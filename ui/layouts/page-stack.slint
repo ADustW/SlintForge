@@ -1,0 +1,16 @@
+// 页面均在编译时创建；仅切换 visible，保留隐藏页的控件状态。
+export component ForgePageStack inherits Rectangle {
+    in property<string> active-id;
+    background: transparent;
+    clip: true;
+    @children
+}
+
+export component ForgeStackPage inherits Rectangle {
+    in property<string> page-id;
+    in property<string> active-id;
+    visible: root.page-id != "" && root.page-id == root.active-id;
+    background: transparent;
+    clip: true;
+    @children
+}

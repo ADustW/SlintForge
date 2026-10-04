@@ -1,0 +1,28 @@
+import { ForgeChartKind, ForgePlotScene, ForgePlotPoint } from "@slintforge";
+import { GalleryChartPage } from "chart-page.slint";
+import { GalleryProfessionalPlotPage } from "plot-page.slint";
+export component GalleryChartPages inherits Rectangle {
+    in property<string> active-route-id;
+    out property<ForgePlotScene> plot-scene: professional.scene;
+    callback append-plot-points(int, [ForgePlotPoint]) -> bool;
+    append-plot-points(id, points) => {return professional.append-points(id, points);}
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => {
+        if route == "chart-bar" { bar.prepare-preview(open); }
+        if route == "chart-line" { line.prepare-preview(open); }
+        if route == "chart-pie" { pie.prepare-preview(open); }
+        if route == "chart-polar" { polar.prepare-preview(open); }
+        if route == "chart-bubble" { bubble.prepare-preview(open); }
+        if route == "chart-scatter" { scatter.prepare-preview(open); }
+        if route == "chart-radar" { radar.prepare-preview(open); }
+        if route == "chart-professional" { professional.prepare-preview(open); }
+    }
+    bar := GalleryChartPage { visible: root.active-route-id == "chart-bar"; title: "Bar Chart"; kind: ForgeChartKind.bar; }
+    line := GalleryChartPage { visible: root.active-route-id == "chart-line"; title: "Line Chart"; kind: ForgeChartKind.line; }
+    pie := GalleryChartPage { visible: root.active-route-id == "chart-pie"; title: "Pie Chart"; kind: ForgeChartKind.pie; }
+    polar := GalleryChartPage { visible: root.active-route-id == "chart-polar"; title: "Polar Area Chart"; kind: ForgeChartKind.polar; }
+    bubble := GalleryChartPage { visible: root.active-route-id == "chart-bubble"; title: "Bubble Chart"; kind: ForgeChartKind.bubble; }
+    scatter := GalleryChartPage { visible: root.active-route-id == "chart-scatter"; title: "Scatter Chart"; kind: ForgeChartKind.scatter; }
+    radar := GalleryChartPage { visible: root.active-route-id == "chart-radar"; title: "Radar Chart"; kind: ForgeChartKind.radar; }
+    professional := GalleryProfessionalPlotPage { visible: root.active-route-id == "chart-professional"; }
+}

@@ -1,0 +1,20 @@
+import { Palette } from "std-widgets.slint";
+
+// 预览区域始终裁剪到卡片边界，避免示例内容盖住页面其他区域。
+export component GalleryDemoCard inherits Rectangle {
+    in property<length> preview-height: 240px;
+    height: root.preview-height;
+    vertical-stretch: 0;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: Palette.border;
+    background: Palette.alternate-background;
+    Rectangle {
+        x: 1px; y: 1px;
+        width: Math.max(0px, root.width - 2px);
+        height: Math.max(0px, root.height - 2px);
+        background: transparent;
+        clip: true;
+        @children
+    }
+}

@@ -1,0 +1,19 @@
+import { GalleryFeedbackProgressBarPage } from "../page/feedback-progress-bar.slint";
+import { GalleryFeedbackProgressRingPage } from "../page/feedback-progress-ring.slint";
+import { GalleryFeedbackInfoBadgePage } from "../page/feedback-info-badge.slint";
+import { GalleryFeedbackResultPage } from "../page/feedback-result.slint";
+import { GalleryFeedbackRatingPage } from "../page/feedback-rating.slint";
+import { GalleryFeedbackShimmerPage } from "../page/feedback-shimmer.slint";
+import { GalleryFeedbackSkeletonPage } from "../page/feedback-skeleton.slint";
+export component GalleryFeedbackPages inherits Rectangle {
+    in property<string> active-route-id;
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => { if route == "feedback-progress-bar" { page-0.prepare-preview(open); } if route == "feedback-progress-ring" { page-1.prepare-preview(open); } if route == "feedback-info-badge" { page-2.prepare-preview(open); } if route == "feedback-result" { page-3.prepare-preview(open); } if route == "feedback-rating" { page-4.prepare-preview(open); } if route == "feedback-shimmer" { page-5.prepare-preview(open); } if route == "feedback-skeleton" { page-6.prepare-preview(open); } }
+    page-0 := GalleryFeedbackProgressBarPage { width: root.width; height: root.height; visible: root.active-route-id == "feedback-progress-bar"; }
+    page-1 := GalleryFeedbackProgressRingPage { width: root.width; height: root.height; visible: root.active-route-id == "feedback-progress-ring"; }
+    page-2 := GalleryFeedbackInfoBadgePage { width: root.width; height: root.height; visible: root.active-route-id == "feedback-info-badge"; }
+    page-3 := GalleryFeedbackResultPage { width: root.width; height: root.height; visible: root.active-route-id == "feedback-result"; }
+    page-4 := GalleryFeedbackRatingPage { width: root.width; height: root.height; visible: root.active-route-id == "feedback-rating"; }
+    page-5 := GalleryFeedbackShimmerPage { width: root.width; height: root.height; visible: root.active-route-id == "feedback-shimmer"; }
+    page-6 := GalleryFeedbackSkeletonPage { width: root.width; height: root.height; visible: root.active-route-id == "feedback-skeleton"; }
+}

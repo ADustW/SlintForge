@@ -1,0 +1,15 @@
+import { GalleryPopupsMenuPage } from "../page/popups-menu.slint";
+import { GalleryPopupsDialogWindowPage } from "../page/popups-dialog-window.slint";
+import { GalleryPopupsTooltipPage } from "../page/popups-tooltip.slint";
+import { GalleryPopupsContentDialogPage } from "../page/popups-content-dialog.slint";
+import { GalleryPopupsDrawerPage } from "../page/popups-drawer.slint";
+export component GalleryPopupsPages inherits Rectangle {
+    in property<string> active-route-id;
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => { if route == "popups-menu" { page-0.prepare-preview(open); } if route == "popups-dialog-window" { page-1.prepare-preview(open); } if route == "popups-tooltip" { page-2.prepare-preview(open); } if route == "popups-content-dialog" { page-3.prepare-preview(open); } if route == "popups-drawer" { page-4.prepare-preview(open); } }
+    page-0 := GalleryPopupsMenuPage { width: root.width; height: root.height; visible: root.active-route-id == "popups-menu"; }
+    page-1 := GalleryPopupsDialogWindowPage { width: root.width; height: root.height; visible: root.active-route-id == "popups-dialog-window"; }
+    page-2 := GalleryPopupsTooltipPage { width: root.width; height: root.height; visible: root.active-route-id == "popups-tooltip"; }
+    page-3 := GalleryPopupsContentDialogPage { width: root.width; height: root.height; visible: root.active-route-id == "popups-content-dialog"; }
+    page-4 := GalleryPopupsDrawerPage { width: root.width; height: root.height; visible: root.active-route-id == "popups-drawer"; }
+}

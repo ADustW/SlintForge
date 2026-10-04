@@ -1,0 +1,22 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeIconButton, ForgeMarquee, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+
+export component GalleryMarqueePage inherits Rectangle {
+    in-out property<bool> running: true;
+    sample-page := GallerySamplePage {
+        width: parent.width; height: parent.height;
+        title: "Marquee";
+        subtitle: @tr("长文本在固定区域内连续滚动，可暂停和继续。");
+        preview-height: 190px;
+
+        marquee := ForgeMarquee {
+            x: 18px; y: Math.max(28px, (sample-page.preview-area-height - 120px) / 2); width: Math.min(420px, sample-page.preview-width - 36px); height: 54px;
+            text: @tr("SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例。");
+            cycle-duration: 8s;
+            running: root.running;
+        }
+        ForgeIconButton { x: 18px; y: marquee.y + 76px; label: root.running ? @tr("暂停滚动") : @tr("继续滚动"); clicked => { root.running = !root.running; } }
+        Text { x: 145px; y: marquee.y + 82px; text: root.running ? @tr("正在滚动") : @tr("已暂停"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+    }
+}

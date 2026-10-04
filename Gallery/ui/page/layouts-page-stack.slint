@@ -1,0 +1,57 @@
+import { Palette, LineEdit } from "std-widgets.slint";
+import { ForgePageStack, ForgeStackPage, ForgeIconButton, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+
+export component GalleryPageStackPage inherits Rectangle {
+    in-out property<string> current-id: "first";
+    out property<string> draft: draft-input.text;
+    callback qa-set-draft(string);
+    qa-set-draft(value) => { draft-input.text = value; }
+    GalleryPageFrame {
+        width: parent.width; height: parent.height;
+        title: "PageStack";
+        subtitle: @tr("按稳定 ID 立即切换预编译页面；隐藏页的输入内容保持不变。");
+        HorizontalLayout {
+            height: 34px; vertical-stretch: 0; spacing: 8px;
+            ForgeIconButton { label: @tr("第一页"); selected: root.current-id == "first"; clicked => { root.current-id = "first"; } }
+            ForgeIconButton { label: @tr("第二页"); selected: root.current-id == "second"; clicked => { root.current-id = "second"; } }
+            ForgeIconButton { label: @tr("第三页"); selected: root.current-id == "third"; clicked => { root.current-id = "third"; } }
+            ForgeIconButton { label: @tr("未知 ID"); selected: root.current-id == "unknown"; clicked => { root.current-id = "unknown"; } }
+        }
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        preview := GalleryDemoCard {
+            preview-height: 350px;
+            stack := ForgePageStack {
+                x: 18px; y: 16px;
+                width: Math.max(0px, preview.width - 36px);
+                height: Math.max(0px, preview.height - 32px);
+                active-id: root.current-id;
+                ForgeStackPage {
+                    page-id: "first"; active-id: stack.active-id;
+                    width: stack.width; height: stack.height;
+                    background: #39305b;
+                    Text {
+                        x: 24px; y: 24px; width: parent.width - 48px;
+                        text: @tr("第一页：输入内容，切走后再返回");
+                        color: white; font-size: 20px * ForgeTypography.scale;
+                    }
+                    draft-input := LineEdit { x: 24px; y: 78px; width: Math.min(340px, parent.width - 48px); placeholder-text: @tr("输入一些文字"); }
+                }
+                ForgeStackPage {
+                    page-id: "second"; active-id: stack.active-id;
+                    width: stack.width; height: stack.height;
+                    background: #285872;
+                    Text { text: @tr("第二页"); color: white; font-size: 25px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+                }
+                ForgeStackPage {
+                    page-id: "third"; active-id: stack.active-id;
+                    width: stack.width; height: stack.height;
+                    background: #247b6f;
+                    Text { text: @tr("第三页"); color: white; font-size: 25px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+                }
+            }
+        }
+
+    }
+}

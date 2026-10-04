@@ -1,0 +1,8 @@
+[workspace]
+members = ["sdk/rust", "Gallery/rust", "examples/rust"]
+exclude = ["third_party/qrcodegen/rust"]
+resolver = "2"
+
+# Debug 保留本项目的调试信息，栅格化与渲染依赖启用优化以满足桌面交互帧预算。
+[profile.dev.package."*"]
+opt-level = 3

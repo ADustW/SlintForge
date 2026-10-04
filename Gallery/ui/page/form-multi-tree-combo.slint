@@ -1,0 +1,30 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeMultiTreeSelectComboBox, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：MultiTreeSelectComboBox。
+export component GalleryFormMultiTreeComboPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => { if open { control.show(); } else { control.close(); } }
+    
+    sample := GallerySamplePage {
+        title: "MultiTreeSelectComboBox";
+        subtitle: @tr("展开树节点，选择一个或多个子项。");
+        example-title: @tr("用法与状态");
+        preview-height: 160px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            control := ForgeMultiTreeSelectComboBox { items: GalleryDemoModels.tree-items; selection-text: GalleryDemoModels.tree-selection; expansion-changed(id, value) => { GalleryDemoModels.expand-tree(id, value); } selection-changed(id, value) => { GalleryDemoModels.select-tree(id, value, true); } }
+Text { text: GalleryDemoModels.tree-selection; color: Palette.foreground; wrap: word-wrap; }
+        }
+    }
+    
+}

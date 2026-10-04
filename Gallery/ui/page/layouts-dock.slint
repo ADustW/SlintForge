@@ -1,0 +1,84 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeDockLayout, ForgeIconButton, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+
+export component GalleryDockLayoutPage inherits Rectangle {
+    in-out property<bool> top-visible: true;
+    in-out property<bool> bottom-visible: true;
+    in-out property<bool> left-visible: true;
+    in-out property<bool> right-visible: true;
+    GalleryPageFrame {
+        width: parent.width; height: parent.height;
+        title: "DockLayout";
+        subtitle: @tr("拖动四条分隔线调整尺寸；独立隐藏边区后，中央区自动填充。");
+        HorizontalLayout {
+            height: 34px; vertical-stretch: 0; spacing: 8px;
+            ForgeIconButton { label: @tr("顶部"); selected: root.top-visible; clicked => { root.top-visible = !root.top-visible; } }
+            ForgeIconButton { label: @tr("底部"); selected: root.bottom-visible; clicked => { root.bottom-visible = !root.bottom-visible; } }
+            ForgeIconButton { label: @tr("左侧"); selected: root.left-visible; clicked => { root.left-visible = !root.left-visible; } }
+            ForgeIconButton { label: @tr("右侧"); selected: root.right-visible; clicked => { root.right-visible = !root.right-visible; } }
+            Rectangle { horizontal-stretch: 1; }
+            ForgeIconButton {
+                label: @tr("重置尺寸");
+                clicked => {
+                    dock.top-height = 92px; dock.bottom-height = 92px;
+                    dock.left-width = 175px; dock.right-width = 175px;
+                }
+            }
+        }
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        preview := GalleryDemoCard {
+            preview-height: 390px;
+            dock := ForgeDockLayout {
+                x: 18px; y: 16px;
+                width: Math.max(0px, preview.width - 36px);
+                height: Math.max(0px, preview.height - 32px);
+                top-height: 92px; bottom-height: 92px;
+                left-width: 175px; right-width: 175px;
+                show-top: root.top-visible; show-bottom: root.bottom-visible;
+                show-left: root.left-visible; show-right: root.right-visible;
+                Rectangle {
+                    visible: root.top-visible;
+                    x: dock.top-rect.x; y: dock.top-rect.y;
+                    width: dock.top-rect.width; height: dock.top-rect.height;
+                    background: #3762a8;
+                    clip: true;
+                    Text { text: @tr("顶部"); color: white; horizontal-alignment: center; vertical-alignment: center; }
+                }
+                Rectangle {
+                    visible: root.bottom-visible;
+                    x: dock.bottom-rect.x; y: dock.bottom-rect.y;
+                    width: dock.bottom-rect.width; height: dock.bottom-rect.height;
+                    background: #8756aa;
+                    clip: true;
+                    Text { text: @tr("底部"); color: white; horizontal-alignment: center; vertical-alignment: center; }
+                }
+                Rectangle {
+                    visible: root.left-visible;
+                    x: dock.left-rect.x; y: dock.left-rect.y;
+                    width: dock.left-rect.width; height: dock.left-rect.height;
+                    background: #247b6f;
+                    clip: true;
+                    Text { text: @tr("左侧"); color: white; horizontal-alignment: center; vertical-alignment: center; }
+                }
+                Rectangle {
+                    visible: root.right-visible;
+                    x: dock.right-rect.x; y: dock.right-rect.y;
+                    width: dock.right-rect.width; height: dock.right-rect.height;
+                    background: #a05332;
+                    clip: true;
+                    Text { text: @tr("右侧"); color: white; horizontal-alignment: center; vertical-alignment: center; }
+                }
+                Rectangle {
+                    x: dock.center-rect.x; y: dock.center-rect.y;
+                    width: dock.center-rect.width; height: dock.center-rect.height;
+                    background: #39305b;
+                    clip: true;
+                    Text { text: @tr("中央"); color: white; horizontal-alignment: center; vertical-alignment: center; }
+                }
+            }
+        }
+
+    }
+}

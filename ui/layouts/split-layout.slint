@@ -1,0 +1,55 @@
+import { Palette } from "std-widgets.slint";
+
+export enum ForgeSplitOrientation { horizontal, vertical }
+
+// 子项绑定两侧的公开几何属性；分隔条支持水平或垂直拖动。
+export component ForgeSplitLayout inherits Rectangle {
+    in-out property<float> ratio: 0.5;
+    in property<ForgeSplitOrientation> orientation: ForgeSplitOrientation.horizontal;
+    in property<length> divider-size: 8px;
+    private property<float> effective-ratio: Math.max(0, Math.min(1, root.ratio));
+    private property<length> effective-divider: Math.max(0px, Math.min(root.divider-size,
+        root.orientation == ForgeSplitOrientation.horizontal ? root.width : root.height));
+    out property<length> first-width: root.orientation == ForgeSplitOrientation.horizontal
+        ? Math.max(0px, Math.min(root.width - root.effective-divider, root.width * root.effective-ratio - root.effective-divider / 2)) : root.width;
+    out property<length> first-height: root.orientation == ForgeSplitOrientation.vertical
+        ? Math.max(0px, Math.min(root.height - root.effective-divider, root.height * root.effective-ratio - root.effective-divider / 2)) : root.height;
+    out property<length> second-x: root.orientation == ForgeSplitOrientation.horizontal ? root.first-width + root.effective-divider : 0px;
+    out property<length> second-y: root.orientation == ForgeSplitOrientation.vertical ? root.first-height + root.effective-divider : 0px;
+    out property<length> second-width: root.orientation == ForgeSplitOrientation.horizontal ? Math.max(0px, root.width - root.second-x) : root.width;
+    out property<length> second-height: root.orientation == ForgeSplitOrientation.vertical ? Math.max(0px, root.height - root.second-y) : root.height;
+    callback ratio-changed(float);
+    background: Palette.background;
+    clip: true;
+    @children
+    divider := Rectangle {
+        x: root.orientation == ForgeSplitOrientation.horizontal ? root.first-width : 0px;
+        y: root.orientation == ForgeSplitOrientation.vertical ? root.first-height : 0px;
+        width: root.orientation == ForgeSplitOrientation.horizontal ? root.effective-divider : parent.width;
+        height: root.orientation == ForgeSplitOrientation.vertical ? root.effective-divider : parent.height;
+        background: Palette.border;
+        TouchArea {
+            property<float> pressed-ratio: root.ratio;
+            property<length> pressed-root-x: 0px;
+            property<length> pressed-root-y: 0px;
+            mouse-cursor: root.orientation == ForgeSplitOrientation.horizontal ? col-resize : row-resize;
+            pointer-event(event) => {
+                if (event.kind == PointerEventKind.down) {
+                    self.pressed-ratio = root.effective-ratio;
+                    self.pressed-root-x = divider.x + self.pressed-x;
+                    self.pressed-root-y = divider.y + self.pressed-y;
+                }
+            }
+            moved => {
+                if (self.pressed && root.width > 0px && root.height > 0px) {
+                    // 鼠标局部坐标会随分隔条移动，先换算到固定的组件坐标系。
+                    root.ratio = Math.max(0.15, Math.min(0.85,
+                        self.pressed-ratio + (root.orientation == ForgeSplitOrientation.horizontal
+                            ? (divider.x + self.mouse-x - self.pressed-root-x) / root.width
+                            : (divider.y + self.mouse-y - self.pressed-root-y) / root.height)));
+                    root.ratio-changed(root.ratio);
+                }
+            }
+        }
+    }
+}

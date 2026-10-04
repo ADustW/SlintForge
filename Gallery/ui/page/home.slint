@@ -1,0 +1,116 @@
+import { ForgeTypography } from "@slintforge";
+import { Palette, ScrollView } from "std-widgets.slint";
+import { ForgeIconButton, ForgeNavPlacement, ForgePaneState } from "@slintforge";
+
+component GalleryHomeTile inherits Rectangle {
+    in property<string> icon;
+    in property<string> title;
+    in property<string> description;
+    in property<length> tile-width: 200px;
+    callback clicked();
+    width: root.tile-width;
+    horizontal-stretch: 0;
+    height: 112px;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: Palette.border;
+    background: tile-touch.has-hover ? Palette.control-background : Palette.alternate-background;
+    Text { x: 16px; y: 16px; text: root.icon; color: Palette.accent-background; font-size: 27px * ForgeTypography.scale; }
+    Text { x: 58px; y: 19px; width: parent.width - 72px; text: root.title; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; font-weight: 600; overflow: elide; }
+    Text { x: 58px; y: 47px; width: parent.width - 72px; text: root.description; color: Palette.foreground; font-size: 11px * ForgeTypography.scale; wrap: word-wrap; }
+    tile-touch := TouchArea { clicked => { root.clicked(); } }
+}
+
+export component GalleryHomePage inherits Rectangle {
+    property<length> sample-tile-width: (root.width - 84px) / 4;
+    callback navigate-requested(string);
+    callback placement-requested(ForgeNavPlacement);
+    callback pane-requested(ForgePaneState);
+    background: Palette.background;
+
+    ScrollView {
+        width: parent.width;
+        height: parent.height;
+        VerticalLayout {
+            width: parent.width;
+            spacing: 22px;
+            padding-bottom: 28px;
+            Rectangle {
+                height: 306px;
+                clip: true;
+                background: @linear-gradient(135deg, #211433 0%, #4c2580 55%, #160f27 100%);
+                Rectangle {
+                    x: parent.width * 0.58; y: 38px; width: 500px; height: 320px;
+                    border-radius: 170px;
+                    background: @linear-gradient(120deg, #7f4abd 0%, #371765 55%, #1a1132 100%);
+                }
+                Rectangle {
+                    x: parent.width * 0.72; y: 124px; width: 430px; height: 210px;
+                    border-radius: 110px;
+                    border-width: 3px;
+                    border-color: #9d6bd1;
+                    background: transparent;
+                }
+                Text { x: 24px; y: 34px; text: "SlintForge Gallery"; color: white; font-size: 28px * ForgeTypography.scale; font-weight: 700; }
+                Text { x: 25px; y: 78px; text: @tr("一套 Slint 组件，同时服务 Rust 与 C++ 应用"); color: #dfd6ea; font-size: 13px * ForgeTypography.scale; }
+                Rectangle {
+                    x: 24px; y: 145px; width: 170px; height: 139px;
+                    border-radius: 8px; background: #231c35;
+                    Text { x: 16px; y: 15px; text: "+"; color: #9d78ec; font-size: 29px * ForgeTypography.scale; }
+                    Text { x: 16px; y: 63px; text: @tr("开始使用"); color: white; font-size: 14px * ForgeTypography.scale; font-weight: 600; }
+                    Text { x: 16px; y: 89px; width: parent.width - 32px; text: @tr("查看基础组件的可交互示例"); color: #d0c9dd; font-size: 11px * ForgeTypography.scale; wrap: word-wrap; }
+                    TouchArea { clicked => { root.navigate-requested("iconbutton"); } }
+                }
+                Rectangle {
+                    x: 208px; y: 145px; width: 170px; height: 139px;
+                    border-radius: 8px; background: #231c35;
+                    Text { x: 16px; y: 15px; text: "#"; color: #9d78ec; font-size: 29px * ForgeTypography.scale; }
+                    Text { x: 16px; y: 63px; text: @tr("组件目录"); color: white; font-size: 14px * ForgeTypography.scale; font-weight: 600; }
+                    Text { x: 16px; y: 89px; width: parent.width - 32px; text: @tr("按分类浏览已实现和规划中的页面"); color: #d0c9dd; font-size: 11px * ForgeTypography.scale; wrap: word-wrap; }
+                    TouchArea { clicked => { root.navigate-requested("navigation"); } }
+                }
+            }
+            VerticalLayout {
+                padding-left: 24px;
+                padding-right: 24px;
+                spacing: 12px;
+                Text { text: @tr("最近添加的示例"); color: Palette.foreground; font-size: 21px * ForgeTypography.scale; font-weight: 600; }
+                HorizontalLayout {
+                    spacing: 12px;
+                    GalleryHomeTile { tile-width: root.sample-tile-width; icon: "P"; title: "ForgePlot"; description: @tr("专业绘图、交互与导出"); clicked => { root.navigate-requested("chart-professional"); } }
+                    GalleryHomeTile { tile-width: root.sample-tile-width; icon: "D"; title: "DataGrid"; description: @tr("排序、筛选与单元格编辑"); clicked => { root.navigate-requested("data-grid"); } }
+                    GalleryHomeTile { tile-width: root.sample-tile-width; icon: "T"; title: "TreeDataGrid"; description: @tr("树形层级与数据展示"); clicked => { root.navigate-requested("data-tree-grid"); } }
+                    GalleryHomeTile { tile-width: root.sample-tile-width; icon: "W"; title: "ForgeWindow"; description: @tr("无边框窗口与标题栏"); clicked => { root.navigate-requested("forge-window"); } }
+                }
+            }
+            VerticalLayout {
+                padding-left: 24px;
+                padding-right: 24px;
+                spacing: 12px;
+                Text { text: @tr("常用示例"); color: Palette.foreground; font-size: 21px * ForgeTypography.scale; font-weight: 600; }
+                HorizontalLayout {
+                    spacing: 12px;
+                    GalleryHomeTile { tile-width: root.sample-tile-width; icon: "A"; title: "AutoSuggestBox"; description: @tr("输入建议与快速选择"); clicked => { root.navigate-requested("form-auto-suggest"); } }
+                    GalleryHomeTile { tile-width: root.sample-tile-width; icon: "D"; title: "Bar Chart"; description: @tr("比较各月份的数据，切换分组或堆叠。"); clicked => { root.navigate-requested("chart-bar"); } }
+                    GalleryHomeTile { tile-width: root.sample-tile-width; icon: "T"; title: "TabBar"; description: @tr("按稳定 ID 切换页签"); clicked => { root.navigate-requested("tabbar"); } }
+                    GalleryHomeTile { tile-width: root.sample-tile-width; icon: "*"; title: "PasswordBox"; description: @tr("安全输入"); clicked => { root.navigate-requested("form-password-box"); } }
+                }
+            }
+            VerticalLayout {
+                padding-left: 24px;
+                padding-right: 24px;
+                spacing: 12px;
+                Text { text: @tr("Gallery 布局预览"); color: Palette.foreground; font-size: 21px * ForgeTypography.scale; font-weight: 600; }
+                HorizontalLayout {
+                    spacing: 8px;
+                    ForgeIconButton { label: @tr("左侧"); clicked => { root.placement-requested(ForgeNavPlacement.left); } }
+                    ForgeIconButton { label: @tr("右侧"); clicked => { root.placement-requested(ForgeNavPlacement.right); } }
+                    ForgeIconButton { label: @tr("顶部"); clicked => { root.placement-requested(ForgeNavPlacement.top); } }
+                    ForgeIconButton { label: @tr("展开"); clicked => { root.pane-requested(ForgePaneState.expanded); } }
+                    ForgeIconButton { label: @tr("仅图标"); clicked => { root.pane-requested(ForgePaneState.compact); } }
+                    ForgeIconButton { label: @tr("隐藏"); clicked => { root.pane-requested(ForgePaneState.hidden); } }
+                }
+            }
+        }
+    }
+}

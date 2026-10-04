@@ -1,0 +1,41 @@
+import { Button, Palette } from "std-widgets.slint";
+
+export component ForgeShortcutPicker inherits Rectangle {
+    in-out property<string> shortcut;
+    in-out property<bool> recording: false;
+    in property<bool> enabled: true;
+    callback shortcut-changed(string);
+    private property<string> previous;
+    function key-name(key: string) -> string {
+        return key == Key.Return ? "Enter" : key == " " ? "Space" : key == Key.Tab ? "Tab"
+            : key == Key.LeftArrow ? "Left" : key == Key.RightArrow ? "Right"
+            : key == Key.UpArrow ? "Up" : key == Key.DownArrow ? "Down"
+            : key == Key.Home ? "Home" : key == Key.End ? "End"
+            : key == Key.Delete ? "Delete" : key == Key.Backspace ? "Backspace"
+            : key == Key.F1 ? "F1" : key == Key.F2 ? "F2" : key == Key.F3 ? "F3"
+            : key == Key.F4 ? "F4" : key == Key.F5 ? "F5" : key == Key.F6 ? "F6"
+            : key == Key.F7 ? "F7" : key == Key.F8 ? "F8" : key == Key.F9 ? "F9"
+            : key == Key.F10 ? "F10" : key == Key.F11 ? "F11" : key == Key.F12 ? "F12" : key.to-uppercase();
+    }
+    public function start-recording() {
+        if root.enabled { root.previous = root.shortcut; root.recording = true; focus.focus(); }
+    }
+    public function clear() { if root.enabled { root.shortcut = ""; root.recording = false; root.shortcut-changed(""); } }
+    min-width: 240px; preferred-height: 36px; forward-focus: focus;
+    HorizontalLayout {
+        spacing: 8px;
+        Button { text: root.recording ? @tr("请按快捷键…") : root.shortcut == "" ? @tr("录制快捷键") : root.shortcut; enabled: root.enabled; clicked => { root.start-recording(); } }
+        Button { text: @tr("清除"); enabled: root.enabled; clicked => { root.clear(); } }
+    }
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if !root.recording { return reject; }
+            if event.text == Key.Escape { root.shortcut = root.previous; root.recording = false; return accept; }
+            if event.text == Key.Control || event.text == Key.Shift || event.text == Key.Alt || event.text == Key.Meta { return accept; }
+            root.shortcut = (event.modifiers.control ? "Ctrl+" : "") + (event.modifiers.alt ? "Alt+" : "") + (event.modifiers.shift ? "Shift+" : "") + (event.modifiers.meta ? "Meta+" : "") + root.key-name(event.text);
+            root.recording = false; root.shortcut-changed(root.shortcut); return accept;
+        }
+    }
+    changed enabled => { if !root.enabled { root.recording = false; } }
+}

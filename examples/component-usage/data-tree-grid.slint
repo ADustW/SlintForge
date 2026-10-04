@@ -1,0 +1,10 @@
+import { ForgeTreeDataGrid } from "@slintforge";
+export component Example inherits Window {
+    width: 640px; height: 360px;
+    ForgeTreeDataGrid {
+        columns: [{id: "name", title: "Name", width: 220, frozen: true, sortable: true},
+            {id: "count", title: "Count", numeric: true, sortable: true}];
+        rows: [{id: "root", expanded: true, cells: [{text: "Project"}, {text: "12", value: 12}]},
+            {id: "child", parent-id: "root", cells: [{text: "Module"}, {text: "12", value: 12}]}];
+    }
+}

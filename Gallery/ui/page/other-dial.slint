@@ -1,0 +1,30 @@
+import { Slider, Palette } from "std-widgets.slint";
+import { ForgeDial, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：Dial。
+export component GalleryOtherDialPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "Dial";
+        subtitle: @tr("旋转拨盘或拖动滑块调整同一数值。");
+        example-title: @tr("用法与状态");
+        preview-height: 250px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            HorizontalLayout { spacing: 20px; dial := ForgeDial { width: 200px; height: 200px; value <=> root.number; minimum: 0; maximum: 100; suffix: "%"; } Slider { minimum: 0; maximum: 100; value <=> root.number; } }
+Text { text: @tr("当前值：{}", round(root.number)); color: Palette.foreground; }
+        }
+    }
+    
+}

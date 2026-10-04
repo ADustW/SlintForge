@@ -1,0 +1,79 @@
+import { Button, CheckBox, Palette, ScrollView } from "std-widgets.slint";
+import { ForgeChoiceItem, ForgeTreeItem } from "../types/widgets.slint";
+import { ForgeFileTree } from "../data/file-tree.slint";
+import { ForgeIcon, ForgeIcons } from "../icons/icon.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export component ForgeMultiSelectComboBox inherits Rectangle {
+    in-out property<[ForgeChoiceItem]> items;
+    in property<string> placeholder-text: @tr("选择多个项目");
+    in property<string> selection-text;
+    in property<bool> enabled: true;
+    out property<bool> open: popup.is-open;
+    callback selection-changed(string, bool);
+    public function show() { if root.enabled { popup.show(); } }
+    public function close() { popup.close(); }
+    min-width: 200px; preferred-height: button.preferred-height;
+    button := Button { width: root.width; height: root.height; text: (root.selection-text == "" ? root.placeholder-text : root.selection-text) + "      "; enabled: root.enabled; clicked => { popup.show(); } }
+    ForgeIcon {
+        x: root.width - self.width - 8px; width: 14px * ForgeTypography.scale; height: root.height;
+        glyph: ForgeIcons.chevron-down; font-size: 14px * ForgeTypography.scale;
+        opacity: root.enabled ? 1 : 0.45;
+    }
+    popup := PopupWindow {
+        y: root.height; x: 0px; width: Math.max(240px, root.width);
+        height: Math.min(300px, Math.max(80px, root.items.length * 36px + 50px));
+        close-policy: close-on-click-outside;
+        Rectangle {
+            background: Palette.background; border-color: Palette.border; border-width: 1px; border-radius: 6px;
+            VerticalLayout {
+                padding: 10px; spacing: 8px;
+                ScrollView {
+                    VerticalLayout {
+                        spacing: 2px;
+                        for item[index] in root.items : CheckBox {
+                            text: item.label; checked: item.selected; enabled: item.enabled && root.enabled;
+                            toggled => { root.items[index].selected = self.checked; root.selection-changed(item.id, self.checked); }
+                        }
+                    }
+                }
+                Button { text: @tr("完成"); clicked => { popup.close(); } }
+            }
+        }
+    }
+    changed enabled => { if !root.enabled { popup.close(); } }
+}
+
+export component ForgeMultiTreeSelectComboBox inherits Rectangle {
+    in property<[ForgeTreeItem]> items;
+    in property<string> selection-text;
+    in property<bool> enabled: true;
+    callback expansion-changed(string, bool);
+    callback selection-changed(string, bool);
+    public function show() { if root.enabled { popup.show(); } }
+    public function close() { popup.close(); }
+    min-width: 220px; preferred-height: button.preferred-height;
+    button := Button { width: root.width; height: root.height; text: (root.selection-text == "" ? @tr("选择树节点") : root.selection-text) + "      "; enabled: root.enabled; clicked => { popup.show(); } }
+    ForgeIcon {
+        x: root.width - self.width - 8px; width: 14px * ForgeTypography.scale; height: root.height;
+        glyph: ForgeIcons.chevron-down; font-size: 14px * ForgeTypography.scale;
+        opacity: root.enabled ? 1 : 0.45;
+    }
+    popup := PopupWindow {
+        x: 0px; y: root.height; width: Math.max(300px, root.width); height: 340px;
+        close-policy: close-on-click-outside;
+        Rectangle {
+            background: Palette.background; border-radius: 6px; border-width: 1px; border-color: Palette.border;
+            VerticalLayout {
+                padding: 10px; spacing: 8px;
+                ForgeFileTree {
+                    items: root.items; multi-select: true; enabled: root.enabled;
+                    expansion-changed(id, value) => { root.expansion-changed(id, value); }
+                    selection-changed(id, value) => { root.selection-changed(id, value); }
+                }
+                Button { text: @tr("完成"); clicked => { popup.close(); } }
+            }
+        }
+    }
+    changed enabled => { if !root.enabled { popup.close(); } }
+}

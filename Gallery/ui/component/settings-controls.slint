@@ -1,0 +1,53 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeIcon, ForgeTypography } from "@slintforge";
+
+export component GallerySettingsChoice inherits Rectangle {
+    in property<string> label;
+    in property<string> icon: "";
+    in property<bool> selected;
+    callback clicked();
+    width: label-text.preferred-width + (root.icon == "" ? 28px : 52px);
+    height: 34px;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: root.selected ? Palette.accent-background : Palette.border;
+    background: root.selected || choice-touch.has-hover ? Palette.control-background : Palette.alternate-background;
+    if root.icon != "" : ForgeIcon {
+        x: 12px; width: 20px; height: parent.height;
+        glyph: root.icon;
+        font-size: 18px * ForgeTypography.scale;
+    }
+    label-text := Text {
+        x: root.icon == "" ? 0px : 32px;
+        width: parent.width - self.x;
+        text: root.label;
+        color: Palette.foreground;
+        font-size: 13px * ForgeTypography.scale;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    choice-touch := TouchArea { clicked => { root.clicked(); } }
+}
+
+export component GallerySettingsToggle inherits Rectangle {
+    in property<string> label;
+    in property<string> description;
+    in property<bool> checked;
+    callback toggled(bool);
+    height: 64px;
+    background: transparent;
+    Text { x: 0px; y: 6px; text: root.label; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; font-weight: 600; }
+    Text { x: 0px; y: 31px; width: parent.width - 82px; text: root.description; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; overflow: elide; }
+    Rectangle {
+        x: parent.width - 56px; y: 17px; width: 48px; height: 27px;
+        border-radius: 14px;
+        background: root.checked ? Palette.accent-background : Palette.control-background;
+        border-width: 1px;
+        border-color: root.checked ? Palette.accent-background : Palette.border;
+        Rectangle {
+            x: root.checked ? 25px : 3px; y: 3px; width: 19px; height: 19px;
+            border-radius: 10px; background: root.checked ? Palette.accent-foreground : Palette.foreground;
+        }
+    }
+    TouchArea { clicked => { root.toggled(!root.checked); } }
+}

@@ -1,0 +1,35 @@
+import { Palette } from "std-widgets.slint";
+
+export component ForgeShimmer inherits Rectangle {
+    in property<bool> running: true;
+    in property<duration> cycle: 1600ms;
+    private property<duration> elapsed: 0ms;
+    out property<float> phase: root.cycle <= 0ms ? 0 : mod(root.elapsed, root.cycle) / root.cycle;
+    preferred-height: 28px;
+    border-radius: 5px; clip: true; background: Palette.control-background;
+    Rectangle {
+        x: -self.width + root.phase * (root.width + self.width);
+        width: Math.max(60px, root.width * 0.45); height: root.height;
+        background: @linear-gradient(90deg, transparent, #ffffff40, transparent);
+    }
+    Timer { interval: 40ms; running: root.running && root.cycle > 0ms; triggered => { root.elapsed = mod(root.elapsed + 40ms, root.cycle); } }
+}
+
+export component ForgeSkeletonView inherits Rectangle {
+    in property<bool> loading: true;
+    in property<bool> animate: true;
+    in property<int> rows: 3;
+    preferred-height: Math.max(0, root.rows) * 36px + 72px;
+    Rectangle {
+        visible: root.loading;
+        VerticalLayout {
+            spacing: 12px;
+            ForgeShimmer { width: 64px; height: 64px; border-radius: 32px; running: root.animate && root.loading; }
+            for index in Math.max(0, Math.min(30, root.rows)) : ForgeShimmer {
+                height: 24px; width: index == root.rows - 1 ? parent.width * 0.65 : parent.width;
+                running: root.animate && root.loading;
+            }
+        }
+    }
+    Rectangle { visible: !root.loading; @children }
+}

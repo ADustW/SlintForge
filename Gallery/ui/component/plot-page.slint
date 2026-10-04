@@ -1,0 +1,33 @@
+import { ForgePlotPoint, ForgePlotScene, ForgeTypography } from "@slintforge";
+import { ProfessionalPlotDemo } from "../../../examples/ui/professional-plot-demo.slint";
+import { GalleryPageFrame } from "page-frame.slint";
+
+export global GalleryPlotDemoModels {
+    in-out property<[ForgePlotPoint]> live-points;
+    callback sample-running(bool);
+}
+
+// Gallery 和独立消费者使用同一个专业图表示例。
+export component GalleryProfessionalPlotPage inherits Rectangle {
+    callback append-points(int, [ForgePlotPoint]) -> bool;
+    append-points(id, points) => {return demo.append-points(id, points);}
+    out property<ForgePlotScene> scene: demo.scene;
+    callback prepare-preview(bool);
+    prepare-preview(open) => {
+        GalleryPlotDemoModels.sample-running(false);
+        demo.live = false; demo.mode = open ? 8 : 0;
+        demo.reset(); demo.refresh();
+    }
+    changed visible => {
+        if !root.visible {GalleryPlotDemoModels.sample-running(false);demo.live = false;}
+    }
+    GalleryPageFrame {
+        title: "ForgePlot";
+        subtitle: @tr("曲线、统计图、二维色图、极坐标与多绘图区，支持缩放、选择和五种格式导出。");
+        demo := ProfessionalPlotDemo {
+            height: 700px * ForgeTypography.scale; vertical-stretch: 0;
+            live-points: GalleryPlotDemoModels.live-points;
+            sample-running(running) => {GalleryPlotDemoModels.sample-running(running);}
+        }
+    }
+}

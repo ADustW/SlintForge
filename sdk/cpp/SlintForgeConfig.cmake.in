@@ -1,0 +1,16 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+if(NOT TARGET Slint::Slint)
+    find_dependency(Slint 1.18.0 EXACT CONFIG)
+endif()
+include("${CMAKE_CURRENT_LIST_DIR}/SlintForgeTargets.cmake")
+
+set(SLINTFORGE_UI_LIBRARY "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_DATADIR@/slintforge/ui/slintforge.slint")
+
+function(slintforge_target_sources target source)
+    slint_target_sources(${target} ${source}
+        LIBRARY_PATHS "slintforge=${SLINTFORGE_UI_LIBRARY}")
+endfunction()
+
+check_required_components(SlintForge)

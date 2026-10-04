@@ -1,0 +1,21 @@
+import { Button, LineEdit, StandardButton, Palette } from "std-widgets.slint";
+export component GalleryDemoWindow inherits Window {
+    title: @tr("Slint 原生多窗口"); width: 420px; height: 220px;
+    callback dismissed();
+    VerticalLayout {
+        padding: 24px; spacing: 16px;
+        Text { text: @tr("此窗口由 Rust/C++ 宿主创建并持有。"); color: Palette.foreground; wrap: word-wrap; }
+        LineEdit { placeholder-text: @tr("隐藏再打开会保留输入"); }
+        Button { text: @tr("关闭"); clicked => { root.dismissed(); } }
+    }
+}
+export component GalleryDemoDialog inherits Dialog {
+    title: @tr("Slint 原生对话窗口"); width: 420px; height: 220px;
+    VerticalLayout {
+        padding: 24px; spacing: 16px;
+        Text { text: @tr("原生 Dialog 自动排列标准操作按钮。"); color: Palette.foreground; wrap: word-wrap; }
+        LineEdit { placeholder-text: @tr("对话窗口内容"); }
+    }
+    StandardButton { kind: ok; }
+    StandardButton { kind: cancel; }
+}

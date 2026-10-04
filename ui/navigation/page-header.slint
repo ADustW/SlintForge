@@ -1,0 +1,21 @@
+import { ForgeTypography } from "../typography/typography.slint";
+import { Palette } from "std-widgets.slint";
+
+import { ForgeIconButton } from "../basic/icon-button.slint";
+
+export component ForgePageHeader inherits Rectangle {
+    in property<string> title;
+    in property<string> subtitle;
+    in property<bool> can-go-back: false;
+    callback back-requested();
+    height: 64px;
+    background: transparent;
+    HorizontalLayout {
+        spacing: 10px;
+        if root.can-go-back : ForgeIconButton { icon: "<"; clicked => { root.back-requested(); } }
+        VerticalLayout {
+            Text { text: root.title; font-size: 23px * ForgeTypography.scale; font-weight: 600; color: Palette.foreground; }
+            Text { text: root.subtitle; font-size: 12px * ForgeTypography.scale; color: Palette.foreground; }
+        }
+    }
+}

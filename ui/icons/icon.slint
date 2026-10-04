@@ -1,0 +1,46 @@
+import "../assets/fonts/FluentSystemIcons-Regular.ttf";
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export struct ForgeIconEntry { name: string, codepoint: string, glyph: string }
+
+// 字形来自 Microsoft Fluent System Icons，完整码位表见 assets/fonts 下的 JSON。
+export global ForgeIcons {
+    out property<string> add: "\u{f109}";
+    out property<string> apps: "\u{f133}";
+    out property<string> arrow-left: "\u{f15b}";
+    out property<string> brightness: "\u{e1f7}";
+    out property<string> sun: "\u{f8a1}";
+    out property<string> moon: "\u{f87d}";
+    out property<string> checkmark: "\u{f294}";
+    out property<string> dismiss: "\u{f369}";
+    out property<string> globe: "\u{f45a}";
+    out property<string> home: "\u{f480}";
+    out property<string> info: "\u{f4a3}";
+    out property<string> warning: "\u{f03cf}";
+    out property<string> pin: "\u{f601}";
+    out property<string> pin-off: "\u{f603}";
+    out property<string> search: "\u{f68f}";
+    out property<string> settings: "\u{f6a9}";
+    out property<string> text-font: "\u{f7e4}";
+    out property<string> window: "\u{f8b5}";
+    out property<string> panel-left: "\u{e8b0}";
+    out property<string> panel-left-expand: "\u{e8b9}";
+    out property<string> panel-right: "\u{e8bd}";
+    out property<string> panel-right-expand: "\u{e8c4}";
+    out property<string> panel-top-contract: "\u{e8c6}";
+    out property<string> panel-top-expand: "\u{e8c7}";
+    out property<string> arrow-clockwise: "\u{f13d}";
+    out property<string> chevron-down: "\u{f2a3}";
+    out property<string> chevron-right: "\u{f2b0}";
+}
+
+export component ForgeIcon inherits Text {
+    in property<string> glyph;
+    text: root.glyph;
+    font-family: "FluentSystemIcons-Regular";
+    font-size: 20px * ForgeTypography.scale;
+    color: Palette.foreground;
+    horizontal-alignment: center;
+    vertical-alignment: center;
+}

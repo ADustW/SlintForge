@@ -1,0 +1,154 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTitleBarButton } from "internal/title-bar-button.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeIcons } from "../icons/icon.slint";
+import { ForgeCaptureService, ForgeCaptureResult } from "../types/capture.slint";
+
+// 公共无边框窗口：原生窗口负责拖动与缩放，内容通过 @children 常驻于标题栏下方。
+export component ForgeWindow inherits Window {
+    no-frame: true;
+    resize-border-width: 6px;
+    background: Palette.background;
+    default-font-family: ForgeTypography.family;
+    preferred-width: 960px;
+    preferred-height: 640px;
+    min-width: 420px;
+    min-height: 240px;
+
+    in property<string> brand-symbol: "S";
+    in property<image> brand-icon;
+    in property<bool> show-brand-icon: false;
+    in property<string> version-text: "";
+    in property<bool> show-menu-button: false;
+    in property<string> navigation-glyph: ForgeIcons.panel-left;
+    in property<bool> show-theme-button: false;
+    in property<bool> show-pin-button: false;
+    in property<bool> show-settings-button: false;
+    in property<bool> show-maximize-button: true;
+    in-out property<bool> dark-mode: false;
+    in-out property<bool> pinned: false;
+    in-out property<bool> rounded-corners: true;
+    always-on-top: root.pinned;
+    out property<length> title-bar-height: 46px;
+    callback menu-requested();
+    callback theme-toggle-requested();
+    callback pin-state-changed(bool);
+    callback settings-requested();
+
+    public function capture() -> ForgeCaptureResult {
+        if (!ForgeCaptureService.connected) {
+            return { error: @tr("截图服务未接入") };
+        }
+        return ForgeCaptureService.capture-window();
+    }
+
+    Rectangle {
+        x: 0px; y: 0px;
+        width: root.width; height: root.title-bar-height;
+        background: Palette.alternate-background;
+        HorizontalLayout {
+            width: parent.width; height: parent.height;
+            spacing: 0px;
+            WindowMoveArea {
+                horizontal-stretch: 1;
+                height: root.title-bar-height;
+                HorizontalLayout {
+                    width: parent.width; height: parent.height;
+                    padding-left: 10px;
+                    spacing: 9px;
+                    Rectangle {
+                        width: 22px; height: root.title-bar-height;
+                        background: transparent;
+                        if root.show-brand-icon : Image {
+                            x: 0px; y: (parent.height - 22px) / 2;
+                            width: 22px; height: 22px;
+                            source: root.brand-icon;
+                            image-fit: contain;
+                        }
+                        if !root.show-brand-icon : Rectangle {
+                            x: 1px; y: (parent.height - 20px) / 2;
+                            width: 20px; height: 20px;
+                            border-radius: 5px;
+                            background: Palette.accent-background;
+                            Text {
+                                width: parent.width; height: parent.height;
+                                text: root.brand-symbol;
+                                color: Palette.accent-foreground;
+                                font-size: 12px * ForgeTypography.scale;
+                                font-weight: 700;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                    Text {
+                        height: root.title-bar-height;
+                        text: root.title + (root.version-text == "" ? "" : " (" + root.version-text + ")");
+                        color: Palette.foreground;
+                        font-size: 13px * ForgeTypography.scale;
+                        font-weight: 600;
+                        horizontal-alignment: left;
+                        vertical-alignment: center;
+                        overflow: elide;
+                    }
+                }
+                TouchArea {
+                    double-clicked => {
+                        if (root.show-maximize-button) { root.maximized = !root.maximized; }
+                    }
+                }
+            }
+            if root.show-theme-button : ForgeTitleBarButton {
+                role: 2;
+                dark-mode: root.dark-mode;
+                clicked => { root.theme-toggle-requested(); }
+            }
+            if root.show-pin-button : ForgeTitleBarButton {
+                role: 6;
+                pinned-state: root.pinned;
+                clicked => { root.pinned = !root.pinned; root.pin-state-changed(root.pinned); }
+            }
+            if root.show-menu-button : ForgeTitleBarButton {
+                role: 1;
+                glyph: root.navigation-glyph;
+                clicked => { root.menu-requested(); }
+            }
+            if root.show-settings-button : ForgeTitleBarButton {
+                role: 7;
+                clicked => { root.settings-requested(); }
+            }
+            ForgeTitleBarButton {
+                role: 3;
+                clicked => { root.minimized = true; }
+            }
+            if root.show-maximize-button : ForgeTitleBarButton {
+                role: 4;
+                maximized-state: root.maximized;
+                clicked => { root.maximized = !root.maximized; }
+            }
+            ForgeTitleBarButton {
+                role: 5;
+                clicked => { root.close(); }
+            }
+        }
+        Rectangle {
+            x: 0px; y: parent.height - 1px;
+            width: parent.width; height: 1px;
+            background: Palette.border;
+        }
+    }
+    Rectangle {
+        x: 0px; y: root.title-bar-height;
+        width: root.width;
+        height: root.height - root.title-bar-height;
+        background: Palette.background;
+        @children
+    }
+    Rectangle {
+        x: 0px; y: 0px;
+        width: root.width; height: root.height;
+        border-width: root.maximized ? 0px : 1px;
+        border-color: Palette.border;
+        background: transparent;
+    }
+}

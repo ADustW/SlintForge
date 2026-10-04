@@ -1,0 +1,43 @@
+import { ForgeTypography } from "@slintforge";
+import { Palette } from "std-widgets.slint";
+import { ForgeIconButton, ForgeInfoBar, ForgeInfoLevel } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+
+export component GalleryInfoBarPage inherits Rectangle {
+    in-out property<bool> bar-visible: true;
+    in-out property<ForgeInfoLevel> level: ForgeInfoLevel.info;
+    background: transparent;
+
+    GalleryPageFrame {
+        width: parent.width;
+        height: parent.height;
+        title: "InfoBar";
+        subtitle: @tr("内联状态反馈 · ForgeInfoBar");
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        GalleryDemoCard {
+            preview-height: 180px;
+            VerticalLayout {
+                x: 20px; y: 18px; width: parent.width - 40px; height: parent.height - 36px;
+                spacing: 14px;
+                HorizontalLayout {
+                    height: 34px;
+                    vertical-stretch: 0;
+                    spacing: 8px;
+                    ForgeIconButton { label: @tr("信息"); clicked => { root.level = ForgeInfoLevel.info; root.bar-visible = true; } }
+                    ForgeIconButton { label: @tr("成功"); clicked => { root.level = ForgeInfoLevel.success; root.bar-visible = true; } }
+                    ForgeIconButton { label: @tr("警告"); clicked => { root.level = ForgeInfoLevel.warning; root.bar-visible = true; } }
+                    ForgeIconButton { label: @tr("错误"); clicked => { root.level = ForgeInfoLevel.error; root.bar-visible = true; } }
+                }
+                ForgeInfoBar {
+                    height: 52px;
+                    vertical-stretch: 0;
+                    visible: root.bar-visible;
+                    level: root.level;
+                    message: @tr("这是一条可关闭的反馈信息。");
+                    dismissed => { root.bar-visible = false; }
+                }
+            }
+        }
+}
+}

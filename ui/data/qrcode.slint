@@ -1,0 +1,19 @@
+import { ForgeWidgetServices, ForgeQRCodeResult } from "../types/widgets.slint";
+
+export component ForgeQRCode inherits Rectangle {
+    in property<string> text;
+    in property<color> light-color: white;
+    out property<ForgeQRCodeResult> result;
+    private property<bool> service-ready: ForgeWidgetServices.connected;
+    public function regenerate() {
+        if root.service-ready { root.result = ForgeWidgetServices.qr-code(root.text); }
+        else { root.result = { ok: false, error: @tr("二维码服务未绑定") }; }
+    }
+    init => { root.regenerate(); }
+    changed text => { root.regenerate(); }
+    changed service-ready => { root.regenerate(); }
+    preferred-width: 220px; preferred-height: 220px;
+    background: root.light-color;
+    Image { width: parent.width; height: parent.height; source: root.result.image; image-fit: contain; image-rendering: pixelated; }
+    if !root.result.ok : Text { text: root.result.error; color: #d13b3b; wrap: word-wrap; horizontal-alignment: center; vertical-alignment: center; }
+}

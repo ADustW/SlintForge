@@ -1,0 +1,171 @@
+import { ForgeTypography } from "../../typography/typography.slint";
+import { Palette, ScrollView } from "std-widgets.slint";
+import { ForgeNavigationItem, ForgeNavItemKind, ForgePaneState } from "../../types/navigation.slint";
+import { ForgeIcon } from "../../icons/icon.slint";
+
+// 顶部导航只显示一级入口；任意层级的子项在同一个下拉菜单内逐级打开。
+export component ForgeTopNavigation inherits Rectangle {
+    in property<[ForgeNavigationItem]> items;
+    in property<string> active-route-id;
+    in property<string> active-top-id;
+    in property<ForgePaneState> pane-state;
+    callback navigate-requested(string);
+
+    height: 48px;
+    background: Palette.alternate-background;
+    property<[ForgeNavigationItem]> menu-path: [];
+    property<bool> opened-from-more: false;
+    property<length> menu-x: 8px;
+    property<string> menu-parent-id: root.menu-path.length == 0 ? "" : root.menu-path[root.menu-path.length - 1].id;
+    property<int> menu-child-count: root.menu-path.length == 0 ? root.items.length : root.menu-path[root.menu-path.length - 1].child-count;
+
+    function open-entry(item: ForgeNavigationItem, anchor-x: length) {
+        if (!item.enabled) { return; }
+        if (item.kind == ForgeNavItemKind.page) {
+            root.navigate-requested(item.id);
+            menu-popup.close();
+            return;
+        }
+        if (item.kind != ForgeNavItemKind.group) { return; }
+        if (menu-popup.is-open && root.menu-path.length == 1 && root.menu-path[0].id == item.id && !root.opened-from-more) {
+            menu-popup.close();
+            return;
+        }
+        root.menu-path = [item];
+        root.opened-from-more = false;
+        root.menu-x = Math.max(8px, Math.min(anchor-x, root.width - 280px));
+        menu-popup.show();
+    }
+
+    function open-more() {
+        if (menu-popup.is-open && root.opened-from-more && root.menu-path.length == 0) {
+            menu-popup.close();
+            return;
+        }
+        root.menu-path = [];
+        root.opened-from-more = true;
+        root.menu-x = Math.max(8px, root.width - 280px);
+        menu-popup.show();
+    }
+
+    Rectangle {
+        x: 0px; y: 0px;
+        width: parent.width - 52px; height: parent.height;
+        clip: true;
+        HorizontalLayout {
+            x: 8px; y: 4px;
+            width: parent.width - 8px; height: 40px;
+            // 隐藏的子项仍参与布局，不能让它们累积出一级菜单间距。
+            spacing: 0px;
+            for item in root.items : top-entry := Rectangle {
+                property<bool> is-root-entry: item.parent-id == "" && (item.kind == ForgeNavItemKind.page || item.kind == ForgeNavItemKind.group);
+                visible: self.is-root-entry;
+                width: !self.is-root-entry ? 0px : root.pane-state == ForgePaneState.compact ? 48px : (item.kind == ForgeNavItemKind.group ? 68px : 46px) + title-text.preferred-width;
+                height: 40px;
+                border-radius: 4px;
+                background: (item.id == root.active-top-id || entry-touch.has-hover || (menu-popup.is-open && root.menu-path.length > 0 && root.menu-path[0].id == item.id)) ? Palette.control-background : transparent;
+                opacity: item.enabled ? 1 : 0.4;
+                ForgeIcon { x: 9px; width: 22px; height: parent.height; glyph: item.icon; color: Palette.foreground; font-size: 15px * ForgeTypography.scale; }
+                title-text := Text { x: 34px; height: parent.height; visible: root.pane-state != ForgePaneState.compact; text: item.title; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; overflow: elide; vertical-alignment: center; }
+                Path {
+                    x: parent.width - 18px; y: 17px; width: 12px; height: 8px;
+                    visible: root.pane-state != ForgePaneState.compact && item.kind == ForgeNavItemKind.group;
+                    viewbox-width: 12; viewbox-height: 8;
+                    commands: "M 1 2 L 6 6 L 11 2";
+                    stroke: Palette.foreground; stroke-width: 1.5px;
+                }
+                if item.id == root.active-top-id : Rectangle { x: (parent.width - 24px) / 2; y: parent.height - 3px; width: 24px; height: 3px; border-radius: 2px; background: Palette.accent-background; }
+                entry-touch := TouchArea {
+                    enabled: item.enabled;
+                    clicked => { root.open-entry(item, top-entry.x + 8px); }
+                }
+            }
+        }
+    }
+    Rectangle {
+        x: parent.width - 48px; y: 4px;
+        width: 42px; height: 40px;
+        border-radius: 4px;
+        background: more-touch.has-hover || (menu-popup.is-open && root.opened-from-more) ? Palette.control-background : transparent;
+        Text { text: "..."; color: Palette.foreground; font-size: 17px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+        more-touch := TouchArea { clicked => { root.open-more(); } }
+    }
+    Rectangle { x: 0px; y: parent.height - 1px; width: parent.width; height: 1px; background: Palette.border; }
+
+    menu-popup := PopupWindow {
+        x: root.menu-x; y: root.height;
+        width: 272px;
+        height: Math.min(460px, 52px + root.menu-child-count * 40px);
+        close-policy: PopupClosePolicy.close-on-click-outside;
+        Rectangle {
+            width: parent.width; height: parent.height;
+            background: Palette.alternate-background;
+            border-width: 1px;
+            border-color: Palette.border;
+            border-radius: 6px;
+            VerticalLayout {
+                width: parent.width; height: parent.height;
+                padding-top: 5px; padding-bottom: 5px;
+                spacing: 0px;
+                Rectangle {
+                    height: 39px;
+                    background: transparent;
+                    if root.menu-path.length > 1 || (root.opened-from-more && root.menu-path.length > 0) : Rectangle {
+                        x: 6px; y: 2px; width: 34px; height: 34px;
+                        border-radius: 4px;
+                        background: back-touch.has-hover ? Palette.control-background : transparent;
+                        Text { text: "‹"; color: Palette.foreground; font-size: 24px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+                        back-touch := TouchArea { clicked => { root.menu-path.remove(root.menu-path.length - 1); } }
+                    }
+                    Text {
+                        x: root.menu-path.length > 1 || (root.opened-from-more && root.menu-path.length > 0) ? 44px : 14px;
+                        width: parent.width - self.x - 12px;
+                        height: parent.height;
+                        text: root.menu-path.length == 0 ? @tr("全部分类") : root.menu-path[root.menu-path.length - 1].title;
+                        color: Palette.foreground;
+                        font-size: 13px * ForgeTypography.scale;
+                        font-weight: 600;
+                        vertical-alignment: center;
+                        overflow: elide;
+                    }
+                }
+                Rectangle { height: 1px; background: Palette.border; }
+                ScrollView {
+                    width: parent.width;
+                    vertical-stretch: 1;
+                    VerticalLayout {
+                        width: parent.width;
+                        padding-left: 5px; padding-right: 5px; padding-top: 4px; padding-bottom: 4px;
+                        spacing: 0px;
+                        for item in root.items : Rectangle {
+                            property<bool> is-menu-entry: item.parent-id == root.menu-parent-id && (item.kind == ForgeNavItemKind.page || item.kind == ForgeNavItemKind.group);
+                            visible: self.is-menu-entry;
+                            width: parent.width;
+                            height: self.is-menu-entry ? 38px : 0px;
+                            border-radius: 4px;
+                            background: item.id == root.active-route-id || row-touch.has-hover ? Palette.control-background : transparent;
+                            opacity: item.enabled ? 1 : 0.4;
+                            if item.id == root.active-route-id : Rectangle { x: 1px; y: 8px; width: 3px; height: 22px; border-radius: 2px; background: Palette.accent-background; }
+                            ForgeIcon { x: 12px; width: 23px; height: parent.height; glyph: item.icon; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; }
+                            Text { x: 42px; width: parent.width - 69px; height: parent.height; text: item.title; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; overflow: elide; vertical-alignment: center; }
+                            Path {
+                                x: parent.width - 22px; y: 14px; width: 9px; height: 10px;
+                                visible: item.kind == ForgeNavItemKind.group;
+                                viewbox-width: 9; viewbox-height: 10;
+                                commands: "M 2 1 L 7 5 L 2 9";
+                                stroke: Palette.foreground; stroke-width: 1.5px;
+                            }
+                            row-touch := TouchArea {
+                                enabled: item.enabled;
+                                clicked => {
+                                    if (item.kind == ForgeNavItemKind.group) { root.menu-path.push(item); }
+                                    else { root.navigate-requested(item.id); menu-popup.close(); }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

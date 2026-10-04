@@ -1,0 +1,28 @@
+import { ForgeColorPicker, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：ColorPicker。
+export component GalleryFormColorPickerPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "ColorPicker";
+        subtitle: @tr("调整四个颜色通道，预览颜色和透明度。");
+        example-title: @tr("用法与状态");
+        preview-height: 350px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            ForgeColorPicker { height: 300px; }
+        }
+    }
+    
+}

@@ -1,0 +1,75 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeFlowLayout, ForgeIconButton, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+
+export component GalleryFlowLayoutPage inherits Rectangle {
+    in-out property<int> tile-count: 32;
+
+    GalleryPageFrame {
+        width: parent.width;
+        height: parent.height;
+        title: "FlowLayout";
+        subtitle: @tr("矩形按可用宽度自动换行，内容超出时出现竖向滚动条。");
+
+        HorizontalLayout {
+            height: 34px;
+            vertical-stretch: 0;
+            spacing: 10px;
+            ForgeIconButton {
+                label: @tr("少量矩形");
+                selected: root.tile-count == 12;
+                clicked => { root.tile-count = 12; }
+            }
+            ForgeIconButton {
+                label: @tr("大量矩形");
+                selected: root.tile-count == 32;
+                clicked => { root.tile-count = 32; }
+            }
+            Rectangle { horizontal-stretch: 1; }
+            Text {
+                text: flow.vertical-scrollbar-visible ? @tr("竖向滚动条已显示") : @tr("当前无需滚动");
+                color: Palette.foreground;
+                font-size: 13px * ForgeTypography.scale;
+                vertical-alignment: center;
+                horizontal-stretch: 0;
+            }
+        }
+
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        preview := GalleryDemoCard {
+            preview-height: 520px;
+            flow := ForgeFlowLayout {
+                x: 18px;
+                y: 16px;
+                width: Math.max(0px, preview.width - 38px);
+                height: Math.max(0px, preview.height - 32px);
+                spacing: 12px;
+                content-padding: 12px;
+
+                for index in root.tile-count : Rectangle {
+                    width: Math.mod(index, 4) == 0 ? 176px : Math.mod(index, 4) == 1 ? 132px : Math.mod(index, 4) == 2 ? 206px : 150px;
+                    height: Math.mod(index, 3) == 0 ? 120px : Math.mod(index, 3) == 1 ? 82px : 102px;
+                    border-radius: 6px;
+                    background: Math.mod(index, 6) == 0 ? #3762a8
+                        : Math.mod(index, 6) == 1 ? #8756aa
+                        : Math.mod(index, 6) == 2 ? #247b6f
+                        : Math.mod(index, 6) == 3 ? #a05332
+                        : Math.mod(index, 6) == 4 ? #2c7994 : #a24d70;
+                    Text {
+                        x: 12px;
+                        width: Math.max(0px, parent.width - 24px);
+                        height: parent.height;
+                        text: @tr("矩形 {}", index + 1);
+                        color: white;
+                        font-size: 16px * ForgeTypography.scale;
+                        font-weight: 600;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+    }
+}

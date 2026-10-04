@@ -1,0 +1,325 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgePlotAxis, ForgePlotPanel, ForgePlotSeries, ForgePlotColorMap, ForgePlotItem,
+    ForgePlotOptions, ForgePlotScene, ForgePlotServices, ForgePlotHit, ForgePlotRange,
+    ForgePlotSelection, ForgePlotExportResult, ForgePlotPoint, ForgePlotLegendPosition,
+    ForgePlotLegendStyle, ForgePlotPlacement, ForgePlotXWindowMode } from "../types/plot.slint";
+
+// 显示使用按物理像素缓存的场景图像；选择、坐标和矢量导出查询同一个共用场景。
+export component ForgePlot inherits Rectangle {
+    in-out property<[ForgePlotAxis]> axes: [{id: 0, side: bottom, precision: 2}, {id: 1, side: left, precision: 2}];
+    in property<[ForgePlotPanel]> panels;
+    in-out property<[ForgePlotSeries]> series;
+    in-out property<[ForgePlotColorMap]> color-maps;
+    in-out property<[ForgePlotItem]> items;
+    in property<string> title;
+    in property<bool> enabled: true;
+    in property<bool> show-legend: true;
+    in property<ForgePlotLegendPosition> legend-position: bottom;
+    in property<ForgePlotPlacement> legend-placement: inside;
+    in property<ForgePlotLegendStyle> legend-style: plain;
+    in property<bool> legend-latest-value: false;
+    in property<int> legend-precision: 2;
+    in property<ForgePlotXWindowMode> x-window-mode: fit;
+    in property<int> x-window-axis: 0;
+    in property<float> x-window-size: 10;
+    in-out property<bool> measure-enabled: false;
+    in-out property<float> cursor-a: 0;
+    in-out property<float> cursor-b: 1;
+    in property<int> measurement-series: 0;
+    in property<ForgePlotLegendPosition> measurement-position: bottom;
+    in property<ForgePlotPlacement> measurement-placement: outside;
+    // 0 表示根据系列名、数值和字体自动收紧信息框。
+    in property<length> measurement-width: 0px;
+    in property<length> measurement-height: 0px;
+    in property<bool> measurement-follow-view: root.x-window-mode != fit;
+    out property<float> cursor-a-pixel: ForgePlotServices.coordinate(root.scene.token, root.scene.measurement-axis, root.cursor-a, false);
+    out property<float> cursor-b-pixel: ForgePlotServices.coordinate(root.scene.token, root.scene.measurement-axis, root.cursor-b, false);
+    out property<ForgePlotHit> measurement-a: root.scene.status < 2 ? ForgePlotServices.measure(root.scene.token, root.measurement-series, root.cursor-a) : {kind: -1};
+    out property<ForgePlotHit> measurement-b: root.scene.status < 2 ? ForgePlotServices.measure(root.scene.token, root.measurement-series, root.cursor-b) : {kind: -1};
+    in property<bool> show-crosshair: true;
+    in property<bool> show-tooltip: true;
+    in property<bool> adaptive-sampling: true;
+    in property<bool> antialias: true;
+    in property<int> max-points-per-pixel: 4;
+    in property<bool> allow-pan: true;
+    in property<bool> allow-zoom: true;
+    in property<bool> allow-selection: true;
+    in property<int> directions: 3;
+    in property<int> frame-interval: 16;
+    in property<color> plot-background: Palette.background;
+    in-out property<[ForgePlotSelection]> selection;
+    out property<ForgePlotHit> hovered: root.hover;
+    out property<ForgePlotScene> scene: root.connected && root.token > 0
+        ? ForgePlotServices.prepare(root.token, root.axes, root.panels, root.series, root.color-maps, root.items, root.selection, root.options)
+        : {token: 0, status: 3, error: @tr("尚未绑定图表服务")};
+    callback point-selected(ForgePlotHit);
+    callback item-selected(ForgePlotHit);
+    callback axis-clicked(int);
+    callback legend-clicked(int);
+    callback selection-changed([ForgePlotSelection]);
+    callback range-changed([ForgePlotRange]);
+    callback coordinate-moved(int, float, float);
+    callback export-finished(ForgePlotExportResult);
+    private property<int> token: 0;
+    private property<bool> connected: ForgePlotServices.connected;
+    private property<int> revision: 0;
+    private property<int> stream-revision: 0;
+    private property<bool> stream-pending: false;
+    private property<bool> pending: false;
+    private property<ForgePlotHit> hover: {kind: -1, id: -1, index: -1};
+    private property<float> pointer-x: 0;
+    private property<float> pointer-y: 0;
+    private property<int> pointer-panel: -1;
+    private property<int> drag-panel: -1;
+    private property<int> drag-mode: 0;
+    private property<bool> dragging: false;
+    private property<bool> drag-moved: false;
+    // 由稳定的图表输入层持有捕获，避免实时刷新重建绘图区后中断光标拖动。
+    private property<int> measurement-drag-cursor: -1;
+    private property<int> measurement-hover-cursor: root.measure-enabled && root.pointer-panel == root.measurement-a.panel
+        && Math.min(Math.abs(root.pointer-x - root.cursor-a-pixel), Math.abs(root.pointer-x - root.cursor-b-pixel)) <= 8
+        ? (Math.abs(root.pointer-x - root.cursor-a-pixel) <= Math.abs(root.pointer-x - root.cursor-b-pixel) ? 0 : 1) : -1;
+    private property<bool> additive: false;
+    private property<float> drag-x: 0;
+    private property<float> drag-y: 0;
+    private property<[ForgePlotRange]> drag-ranges;
+    private property<ForgePlotExportResult> export-result;
+    private property<bool> measurement-initialized: false;
+    private property<float> measurement-old-min: 0;
+    private property<float> measurement-old-max: 1;
+    private property<ForgePlotOptions> options: {
+        width: root.width / 1px, height: root.height / 1px - (root.x-window-mode == unlimited ? 22 : 0),
+        font-size: 12 * ForgeTypography.scale, font-family: ForgeTypography.family,
+        background: root.plot-background, foreground: Palette.foreground, grid-color: Palette.border,
+        selection-color: Palette.accent-background,
+        hide-legend: !root.show-legend, disable-adaptive: !root.adaptive-sampling,
+        legend-position: root.legend-position, legend-style: root.legend-style,
+        legend-placement: root.legend-placement,
+        measurement-enabled: root.measure-enabled, measurement-position: root.measurement-position,
+        measurement-placement: root.measurement-placement, measurement-series: root.measurement-series,
+        measurement-width: root.measurement-width / 1px, measurement-height: root.measurement-height / 1px,
+        legend-latest-value: root.legend-latest-value, legend-precision: root.legend-precision,
+        x-window-mode: root.x-window-mode, x-window-axis: root.x-window-axis, x-window-size: root.x-window-size,
+        disable-antialias: !root.antialias, max-points-per-pixel: root.max-points-per-pixel,
+        title: root.title, revision: root.revision, stream-revision: root.stream-revision,
+        render-scale: 1px / 1phx,
+    };
+    min-width: 300px; min-height: 260px; preferred-width: 720px; preferred-height: 460px;
+    background: root.plot-background; clip: true; forward-focus: focus;
+    init => { root.connect(); }
+    changed connected => { root.connect(); }
+    changed scene => { root.hover = {kind: -1, id: -1, index: -1}; root.update-measurement-cursors(false); root.range-changed(root.scene.ranges); }
+    changed measure-enabled => {root.measurement-drag-cursor=-1;root.measurement-initialized=false;root.update-measurement-cursors(false);}
+    changed measurement-series => {root.measurement-drag-cursor=-1;root.measurement-initialized=false;root.update-measurement-cursors(false);}
+    changed enabled => { if !root.enabled {root.measurement-drag-cursor=-1;root.dragging = false;root.hover = {kind: -1, id: -1, index: -1};} }
+    changed selection => {root.selection-changed(root.selection);}
+    public function connect() { if root.connected && root.token == 0 {root.token = ForgePlotServices.allocate();} }
+    public function reset-measurement-cursors() {root.update-measurement-cursors(true);}
+    function update-measurement-cursors(reset: bool) {
+        let range=root.scene.measurement-range;let span=range.maximum - range.minimum;
+        if root.scene.status>=2 || span<=0 {return;}
+        if root.measure-enabled {
+            if reset || (!root.measurement-initialized && (root.cursor-a<range.minimum || root.cursor-a>range.maximum || root.cursor-b<range.minimum || root.cursor-b>range.maximum || root.cursor-a==root.cursor-b)) {
+                root.cursor-a=range.minimum+span*0.25;root.cursor-b=range.minimum+span*0.65;
+            } else if root.measurement-follow-view && root.measurement-initialized && root.measurement-old-max>root.measurement-old-min && (range.minimum!=root.measurement-old-min || range.maximum!=root.measurement-old-max) {
+                // 实时窗口滚动时保持视图中的相对位置，继续读取原始采样点。
+                let previous=root.measurement-old-max - root.measurement-old-min;
+                root.cursor-a=root.measurement-drag-cursor == 0 ? ForgePlotServices.coordinate(root.scene.token,root.scene.measurement-axis,root.pointer-x,true) : range.minimum+span*Math.max(0.05,Math.min(0.95,(root.cursor-a - root.measurement-old-min)/previous));
+                root.cursor-b=root.measurement-drag-cursor == 1 ? ForgePlotServices.coordinate(root.scene.token,root.scene.measurement-axis,root.pointer-x,true) : range.minimum+span*Math.max(0.05,Math.min(0.95,(root.cursor-b - root.measurement-old-min)/previous));
+            }
+        }
+        root.measurement-old-min=range.minimum;root.measurement-old-max=range.maximum;root.measurement-initialized=root.measure-enabled;
+    }
+    public function refresh() { root.pending = true; }
+    public function refresh-immediate() { root.pending = false; root.revision += 1; }
+    public function append-points(id: int, points: [ForgePlotPoint]) -> bool {
+        // 读取场景以初始化引擎；只使视图失效，不重新导入静态模型。
+        root.connect();
+        if root.scene.status >= 2 { return false; }
+        let ok = ForgePlotServices.append(root.token, id, points);
+        if ok {root.stream-pending = true;}return ok;
+    }
+    public function append-point(id: int, point: ForgePlotPoint) -> bool {return root.append-points(id, [point]);}
+    public function flush() {root.stream-pending = false;root.stream-revision += 1;}
+    public function measure-at(id: int, x: float) -> ForgePlotHit {return ForgePlotServices.measure(root.scene.token, id, x);}
+    public function scroll-history(position: float) {root.axes = ForgePlotServices.scroll-view(root.scene.token, root.axes, root.x-window-axis, position, root.scene.window-range.maximum - root.scene.window-range.minimum);}
+    public function follow-latest() {if root.enabled {root.axes = ForgePlotServices.change-view(root.token, root.axes, root.scene.ranges, -1, 3, 0, 0, 0, 0, 1);}}
+    public function release() { if root.token > 0 {ForgePlotServices.release(root.token);root.token = 0;} }
+    public function reset-view() {
+        if root.enabled && root.allow-zoom {root.axes = ForgePlotServices.change-view(root.token, root.axes, root.scene.ranges, -1, 3, 0, 0, 0, 0, 3);}
+    }
+    public function zoom-at(x: float, y: float, factor: float, panel: int) {
+        if root.enabled && root.allow-zoom {root.axes = ForgePlotServices.change-view(root.token, root.axes, root.scene.ranges, panel, 1, x, y, factor, factor, root.directions);}
+    }
+    public function pan-by(dx: float, dy: float, panel: int) {
+        if root.enabled && root.allow-pan {root.axes = ForgePlotServices.change-view(root.token, root.axes, root.scene.ranges, panel, 0, 0, 0, dx, dy, root.directions);}
+    }
+    public function clear-selection() { root.selection = []; }
+    public function select-point(id: int, index: int, additive: bool) {
+        if root.enabled && root.allow-selection && index >= 0 {root.selection = ForgePlotServices.merge-selection(root.selection, [{id: id, first: index, last: index}], additive ? 1 : 0);}
+    }
+    public function export-file(path: string, format: string) -> ForgePlotExportResult {
+        root.flush();
+        // 读取 scene 使最新的模型和尺寸在导出前完成场景计算。
+        root.export-result = root.scene.status >= 2 ? {ok: false, error: root.scene.error} : ForgePlotServices.export(root.scene.token, path, format);
+        root.export-finished(root.export-result);return root.export-result;
+    }
+    Timer { interval: Math.max(1, root.frame-interval) * 1ms; running: root.pending || root.stream-pending;
+        triggered => {if root.pending {root.pending = false;root.revision += 1;}if root.stream-pending {root.flush();}} }
+    Image { width: root.width; height: root.options.height * 1px;
+        preferred-width: 0px; preferred-height: 0px; source: root.scene.image; image-fit: fill; }
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == Key.Escape {root.clear-selection();root.dragging = false;root.measurement-drag-cursor=-1;return accept;}
+            if root.allow-zoom && (event.text == "0" || event.text == Key.Home) {root.reset-view();return accept;}
+            if root.allow-zoom && (event.text == "+" || event.text == "=") {root.zoom-at(root.width / 2px, root.height / 2px, 0.8, -1);return accept;}
+            if root.allow-zoom && event.text == "-" {root.zoom-at(root.width / 2px, root.height / 2px, 1.25, -1);return accept;}
+            if root.allow-pan && (event.text == Key.LeftArrow || event.text == Key.RightArrow || event.text == Key.UpArrow || event.text == Key.DownArrow) {
+                root.axes = ForgePlotServices.change-view(root.token, root.axes, root.scene.ranges, -1, 0,
+                    0, 0, event.text == Key.LeftArrow ? -24 : event.text == Key.RightArrow ? 24 : 0,
+                    event.text == Key.UpArrow ? -24 : event.text == Key.DownArrow ? 24 : 0, root.directions);return accept;
+            }
+            return reject;
+        }
+    }
+    for rect in root.scene.rects : Rectangle {
+        x: rect.x * 1px; y: rect.y * 1px; width: rect.width * 1px; height: rect.height * 1px;
+        background: transparent; clip: true;
+        if root.enabled && root.show-crosshair && interaction.has-hover && root.pointer-panel == rect.id && !root.dragging : Rectangle {
+            x: root.pointer-x * 1px - rect.x * 1px; width: 1px; height: parent.height; background: Palette.foreground.with-alpha(0.4);
+        }
+        if root.enabled && root.show-crosshair && interaction.has-hover && root.pointer-panel == rect.id && !root.dragging : Rectangle {
+            y: root.pointer-y * 1px - rect.y * 1px; width: parent.width; height: 1px; background: Palette.foreground.with-alpha(0.4);
+        }
+        if root.dragging && root.drag-mode > 0 && root.drag-panel == rect.id : Rectangle {
+            x: (Math.min(root.pointer-x, root.drag-x) - rect.x) * 1px;
+            y: (Math.min(root.pointer-y, root.drag-y) - rect.y) * 1px;
+            width: Math.abs(root.pointer-x - root.drag-x) * 1px; height: Math.abs(root.pointer-y - root.drag-y) * 1px;
+            background: Palette.accent-background.with-alpha(0.12); border-width: 1px; border-color: Palette.accent-background;
+        }
+    }
+    interaction := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.measurement-drag-cursor >= 0 || root.measurement-hover-cursor >= 0 ? ew-resize : default;
+        pointer-event(event) => {
+            if event.kind == move {
+                root.pointer-x = self.mouse-x / 1px; root.pointer-y = self.mouse-y / 1px;
+                root.hover = ForgePlotServices.hit-test(root.token, root.pointer-x, root.pointer-y, 6);
+                let coordinate = ForgePlotServices.hit-test(root.token, root.pointer-x, root.pointer-y, -1);
+                root.pointer-panel = coordinate.panel;
+                root.coordinate-moved(coordinate.panel, coordinate.x, coordinate.y);
+            }
+            if event.kind == down && event.button == left {
+                focus.focus(); root.drag-x = self.mouse-x / 1px; root.drag-y = self.mouse-y / 1px;
+                root.pointer-x = root.drag-x;root.pointer-y = root.drag-y;
+                root.hover = ForgePlotServices.hit-test(root.token, root.drag-x, root.drag-y, 6);
+                root.pointer-panel = ForgePlotServices.hit-test(root.token, root.drag-x, root.drag-y, -1).panel;
+                root.measurement-drag-cursor = root.measurement-hover-cursor;
+                root.drag-panel = root.hover.panel;
+                root.drag-ranges = root.scene.ranges;
+                root.drag-mode = event.modifiers.shift ? 1 : event.modifiers.control || event.modifiers.meta ? 2 : 0;
+                root.additive = event.modifiers.control || event.modifiers.meta;
+                root.dragging = root.measurement-drag-cursor < 0 && root.drag-panel >= 0; root.drag-moved = false;
+            }
+            if event.kind == up && event.button == left && root.measurement-drag-cursor >= 0 {
+                root.measurement-drag-cursor=-1;root.drag-moved=true;
+            }
+            if event.kind == cancel {root.measurement-drag-cursor=-1;root.dragging=false;}
+            if event.kind == up && event.button == left && root.dragging {
+                root.pointer-x = self.mouse-x / 1px;root.pointer-y = self.mouse-y / 1px;
+                if root.drag-moved && root.drag-mode == 1 && root.allow-zoom {root.axes = ForgePlotServices.change-view(root.token, root.axes, root.drag-ranges, root.drag-panel, 2, root.drag-x, root.drag-y, root.pointer-x, root.pointer-y, root.directions);}
+                if root.drag-moved && root.drag-mode == 2 && root.allow-selection {root.selection = ForgePlotServices.merge-selection(root.selection, ForgePlotServices.select-rect(root.token, root.drag-x, root.drag-y, root.pointer-x - root.drag-x, root.pointer-y - root.drag-y), root.additive ? 1 : 0);}
+                root.dragging = false;
+            }
+        }
+        moved => {
+            root.pointer-x = self.mouse-x / 1px; root.pointer-y = self.mouse-y / 1px;
+            if root.measurement-drag-cursor >= 0 && self.pressed {
+                let value=ForgePlotServices.coordinate(root.scene.token,root.scene.measurement-axis,root.pointer-x,true);
+                if root.measurement-drag-cursor == 0 {root.cursor-a=value;}else{root.cursor-b=value;}
+                root.drag-moved=true;
+            }
+            if root.dragging && self.pressed {
+                root.drag-moved = root.drag-moved || Math.abs(root.pointer-x - root.drag-x) > 3 || Math.abs(root.pointer-y - root.drag-y) > 3;
+                if root.drag-moved && root.drag-mode == 0 && root.allow-pan {root.axes = ForgePlotServices.change-view(root.token, root.axes, root.drag-ranges, root.drag-panel, 0, 0, 0, root.pointer-x - root.drag-x, root.pointer-y - root.drag-y, root.directions);}
+            }
+        }
+        scroll-event(event) => {
+            root.hover = ForgePlotServices.hit-test(root.token, self.mouse-x / 1px, self.mouse-y / 1px, 6);
+            if root.hover.panel < 0 || !root.allow-zoom || event.delta-y == 0px {return reject;}
+            root.zoom-at(self.mouse-x / 1px, self.mouse-y / 1px, event.delta-y > 0px ? 0.85 : 1.1764706, root.hover.panel);return accept;
+        }
+        double-clicked => {if root.allow-zoom && root.measurement-hover-cursor < 0 {root.reset-view();}}
+        changed has-hover => {if !self.has-hover {root.hover = {kind: -1, id: -1, index: -1};root.pointer-panel = -1;}}
+        clicked => {
+            focus.focus();
+            if root.drag-moved || root.measurement-drag-cursor >= 0 {return;}
+            root.hover = ForgePlotServices.hit-test(root.token, self.mouse-x / 1px, self.mouse-y / 1px, 6);
+            if root.hover.kind == 0 && root.allow-selection {
+                root.selection = ForgePlotServices.merge-selection(root.selection, [{id: root.hover.id, first: root.hover.index, last: root.hover.index}], root.additive ? 2 : 0);root.point-selected(root.hover);
+            }
+            if root.hover.kind == 1 {root.item-selected(root.hover);}
+            if root.hover.kind == 2 {let id = root.hover.id;root.series = ForgePlotServices.toggle-series(root.series, id);root.legend-clicked(id);}
+            if root.hover.kind == 4 {root.axis-clicked(root.hover.id);}
+        }
+    }
+    if root.hover.kind >= 0 && root.show-tooltip && root.enabled && !root.dragging && root.measurement-drag-cursor < 0 : Rectangle {
+        x: Math.max(4px, Math.min(root.pointer-x * 1px + 12px, root.width - self.width - 4px));
+        y: Math.max(4px, Math.min(root.pointer-y * 1px + 12px, root.height - self.height - 4px));
+        width: 220px; height: 54px; background: Palette.control-background;
+        border-width: 1px; border-color: Palette.border; border-radius: 4px;
+        Text { x: 8px; width: parent.width - 16px; height: parent.height;
+            text: root.hover.label + (root.hover.kind == 0 ? "\nx=" + root.hover.x + "  y=" + root.hover.value : root.hover.kind == 3 ? "\nx=" + root.hover.x + "  y=" + root.hover.y + "  z=" + root.hover.value : "");
+            color: Palette.foreground; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; wrap: word-wrap;
+        }
+    }
+    for rect in root.scene.rects : Rectangle {
+        x: rect.x * 1px; y: rect.y * 1px; width: rect.width * 1px; height: rect.height * 1px;
+        background: transparent; clip: true;
+        for cursor in [0, 1] : Rectangle {
+            visible: root.measure-enabled && root.measurement-a.panel == rect.id;
+            x: ((cursor == 0 ? root.cursor-a-pixel : root.cursor-b-pixel) - rect.x) * 1px - 5px;
+            width: 11px; height: parent.height; background: transparent;
+            Rectangle { x: 5px; width: 2px; height: parent.height; background: cursor == 0 ? #e89b35 : #aa75ed; }
+            Rectangle {x:0px;y:0px;width:11px;height:18px;background:cursor == 0 ? #e89b35 : #aa75ed;
+                Text {text: cursor == 0 ? "A" : "B";color:#151515;font-size:12px;horizontal-alignment:center;vertical-alignment:center;}
+            }
+        }
+    }
+    if root.measure-enabled && root.scene.measurement-rect.width > 0 : Rectangle {
+        x: root.scene.measurement-rect.x * 1px; y: root.scene.measurement-rect.y * 1px;
+        width: root.scene.measurement-rect.width * 1px; height: root.scene.measurement-rect.height * 1px;
+        // 区域内保持透明，保留框下方波形；区域外使用主题背景。
+        background: root.measurement-placement == inside ? transparent : root.plot-background.with-alpha(0.94);
+        border-width: 1px; border-color: Palette.foreground.with-alpha(0.35); clip: true;
+        VerticalLayout {padding: 6px;spacing: 2px;alignment:start;
+            Text {text:root.measurement-a.label;color:Palette.foreground;font-size:12px * ForgeTypography.scale;overflow:elide;vertical-stretch:0;}
+            Text {text:"A: X=" + Math.round(root.cursor-a * 1000) / 1000 + "  Y=" + Math.round(root.measurement-a.value * 1000) / 1000;color:Palette.foreground;font-size:12px * ForgeTypography.scale;vertical-stretch:0;}
+            Text {text:"B: X=" + Math.round(root.cursor-b * 1000) / 1000 + "  Y=" + Math.round(root.measurement-b.value * 1000) / 1000;color:Palette.foreground;font-size:12px * ForgeTypography.scale;vertical-stretch:0;}
+            Text {text:"ΔX=" + Math.round((root.cursor-b - root.cursor-a) * 1000) / 1000 + "  ΔY=" + Math.round((root.measurement-b.value - root.measurement-a.value) * 1000) / 1000;color:Palette.foreground;font-size:12px * ForgeTypography.scale;vertical-stretch:0;}
+        }
+    }
+    if root.x-window-mode == unlimited && root.scene.history-range.maximum - root.scene.history-range.minimum > root.scene.window-range.maximum - root.scene.window-range.minimum : Rectangle {
+        x: 8px; y: root.height - 20px; width: root.width - 16px; height: 16px; border-radius: 4px; background: Palette.control-background;
+        private property<float> span: root.scene.window-range.maximum - root.scene.window-range.minimum;
+        private property<float> history: root.scene.history-range.maximum - root.scene.history-range.minimum;
+        private property<float> position: Math.max(0, Math.min(1, (root.scene.window-range.minimum - root.scene.history-range.minimum) / (self.history - self.span)));
+        thumb := Rectangle {
+            width: Math.max(18px, parent.width * parent.span / parent.history); height: parent.height;
+            x: (parent.width - self.width) * parent.position; border-radius: 4px; background: Palette.accent-background.with-alpha(0.65);
+        }
+        TouchArea {
+            enabled: root.enabled && root.allow-pan;
+            clicked => {root.scroll-history(Math.max(0, Math.min(1, (self.mouse-x - thumb.width / 2) / (self.width - thumb.width))));}
+            moved => {if self.pressed {root.scroll-history(Math.max(0, Math.min(1, (self.mouse-x - thumb.width / 2) / (self.width - thumb.width))));}}
+            double-clicked => {root.follow-latest();}
+        }
+    }
+    if root.scene.status >= 2 || root.scene.status == 1 : Text {
+        text: root.scene.status == 1 ? @tr("暂无数据") : root.scene.error;
+        color: Palette.foreground; wrap: word-wrap; horizontal-alignment: center; vertical-alignment: center;
+    }
+    Rectangle { background: transparent; border-width: focus.has-focus ? 1px : 0px; border-color: Palette.accent-background; }
+}

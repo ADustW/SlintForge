@@ -1,0 +1,30 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeSegmentedControl, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：SegmentedControl。
+export component GalleryNavigationSegmentedPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "SegmentedControl";
+        subtitle: @tr("切换日、周、月三个视图。");
+        example-title: @tr("用法与状态");
+        preview-height: 150px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            ForgeSegmentedControl { selected-id: "day"; items: [{id: "day", label: @tr("日"), enabled: true}, {id: "week", label: @tr("周"), enabled: true}, {id: "month", label: @tr("月"), enabled: true}]; selected(id) => { root.status = id; } }
+Text { text: root.status; color: Palette.foreground; }
+        }
+    }
+    
+}

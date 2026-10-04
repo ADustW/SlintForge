@@ -1,0 +1,59 @@
+import { Palette, LineEdit } from "std-widgets.slint";
+import { ForgePage, ForgeCaptureRect, ForgeCaptureResult, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryCapturePreview } from "../component/capture-preview.slint";
+
+export component GalleryPageContainerPage inherits Rectangle {
+    in property<bool> active: true;
+    in-out property<bool> sample-active: true;
+    in-out property<ForgeCaptureResult> capture-result;
+    in-out property<string> export-message;
+    out property<ForgeCaptureRect> sample-rect: sample.capture-rect;
+    callback export-capture(image) -> string;
+    callback qa-capture() -> ForgeCaptureResult;
+    callback qa-export() -> string;
+    public function take-capture() -> ForgeCaptureResult {
+        root.capture-result = sample.capture();
+        root.export-message = "";
+        return root.capture-result;
+    }
+    public function save-capture() -> string {
+        root.export-message = root.capture-result.ok ? root.export-capture(root.capture-result.image) : root.capture-result.error;
+        return root.export-message;
+    }
+    qa-capture => { return root.take-capture(); }
+    qa-export => { return root.save-capture(); }
+    GalleryPageFrame {
+        width: parent.width; height: parent.height;
+        title: "ForgePage";
+        subtitle: @tr("常驻页面容器与当前可视区域截图");
+        sample := ForgePage {
+            active: root.active && root.sample-active;
+            height: 180px; vertical-stretch: 0;
+            content-padding: 16px;
+            background: #204060;
+            VerticalLayout {
+                spacing: 12px;
+                Text { text: @tr("页面截图目标"); height: self.preferred-height; color: white; font-size: 20px * ForgeTypography.scale; }
+                LineEdit { text: @tr("修改输入后获取截图"); }
+                HorizontalLayout {
+                    spacing: 12px;
+                    Rectangle { background: #e05040; height: 36px; }
+                    Rectangle { background: #40b080; height: 36px; }
+                    Rectangle { background: #4080d0; height: 36px; }
+                }
+            }
+        }
+        GalleryCapturePreview {
+            result: root.capture-result;
+            export-message: root.export-message;
+            capture-requested => { root.take-capture(); }
+            export-requested => { root.save-capture(); }
+        }
+        Text {
+            text: @tr("页面隐藏后保留输入；截图包含当前区域的背景、内容和覆盖层。");
+            height: self.preferred-height;
+            color: Palette.foreground; wrap: word-wrap; vertical-stretch: 0;
+        }
+    }
+}

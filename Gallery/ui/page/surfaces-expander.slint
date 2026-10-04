@@ -1,0 +1,24 @@
+import { Palette, LineEdit } from "std-widgets.slint";
+import { ForgeExpander, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+
+export component GalleryExpanderPage inherits Rectangle {
+    sample-page := GallerySamplePage {
+        width: parent.width; height: parent.height;
+        title: "Expander";
+        subtitle: @tr("展开或折叠内容，输入状态在折叠后保留。");
+        preview-height: 255px;
+
+        expander := ForgeExpander {
+            x: 18px; y: 18px; width: sample-page.preview-width - 36px;
+            title: @tr("高级选项");
+            expanded: true;
+            VerticalLayout {
+                spacing: 16px;
+                LineEdit { text: ""; placeholder-text: @tr("输入文字后折叠并重新展开"); }
+                Text { text: @tr("这里还可以放置任意业务组件。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+            }
+        }
+        Text { x: 18px; y: sample-page.preview-area-height - 42px; text: expander.expanded ? @tr("当前：已展开") : @tr("当前：已折叠"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+    }
+}

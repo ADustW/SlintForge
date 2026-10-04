@@ -1,0 +1,32 @@
+import { ScrollView } from "std-widgets.slint";
+
+// 子组件按可用宽度换行；内容超出高度时由滚动视图显示竖向滚动条。
+export component ForgeFlowLayout inherits Rectangle {
+    in property<length> spacing: 12px;
+    in property<length> content-padding: 12px;
+    out property<length> content-height: scroll.content-height;
+    out property<bool> vertical-scrollbar-visible: scroll.content-height > scroll.visible-height;
+    background: transparent;
+
+    scroll := ScrollView {
+        width: root.width;
+        height: root.height;
+        vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
+        horizontal-scrollbar-policy: ScrollBarPolicy.always-off;
+
+        FlexboxLayout {
+            width: parent.width;
+            spacing: root.spacing;
+            padding-left: root.content-padding;
+            padding-right: root.content-padding + 14px;
+            padding-top: root.content-padding;
+            padding-bottom: root.content-padding;
+            flex-direction: row;
+            flex-wrap: wrap;
+            alignment: start;
+            cross-axis-alignment: start;
+            cross-axis-line-alignment: start;
+            @children
+        }
+    }
+}

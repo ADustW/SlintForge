@@ -1,0 +1,33 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeCaptureRect, ForgeCaptureResult, ForgeCaptureService } from "../types/capture.slint";
+
+// 页面常驻，active 同时控制可见性与截图许可。
+export component ForgePage inherits Rectangle {
+    in property<bool> active: true;
+    in property<length> content-padding: 0px;
+    out property<ForgeCaptureRect> capture-rect: {
+        x: root.absolute-position.x, y: root.absolute-position.y,
+        width: root.width, height: root.height,
+    };
+    background: Palette.background;
+    clip: true;
+    visible: root.active;
+
+    public function capture() -> ForgeCaptureResult {
+        if (!root.active || !root.visible) {
+            return { error: @tr("页面未激活") };
+        }
+        if (!ForgeCaptureService.connected) {
+            return { error: @tr("截图服务未接入") };
+        }
+        return ForgeCaptureService.capture-region(root.capture-rect);
+    }
+
+    Rectangle {
+        x: Math.max(0px, root.content-padding);
+        y: self.x;
+        width: Math.max(0px, root.width - 2 * self.x);
+        height: Math.max(0px, root.height - 2 * self.y);
+        @children
+    }
+}

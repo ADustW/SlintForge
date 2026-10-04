@@ -1,0 +1,43 @@
+import { Palette, Button } from "std-widgets.slint";
+import { ForgeCaptureResult, ForgeTypography } from "@slintforge";
+
+// 预览放在截图目标之外，避免把上次截图递归拍入目标。
+export component GalleryCapturePreview inherits Rectangle {
+    in property<ForgeCaptureResult> result;
+    in property<string> export-message;
+    callback capture-requested();
+    callback export-requested();
+    height: self.preferred-height;
+    vertical-stretch: 0;
+    VerticalLayout {
+        spacing: 10px;
+        HorizontalLayout {
+            spacing: 10px;
+            Button { text: @tr("获取截图"); width: self.preferred-width; height: self.preferred-height; horizontal-stretch: 0; clicked => { root.capture-requested(); } }
+            Button { text: @tr("导出 PNG"); width: self.preferred-width; height: self.preferred-height; horizontal-stretch: 0; enabled: root.result.ok; clicked => { root.export-requested(); } }
+            Text {
+                text: root.result.ok ? @tr("截图尺寸：{} × {} 像素", root.result.pixel-width, root.result.pixel-height) : root.result.error;
+                color: Palette.foreground; wrap: word-wrap;
+                font-size: 13px * ForgeTypography.scale;
+                height: self.preferred-height;
+            }
+        }
+        Rectangle {
+            height: 190px; vertical-stretch: 0;
+            background: Palette.control-background;
+            border-width: 1px; border-color: Palette.border;
+            clip: true;
+            Image {
+                visible: root.result.ok;
+                width: parent.width; height: parent.height;
+                source: root.result.image; image-fit: contain;
+            }
+            Text {
+                visible: !root.result.ok && root.result.error == "";
+                text: @tr("截图将在此处显示"); color: Palette.foreground;
+                horizontal-alignment: center; vertical-alignment: center;
+            }
+        }
+        if root.export-message != "" : Text { text: root.export-message; height: self.preferred-height; color: Palette.foreground; wrap: word-wrap; vertical-stretch: 0; }
+    }
+}

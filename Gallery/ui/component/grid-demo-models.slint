@@ -1,0 +1,30 @@
+import { ForgeGridRow } from "@slintforge";
+
+// 示例源数据由共享 Slint 声明，两端仅负责批量加载与增删操作。
+export global GalleryGridDemoModels {
+    in property<string> new-label: @tr("新增条目");
+    in property<string> group-label: @tr("分组");
+    in property<[ForgeGridRow]> flat-seed: [
+        {id: "row-1", cells: [{text: @tr("电源测试")}, {text: "32", value: 32}, {text: @tr("张工")}, {text: @tr("进行中")}, {text: @tr("检查输出电压与保护阈值。")}]},
+        {id: "row-2", cells: [{text: @tr("通信验证")}, {text: "8", value: 8}, {text: @tr("李工")}, {text: @tr("已完成")}, {text: @tr("验证正常帧、异常帧和超时处理。")}]},
+        {id: "row-3", cells: [{text: @tr("环境试验")}, {text: "120", value: 120}, {text: @tr("王工")}, {text: @tr("待开始")}, {text: @tr("记录温度循环与运行状态。")}]},
+        {id: "row-4", cells: [{text: @tr("性能测试")}, {text: "24", value: 24}, {text: @tr("赵工")}, {text: @tr("进行中")}, {text: @tr("统计延迟、吞吐量及峰值负载。")}]},
+        {id: "row-5", disabled: true, cells: [{text: @tr("归档记录")}, {text: "64", value: 64}, {text: @tr("只读")}, {text: @tr("已归档")}, {text: @tr("禁用行不可选择或编辑。")}]},
+        {id: "row-6", cells: [{text: @tr("恢复验证")}, {text: "16", value: 16}, {text: @tr("陈工")}, {text: @tr("待开始")}, {text: @tr("检查断连恢复与重启行为。")}]},
+        {id: "row-7", cells: [{text: @tr("接口检查")}, {text: "4", value: 4}, {text: @tr("周工")}, {text: @tr("已完成")}, {text: @tr("确认版本、资源和参数配置。")}]},
+        {id: "row-8", cells: [{text: @tr("回归测试")}, {text: "48", value: 48}, {text: @tr("张工")}, {text: @tr("进行中")}, {text: @tr("覆盖本轮修改和已有功能。")}]}
+    ];
+    in property<[ForgeGridRow]> tree-seed: [
+        {id: "suite", expanded: true, cells: [{text: @tr("测试计划")}, {text: "152", value: 152}, {text: @tr("张工")}, {text: @tr("进行中")}, {text: @tr("按测试域组织任务。")}]},
+        {id: "power", parent-id: "suite", expanded: true, cells: [{text: @tr("电源")}, {text: "32", value: 32}, {text: @tr("张工")}, {text: @tr("进行中")}, {text: @tr("电源测试分组")}]},
+        {id: "power/voltage", parent-id: "power", cells: [{text: @tr("输出电压")}, {text: "12", value: 12}, {text: @tr("李工")}, {text: @tr("已完成")}, {text: @tr("检查稳态与动态输出。")}]},
+        {id: "power/protect", parent-id: "power", cells: [{text: @tr("保护阈值")}, {text: "20", value: 20}, {text: @tr("王工")}, {text: @tr("进行中")}, {text: @tr("检查保护触发与恢复。")}]},
+        {id: "comms", parent-id: "suite", expanded: false, cells: [{text: @tr("通信")}, {text: "24", value: 24}, {text: @tr("赵工")}, {text: @tr("待开始")}, {text: @tr("通信测试分组")}]},
+        {id: "comms/frames", parent-id: "comms", cells: [{text: @tr("帧校验")}, {text: "8", value: 8}, {text: @tr("李工")}, {text: @tr("已完成")}, {text: @tr("正常帧与异常帧")}]},
+        {id: "comms/recovery", parent-id: "comms", cells: [{text: @tr("断连恢复")}, {text: "16", value: 16}, {text: @tr("陈工")}, {text: @tr("待开始")}, {text: @tr("超时、重连和状态恢复")}]},
+        {id: "environment", parent-id: "suite", expanded: true, cells: [{text: @tr("环境")}, {text: "96", value: 96}, {text: @tr("王工")}, {text: @tr("待开始")}, {text: @tr("环境测试分组")}]},
+        {id: "environment/thermal", parent-id: "environment", cells: [{text: @tr("温度循环")}, {text: "96", value: 96}, {text: @tr("王工")}, {text: @tr("待开始")}, {text: @tr("记录温度与运行状态。")}]},
+        {id: "archive", disabled: true, cells: [{text: @tr("历史归档")}, {text: "64", value: 64}, {text: @tr("只读")}, {text: @tr("已归档")}, {text: @tr("禁用行不可选择或编辑。")}]}
+    ];
+    callback action(bool, string, [ForgeGridRow]) -> [ForgeGridRow];
+}

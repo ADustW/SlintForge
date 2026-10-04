@@ -1,0 +1,69 @@
+import { LineEdit, Palette } from "std-widgets.slint";
+import { ForgeIconEntry, ForgeIconButton, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+import { GalleryIconResultRow } from "../component/icon-result-row.slint";
+
+export component GalleryIconsPage inherits Rectangle {
+    in property<[ForgeIconEntry]> entries;
+    in property<string> query;
+    in property<int> total;
+    in property<int> page-index;
+    in property<int> page-count;
+    callback search-requested(string);
+    callback page-requested(int);
+    background: Palette.background;
+    GalleryPageFrame {
+        width: parent.width; height: parent.height;
+        title: @tr("图标字体");
+        subtitle: @tr("浏览 Fluent System Icons Regular 的完整图标目录，按名称搜索并查看码位。");
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        GalleryDemoCard {
+            preview-height: 76px;
+            Text {
+                x: 18px; y: 18px; width: parent.width - 36px;
+                text: @tr("搜索图标名称，查看图形和对应码位。");
+                color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                wrap: word-wrap;
+            }
+        }
+        HorizontalLayout {
+            height: 38px; spacing: 12px;
+            LineEdit {
+                horizontal-stretch: 1;
+                text: root.query;
+                placeholder-text: @tr("按名称搜索，例如 home、settings、arrow");
+                edited(value) => { root.search-requested(value); }
+            }
+            Text {
+                text: @tr("匹配图标") + ": " + root.total;
+                color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                vertical-alignment: center;
+            }
+        }
+        HorizontalLayout {
+            height: 36px; spacing: 10px;
+            ForgeIconButton {
+                label: @tr("上一页"); enabled: root.page-index > 0;
+                clicked => { root.page-requested(root.page-index - 1); }
+            }
+            Text {
+                text: (root.total == 0 ? 0 : root.page-index + 1) + " / " + root.page-count;
+                color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                vertical-alignment: center;
+            }
+            ForgeIconButton {
+                label: @tr("下一页"); enabled: root.page-index + 1 < root.page-count;
+                clicked => { root.page-requested(root.page-index + 1); }
+            }
+        }
+        VerticalLayout {
+            width: Math.max(0px, root.width - 48px); spacing: 4px;
+            for item in root.entries : GalleryIconResultRow {
+                width: parent.width;
+                name: item.name; glyph: item.glyph; codepoint: item.codepoint;
+            }
+        }
+
+    }
+}

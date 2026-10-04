@@ -1,0 +1,30 @@
+import { ProgressIndicator } from "std-widgets.slint";
+import { ForgeProgressButton, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：ProgressButton。
+export component GalleryInputsProgressButtonPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => { root.busy = open; }
+    in-out property<bool> busy: false;
+    sample := GallerySamplePage {
+        title: "ProgressButton";
+        subtitle: @tr("启动任务，按钮显示进度并避免重复提交。");
+        example-title: @tr("用法与状态");
+        preview-height: 170px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            ForgeProgressButton { busy: root.busy; progress: root.number / 100; text: @tr("开始任务"); clicked => { root.number = 0; root.busy = true; } }
+ProgressIndicator { progress: root.number / 100; height: 8px; }
+        }
+    }
+    Timer { interval: 100ms; running: root.busy && root.visible; triggered => { root.number += 5; if root.number >= 100 { root.busy = false; } } }
+}

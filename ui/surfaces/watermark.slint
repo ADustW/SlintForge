@@ -1,0 +1,28 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export component ForgeWatermark inherits Rectangle {
+    in property<string> mark: "SlintForge";
+    in property<float> mark-opacity: 0.12;
+    in property<length> tile-width: 180px;
+    in property<length> tile-height: 120px;
+    property<length> effective-width: Math.max(1px, root.tile-width);
+    property<length> effective-height: Math.max(1px, root.tile-height);
+    out property<int> columns: Math.ceil(Math.max(0px, root.width) / root.effective-width);
+    out property<int> rows: Math.ceil(Math.max(0px, root.height) / root.effective-height);
+    background: Palette.alternate-background;
+    clip: true;
+    @children
+    for index in (root.mark == "" ? 0 : root.columns * root.rows) : Text {
+        x: Math.mod(index, Math.max(1, root.columns)) * root.effective-width;
+        y: Math.floor(index / Math.max(1, root.columns)) * root.effective-height;
+        width: root.effective-width; height: root.effective-height;
+        text: root.mark;
+        color: Palette.foreground;
+        opacity: Math.clamp(root.mark-opacity, 0, 1);
+        font-size: 18px * ForgeTypography.scale;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+}

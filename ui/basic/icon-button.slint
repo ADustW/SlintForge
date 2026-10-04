@@ -1,0 +1,25 @@
+import { Palette } from "std-widgets.slint";
+
+export component ForgeIconButton inherits Rectangle {
+    in property<string> icon;
+    in property<string> label;
+    in property<bool> selected: false;
+    in property<bool> enabled: true;
+    callback clicked();
+    width: root.label == "" ? 36px : icon-text.preferred-width + label-text.preferred-width + 26px;
+    height: 34px;
+    horizontal-stretch: 0;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: selected ? Palette.accent-background : Palette.border;
+    background: selected ? Palette.accent-background : button-touch.has-hover ? Palette.control-background : Palette.background;
+    opacity: root.enabled ? 1 : 0.45;
+    HorizontalLayout {
+        padding-left: 8px;
+        padding-right: 8px;
+        spacing: 6px;
+        icon-text := Text { text: root.icon; visible: root.icon != ""; vertical-alignment: center; color: selected ? Palette.accent-foreground : Palette.foreground; }
+        label-text := Text { text: root.label; visible: root.label != ""; vertical-alignment: center; color: selected ? Palette.accent-foreground : Palette.foreground; }
+    }
+    button-touch := TouchArea { enabled: root.enabled; clicked => { root.clicked(); } }
+}

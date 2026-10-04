@@ -1,0 +1,27 @@
+import { Palette } from "std-widgets.slint";
+
+export component ForgeRoundImageView inherits Rectangle {
+    in property<image> source;
+    in property<length> corner-radius: 12px;
+    in property<ImageFit> image-fit: cover;
+    border-radius: root.corner-radius;
+    border-width: 1px;
+    border-color: Palette.border;
+    background: Palette.alternate-background;
+    clip: true;
+    Image {
+        x: Math.max(0px, root.border-width);
+        y: self.x;
+        width: Math.max(0px, parent.width - 2 * self.x);
+        height: Math.max(0px, parent.height - 2 * self.y);
+        source: root.source;
+        image-fit: root.image-fit;
+    }
+    Rectangle {
+        width: parent.width; height: parent.height;
+        border-radius: root.corner-radius;
+        border-width: root.border-width;
+        border-color: root.border-color;
+        background: transparent;
+    }
+}

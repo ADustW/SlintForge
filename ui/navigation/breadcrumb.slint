@@ -1,0 +1,20 @@
+import { Palette } from "std-widgets.slint";
+
+import { ForgeBreadcrumbItem } from "../types/content.slint";
+
+export component ForgeBreadcrumb inherits Rectangle {
+    in property<[ForgeBreadcrumbItem]> items;
+    callback selected(string);
+    height: 34px;
+    background: transparent;
+    HorizontalLayout {
+        spacing: 3px;
+        for crumb[index] in root.items : Rectangle {
+            width: title-text.preferred-width + 22px;
+            height: parent.height;
+            title-text := Text { x: 8px; text: crumb.title; vertical-alignment: center; color: Palette.foreground; }
+            TouchArea { clicked => { root.selected(crumb.id); } }
+            if index < root.items.length - 1 : Text { x: parent.width - 8px; text: "/"; color: Palette.foreground; vertical-alignment: center; }
+        }
+    }
+}

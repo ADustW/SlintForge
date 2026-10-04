@@ -1,0 +1,6 @@
+import { ForgePlot } from "@slintforge";
+// 宿主绑定 ForgePlotServices 后可直接使用默认坐标轴。
+export component Usage inherits Window {
+    width: 800px; height: 500px;
+    ForgePlot { series: [{id: 1, name: "测量", points: [{x: 0, y: 2}, {x: 1, y: 5}, {x: 2, y: 3}]}]; }
+}

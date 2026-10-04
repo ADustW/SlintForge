@@ -1,0 +1,14 @@
+[package]
+name = "slintforge-qrcodegen"
+version = "1.8.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[lib]
+path = "lib.rs"
+# 上游文档中的绘图示例含伪代码；编码行为由 SlintForge 的独立测试验证。
+doctest = false
+
+[lints.rust]
+unused_parens = "allow"

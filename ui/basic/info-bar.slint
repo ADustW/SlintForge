@@ -1,0 +1,32 @@
+import { Palette } from "std-widgets.slint";
+
+import { ForgeInfoLevel } from "../types/feedback.slint";
+
+import { ForgeIconButton } from "icon-button.slint";
+
+export component ForgeInfoBar inherits Rectangle {
+    in property<ForgeInfoLevel> level: ForgeInfoLevel.info;
+    in property<string> message;
+    in property<bool> dismissible: true;
+    property<color> accent-color: root.level == ForgeInfoLevel.success ? #59b27c : root.level == ForgeInfoLevel.warning ? #dca340 : root.level == ForgeInfoLevel.error ? #db6969 : #69a8de;
+    callback dismissed();
+    min-height: 44px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: Palette.border;
+    background: Palette.alternate-background;
+    Rectangle { x: 0px; y: 0px; width: 4px; height: parent.height; background: root.accent-color; }
+    HorizontalLayout {
+        padding: 10px;
+        spacing: 10px;
+        Text {
+            text: root.level == ForgeInfoLevel.success ? "+" : root.level == ForgeInfoLevel.warning ? "!" : root.level == ForgeInfoLevel.error ? "x" : "i";
+            width: 20px;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+            color: root.accent-color;
+        }
+        Text { text: root.message; vertical-alignment: center; color: Palette.foreground; wrap: word-wrap; }
+        if root.dismissible : ForgeIconButton { icon: "x"; clicked => { root.dismissed(); } }
+    }
+}

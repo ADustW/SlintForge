@@ -1,0 +1,31 @@
+import { Slider, Switch, ProgressIndicator } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// Slint 原生示例：ProgressBar。
+export component GalleryFeedbackProgressBarPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "ProgressBar";
+        subtitle: @tr("确定进度与持续加载两种状态。");
+        example-title: @tr("用法与状态");
+        preview-height: 190px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            Slider { minimum: 0; maximum: 100; value <=> root.number; }
+ProgressIndicator { progress: root.number / 100; indeterminate: !root.flag; height: 12px; }
+Switch { text: @tr("确定进度"); checked <=> root.flag; }
+        }
+    }
+    
+}

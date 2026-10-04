@@ -1,0 +1,51 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+// 多行表单由调用方使用官方 VerticalLayout 排列。
+export component ForgeFormRow inherits Rectangle {
+    in property<string> title;
+    in property<string> description;
+    in property<length> breakpoint: 560px;
+    in property<length> label-width: 220px;
+    in property<length> spacing: 12px;
+    private property<bool> stacked: root.width < root.breakpoint;
+    private property<length> label-area-width: root.stacked ? root.width : Math.min(root.label-width, Math.max(0px, root.width - root.spacing));
+    private property<length> control-x: root.stacked ? 0px : root.label-area-width + root.spacing;
+    out property<bool> stacked-layout: root.stacked;
+    out property<length> control-origin-x: root.control-x;
+    out property<length> control-origin-y: root.stacked
+        ? Math.max(64px, 29px + description-text.preferred-height + root.spacing) : 8px;
+    min-height: root.stacked
+        ? root.control-origin-y + 32px
+        : Math.max(68px, 29px + description-text.preferred-height + 8px);
+    background: transparent;
+    clip: true;
+
+    Text {
+        x: 0px; y: 4px;
+        width: root.label-area-width;
+        height: 23px;
+        text: root.title;
+        color: Palette.foreground;
+        font-size: 15px * ForgeTypography.scale;
+        font-weight: 600;
+        overflow: elide;
+    }
+    description-text := Text {
+        x: 0px; y: 29px;
+        width: root.label-area-width;
+        text: root.description;
+        color: Palette.foreground;
+        font-size: 12px * ForgeTypography.scale;
+        wrap: word-wrap;
+    }
+    HorizontalLayout {
+        x: root.control-x;
+        y: root.control-origin-y;
+        width: root.stacked ? root.width : Math.max(0px, root.width - root.control-x);
+        height: root.stacked ? Math.max(32px, root.height - root.control-origin-y) : Math.max(32px, root.height - 16px);
+        spacing: root.spacing;
+        alignment: root.stacked ? start : end;
+        @children
+    }
+}

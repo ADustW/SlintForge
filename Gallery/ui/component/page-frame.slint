@@ -1,0 +1,28 @@
+import { ForgeTypography } from "@slintforge";
+import { Palette, ScrollView } from "std-widgets.slint";
+
+// Gallery 页面统一使用标题、说明与滚动内容区。
+export component GalleryPageFrame inherits Rectangle {
+    in property<string> title;
+    in property<string> subtitle;
+    background: Palette.background;
+
+    scroll := ScrollView {
+        width: parent.width;
+        height: parent.height;
+        content-width: root.width;
+        horizontal-scrollbar-policy: always-off;
+        VerticalLayout {
+            alignment: start;
+            width: scroll.visible-width;
+            padding-left: 24px;
+            padding-right: 24px;
+            padding-top: 24px;
+            padding-bottom: 24px;
+            spacing: 24px;
+            Text { text: root.title; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 26px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
+            Text { text: root.subtitle; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+            @children
+        }
+    }
+}

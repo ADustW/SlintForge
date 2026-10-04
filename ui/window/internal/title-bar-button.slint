@@ -1,0 +1,76 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeIcon, ForgeIcons } from "../../icons/icon.slint";
+import { ForgeTypography } from "../../typography/typography.slint";
+
+// 窗口按钮只由 ForgeWindow 使用；role: 菜单、主题、最小化、最大化、关闭、置顶、设置。
+export component ForgeTitleBarButton inherits Rectangle {
+    in property<int> role;
+    in property<bool> enabled: true;
+    in property<bool> maximized-state: false;
+    in property<bool> dark-mode: false;
+    in property<bool> pinned-state: false;
+    in property<string> glyph;
+    callback clicked();
+
+    width: 46px;
+    height: 46px;
+    horizontal-stretch: 0;
+    background: root.role == 5 && button-touch.has-hover ? #c42b1c : button-touch.has-hover && root.enabled ? Palette.control-background : transparent;
+    opacity: root.enabled ? 1 : 0.38;
+
+    if root.role == 2 : ForgeIcon {
+        glyph: root.dark-mode ? ForgeIcons.sun : ForgeIcons.moon;
+        width: parent.width; height: parent.height;
+        font-size: 20px * ForgeTypography.scale;
+        color: Palette.foreground;
+    }
+    if root.role == 5 : Text {
+        text: "×";
+        color: button-touch.has-hover ? white : Palette.foreground;
+        font-size: 20px * ForgeTypography.scale;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    if root.role == 1 : ForgeIcon {
+        glyph: root.glyph;
+        width: parent.width; height: parent.height;
+        font-size: 20px * ForgeTypography.scale;
+        color: Palette.foreground;
+    }
+    if root.role == 3 : Rectangle {
+        x: 17px; y: 23px; width: 12px; height: 1px;
+        background: Palette.foreground;
+    }
+    if root.role == 4 && !root.maximized-state : Rectangle {
+        x: 17px; y: 17px; width: 12px; height: 12px;
+        border-width: 1px;
+        border-color: Palette.foreground;
+        background: transparent;
+    }
+    if root.role == 4 && root.maximized-state : Rectangle {
+        x: 16px; y: 19px; width: 11px; height: 10px;
+        border-width: 1px;
+        border-color: Palette.foreground;
+        background: Palette.alternate-background;
+        Rectangle {
+            x: 3px; y: -3px; width: 11px; height: 10px;
+            border-width: 1px;
+            border-color: Palette.foreground;
+            background: transparent;
+        }
+    }
+    if root.role == 6 : ForgeIcon {
+        glyph: root.pinned-state ? ForgeIcons.pin : ForgeIcons.pin-off;
+        width: parent.width; height: parent.height;
+        color: Palette.foreground;
+    }
+    if root.role == 7 : ForgeIcon {
+        glyph: ForgeIcons.settings;
+        width: parent.width; height: parent.height;
+        color: Palette.foreground;
+    }
+    button-touch := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
+    }
+}

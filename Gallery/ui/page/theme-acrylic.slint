@@ -1,0 +1,30 @@
+import { Button, LineEdit } from "std-widgets.slint";
+import { ForgeAcrylic, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：Acrylic。
+export component GalleryThemeAcrylicPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "Acrylic";
+        subtitle: @tr("在彩色背景上比较半透明材质。");
+        example-title: @tr("用法与状态");
+        preview-height: 420px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            Image { source: GalleryDemoModels.backdrop-image; height: 90px; image-fit: cover; }
+ForgeAcrylic { height: 260px; source: GalleryDemoModels.backdrop-image; VerticalLayout { spacing: 18px; Text { text: @tr("背景图上的材质效果"); color: white; font-size: 24px; font-weight: 600; } LineEdit { placeholder-text: @tr("内容仍可交互"); } Button { text: @tr("点击按钮"); clicked => { root.count += 1; } } Text { text: @tr("点击次数：{}", root.count); color: white; } } }
+        }
+    }
+    
+}

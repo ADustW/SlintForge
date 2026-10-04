@@ -1,0 +1,21 @@
+import { GalleryNavigationTabViewPage } from "../page/navigation-tab-view.slint";
+import { GalleryNavigationMultiWindowPage } from "../page/navigation-multi-window.slint";
+import { GalleryNavigationSegmentedPage } from "../page/navigation-segmented.slint";
+import { GalleryNavigationPaginationPage } from "../page/navigation-pagination.slint";
+import { GalleryNavigationPage } from "../page/navigation.slint";
+import { GalleryBreadcrumbPage } from "../page/breadcrumb.slint";
+import { GalleryTabbarPage } from "../page/tabbar.slint";
+import { GalleryPageheaderPage } from "../page/pageheader.slint";
+export component GalleryNavigationPages inherits Rectangle {
+    in property<string> active-route-id;
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => { if route == "navigation-tab-view" { page-0.prepare-preview(open); } if route == "navigation-multi-window" { page-1.prepare-preview(open); } if route == "navigation-segmented" { page-2.prepare-preview(open); } if route == "navigation-pagination" { page-3.prepare-preview(open); } if route == "navigation" { page-4.prepare-preview(open); } if route == "breadcrumb" { page-5.prepare-preview(open); } if route == "tabbar" { page-6.prepare-preview(open); } if route == "pageheader" { page-7.prepare-preview(open); } }
+    page-0 := GalleryNavigationTabViewPage { width: root.width; height: root.height; visible: root.active-route-id == "navigation-tab-view"; }
+    page-1 := GalleryNavigationMultiWindowPage { width: root.width; height: root.height; visible: root.active-route-id == "navigation-multi-window"; }
+    page-2 := GalleryNavigationSegmentedPage { width: root.width; height: root.height; visible: root.active-route-id == "navigation-segmented"; }
+    page-3 := GalleryNavigationPaginationPage { width: root.width; height: root.height; visible: root.active-route-id == "navigation-pagination"; }
+    page-4 := GalleryNavigationPage { width: root.width; height: root.height; visible: root.active-route-id == "navigation"; }
+    page-5 := GalleryBreadcrumbPage { width: root.width; height: root.height; visible: root.active-route-id == "breadcrumb"; }
+    page-6 := GalleryTabbarPage { width: root.width; height: root.height; visible: root.active-route-id == "tabbar"; }
+    page-7 := GalleryPageheaderPage { width: root.width; height: root.height; visible: root.active-route-id == "pageheader"; }
+}

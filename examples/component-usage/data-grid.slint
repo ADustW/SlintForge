@@ -1,0 +1,10 @@
+import { ForgeDataGrid } from "@slintforge";
+export component Example inherits Window {
+    width: 640px; height: 360px;
+    ForgeDataGrid {
+        columns: [{id: "name", title: "Name", width: 180, frozen: true, sortable: true, editable: true},
+            {id: "count", title: "Count", numeric: true, sortable: true, editable: true}];
+        rows: [{id: "a", cells: [{text: "Alpha"}, {text: "12", value: 12}]},
+            {id: "b", cells: [{text: "Beta"}, {text: "2", value: 2}]}];
+    }
+}

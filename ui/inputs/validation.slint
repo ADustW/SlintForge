@@ -1,0 +1,32 @@
+import { LineEdit, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export component ForgeInputValidation inherits Rectangle {
+    in-out property<string> text;
+    in property<string> placeholder-text;
+    in property<bool> required: true;
+    in property<int> minimum-length: 0;
+    in property<int> maximum-length: 0;
+    in property<string> error-message;
+    in property<bool> enabled: true;
+    in-out property<bool> touched: false;
+    out property<bool> valid: (!root.required || root.text != "") && root.text.character-count >= Math.max(0, root.minimum-length) && (root.maximum-length <= 0 || root.text.character-count <= root.maximum-length) && root.error-message == "";
+    out property<string> validation-message: root.valid ? "" : root.error-message != "" ? root.error-message : root.text == "" ? @tr("此项不能为空") : @tr("输入长度不符合要求");
+    callback edited(string);
+    callback accepted(string);
+    preferred-height: layout.preferred-height; min-height: layout.min-height;
+    forward-focus: field;
+    layout := VerticalLayout {
+        spacing: 6px;
+        field := LineEdit {
+            text <=> root.text; enabled: root.enabled;
+            placeholder-text: root.placeholder-text;
+            edited(value) => { root.touched = true; root.edited(value); }
+            accepted => { root.touched = true; if root.valid { root.accepted(root.text); } }
+        }
+        if root.touched && !root.valid : Text {
+            text: root.validation-message; color: #e45c5c;
+            font-size: 12px * ForgeTypography.scale; wrap: word-wrap;
+        }
+    }
+}

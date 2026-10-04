@@ -1,0 +1,52 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeDataGrid, ForgeTreeDataGrid, ForgeGridColumn, ForgeGridRow } from "@slintforge";
+export { ForgeGridServices, ForgeGridScene, ForgeGridViewRow, ForgeGridViewColumn, ForgeGridRow,
+    ForgeGridCell, ForgeGridColumn, ForgeGridEditResult } from "@slintforge";
+
+export component GridsWindow inherits Window {
+    title: "SlintForge DataGrid / TreeDataGrid";
+    width: 800px; height: 540px;
+    in-out property<int> mode: 0;
+    private property<bool> is-tree: root.mode == 1 || root.mode == 6;
+    private property<[ForgeGridColumn]> columns: [
+        {id: "name", title: "Name", width: 200, min-width: 100, max-width: 500, frozen: true, editable: true, sortable: true},
+        {id: "count", title: "Count", width: 100, numeric: true, editable: true, sortable: true},
+        {id: "notes", title: "Notes", width: 520, editable: true}
+    ];
+    private property<[ForgeGridRow]> flat-seed: [
+        {id: "alpha", cells: [{text: "Alpha"}, {text: "12", value: 12}, {text: "Editable text and numeric cells"}]},
+        {id: "beta", cells: [{text: "Beta"}, {text: "2", value: 2}, {text: "Stable IDs across sorting and selection"}]},
+        {id: "gamma", cells: [{text: "Gamma"}, {text: "3", value: 3}, {text: "Frozen first column with horizontal scrolling"}]}
+    ];
+    private property<[ForgeGridRow]> tree-seed: [
+        {id: "root", cells: [{text: "Project"}, {text: "15", value: 15}, {text: "Expand to see child rows"}]},
+        {id: "child1", parent-id: "root", cells: [{text: "child1"}, {text: "12", value: 12}, {text: "First child"}]},
+        {id: "child2", parent-id: "root", cells: [{text: "child2"}, {text: "3", value: 3}, {text: "Second child"}]}
+    ];
+    out property<int> status: root.is-tree ? tree.scene.status : flat.scene.status;
+    out property<int> visible-count: root.is-tree ? tree.visible-row-count : flat.visible-row-count;
+    out property<int> selected-count: root.is-tree ? tree.selected-row-count : flat.selected-row-count;
+    out property<bool> editing: flat.editing;
+    callback prepare(int);
+    prepare(mode) => {
+        root.mode = mode;
+        flat.cancel-edit(); tree.cancel-edit();
+        flat.rows = mode == 2 ? [] : root.flat-seed;
+        tree.rows = root.tree-seed; flat.sort-column = -1; tree.sort-column = -1;
+        flat.filter = ""; tree.filter = "";
+        if mode == 1 { tree.toggle-row(0); }
+        if mode == 3 { flat.select-all(); }
+        if mode == 4 { flat.sort-by(1); flat.select-row(0, false, false); }
+        if mode == 5 { flat.begin-edit(1, 1); }
+        if mode == 6 { tree.filter = "child1"; }
+    }
+    background: Palette.background;
+    Text { x: 20px; y: 20px; width: root.width - 40px; height: 30px; text: root.is-tree ? "TreeDataGrid" : "DataGrid";
+        font-size: 24px; font-weight: 600; color: Palette.foreground; }
+    flat := ForgeDataGrid { x: 20px; y: 70px; width: root.width - 40px; height: 390px; columns: root.columns;
+        rows: root.flat-seed; enabled: root.mode != 3; visible: !root.is-tree; }
+    tree := ForgeTreeDataGrid { x: 20px; y: 70px; width: root.width - 40px; height: 390px; columns: root.columns;
+        rows: root.tree-seed; visible: root.is-tree; }
+    Text { x: 20px; y: 482px; width: root.width - 40px; height: 28px;
+        text: "Rows: \{root.visible-count}   Selected: \{root.selected-count}"; color: Palette.foreground; }
+}

@@ -1,0 +1,56 @@
+import { ProfessionalPlotDemo } from "professional-plot-demo.slint";
+import { Palette } from "std-widgets.slint";
+import { ForgePlotPoint,ForgePlotScene,ForgePlotExportResult } from "@slintforge";
+export { ForgePlotServices,ForgePlotScene,ForgePlotAxis,ForgePlotRange,ForgePlotRect,
+    ForgePlotHit,ForgePlotSelection,ForgePlotExportResult,ForgePlotPoint } from "@slintforge";
+// 独立消费者与 Gallery 使用同一份演示组件。
+
+export component ProfessionalPlotWindow inherits Window {
+    title: "SlintForge · 专业图表";width: 1080px;height: 760px;
+    in-out property<bool> dark-mode: false;
+    changed dark-mode => {Palette.color-scheme = root.dark-mode ? ColorScheme.dark : ColorScheme.light;}
+    in-out property<int> mode <=> demo.mode;
+    in-out property<bool> streaming <=> demo.streaming;
+    in-out property<bool> live <=> demo.live;
+    in-out property<int> window-mode <=> demo.window-mode;
+    in-out property<int> legend-position-index <=> demo.legend-position-index;
+    in-out property<int> legend-style-index <=> demo.legend-style-index;
+    in-out property<int> legend-placement-index <=> demo.legend-placement-index;
+    in-out property<int> measurement-placement-index <=> demo.measurement-placement-index;
+    in-out property<int> measurement-position-index <=> demo.measurement-position-index;
+    in-out property<int> measurement-series <=> demo.measurement-series;
+    in-out property<bool> measure <=> demo.measure;
+    in-out property<int> line-style-index <=> demo.line-style-index;
+    in-out property<int> axis-ticker-index <=> demo.axis-ticker-index;
+    in-out property<[ForgePlotPoint]> live-points <=> demo.live-points;
+    in-out property<[ForgePlotPoint]> benchmark-points <=> demo.benchmark-points;
+    out property<ForgePlotScene> scene: demo.scene;
+    out property<float> plot-offset-x: demo.plot-offset-x;
+    out property<float> plot-offset-y: demo.plot-offset-y;
+    out property<float> cursor-a:demo.cursor-a;
+    out property<float> cursor-b:demo.cursor-b;
+    out property<float> cursor-a-pixel:demo.cursor-a-pixel;
+    out property<float> cursor-b-pixel:demo.cursor-b-pixel;
+    out property<bool> legend-menu-open:demo.legend-menu-open;
+    out property<bool> measurement-menu-open:demo.measurement-menu-open;
+    out property<float> legend-picker-x:demo.legend-picker-x;
+    out property<float> legend-picker-y:demo.legend-picker-y;
+    out property<float> measurement-picker-x:demo.measurement-picker-x;
+    out property<float> measurement-picker-y:demo.measurement-picker-y;
+    callback show-legend-positions();show-legend-positions=>{demo.show-legend-positions();}
+    callback show-measurement-positions();show-measurement-positions=>{demo.show-measurement-positions();}
+    callback close-position-menus();close-position-menus=>{demo.close-position-menus();}
+    callback reset-measurement();reset-measurement=>{demo.reset-measurement();}
+    callback refresh();refresh => {demo.refresh();}
+    callback flush();flush => {demo.flush();}
+    callback reset();reset => {demo.reset();}
+    callback benchmark-pan(float,float);benchmark-pan(dx,dy)=>{demo.benchmark-pan(dx,dy);}
+    callback benchmark-zoom();benchmark-zoom=>{demo.benchmark-zoom();}
+    callback export-file(string,string)->ForgePlotExportResult;
+    export-file(path,format) => {return demo.export-file(path,format);}
+    callback sample-running(bool);
+    callback append-points(int,[ForgePlotPoint])->bool;
+    append-points(id,points)=>{return demo.append-points(id,points);}
+    callback scroll-history(float);scroll-history(position)=>{demo.scroll-history(position);}
+    demo:=ProfessionalPlotDemo {width:parent.width;height:parent.height;sample-running(running)=>{root.sample-running(running);}}
+}

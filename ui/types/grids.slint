@@ -1,0 +1,31 @@
+// 表格契约：行标识稳定，树形数据通过 parent-id 建立关系。
+export enum ForgeGridSelectionMode { none, single, multiple }
+export struct ForgeGridCell { text: string, value: float }
+export struct ForgeGridColumn {
+    id: string, title: string, width: float, min-width: float, max-width: float,
+    numeric: bool, sortable: bool, editable: bool, hidden: bool, frozen: bool,
+}
+export struct ForgeGridRow {
+    id: string, parent-id: string, cells: [ForgeGridCell],
+    expanded: bool, selected: bool, disabled: bool,
+}
+export struct ForgeGridViewColumn { column: ForgeGridColumn, source-index: int, x: float, width: float }
+export struct ForgeGridViewRow {
+    id: string, parent-id: string, cells: [ForgeGridCell], source-index: int,
+    depth: int, has-children: bool, expanded: bool, selected: bool, disabled: bool,
+}
+export struct ForgeGridScene {
+    status: int, rows: [ForgeGridViewRow], columns: [ForgeGridViewColumn],
+    total-width: float, frozen-width: float, selected-count: int, all-visible-selected: bool,
+}
+export struct ForgeGridEditResult { status: int, rows: [ForgeGridRow] }
+export global ForgeGridServices {
+    in-out property<bool> connected: false;
+    pure callback prepare([ForgeGridRow], [ForgeGridColumn], bool, int, bool, string, int) -> ForgeGridScene;
+    pure callback update([ForgeGridRow], [ForgeGridViewRow], int, int, int) -> [ForgeGridRow];
+    pure callback commit([ForgeGridRow], [ForgeGridColumn], int, int, string) -> ForgeGridEditResult;
+    pure callback find-row([ForgeGridViewRow], string) -> int;
+    pure callback find-column([ForgeGridViewColumn], int) -> int;
+    pure callback filter-active(string) -> bool;
+    pure callback step([ForgeGridViewRow], int, int) -> int;
+}

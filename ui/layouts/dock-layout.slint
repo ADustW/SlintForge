@@ -1,0 +1,143 @@
+import { Palette } from "std-widgets.slint";
+
+export struct ForgeDockRect { x: length, y: length, width: length, height: length }
+export enum ForgeDockEdge { top, bottom, left, right }
+
+// 四边尺寸为保存值；窗口缩小时仅压缩实际几何，重新放大后恢复保存值。
+export component ForgeDockLayout inherits Rectangle {
+    in-out property<length> top-height: 96px;
+    in-out property<length> bottom-height: 96px;
+    in-out property<length> left-width: 180px;
+    in-out property<length> right-width: 180px;
+    in property<bool> show-top: true;
+    in property<bool> show-bottom: true;
+    in property<bool> show-left: true;
+    in property<bool> show-right: true;
+    in property<length> divider-size: 8px;
+    in property<length> min-center-width: 160px;
+    in property<length> min-center-height: 120px;
+    private property<length> horizontal-dividers: (root.show-left ? root.divider-size : 0px) + (root.show-right ? root.divider-size : 0px);
+    private property<length> vertical-dividers: (root.show-top ? root.divider-size : 0px) + (root.show-bottom ? root.divider-size : 0px);
+    private property<length> actual-top: root.show-top ? Math.min(Math.max(0px, root.top-height),
+        Math.max(0px, root.height - root.min-center-height - root.vertical-dividers)) : 0px;
+    private property<length> actual-bottom: root.show-bottom ? Math.min(Math.max(0px, root.bottom-height),
+        Math.max(0px, root.height - root.min-center-height - root.vertical-dividers - root.actual-top)) : 0px;
+    private property<length> actual-left: root.show-left ? Math.min(Math.max(0px, root.left-width),
+        Math.max(0px, root.width - root.min-center-width - root.horizontal-dividers)) : 0px;
+    private property<length> actual-right: root.show-right ? Math.min(Math.max(0px, root.right-width),
+        Math.max(0px, root.width - root.min-center-width - root.horizontal-dividers - root.actual-left)) : 0px;
+    private property<length> middle-y: root.actual-top + (root.show-top ? root.divider-size : 0px);
+    private property<length> middle-height: Math.max(0px, root.height - root.middle-y - root.actual-bottom - (root.show-bottom ? root.divider-size : 0px));
+    private property<length> center-x: root.actual-left + (root.show-left ? root.divider-size : 0px);
+    private property<length> center-width: Math.max(0px, root.width - root.center-x - root.actual-right - (root.show-right ? root.divider-size : 0px));
+    out property<ForgeDockRect> top-rect: { x: 0px, y: 0px, width: root.width, height: root.actual-top };
+    out property<ForgeDockRect> bottom-rect: { x: 0px, y: root.height - root.actual-bottom, width: root.width, height: root.actual-bottom };
+    out property<ForgeDockRect> left-rect: { x: 0px, y: root.middle-y, width: root.actual-left, height: root.middle-height };
+    out property<ForgeDockRect> right-rect: { x: root.width - root.actual-right, y: root.middle-y, width: root.actual-right, height: root.middle-height };
+    out property<ForgeDockRect> center-rect: { x: root.center-x, y: root.middle-y, width: root.center-width, height: root.middle-height };
+    callback pane-size-changed(ForgeDockEdge, length);
+    background: transparent;
+    clip: true;
+    @children
+
+    top-divider := Rectangle {
+        visible: root.show-top;
+        x: 0px; y: root.actual-top;
+        width: root.width; height: root.divider-size;
+        background: Palette.border;
+        TouchArea {
+            property<length> pressed-size: 0px;
+            property<length> pressed-root-y: 0px;
+            mouse-cursor: row-resize;
+            pointer-event(event) => {
+                if (event.kind == PointerEventKind.down) {
+                    self.pressed-size = root.actual-top;
+                    self.pressed-root-y = top-divider.y + self.pressed-y;
+                }
+            }
+            moved => {
+                if (self.pressed) {
+                    root.top-height = Math.max(0px, Math.min(
+                        root.height - root.min-center-height - root.vertical-dividers - root.actual-bottom,
+                        self.pressed-size + top-divider.y + self.mouse-y - self.pressed-root-y));
+                    root.pane-size-changed(ForgeDockEdge.top, root.top-height);
+                }
+            }
+        }
+    }
+    bottom-divider := Rectangle {
+        visible: root.show-bottom;
+        x: 0px; y: root.height - root.actual-bottom - root.divider-size;
+        width: root.width; height: root.divider-size;
+        background: Palette.border;
+        TouchArea {
+            property<length> pressed-size: 0px;
+            property<length> pressed-root-y: 0px;
+            mouse-cursor: row-resize;
+            pointer-event(event) => {
+                if (event.kind == PointerEventKind.down) {
+                    self.pressed-size = root.actual-bottom;
+                    self.pressed-root-y = bottom-divider.y + self.pressed-y;
+                }
+            }
+            moved => {
+                if (self.pressed) {
+                    root.bottom-height = Math.max(0px, Math.min(
+                        root.height - root.min-center-height - root.vertical-dividers - root.actual-top,
+                        self.pressed-size - (bottom-divider.y + self.mouse-y - self.pressed-root-y)));
+                    root.pane-size-changed(ForgeDockEdge.bottom, root.bottom-height);
+                }
+            }
+        }
+    }
+    left-divider := Rectangle {
+        visible: root.show-left;
+        x: root.actual-left; y: root.middle-y;
+        width: root.divider-size; height: root.middle-height;
+        background: Palette.border;
+        TouchArea {
+            property<length> pressed-size: 0px;
+            property<length> pressed-root-x: 0px;
+            mouse-cursor: col-resize;
+            pointer-event(event) => {
+                if (event.kind == PointerEventKind.down) {
+                    self.pressed-size = root.actual-left;
+                    self.pressed-root-x = left-divider.x + self.pressed-x;
+                }
+            }
+            moved => {
+                if (self.pressed) {
+                    root.left-width = Math.max(0px, Math.min(
+                        root.width - root.min-center-width - root.horizontal-dividers - root.actual-right,
+                        self.pressed-size + left-divider.x + self.mouse-x - self.pressed-root-x));
+                    root.pane-size-changed(ForgeDockEdge.left, root.left-width);
+                }
+            }
+        }
+    }
+    right-divider := Rectangle {
+        visible: root.show-right;
+        x: root.width - root.actual-right - root.divider-size; y: root.middle-y;
+        width: root.divider-size; height: root.middle-height;
+        background: Palette.border;
+        TouchArea {
+            property<length> pressed-size: 0px;
+            property<length> pressed-root-x: 0px;
+            mouse-cursor: col-resize;
+            pointer-event(event) => {
+                if (event.kind == PointerEventKind.down) {
+                    self.pressed-size = root.actual-right;
+                    self.pressed-root-x = right-divider.x + self.pressed-x;
+                }
+            }
+            moved => {
+                if (self.pressed) {
+                    root.right-width = Math.max(0px, Math.min(
+                        root.width - root.min-center-width - root.horizontal-dividers - root.actual-left,
+                        self.pressed-size - (right-divider.x + self.mouse-x - self.pressed-root-x)));
+                    root.pane-size-changed(ForgeDockEdge.right, root.right-width);
+                }
+            }
+        }
+    }
+}

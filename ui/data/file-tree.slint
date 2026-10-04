@@ -1,0 +1,38 @@
+import { Button, CheckBox, Palette, ScrollView } from "std-widgets.slint";
+import { ForgeTreeItem } from "../types/widgets.slint";
+
+// 扁平可视模型保留父子关系，展开/选择由宿主回传；适用于文件树和业务树。
+export component ForgeFileTree inherits Rectangle {
+    in property<[ForgeTreeItem]> items;
+    in property<bool> multi-select: false;
+    in property<bool> enabled: true;
+    callback expansion-changed(string, bool);
+    callback selection-changed(string, bool);
+    ScrollView {
+        VerticalLayout {
+            spacing: 0px;
+            for item in root.items : Rectangle {
+                height: item.visible ? 36px : 0px; visible: item.visible;
+                background: item.selected ? Palette.control-background : transparent;
+                HorizontalLayout {
+                    padding-left: Math.max(0, item.depth) * 20px; spacing: 5px;
+                    Button {
+                        width: 30px; text: item.folder ? (item.expanded ? "−" : "+") : "·";
+                        enabled: root.enabled && item.enabled && item.folder;
+                        accessible-label: item.label;
+                        clicked => { root.expansion-changed(item.id, !item.expanded); }
+                    }
+                    if root.multi-select : CheckBox {
+                        text: item.label; checked: item.selected; enabled: root.enabled && item.enabled;
+                        toggled => { root.selection-changed(item.id, self.checked); }
+                    }
+                    if !root.multi-select : Button {
+                        text: (item.folder ? "▸ " : "   ") + item.label;
+                        checkable: true; checked: item.selected; enabled: root.enabled && item.enabled;
+                        clicked => { root.selection-changed(item.id, true); }
+                    }
+                }
+            }
+        }
+    }
+}

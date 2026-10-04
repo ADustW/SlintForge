@@ -1,0 +1,291 @@
+import { Palette } from "std-widgets.slint";
+import {
+    ForgeWindow, ForgeNavigationView, ForgeNavigationItem, ForgeNavPlacement,
+    ForgePaneState, ForgeRouteParam, ForgeTypography, ForgeIconEntry, ForgeIcons, ForgeStaggeredItem,
+    ForgeCaptureResult, ForgeCaptureRect, ForgePlotScene, ForgePlotPoint,
+} from "@slintforge";
+import { GalleryHomePage } from "../page/home.slint";
+import { GalleryGridPages } from "../component/grid-pages.slint";
+import { GalleryIconButtonPage } from "../page/icon-button.slint";
+import { GalleryCardPage } from "../page/card.slint";
+import { GalleryInfoBarPage } from "../page/info-bar.slint";
+import { GalleryForgeWindowPage } from "../page/forge-window.slint";
+import { GallerySettingsPage } from "../page/settings.slint";
+import { GalleryTypographyPage } from "../page/typography.slint";
+import { GalleryIconsPage } from "../page/icons.slint";
+import { GalleryLifecyclePage } from "../page/lifecycle.slint";
+import { GallerySplitLayoutPage } from "../page/layouts-split.slint";
+import { GalleryStaggeredGridPage } from "../page/layouts-staggered.slint";
+import { GalleryFlowLayoutPage } from "../page/layouts-flow.slint";
+import { GalleryAdaptiveGridPage } from "../page/layouts-adaptive-grid.slint";
+import { GalleryDockLayoutPage } from "../page/layouts-dock.slint";
+import { GalleryPageStackPage } from "../page/layouts-page-stack.slint";
+import { GalleryFormRowPage } from "../page/layouts-form-row.slint";
+import { GalleryPageContainerPage } from "../page/surfaces-page.slint";
+import { GalleryRoundImagePage } from "../page/surfaces-round-image.slint";
+import { GalleryIconLabelPage } from "../page/surfaces-icon-label.slint";
+import { GalleryExpanderPage } from "../page/surfaces-expander.slint";
+import { GalleryWatermarkPage } from "../page/surfaces-watermark.slint";
+import { GalleryMarqueePage } from "../page/surfaces-marquee.slint";
+import { GalleryChartPages } from "../component/chart-pages.slint";
+import { GalleryInputsPages } from "../component/inputs-pages.slint";
+import { GalleryDataPages } from "../component/data-pages.slint";
+import { GalleryFormPages } from "../component/form-pages.slint";
+import { GalleryNavigationPages } from "../component/navigation-pages.slint";
+import { GalleryFeedbackPages } from "../component/feedback-pages.slint";
+import { GalleryPopupsPages } from "../component/popups-pages.slint";
+import { GalleryThemePages } from "../component/theme-pages.slint";
+import { GalleryOtherPages } from "../component/other-pages.slint";
+import { GalleryPendingItem, GalleryPendingPage } from "../page/pending.slint";
+
+export component GalleryWindow inherits ForgeWindow {
+    callback append-plot-points(int, [ForgePlotPoint]) -> bool;
+    append-plot-points(id, points) => {return chart-components.append-plot-points(id, points);}
+    callback qa-prepare-component(bool);
+    out property<bool> qa-grid-editing: grid-components.qa-editing;
+    out property<ForgePlotScene> qa-plot-scene: chart-components.plot-scene;
+    qa-prepare-component(open) => { grid-components.prepare-preview(root.active-route-id, open); chart-components.prepare-preview(root.active-route-id, open); inputs-components.prepare-preview(root.active-route-id, open); data-components.prepare-preview(root.active-route-id, open); form-components.prepare-preview(root.active-route-id, open); navigation-components.prepare-preview(root.active-route-id, open); feedback-components.prepare-preview(root.active-route-id, open); popups-components.prepare-preview(root.active-route-id, open); theme-components.prepare-preview(root.active-route-id, open); other-components.prepare-preview(root.active-route-id, open); }
+    title: @tr("SlintForge Gallery");
+    icon: @image-url("../assets/brand/slintforge-gallery.png");
+    brand-icon: @image-url("../assets/brand/slintforge-gallery.png");
+    show-brand-icon: true;
+    version-text: "v0.1.0";
+    preferred-width: 1380px;
+    preferred-height: 860px;
+    min-width: 960px;
+    min-height: 600px;
+    show-menu-button: true;
+    navigation-glyph: root.placement == ForgeNavPlacement.left
+        ? (root.pane-state == ForgePaneState.hidden ? ForgeIcons.panel-left-expand : ForgeIcons.panel-left)
+        : root.placement == ForgeNavPlacement.right
+            ? (root.pane-state == ForgePaneState.hidden ? ForgeIcons.panel-right-expand : ForgeIcons.panel-right)
+            : (root.pane-state == ForgePaneState.hidden ? ForgeIcons.panel-top-expand : ForgeIcons.panel-top-contract);
+    show-theme-button: true;
+    show-pin-button: true;
+    show-settings-button: true;
+    dark-mode: true;
+    in property<[ForgeNavigationItem]> navigation-items;
+    in property<[ForgeNavigationItem]> all-navigation-items;
+    in property<[ForgeNavigationItem]> footer-items;
+    in property<[GalleryPendingItem]> pending-items;
+    in property<[ForgeIconEntry]> icon-items;
+    in property<[ForgeStaggeredItem]> staggered-items;
+    in property<length> staggered-content-height;
+    out property<int> qa-staggered-columns: staggered-page.column-count;
+    out property<string> qa-stack-draft: stack-page.draft;
+    out property<string> qa-stack-current-id: stack-page.current-id;
+    callback qa-set-stack-draft(string);
+    callback qa-switch-stack(string);
+    qa-set-stack-draft(value) => { stack-page.qa-set-draft(value); }
+    qa-switch-stack(value) => { stack-page.current-id = value; }
+    callback staggered-layout-requested(int);
+    callback export-capture(image) -> string;
+    callback qa-capture-window() -> ForgeCaptureResult;
+    callback qa-capture-page() -> ForgeCaptureResult;
+    callback qa-export-page() -> string;
+    callback qa-set-page-active(bool);
+    callback qa-set-maximized(bool);
+    out property<ForgeCaptureRect> qa-page-rect: page-container.sample-rect;
+    qa-capture-window => { return root.capture(); }
+    qa-capture-page => { return page-container.qa-capture(); }
+    qa-export-page => { return page-container.qa-export(); }
+    qa-set-page-active(active) => { page-container.sample-active = active; }
+    qa-set-maximized(value) => { root.maximized = value; }
+    in property<string> icon-query: "";
+    in property<int> icon-total: 0;
+    in property<int> icon-page: 0;
+    in property<int> icon-page-count: 0;
+    in property<string> active-route-id: "home";
+    in property<string> active-top-id: "home";
+    in property<string> search-query: "";
+    in property<bool> can-go-back: false;
+    in property<ForgeNavPlacement> placement: ForgeNavPlacement.left;
+    in property<ForgePaneState> pane-state: ForgePaneState.expanded;
+    property<ForgePaneState> last-visible-pane-state: ForgePaneState.expanded;
+    in property<int> sample-counter: 0;
+    in property<string> route-param-summary: @tr("无");
+    in property<string> language: "zh";
+    in-out property font-family-name <=> ForgeTypography.family;
+    in-out property font-scale <=> ForgeTypography.scale;
+    in-out property window-pinned <=> root.pinned;
+    in-out property window-rounded <=> root.rounded-corners;
+    in-out property theme-dark <=> root.dark-mode;
+    property<length> content-height: root.height - root.title-bar-height;
+    property<length> page-width: root.width - (root.placement == ForgeNavPlacement.top || root.pane-state == ForgePaneState.hidden ? 0px : root.pane-state == ForgePaneState.compact ? 50px : 320px);
+    property<length> page-height: root.content-height - (root.placement == ForgeNavPlacement.top && root.pane-state != ForgePaneState.hidden ? 48px : 0px);
+    out property<string> lifecycle-draft: lifecycle-page.draft;
+    out property<string> qa-localized-settings-label: @tr("设置");
+    out property<string> qa-navigation-glyph: root.navigation-glyph;
+    callback qa-set-lifecycle-draft(string);
+    callback qa-toggle-navigation();
+    qa-set-lifecycle-draft(value) => { lifecycle-page.qa-set-draft(value); }
+    qa-toggle-navigation => { root.menu-requested(); }
+    callback navigate-requested(string, [ForgeRouteParam]);
+    callback group-toggle-requested(string);
+    callback pane-state-requested(ForgePaneState);
+    callback placement-requested(ForgeNavPlacement);
+    callback search-requested(string);
+    callback icon-search-requested(string);
+    callback icon-page-requested(int);
+    callback back-requested();
+    callback open-settings-requested();
+    callback language-requested(string);
+    callback font-family-requested(string);
+    callback font-scale-requested(float);
+    callback pinned-requested(bool);
+    callback corner-style-requested(bool);
+    callback theme-setting-changed(bool);
+    pin-state-changed(value) => { root.pinned-requested(value); }
+    settings-requested => { root.open-settings-requested(); }
+    open-settings-requested => { root.navigate-requested("settings", []); }
+    menu-requested => {
+        if (root.pane-state == ForgePaneState.hidden) {
+            root.pane-state-requested(root.last-visible-pane-state);
+        } else {
+            root.last-visible-pane-state = root.pane-state;
+            root.pane-state-requested(ForgePaneState.hidden);
+        }
+    }
+    changed pane-state => {
+        if (root.pane-state != ForgePaneState.hidden) { root.last-visible-pane-state = root.pane-state; }
+    }
+    theme-toggle-requested => {
+        root.dark-mode = !root.dark-mode;
+        Palette.color-scheme = root.dark-mode ? ColorScheme.dark : ColorScheme.light;
+        root.theme-setting-changed(root.dark-mode);
+    }
+    init => { Palette.color-scheme = ColorScheme.dark; }
+    changed dark-mode => { Palette.color-scheme = root.dark-mode ? ColorScheme.dark : ColorScheme.light; }
+
+    ForgeNavigationView {
+        width: root.width;
+        height: root.content-height;
+        show-app-bar: false;
+        items: root.navigation-items;
+        tree-items: root.all-navigation-items;
+        footer-items: root.footer-items;
+        active-route-id: root.active-route-id;
+        active-top-id: root.active-top-id;
+        search-query: root.search-query;
+        can-go-back: root.can-go-back;
+        dark-mode: root.dark-mode;
+        placement: root.placement;
+        pane-state: root.pane-state;
+        navigate-requested(id, params) => { root.navigate-requested(id, params); }
+        group-toggle-requested(id) => { root.group-toggle-requested(id); }
+        pane-state-requested(state) => { root.pane-state-requested(state); }
+        search-requested(value) => { root.search-requested(value); }
+        back-requested => { root.back-requested(); }
+        theme-toggle-requested => { root.theme-toggle-requested(); }
+
+        GalleryHomePage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == "home";
+            navigate-requested(id) => { root.navigate-requested(id, []); }
+            placement-requested(value) => { root.placement-requested(value); }
+            pane-requested(value) => { root.pane-state-requested(value); }
+        }
+        GalleryIconButtonPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "iconbutton"; }
+        GalleryCardPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "card"; }
+        GalleryInfoBarPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "infobar"; }
+        GallerySplitLayoutPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "layouts-split"; }
+        staggered-page := GalleryStaggeredGridPage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == "layouts-staggered";
+            items: root.staggered-items;
+            layout-content-height: root.staggered-content-height;
+            layout-requested(columns) => { root.staggered-layout-requested(columns); }
+        }
+        GalleryFlowLayoutPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "layouts-flow"; }
+        GalleryAdaptiveGridPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "layouts-adaptive-grid"; }
+        GalleryDockLayoutPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "layouts-dock"; }
+        stack-page := GalleryPageStackPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "layouts-page-stack" || root.active-route-id == "navigation-stack-page"; }
+        GalleryFormRowPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "layouts-form-row"; }
+        page-container := GalleryPageContainerPage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == "surfaces-page";
+            active: root.active-route-id == "surfaces-page";
+            export-capture(image) => { return root.export-capture(image); }
+        }
+        GalleryRoundImagePage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "surfaces-round-image"; }
+        GalleryIconLabelPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "surfaces-icon-label"; }
+        GalleryExpanderPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "surfaces-expander"; }
+        GalleryWatermarkPage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "surfaces-watermark"; }
+        GalleryMarqueePage { width: root.page-width; height: root.page-height; visible: root.active-route-id == "surfaces-marquee"; }
+        GalleryForgeWindowPage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == "forge-window";
+            window-maximized: root.maximized;
+            window-pinned: root.pinned;
+            window-rounded: root.rounded-corners;
+            toggle-maximize-requested => { root.maximized = !root.maximized; }
+            minimize-requested => { root.minimized = true; }
+            pin-requested(value) => { root.pinned-requested(value); }
+            corner-style-requested(value) => { root.corner-style-requested(value); }
+            capture-requested => { return root.capture(); }
+            export-capture(image) => { return root.export-capture(image); }
+        }
+        GallerySettingsPage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == "settings";
+            dark-mode: root.dark-mode;
+            pinned: root.pinned;
+            rounded-corners: root.rounded-corners;
+            language: root.language;
+            font-family: root.font-family-name;
+            font-scale: root.font-scale;
+            placement: root.placement;
+            pane-state: root.pane-state;
+            theme-requested(value) => {
+                root.dark-mode = value;
+                Palette.color-scheme = value ? ColorScheme.dark : ColorScheme.light;
+                root.theme-setting-changed(value);
+            }
+            pin-requested(value) => { root.pinned-requested(value); }
+            corner-style-requested(value) => { root.corner-style-requested(value); }
+            open-icons-requested => { root.navigate-requested("theme-icons", []); }
+            language-requested(value) => { root.language-requested(value); }
+            font-family-requested(value) => { root.font-family-requested(value); }
+            font-scale-requested(value) => { root.font-scale-requested(value); }
+            placement-requested(value) => { root.placement-requested(value); }
+            pane-state-requested(value) => { root.pane-state-requested(value); }
+        }
+        GalleryTypographyPage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == "theme-typography";
+            open-settings-requested => { root.open-settings-requested(); }
+        }
+        GalleryIconsPage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == "theme-icons";
+            entries: root.icon-items;
+            query: root.icon-query;
+            total: root.icon-total;
+            page-index: root.icon-page;
+            page-count: root.icon-page-count;
+            search-requested(value) => { root.icon-search-requested(value); }
+            page-requested(value) => { root.icon-page-requested(value); }
+        }
+        lifecycle-page := GalleryLifecyclePage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == "lifecycle";
+            sample-counter: root.sample-counter;
+            route-param-summary: root.route-param-summary;
+        }
+        chart-components := GalleryChartPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        grid-components := GalleryGridPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        inputs-components := GalleryInputsPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        data-components := GalleryDataPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        form-components := GalleryFormPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        navigation-components := GalleryNavigationPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        feedback-components := GalleryFeedbackPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        popups-components := GalleryPopupsPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        theme-components := GalleryThemePages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        other-components := GalleryOtherPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        for pending in root.pending-items : GalleryPendingPage {
+            width: root.page-width; height: root.page-height;
+            visible: root.active-route-id == pending.id;
+            item: pending;
+        }
+    }
+}

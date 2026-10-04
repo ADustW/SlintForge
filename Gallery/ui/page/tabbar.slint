@@ -1,0 +1,30 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTabBar, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：TabBar。
+export component GalleryTabbarPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "TabBar";
+        subtitle: @tr("切换标签，关闭可移除的标签。");
+        example-title: @tr("用法与状态");
+        preview-height: 150px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            ForgeTabBar { items: [{id: "a", title: @tr("概览")}, {id: "b", title: @tr("详情")}, {id: "c", title: @tr("设置")}]; active-id: root.draft == "" ? "a" : root.draft; selected(id) => { root.draft = id; root.status = id; } }
+Text { text: root.status; color: Palette.foreground; }
+        }
+    }
+    
+}

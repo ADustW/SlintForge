@@ -1,0 +1,30 @@
+import { Button, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeQRCode, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：QRCode。
+export component GalleryDataQrcodePage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    in-out property<string> payload: "SlintForge|Rust|C++";
+    sample := GallerySamplePage {
+        title: "QRCode";
+        subtitle: @tr("输入内容生成二维码，空内容显示提示。");
+        example-title: @tr("用法与状态");
+        preview-height: 450px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            HorizontalLayout { spacing: 20px; VerticalLayout { spacing: 12px; LineEdit { text <=> root.payload; } qr := ForgeQRCode { text: root.payload; width: 240px; height: 240px; } Text { text: @tr("模块数：{}", qr.result.modules); color: Palette.foreground; } Button { text: @tr("导出 PNG"); enabled: qr.result.ok; clicked => { root.status = GalleryDemoModels.export-image(qr.result.image); } } } }
+Text { text: root.status; color: Palette.foreground; wrap: word-wrap; }
+        }
+    }
+    
+}

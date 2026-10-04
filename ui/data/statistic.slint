@@ -1,0 +1,17 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export component ForgeStatistic inherits Rectangle {
+    in property<string> title;
+    in property<string> value: "0";
+    in property<string> suffix;
+    in property<float> trend: 0;
+    in property<bool> show-trend: true;
+    preferred-height: layout.preferred-height; min-width: layout.min-width;
+    layout := VerticalLayout {
+        spacing: 8px;
+        Text { text: root.title; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+        Text { text: root.value + " " + root.suffix; color: Palette.foreground; font-size: 32px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
+        if root.show-trend : Text { text: (root.trend >= 0 ? "↑ " : "↓ ") + root.trend + "%"; color: root.trend >= 0 ? #49b981 : #e45c5c; font-size: 13px * ForgeTypography.scale; }
+    }
+}

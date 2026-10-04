@@ -1,0 +1,27 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeIconButton, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+
+export component GalleryTypographyPage inherits Rectangle {
+    callback open-settings-requested();
+    background: Palette.background;
+    GalleryPageFrame {
+        width: parent.width; height: parent.height;
+        title: @tr("字体排版");
+        subtitle: @tr("使用 ForgeTypography 统一控制文字字体和字号比例。");
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        GalleryDemoCard {
+            preview-height: 270px;
+            VerticalLayout {
+                x: 20px; y: Math.max(20px, (parent.height - 232px) / 2); width: parent.width - 40px; height: 232px;
+                spacing: 12px;
+                Text { text: @tr("展示标题 · Display"); color: Palette.foreground; font-size: 30px * ForgeTypography.scale; font-weight: 700; }
+                Text { text: @tr("页面标题 · Title"); color: Palette.foreground; font-size: 22px * ForgeTypography.scale; font-weight: 600; }
+                Text { text: @tr("正文 · Body：你好 SlintForge，Hello World!"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; }
+                Text { text: @tr("辅助文字 · Caption"); color: Palette.foreground; font-size: 12px * ForgeTypography.scale; }
+                ForgeIconButton { label: @tr("前往设置调整字体"); clicked => { root.open-settings-requested(); } }
+            }
+        }
+}
+}

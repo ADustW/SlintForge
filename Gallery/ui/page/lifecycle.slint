@@ -1,0 +1,31 @@
+import { LineEdit, Palette } from "std-widgets.slint";
+import { ForgeCard } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+
+// 内部验收页：切走后实例仍在，采样线程继续运行。
+export component GalleryLifecyclePage inherits Rectangle {
+    in property<int> sample-counter;
+    in property<string> route-param-summary;
+    out property<string> draft: input.text;
+    callback qa-set-draft(string);
+    qa-set-draft(value) => { input.text = value; }
+    background: transparent;
+
+    GalleryPageFrame {
+        width: parent.width;
+        height: parent.height;
+        title: @tr("页面生命周期");
+        subtitle: @tr("内部验收 · 已注册页面常驻，隐藏时宿主继续采样");
+        ForgeCard {
+            title: @tr("验证步骤");
+            height: 188px;
+            VerticalLayout {
+                spacing: 10px;
+                Text { text: @tr("输入文字 → 切到其他页面 → 等待后返回。"); color: Palette.foreground; }
+                input := LineEdit { placeholder-text: @tr("返回后应保留输入内容"); }
+                Text { text: @tr("后台采样计数：{}", root.sample-counter); color: Palette.foreground; }
+                Text { text: @tr("路由参数：{}", root.route-param-summary); color: Palette.foreground; }
+            }
+        }
+    }
+}

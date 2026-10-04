@@ -1,0 +1,4 @@
+export component Example inherits Window {
+    width: 520px; height: 320px;
+    StyledText { text: @markdown("[Slint](https://slint.dev)"); link-clicked(url) => { Platform.open-url(url); } }
+}

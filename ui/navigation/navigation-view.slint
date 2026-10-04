@@ -1,0 +1,115 @@
+import { ForgeTypography } from "../typography/typography.slint";
+import { Palette } from "std-widgets.slint";
+import { ForgeNavPlacement, ForgePaneState, ForgeRouteParam, ForgeNavigationItem } from "../types/navigation.slint";
+import { ForgeNavigationPane } from "internal/navigation-pane.slint";
+import { ForgeTopNavigation } from "internal/top-navigation.slint";
+
+export component ForgeNavigationView inherits Rectangle {
+    in property<[ForgeNavigationItem]> items;
+    in property<[ForgeNavigationItem]> tree-items;
+    in property<[ForgeNavigationItem]> footer-items;
+    in property<string> active-route-id;
+    in property<string> active-top-id;
+    in property<ForgeNavPlacement> placement: ForgeNavPlacement.left;
+    in property<ForgePaneState> pane-state: ForgePaneState.expanded;
+    in property<string> brand: "SlintForge Gallery";
+    in property<string> search-query: "";
+    in property<bool> can-go-back: false;
+    in property<bool> dark-mode: false;
+    in property<bool> show-app-bar: true;
+    callback navigate-requested(string, [ForgeRouteParam]);
+    callback group-toggle-requested(string);
+    callback pane-state-requested(ForgePaneState);
+    callback search-requested(string);
+    callback back-requested();
+    callback theme-toggle-requested();
+    background: Palette.background;
+    property<length> side-width: root.placement == ForgeNavPlacement.top || root.pane-state == ForgePaneState.hidden ? 0px : root.pane-state == ForgePaneState.compact ? 50px : 320px;
+
+    VerticalLayout {
+        width: parent.width;
+        height: parent.height;
+        spacing: 0px;
+        if root.show-app-bar : Rectangle {
+            height: 48px;
+            background: Palette.alternate-background;
+            HorizontalLayout {
+                width: parent.width;
+                height: parent.height;
+                padding-left: 5px;
+                padding-right: 12px;
+                spacing: 4px;
+                Rectangle {
+                    width: 38px; height: 36px;
+                    border-radius: 4px;
+                    background: back-touch.has-hover && root.can-go-back ? Palette.control-background : transparent;
+                    Text { text: "‹"; font-size: 27px * ForgeTypography.scale; color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; opacity: root.can-go-back ? 1 : 0.35; }
+                    back-touch := TouchArea { enabled: root.can-go-back; clicked => { root.back-requested(); } }
+                }
+                Rectangle {
+                    width: 36px; height: 36px;
+                    border-radius: 4px;
+                    background: menu-touch.has-hover ? Palette.control-background : transparent;
+                    Text { text: "☰"; font-size: 16px * ForgeTypography.scale; color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; }
+                    menu-touch := TouchArea { clicked => { root.pane-state-requested(root.pane-state == ForgePaneState.expanded ? ForgePaneState.compact : root.pane-state == ForgePaneState.compact ? ForgePaneState.hidden : ForgePaneState.expanded); } }
+                }
+                Rectangle {
+                    width: 19px; height: 19px; border-radius: 5px; background: Palette.accent-background;
+                    Text { text: "S"; color: Palette.accent-foreground; font-size: 12px * ForgeTypography.scale; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+                }
+                Text { text: root.brand; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; font-weight: 600; vertical-alignment: center; horizontal-stretch: 1; }
+                Rectangle {
+                    width: 38px; height: 36px; border-radius: 4px;
+                    background: theme-touch.has-hover ? Palette.control-background : transparent;
+                    Text { text: root.dark-mode ? "☼" : "☾"; color: Palette.foreground; font-size: 17px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+                    theme-touch := TouchArea { clicked => { root.theme-toggle-requested(); } }
+                }
+                Text { text: "v0.1"; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+            }
+        }
+        if root.placement == ForgeNavPlacement.top && root.pane-state != ForgePaneState.hidden : ForgeTopNavigation {
+            width: parent.width;
+            items: root.tree-items.length > 0 ? root.tree-items : root.items;
+            active-route-id: root.active-route-id;
+            active-top-id: root.active-top-id;
+            pane-state: root.pane-state;
+            navigate-requested(id) => { root.navigate-requested(id, []); }
+        }
+        Rectangle {
+            vertical-stretch: 1;
+            width: parent.width;
+            background: Palette.background;
+            if root.placement == ForgeNavPlacement.left && root.pane-state != ForgePaneState.hidden : ForgeNavigationPane {
+                x: 0px; width: root.side-width; height: parent.height;
+                items: root.items;
+                footer-items: root.footer-items;
+                active-route-id: root.active-route-id;
+                pane-state: root.pane-state;
+                search-query: root.search-query;
+                navigate-requested(id) => { root.navigate-requested(id, []); }
+                group-toggle-requested(id) => { root.group-toggle-requested(id); }
+                search-requested(value) => { root.search-requested(value); }
+                expand-requested => { root.pane-state-requested(ForgePaneState.expanded); }
+            }
+            Rectangle {
+                x: root.placement == ForgeNavPlacement.left ? root.side-width : 0px;
+                width: parent.width - root.side-width;
+                height: parent.height;
+                background: Palette.background;
+                @children
+            }
+            if root.placement == ForgeNavPlacement.right && root.pane-state != ForgePaneState.hidden : ForgeNavigationPane {
+                x: parent.width - root.side-width; width: root.side-width; height: parent.height;
+                items: root.items;
+                footer-items: root.footer-items;
+                active-route-id: root.active-route-id;
+                pane-state: root.pane-state;
+                search-query: root.search-query;
+                navigate-requested(id) => { root.navigate-requested(id, []); }
+                group-toggle-requested(id) => { root.group-toggle-requested(id); }
+                search-requested(value) => { root.search-requested(value); }
+                expand-requested => { root.pane-state-requested(ForgePaneState.expanded); }
+            }
+        }
+    }
+}

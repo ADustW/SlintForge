@@ -1,0 +1,30 @@
+import { Button, Switch, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeDrawer, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：Drawer。
+export component GalleryPopupsDrawerPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => { root.drawer-open = open; }
+    in-out property<bool> drawer-open: false;
+    sample := GallerySamplePage {
+        title: "Drawer";
+        subtitle: @tr("从侧边展开抽屉，关闭后输入会保留。");
+        example-title: @tr("用法与状态");
+        preview-height: 150px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            Button { text: @tr("打开抽屉"); clicked => { root.drawer-open = true; } }
+Text { text: root.status; color: Palette.foreground; }
+        }
+    }
+    ForgeDrawer { open <=> root.drawer-open; title: @tr("抽屉设置"); dismissed => { root.status = @tr("抽屉已关闭"); } VerticalLayout { spacing: 14px; LineEdit { placeholder-text: @tr("输入会保留"); } Switch { text: @tr("启用功能"); } } }
+}

@@ -1,0 +1,37 @@
+import { GalleryInputsStandardButtonPage } from "../page/inputs-standard-button.slint";
+import { GalleryInputsFilledButtonPage } from "../page/inputs-filled-button.slint";
+import { GalleryInputsToggleButtonPage } from "../page/inputs-toggle-button.slint";
+import { GalleryInputsRadioButtonPage } from "../page/inputs-radio-button.slint";
+import { GalleryInputsHyperlinkButtonPage } from "../page/inputs-hyperlink-button.slint";
+import { GalleryInputsCopyableTextPage } from "../page/inputs-copyable-text.slint";
+import { GalleryInputsCheckboxPage } from "../page/inputs-checkbox.slint";
+import { GalleryInputsSliderPage } from "../page/inputs-slider.slint";
+import { GalleryInputsToggleSwitchPage } from "../page/inputs-toggle-switch.slint";
+import { GalleryInputsValidationPage } from "../page/inputs-validation.slint";
+import { GalleryInputsPillButtonPage } from "../page/inputs-pill-button.slint";
+import { GalleryInputsDelayButtonPage } from "../page/inputs-delay-button.slint";
+import { GalleryInputsDropdownButtonPage } from "../page/inputs-dropdown-button.slint";
+import { GalleryInputsProgressButtonPage } from "../page/inputs-progress-button.slint";
+import { GalleryInputsChipPage } from "../page/inputs-chip.slint";
+import { GalleryInputsTagInputPage } from "../page/inputs-tag-input.slint";
+export component GalleryInputsPages inherits Rectangle {
+    in property<string> active-route-id;
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => { if route == "inputs-standard-button" { page-0.prepare-preview(open); } if route == "inputs-filled-button" { page-1.prepare-preview(open); } if route == "inputs-toggle-button" { page-2.prepare-preview(open); } if route == "inputs-radio-button" { page-3.prepare-preview(open); } if route == "inputs-hyperlink-button" { page-4.prepare-preview(open); } if route == "inputs-copyable-text" { page-5.prepare-preview(open); } if route == "inputs-checkbox" { page-6.prepare-preview(open); } if route == "inputs-slider" { page-7.prepare-preview(open); } if route == "inputs-toggle-switch" { page-8.prepare-preview(open); } if route == "inputs-validation" { page-9.prepare-preview(open); } if route == "inputs-pill-button" { page-10.prepare-preview(open); } if route == "inputs-delay-button" { page-11.prepare-preview(open); } if route == "inputs-dropdown-button" { page-12.prepare-preview(open); } if route == "inputs-progress-button" { page-13.prepare-preview(open); } if route == "inputs-chip" { page-14.prepare-preview(open); } if route == "inputs-tag-input" { page-15.prepare-preview(open); } }
+    page-0 := GalleryInputsStandardButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-standard-button"; }
+    page-1 := GalleryInputsFilledButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-filled-button"; }
+    page-2 := GalleryInputsToggleButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-toggle-button"; }
+    page-3 := GalleryInputsRadioButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-radio-button"; }
+    page-4 := GalleryInputsHyperlinkButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-hyperlink-button"; }
+    page-5 := GalleryInputsCopyableTextPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-copyable-text"; }
+    page-6 := GalleryInputsCheckboxPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-checkbox"; }
+    page-7 := GalleryInputsSliderPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-slider"; }
+    page-8 := GalleryInputsToggleSwitchPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-toggle-switch"; }
+    page-9 := GalleryInputsValidationPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-validation"; }
+    page-10 := GalleryInputsPillButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-pill-button"; }
+    page-11 := GalleryInputsDelayButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-delay-button"; }
+    page-12 := GalleryInputsDropdownButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-dropdown-button"; }
+    page-13 := GalleryInputsProgressButtonPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-progress-button"; }
+    page-14 := GalleryInputsChipPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-chip"; }
+    page-15 := GalleryInputsTagInputPage { width: root.width; height: root.height; visible: root.active-route-id == "inputs-tag-input"; }
+}

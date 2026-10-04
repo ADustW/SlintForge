@@ -1,0 +1,36 @@
+import { Button, Palette } from "std-widgets.slint";
+
+export component ForgePagination inherits Rectangle {
+    in property<int> total-items: 0;
+    in property<int> page-size: 10;
+    in property<bool> enabled: true;
+    in-out property<int> current-page: 1;
+    out property<int> page-count: root.total-items <= 0 || root.page-size <= 0 ? 0 : ceil(root.total-items / root.page-size);
+    private property<int> first-visible: Math.max(1, Math.min(root.current-page - 3, root.page-count - 6));
+    callback page-changed(int);
+    public function go-to(page: int) {
+        if root.enabled {
+            root.current-page = root.page-count == 0 ? 0 : Math.max(1, Math.min(root.page-count, page));
+            root.page-changed(root.current-page);
+        }
+    }
+    public function normalize() { root.current-page = root.page-count == 0 ? 0 : Math.max(1, Math.min(root.page-count, root.current-page)); }
+    init => { root.normalize(); }
+    changed page-count => { root.normalize(); }
+    changed current-page => { root.normalize(); }
+    min-width: layout.min-width; preferred-height: layout.preferred-height;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    layout := HorizontalLayout {
+        spacing: 4px;
+        Button { text: "«"; accessible-label: @tr("首页"); enabled: root.enabled && root.current-page > 1; clicked => { root.go-to(1); } }
+        Button { text: "‹"; accessible-label: @tr("上一页"); enabled: root.enabled && root.current-page > 1; clicked => { root.go-to(root.current-page - 1); } }
+        for index in Math.min(7, root.page-count) : Button {
+            text: "\{root.first-visible + index}"; checkable: true; checked: root.current-page == root.first-visible + index;
+            enabled: root.enabled;
+            clicked => { root.go-to(root.first-visible + index); }
+        }
+        Text { text: root.page-count == 0 ? "0 / 0" : "\{root.current-page} / \{root.page-count}"; color: Palette.foreground; vertical-alignment: center; }
+        Button { text: "›"; accessible-label: @tr("下一页"); enabled: root.enabled && root.current-page < root.page-count; clicked => { root.go-to(root.current-page + 1); } }
+        Button { text: "»"; accessible-label: @tr("末页"); enabled: root.enabled && root.current-page < root.page-count; clicked => { root.go-to(root.page-count); } }
+    }
+}

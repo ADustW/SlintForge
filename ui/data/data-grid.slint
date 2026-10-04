@@ -1,0 +1,426 @@
+import { Palette, ListView, CheckBox, Button, LineEdit } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeGridSelectionMode, ForgeGridCell, ForgeGridColumn, ForgeGridRow,
+    ForgeGridViewRow, ForgeGridViewColumn, ForgeGridScene, ForgeGridServices } from "../types/grids.slint";
+
+// 内部单元格共享显示、树展开与编辑逻辑，不作为公共 API 导出。
+component ForgeGridCellView inherits Rectangle {
+    in property<ForgeGridViewRow> item;
+    in property<ForgeGridViewColumn> column;
+    in property<bool> tree-cell;
+    in property<bool> can-expand;
+    in property<bool> enabled;
+    in property<bool> editing;
+    in-out property<string> edit-text;
+    callback pressed(bool, bool);
+    callback activated();
+    callback context-requested();
+    callback toggle-expanded();
+    callback commit();
+    callback cancel();
+    property<length> inset: root.tree-cell ? Math.max(0px, Math.min(12px + root.item.depth * 20px, root.width - 40px)) : 10px;
+    clip: true;
+    opacity: root.item.disabled ? 0.45 : 1;
+    Text {
+        x: root.inset + (root.tree-cell ? 28px : 0px);
+        width: Math.max(0px, root.width - self.x - 10px); height: parent.height;
+        text: root.item.cells[root.column.source-index].text;
+        color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+        horizontal-alignment: root.column.column.numeric ? right : left;
+        vertical-alignment: center; overflow: elide;
+        visible: !root.editing;
+    }
+    touch := TouchArea {
+        enabled: root.enabled && !root.item.disabled && !root.editing;
+        pointer-event(event) => {
+            if event.kind == down && event.button == left { root.pressed(event.modifiers.control || event.modifiers.meta, event.modifiers.shift); }
+            if event.kind == down && event.button == right { root.context-requested(); }
+        }
+        double-clicked => { root.activated(); }
+    }
+    if root.tree-cell && root.item.has-children && !root.editing : Button {
+        x: root.inset; y: (parent.height - self.height) / 2;
+        width: 24px; height: 26px;
+        text: root.item.expanded ? "−" : "+";
+        enabled: root.enabled && !root.item.disabled && root.can-expand;
+        accessible-label: root.item.expanded ? @tr("折叠行") : @tr("展开行");
+        clicked => { root.toggle-expanded(); }
+    }
+    // 编辑器随虚拟化的单元格保留，切换编辑列时再设置焦点。
+    editor := LineEdit {
+        visible: root.editing; enabled: root.enabled && root.editing;
+        x: 4px; y: 3px; width: Math.max(0px, parent.width - 8px); height: parent.height - 6px;
+        text <=> root.edit-text;
+        init => { if root.editing { self.focus(); } }
+        accepted => { root.commit(); }
+        key-pressed(event) => { if event.text == Key.Escape { root.cancel(); return accept; } return reject; }
+    }
+    changed editing => { if root.editing { editor.focus(); } }
+    Rectangle { x: parent.width - 1px; width: 1px; background: Palette.border; opacity: 0.35; }
+}
+
+// 原生 ListView 负责虚拟化和滚动；排序与行操作由 SDK 服务提供。
+// 表头使用稳定的源列模型，避免调整列宽时销毁正在抓取鼠标的实例。
+export component ForgeDataGrid inherits Rectangle {
+    in-out property<[ForgeGridColumn]> columns;
+    in-out property<[ForgeGridRow]> rows;
+    in property<bool> tree: false;
+    in property<int> tree-column: 0;
+    in property<ForgeGridSelectionMode> selection-mode: multiple;
+    in property<bool> enabled: true;
+    in property<bool> editable: true;
+    in property<bool> show-row-numbers: true;
+    in property<bool> alternating-rows: true;
+    in property<length> row-height: 36px * ForgeTypography.scale;
+    in property<length> header-height: 40px * ForgeTypography.scale;
+    in-out property<int> sort-column: -1;
+    in-out property<bool> sort-descending: false;
+    in-out property<string> filter: "";
+    in-out property<string> current-row-id: "";
+    out property<int> current-row: ForgeGridServices.connected ? ForgeGridServices.find-row(root.scene.rows, root.current-row-id) : -1;
+    out property<int> visible-row-count: root.scene.rows.length;
+    out property<int> selected-row-count: root.scene.selected-count;
+    out property<ForgeGridScene> scene: ForgeGridServices.connected
+        ? ForgeGridServices.prepare(root.rows, root.columns, root.tree, root.sort-column, root.sort-descending, root.filter, root.revision)
+        : {status: 3, rows: [], columns: [], total-width: 0, frozen-width: 0, selected-count: 0, all-visible-selected: false};
+    out property<bool> editing: root.edit-row-id != "";
+    out property<string> edit-message: root.edit-error;
+    out property<length> scroll-x <=> list.content-x;
+    out property<length> scroll-y <=> list.content-y;
+    callback row-clicked(string);
+    callback row-activated(string);
+    callback row-context-requested(string);
+    callback selection-changed();
+    callback sort-changed(string, bool);
+    callback column-resized(string, float);
+    callback cell-edited(string, string, string);
+    callback expansion-changed(string, bool);
+    callback rows-removed(int);
+    private property<int> revision: 0;
+    private property<bool> filtering: ForgeGridServices.connected && ForgeGridServices.filter-active(root.filter);
+    private property<string> anchor-id: "";
+    private property<string> edit-row-id: "";
+    private property<int> edit-column: -1;
+    private property<string> edit-column-id: "";
+    private property<string> edit-text: "";
+    private property<string> edit-error: "";
+    private property<length> unit: 1px * ForgeTypography.scale;
+    private property<length> selector-width: (root.selection-mode == multiple ? 40 : 0) * root.unit;
+    private property<length> number-width: (root.show-row-numbers ? 44 : 0) * root.unit;
+    private property<length> leading-width: root.selector-width + root.number-width;
+    private property<length> actual-row-height: Math.max(28px, root.row-height);
+    private property<length> actual-header-height: Math.max(28px, root.header-height);
+    min-width: 240px; min-height: 160px; preferred-width: 640px; preferred-height: 360px;
+    background: Palette.background; border-width: 1px; border-color: Palette.border; border-radius: 4px;
+    clip: true; forward-focus: keyboard;
+    accessible-role: table;
+    accessible-item-count: root.visible-row-count;
+
+    public function refresh() { root.revision += 1; }
+    public function cancel-edit() { root.edit-row-id = ""; root.edit-column = -1; root.edit-column-id = ""; root.edit-error = ""; }
+    public function focus-row(index: int) {
+        if !root.enabled || index < 0 || index >= root.scene.rows.length || root.scene.rows[index].disabled { return; }
+        root.cancel-edit(); root.current-row-id = root.scene.rows[index].id; keyboard.focus(); root.scroll-to-row(index);
+    }
+    public function select-row(index: int, toggle: bool, range: bool) {
+        if !root.enabled || index < 0 || index >= root.scene.rows.length || root.scene.rows[index].disabled { return; }
+        root.focus-row(index);
+        if root.selection-mode == none { return; }
+        let anchor = ForgeGridServices.find-row(root.scene.rows, root.anchor-id);
+        let operation = root.selection-mode == single ? 0 : range ? (toggle ? 3 : 2) : toggle ? 1 : 0;
+        let source = root.scene.rows[index].source-index;
+        let anchor-source = anchor >= 0 ? root.scene.rows[anchor].source-index : source;
+        root.rows = ForgeGridServices.update(root.rows, root.scene.rows, operation, source, anchor-source);
+        if !range { root.anchor-id = root.current-row-id; }
+        root.selection-changed();
+    }
+    public function select-all() {
+        if root.enabled && root.selection-mode == multiple && ForgeGridServices.connected {
+            root.rows = ForgeGridServices.update(root.rows, root.scene.rows, 12, -1, -1);
+            root.selection-changed();
+        }
+    }
+    public function toggle-visible-selection() {
+        if root.enabled && root.selection-mode == multiple && ForgeGridServices.connected {
+            root.rows = ForgeGridServices.update(root.rows, root.scene.rows, 4, -1, -1); root.selection-changed();
+        }
+    }
+    public function clear-selection() {
+        if root.enabled && ForgeGridServices.connected {
+            root.rows = ForgeGridServices.update(root.rows, root.scene.rows, 5, -1, -1);
+            root.anchor-id = ""; root.selection-changed();
+        }
+    }
+    public function delete-selected() {
+        if root.enabled && ForgeGridServices.connected {
+            root.cancel-edit();
+            let count = root.rows.length;
+            root.rows = ForgeGridServices.update(root.rows, root.scene.rows, 11, root.tree ? 1 : 0, -1);
+            root.rows-removed(count - root.rows.length); root.selection-changed();
+        }
+    }
+    public function sort-by(index: int) {
+        if !root.enabled || index < 0 || index >= root.columns.length || !root.columns[index].sortable { return; }
+        root.cancel-edit();
+        root.sort-descending = root.sort-column == index ? !root.sort-descending : false;
+        root.sort-column = index;
+        root.sort-changed(root.columns[index].id, root.sort-descending);
+        list.content-y = 0px;
+    }
+    public function resize-column(index: int, width: float) {
+        if !root.enabled || index < 0 || index >= root.columns.length { return; }
+        let minimum = Math.min(2048, Math.max(32, root.columns[index].min-width > 0 ? root.columns[index].min-width : 40));
+        let maximum = Math.max(minimum, Math.min(4096, root.columns[index].max-width > 0 ? root.columns[index].max-width : 4096));
+        root.columns[index].width = Math.max(minimum, Math.min(maximum, width));
+        root.refresh();
+        root.column-resized(root.columns[index].id, root.columns[index].width);
+    }
+    public function scroll-to-row(index: int) {
+        if index < 0 || index >= root.scene.rows.length { return; }
+        let y = index * root.actual-row-height;
+        if y + list.content-y < 0px { list.content-y = -y; }
+        if y + root.actual-row-height + list.content-y > list.visible-height {
+            list.content-y = Math.min(0px, list.visible-height - y - root.actual-row-height);
+        }
+    }
+    public function toggle-row(index: int) {
+        if !root.enabled || !root.tree || root.filtering || index < 0 || index >= root.scene.rows.length ||
+            root.scene.rows[index].disabled || !root.scene.rows[index].has-children { return; }
+        root.cancel-edit();
+        let id = root.scene.rows[index].id;
+        let expanded = !root.scene.rows[index].expanded;
+        root.rows = ForgeGridServices.update(root.rows, root.scene.rows, 6, root.scene.rows[index].source-index, -1);
+        root.expansion-changed(id, expanded);
+    }
+    public function expand-all(expanded: bool) {
+        if root.enabled && root.tree && ForgeGridServices.connected {
+            root.cancel-edit();
+            root.rows = ForgeGridServices.update(root.rows, root.scene.rows, expanded ? 9 : 10, -1, -1);
+        }
+    }
+    public function begin-edit(index: int, column: int) {
+        if !root.enabled || !root.editable || index < 0 || index >= root.scene.rows.length ||
+            column < 0 || column >= root.columns.length || !root.columns[column].editable || root.columns[column].hidden ||
+            root.scene.rows[index].disabled { return; }
+        root.current-row-id = root.scene.rows[index].id;
+        root.scroll-to-row(index);
+        let layout-column = ForgeGridServices.find-column(root.scene.columns, column);
+        if layout-column >= 0 && !root.scene.columns[layout-column].column.frozen {
+            let left = root.leading-width + root.scene.columns[layout-column].x * root.unit;
+            let width = root.scene.columns[layout-column].width * root.unit;
+            let fixed = root.leading-width + root.scene.frozen-width * root.unit;
+            if left + list.content-x < fixed || width > list.visible-width - fixed { list.content-x = Math.min(0px, fixed - left); }
+            if width <= list.visible-width - fixed && left + width + list.content-x > list.visible-width { list.content-x = Math.min(0px, list.visible-width - left - width); }
+        }
+        root.edit-column = column;
+        root.edit-column-id = root.columns[column].id;
+        root.edit-text = root.scene.rows[index].cells[column].text;
+        root.edit-row-id = root.current-row-id; root.edit-error = "";
+    }
+    public function commit-edit() {
+        if !root.enabled || !root.editing { return; }
+        let index = ForgeGridServices.find-row(root.scene.rows, root.edit-row-id);
+        if index < 0 { root.cancel-edit(); return; }
+        let result = ForgeGridServices.commit(root.rows, root.columns, root.scene.rows[index].source-index, root.edit-column, root.edit-text);
+        if result.status != 0 { root.edit-error = result.status == 2 ? @tr("请输入有限的有效数字。") : @tr("此单元格无法编辑。"); return; }
+        let id = root.edit-row-id; let column = root.columns[root.edit-column].id; let text = root.edit-text;
+        root.cancel-edit(); root.rows = result.rows; keyboard.focus(); root.cell-edited(id, column, text);
+    }
+    changed enabled => { if !root.enabled { root.cancel-edit(); } }
+    changed filter => { root.cancel-edit(); list.content-y = 0px; }
+    changed columns => {
+        if root.editing && (root.edit-column < 0 || root.edit-column >= root.columns.length ||
+            root.columns[root.edit-column].id != root.edit-column-id || root.columns[root.edit-column].hidden ||
+            !root.columns[root.edit-column].editable) { root.cancel-edit(); }
+    }
+    changed rows => {
+        if root.editing {
+            let index = ForgeGridServices.find-row(root.scene.rows, root.edit-row-id);
+            if index < 0 || root.scene.rows[index].disabled { root.cancel-edit(); }
+        }
+    }
+    changed editable => { if !root.editable { root.cancel-edit(); } }
+
+    keyboard := FocusScope {
+        width: 0px; height: 0px; enabled: root.enabled;
+        key-pressed(event) => {
+            
+            if root.editing || !ForgeGridServices.connected { return reject; }
+            if (event.modifiers.control || event.modifiers.meta) && (event.text == "a" || event.text == "A") { root.select-all(); return accept; }
+            if event.text == Key.Escape { root.clear-selection(); return accept; }
+            if event.text == Key.Space && root.current-row >= 0 { root.select-row(root.current-row, true, false); return accept; }
+            if event.text == Key.Return && root.current-row >= 0 { root.row-activated(root.current-row-id); return accept; }
+            if event.text == Key.F2 && root.current-row >= 0 { root.begin-edit(root.current-row, root.tree-column); return accept; }
+            if (event.text == Key.LeftArrow || event.text == Key.RightArrow) && root.tree && root.current-row >= 0 {
+                if root.scene.rows[root.current-row].has-children && root.scene.rows[root.current-row].expanded != (event.text == Key.RightArrow) { root.toggle-row(root.current-row); }
+                else if event.text == Key.LeftArrow {
+                    let parent = ForgeGridServices.find-row(root.scene.rows, root.scene.rows[root.current-row].parent-id);
+                    if parent >= 0 { root.select-row(parent, false, false); }
+                } else if root.current-row + 1 < root.scene.rows.length && root.scene.rows[root.current-row + 1].parent-id == root.current-row-id {
+                    root.select-row(root.current-row + 1, false, false);
+                }
+                return accept;
+            }
+            let delta = event.text == Key.UpArrow ? -1 : event.text == Key.DownArrow ? 1 :
+                event.text == Key.PageUp ? -Math.max(1, floor(list.visible-height / root.actual-row-height)) :
+                event.text == Key.PageDown ? Math.max(1, floor(list.visible-height / root.actual-row-height)) : 0;
+            let index = event.text == Key.Home ? ForgeGridServices.step(root.scene.rows, -1, 1) :
+                event.text == Key.End ? ForgeGridServices.step(root.scene.rows, -1, -1) :
+                delta != 0 ? ForgeGridServices.step(root.scene.rows, root.current-row, delta) : -1;
+            if index >= 0 {
+                if (event.modifiers.control || event.modifiers.meta) && !event.modifiers.shift { root.focus-row(index); }
+                else { root.select-row(index, event.modifiers.control || event.modifiers.meta, event.modifiers.shift); }
+                return accept;
+            }
+            return reject;
+        }
+    }
+    header := Rectangle {
+        x: 1px; y: 1px; width: Math.max(0px, root.width - 2px); height: root.actual-header-height;
+        background: Palette.control-background; clip: true;
+        for column[column-index] in root.columns : Rectangle {
+                private property<int> layout-index: ForgeGridServices.connected ? ForgeGridServices.find-column(root.scene.columns, column-index) : -1;
+                private property<ForgeGridViewColumn> layout-column: root.scene.columns[self.layout-index];
+            x: root.leading-width + self.layout-column.x * root.unit + (column.frozen ? 0px : list.content-x);
+            width: self.layout-column.width * root.unit; height: parent.height;
+            background: Palette.control-background;
+            visible: self.layout-index >= 0 && !column.frozen;
+            Text {
+                x: 10px; width: parent.width - 30px; height: parent.height;
+                text: column.title; color: Palette.foreground; font-weight: 600;
+                font-size: 13px * ForgeTypography.scale; vertical-alignment: center; overflow: elide;
+            }
+            Text {
+                x: parent.width - 24px; width: 18px; height: parent.height;
+                text: root.sort-column == column-index ? (root.sort-descending ? "↓" : "↑") : "";
+                color: Palette.accent-background; vertical-alignment: center; horizontal-alignment: center;
+            }
+            TouchArea { enabled: root.enabled && column.sortable; clicked => { root.sort-by(column-index); } }
+            resize := TouchArea {
+                x: parent.width - 6px; y: 0px; width: 6px; height: parent.height; mouse-cursor: ew-resize; enabled: root.enabled;
+                private property<length> origin;
+                private property<float> initial-width; private property<bool> dragging: false;
+                pointer-event(event) => {
+                    if event.kind == up { self.dragging = false; }
+                    if event.kind == down && event.button == left {
+                        self.origin = self.mouse-x + self.absolute-position.x; self.initial-width = parent.width / root.unit; self.dragging = true;
+                    }
+                }
+                moved => { if self.pressed && self.dragging { root.resize-column(column-index, self.initial-width + (self.mouse-x + self.absolute-position.x - self.origin) / root.unit); } }
+            }
+            Rectangle { x: parent.width - 1px; width: 1px; background: Palette.border; }
+        }
+        // 固定列覆盖滚动列，保证列头与可视行使用相同坐标。
+        Rectangle {
+            x: 0px; y: 0px;
+            width: root.leading-width + root.scene.frozen-width * root.unit; height: parent.height;
+            background: Palette.control-background; clip: true;
+            if root.selection-mode == multiple : CheckBox {
+                x: 8px; y: (parent.height - self.height) / 2; width: 26px;
+                checked: root.scene.all-visible-selected; enabled: root.enabled && root.scene.rows.length > 0;
+                accessible-label: @tr("选择全部可见行"); toggled => { root.toggle-visible-selection(); }
+            }
+            if root.show-row-numbers : Text {
+                x: root.selector-width; width: root.number-width; height: parent.height; text: "#";
+                color: Palette.foreground; vertical-alignment: center; horizontal-alignment: center;
+            }
+            for column[column-index] in root.columns : Rectangle {
+                private property<int> layout-index: ForgeGridServices.connected ? ForgeGridServices.find-column(root.scene.columns, column-index) : -1;
+                private property<ForgeGridViewColumn> layout-column: root.scene.columns[self.layout-index];
+                visible: self.layout-index >= 0 && column.frozen; x: root.leading-width + self.layout-column.x * root.unit;
+                width: self.layout-column.width * root.unit; height: parent.height; background: Palette.control-background;
+                Text { x: 10px; width: parent.width - 30px; height: parent.height; text: column.title;
+                    color: Palette.foreground; font-weight: 600; font-size: 13px * ForgeTypography.scale; vertical-alignment: center; overflow: elide; }
+                Text { x: parent.width - 24px; width: 18px; height: parent.height;
+                    text: root.sort-column == column-index ? (root.sort-descending ? "↓" : "↑") : "";
+                    color: Palette.accent-background; vertical-alignment: center; horizontal-alignment: center; }
+                TouchArea { enabled: root.enabled && column.sortable; clicked => { root.sort-by(column-index); } }
+                TouchArea {
+                    x: parent.width - 6px; y: 0px; width: 6px; height: parent.height; mouse-cursor: ew-resize; enabled: root.enabled;
+                    private property<length> origin; private property<float> initial-width; private property<bool> dragging: false;
+                    pointer-event(event) => { if event.kind == up { self.dragging = false; }
+                    if event.kind == down && event.button == left { self.origin = self.mouse-x + self.absolute-position.x; self.initial-width = parent.width / root.unit; self.dragging = true; } }
+                    moved => { if self.pressed && self.dragging { root.resize-column(column-index, self.initial-width + (self.mouse-x + self.absolute-position.x - self.origin) / root.unit); } }
+                }
+                Rectangle { x: parent.width - 1px; width: 1px; background: Palette.border; }
+            }
+        }
+        Rectangle { y: parent.height - 1px; height: 1px; background: Palette.border; }
+    }
+    list := ListView {
+        x: 1px; y: root.actual-header-height + 1px;
+        width: Math.max(0px, root.width - 2px); height: Math.max(0px, root.height - self.y - (root.edit-message != "" ? 34px : 1px));
+        content-width: Math.max(self.visible-width, root.leading-width + root.scene.total-width * root.unit);
+        enabled: root.enabled; has-focus: keyboard.has-focus;
+        for index in root.scene.rows.length : Rectangle {
+            private property<ForgeGridViewRow> item: root.scene.rows[index];
+            width: list.content-width; height: root.actual-row-height;
+            property<color> row-background: item.selected ? Palette.accent-background.with-alpha(0.18)
+                : root.alternating-rows && mod(index, 2) == 0 ? Palette.alternate-background : Palette.background;
+            background: self.row-background;
+            accessible-role: list-item; accessible-label: item.cells[0].text;
+            for column[column-index] in root.columns : ForgeGridCellView {
+                    private property<int> layout-index: ForgeGridServices.connected ? ForgeGridServices.find-column(root.scene.columns, column-index) : -1;
+                    private property<ForgeGridViewColumn> layout-column: root.scene.columns[self.layout-index];
+                visible: self.layout-index >= 0 && !column.frozen;
+                x: root.leading-width + self.layout-column.x * root.unit; width: self.layout-column.width * root.unit; height: parent.height;
+                item: item; column: self.layout-column; enabled: root.enabled;
+                tree-cell: root.tree && column-index == root.tree-column; can-expand: !root.filtering;
+                editing: self.visible && root.edit-row-id == item.id && root.edit-column == column-index;
+                edit-text <=> root.edit-text;
+                pressed(toggle, range) => { root.select-row(index, toggle, range); root.row-clicked(item.id); }
+                activated => { root.begin-edit(index, column-index); root.row-activated(item.id); }
+                context-requested => { root.row-context-requested(item.id); }
+                toggle-expanded => { root.toggle-row(index); }
+                commit => { root.commit-edit(); } cancel => { root.cancel-edit(); keyboard.focus(); }
+            }
+            Rectangle {
+                x: -list.content-x; width: root.leading-width + root.scene.frozen-width * root.unit; height: parent.height;
+                background: parent.row-background; clip: true;
+                if root.selection-mode == multiple : CheckBox {
+                    x: 8px; y: (parent.height - self.height) / 2; width: 26px;
+                    checked: item.selected; enabled: root.enabled && !item.disabled;
+                    accessible-label: @tr("选择行 {} ", index + 1); toggled => { root.select-row(index, true, false); }
+                }
+                if root.show-row-numbers : Text {
+                    x: root.selector-width; width: root.number-width; height: parent.height;
+                    text: "\{index + 1}"; color: Palette.foreground; opacity: item.disabled ? 0.45 : 0.65;
+                    vertical-alignment: center; horizontal-alignment: center; font-size: 12px * ForgeTypography.scale;
+                }
+                for column[column-index] in root.columns : ForgeGridCellView {
+                    private property<int> layout-index: ForgeGridServices.connected ? ForgeGridServices.find-column(root.scene.columns, column-index) : -1;
+                    private property<ForgeGridViewColumn> layout-column: root.scene.columns[self.layout-index];
+                    visible: self.layout-index >= 0 && column.frozen;
+                    x: root.leading-width + self.layout-column.x * root.unit; width: self.layout-column.width * root.unit; height: parent.height;
+                    item: item; column: self.layout-column; enabled: root.enabled;
+                    tree-cell: root.tree && column-index == root.tree-column; can-expand: !root.filtering;
+                    editing: self.visible && root.edit-row-id == item.id && root.edit-column == column-index;
+                    edit-text <=> root.edit-text;
+                    pressed(toggle, range) => { root.select-row(index, toggle, range); root.row-clicked(item.id); }
+                    activated => { root.begin-edit(index, column-index); root.row-activated(item.id); }
+                    context-requested => { root.row-context-requested(item.id); }
+                    toggle-expanded => { root.toggle-row(index); }
+                    commit => { root.commit-edit(); } cancel => { root.cancel-edit(); keyboard.focus(); }
+                }
+            }
+            Rectangle { y: parent.height - 1px; height: 1px; background: Palette.border; opacity: 0.35; }
+            Rectangle {
+                x: -list.content-x; width: list.visible-width; height: parent.height; background: transparent;
+                border-width: root.current-row-id == item.id && keyboard.has-focus ? 1px : 0px;
+                border-color: Palette.accent-background;
+            }
+        }
+    }
+    if root.scene.status != 0 : Text {
+        x: 16px; y: root.actual-header-height + 16px; width: Math.max(0px, root.width - 32px); height: root.height - self.y - 16px;
+        text: root.scene.status == 3 ? @tr("表格服务尚未绑定。") : root.scene.status == 2 ? @tr("行或列标识重复、父节点缺失或树关系存在循环。")
+            : root.filtering ? @tr("没有匹配的行。") : @tr("暂无数据。");
+        color: Palette.foreground; wrap: word-wrap; horizontal-alignment: center; vertical-alignment: center;
+    }
+    if root.edit-message != "" : Text {
+        x: 10px; y: root.height - 32px; width: root.width - 20px; height: 28px;
+        text: root.edit-message; color: #d83b01; font-size: 12px * ForgeTypography.scale; vertical-alignment: center;
+    }
+}
+
+export component ForgeTreeDataGrid inherits ForgeDataGrid { tree: true; }

@@ -1,0 +1,42 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeIcon } from "../icons/icon.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export component ForgeIconLabel inherits Rectangle {
+    in property<string> icon;
+    in property<string> label;
+    in property<string> description;
+    in property<bool> vertical: false;
+    background: transparent;
+    GridLayout {
+        padding: 6px;
+        spacing: 8px;
+        ForgeIcon {
+            row: 0; col: 0;
+            rowspan: root.vertical || root.description == "" ? 1 : 2;
+            width: 30px * ForgeTypography.scale;
+            height: 30px * ForgeTypography.scale;
+            horizontal-stretch: 0; vertical-stretch: 0;
+            glyph: root.icon;
+            color: Palette.accent-background;
+            font-size: 24px * ForgeTypography.scale;
+        }
+        Text {
+            row: root.vertical ? 1 : 0; col: root.vertical ? 0 : 1;
+            text: root.label; color: Palette.foreground;
+            font-size: 14px * ForgeTypography.scale; font-weight: 600;
+            horizontal-alignment: root.vertical ? center : left;
+            vertical-alignment: center;
+            vertical-stretch: 0;
+            wrap: word-wrap;
+        }
+        if root.description != "" : Text {
+            row: root.vertical ? 2 : 1; col: root.vertical ? 0 : 1;
+            text: root.description; color: Palette.foreground;
+            opacity: 0.7; font-size: 11px * ForgeTypography.scale;
+            horizontal-alignment: root.vertical ? center : left;
+            vertical-stretch: 0;
+            wrap: word-wrap;
+        }
+    }
+}

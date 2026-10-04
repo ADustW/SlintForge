@@ -1,0 +1,29 @@
+import { Button, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// Slint 原生示例：ToolTip。
+export component GalleryPopupsTooltipPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "ToolTip";
+        subtitle: @tr("将鼠标停在按钮上查看提示。");
+        example-title: @tr("用法与状态");
+        preview-height: 100px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            Button { text: @tr("悬停查看提示"); Tooltip { Text { text: @tr("Slint 原生 Tooltip，支持自定义内容。"); color: Palette.foreground; } } }
+        }
+    }
+    
+}

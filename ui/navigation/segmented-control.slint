@@ -1,0 +1,20 @@
+import { Button } from "std-widgets.slint";
+import { ForgeChoiceItem } from "../types/widgets.slint";
+
+export component ForgeSegmentedControl inherits Rectangle {
+    in property<[ForgeChoiceItem]> items;
+    in-out property<string> selected-id;
+    in property<bool> enabled: true;
+    callback selected(string);
+    preferred-height: layout.preferred-height;
+    min-width: layout.min-width;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    layout := HorizontalLayout {
+        spacing: 2px;
+        for item in root.items : Button {
+            text: item.label; checkable: true; checked: item.id == root.selected-id;
+            enabled: item.enabled && root.enabled;
+            clicked => { root.selected-id = item.id; root.selected(item.id); }
+        }
+    }
+}

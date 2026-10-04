@@ -1,0 +1,1820 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑，Enter 确认，Esc 取消。"
+msgstr "Ctrl-click toggles selection; Shift-click selects a range. Use arrows to move, F2 to edit, Enter to confirm, and Esc to cancel."
+
+msgid "Gallery 布局预览"
+msgstr "Gallery layout preview"
+
+msgid "Gallery 软件图标"
+msgstr "Gallery app icon"
+
+msgid "Microsoft Fluent System Icons · Regular，支持直接传入字形码位。"
+msgstr "Microsoft Fluent System Icons · Regular; glyph code points can be passed directly."
+
+msgid "Rust 与 C++ 使用同一套界面"
+msgstr "Rust and C++ share the same UI"
+
+msgid "Slint 原生 Tooltip，支持自定义内容。"
+msgstr "Native Slint Tooltip with custom content."
+
+msgid "Slint 原生多窗口"
+msgstr "Native Slint windows"
+
+msgid "Slint 原生对话窗口"
+msgstr "Native Slint dialog window"
+
+msgid "SlintForge Gallery"
+msgstr "SlintForge Gallery"
+
+msgid "SlintForge Gallery · Rust / C++ 共用 Slint UI"
+msgstr "SlintForge Gallery · shared Slint UI for Rust and C++"
+
+msgid "SlintForge 组件与示例应用。"
+msgstr "SlintForge components and sample application."
+
+msgid "SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例。"
+msgstr "SlintForge notice: layout and surface components are now available in Gallery."
+
+msgid "X π 刻度"
+msgstr "X pi ticks"
+
+msgid "X 固定 10 秒"
+msgstr "X fixed 10 seconds"
+
+msgid "X 持续时间"
+msgstr "X duration"
+
+msgid "X 数值刻度"
+msgstr "X numeric ticks"
+
+msgid "X 文本刻度"
+msgstr "X text ticks"
+
+msgid "X 无限历史"
+msgstr "X unlimited history"
+
+msgid "X 日期时间"
+msgstr "X date and time"
+
+msgid "X 自动适配"
+msgstr "X auto fit"
+
+msgid "{} 列 · {}"
+msgstr "{} columns · {}"
+
+msgid "{} 属于表格组件，继续按要求暂缓。"
+msgstr "{} is a table component and remains deferred."
+
+msgid "{} 星"
+msgstr "{} stars"
+
+msgid "一套 Slint 组件，同时服务 Rust 与 C++ 应用"
+msgstr "One Slint component set for both Rust and C++ apps"
+
+msgid "一月"
+msgstr "January"
+
+msgid "七月"
+msgstr "July"
+
+msgid "三月"
+msgstr "March"
+
+msgid "上一步"
+msgstr "Previous"
+
+msgid "上一页"
+msgstr "Previous"
+
+msgid "上方内容"
+msgstr "Upper content"
+
+msgid "下一步"
+msgstr "Next"
+
+msgid "下一页"
+msgstr "Next"
+
+msgid "下方内容"
+msgstr "Lower content"
+
+msgid "不小于 560px"
+msgstr "At least 560 px"
+
+msgid "专业二维绘图"
+msgstr "Professional 2D plot"
+
+msgid "专业绘图、交互与导出"
+msgstr "Professional plots, interaction and export"
+
+msgid "中央"
+msgstr "Center"
+
+msgid "中点"
+msgstr "Midpoint"
+
+msgid "中间阶梯"
+msgstr "Centered steps"
+
+msgid "主色 · 背景 · 控件背景 · 前景"
+msgstr "Accent · Background · Control background · Foreground"
+
+msgid "主色按钮用于强调当前操作。"
+msgstr "Primary buttons emphasize the current action."
+
+msgid "主色胶囊"
+msgstr "Primary pill"
+
+msgid "主题模式"
+msgstr "Theme mode"
+
+msgid "二月"
+msgstr "February"
+
+msgid "二维场"
+msgstr "2D field"
+
+msgid "二维码服务未绑定"
+msgstr "QR code service is not connected"
+
+msgid "二维色图"
+msgstr "Color map"
+
+msgid "五月"
+msgstr "May"
+
+msgid "交互示例"
+msgstr "Interactive example"
+
+msgid "仅图标"
+msgstr "Icons only"
+
+msgid "仅散点"
+msgstr "Scatter only"
+
+msgid "仅文字"
+msgstr "Text only"
+
+msgid "仅显示与当前工作相关的通知。"
+msgstr "Show only notifications relevant to the current work."
+
+msgid "从侧边展开抽屉，关闭后输入会保留。"
+msgstr "Open a side drawer and preserve input after closing."
+
+msgid "从按钮下拉菜单中选择操作。"
+msgstr "Choose an action from a button menu."
+
+msgid "价格"
+msgstr "Price"
+
+msgid "位置"
+msgstr "Position"
+
+msgid "位置表示两个数值，圆的大小表示第三个数值。"
+msgstr "Position represents two values; bubble size represents a third."
+
+msgid "使用 ForgeTypography 统一控制文字字体和字号比例。"
+msgstr "Use ForgeTypography to control text font and scale consistently."
+
+msgid "使用按钮或键盘调整整数。"
+msgstr "Adjust an integer with buttons or the keyboard."
+
+msgid "使用鼠标和键盘选择、复制文本。"
+msgstr "Select and copy text with the mouse and keyboard."
+
+msgid "保存"
+msgstr "Save"
+
+msgid "保护阈值"
+msgstr "Protection threshold"
+
+msgid "信息"
+msgstr "Information"
+
+msgid "修改输入后获取截图"
+msgstr "Edit the input before capturing"
+
+msgid "光标复位"
+msgstr "Reset cursors"
+
+msgid "全部分类"
+msgstr "All categories"
+
+msgid "全部展开"
+msgstr "Expand all"
+
+msgid "全部折叠"
+msgstr "Collapse all"
+
+msgid "六月"
+msgstr "June"
+
+msgid "共享 Slint 契约"
+msgstr "Shared Slint contract"
+
+msgid "共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。"
+msgstr "Shared Slint components - Rust / C++ SDK\nAll 96 navigation pages have working demos.\nNative widgets and component APIs share the same UI contract."
+
+msgid "关闭"
+msgstr "Close"
+
+msgid "内容仍可交互"
+msgstr "Content remains interactive"
+
+msgid "内容组合"
+msgstr "Content composition"
+
+msgid "内联状态反馈 · ForgeInfoBar"
+msgstr "Inline status feedback · ForgeInfoBar"
+
+msgid "内部验收 · 已注册页面常驻，隐藏时宿主继续采样"
+msgstr "Internal verification · registered pages remain mounted while sampling continues"
+
+msgid "冻结名称列"
+msgstr "Freeze name column"
+
+msgid "分组"
+msgstr "Group"
+
+msgid "切换加载占位和实际内容，输入会保留。"
+msgstr "Switch between loading placeholders and content while preserving input."
+
+msgid "切换圆形"
+msgstr "Toggle circular shape"
+
+msgid "切换圆角"
+msgstr "Use rounded corners"
+
+msgid "切换开关，查看开启、关闭和禁用状态。"
+msgstr "Explore on, off, and disabled switch states."
+
+msgid "切换按钮"
+msgstr "Toggle button"
+
+msgid "切换日、周、月三个视图。"
+msgstr "Switch between day, week, and month views."
+
+msgid "切换月份，在月历中选择日期。"
+msgstr "Browse months and select a date in the calendar."
+
+msgid "切换标签保留输入"
+msgstr "Switching tabs preserves input"
+
+msgid "切换标签页，输入内容会保留。"
+msgstr "Switch tabs while preserving the entered text."
+
+msgid "切换标签，关闭可移除的标签。"
+msgstr "Switch tabs and close removable ones."
+
+msgid "切换直角"
+msgstr "Use square corners"
+
+msgid "切换页码，或跳至第一页和最后一页。"
+msgstr "Change pages or jump to the first and last page."
+
+msgid "创建工程"
+msgstr "Create project"
+
+msgid "删除所选"
+msgstr "Delete selected"
+
+msgid "前往设置调整字体"
+msgstr "Adjust fonts in Settings"
+
+msgid "加载万行"
+msgstr "Load 10,000 rows"
+
+msgid "加载中"
+msgstr "Loading"
+
+msgid "加载完成，输入状态保留"
+msgstr "Loaded; input state is preserved"
+
+msgid "匹配图标"
+msgstr "Matching icons"
+
+msgid "单击表头排序，拖动列边界调整宽度，双击单元格编辑。"
+msgstr "Click a header to sort, drag its edge to resize, and double-click a cell to edit."
+
+msgid "卡片 {}"
+msgstr "Card {}"
+
+msgid "卡片内操作"
+msgstr "Card action"
+
+msgid "卡片尺寸由页面控制。"
+msgstr "The page controls the card size."
+
+msgid "卡片等宽、逐行对齐；缩放窗口时自动换列，内容过高时竖向滚动。"
+msgstr "Cards have equal widths and align by row; resizing changes columns and overflow scrolls vertically."
+
+msgid "卡片自动进入当前最短列；缩放窗口可观察列数和位置变化。"
+msgstr "Cards enter the shortest column; resize the window to see columns and positions change."
+
+msgid "历史归档"
+msgstr "Historical archive"
+
+msgid "原生 Dialog 自动排列标准操作按钮。"
+msgstr "Native Dialog arranges standard action buttons automatically."
+
+msgid "原生标签内容"
+msgstr "Native tab content"
+
+msgid "参数曲线"
+msgstr "Parametric curve"
+
+msgid "参考下界"
+msgstr "Lower reference"
+
+msgid "双光标测量"
+msgstr "Dual cursor measurement"
+
+msgid "取消"
+msgstr "Cancel"
+
+msgid "取消置顶"
+msgstr "Stop keeping on top"
+
+msgid "只读"
+msgstr "Read-only"
+
+msgid "只读文本"
+msgstr "Read-only text"
+
+msgid "可移除标签"
+msgstr "Removable tag"
+
+msgid "可返回的页面标题"
+msgstr "Page header with back navigation"
+
+msgid "可选中"
+msgstr "Selectable"
+
+msgid "可选择、复制的文本。\n使用鼠标选择，或按 Ctrl+A、Ctrl+C。\n选中内容可复制到其他应用。"
+msgstr "Selectable text.\nSelect with the mouse, or press Ctrl+A and Ctrl+C.\nCopy the selection into other applications."
+
+msgid "右侧"
+msgstr "Right"
+
+msgid "右侧内容"
+msgstr "Right content"
+
+msgid "右阶梯"
+msgstr "Right steps"
+
+msgid "同步策略"
+msgstr "Sync policy"
+
+msgid "同组内只能选择一个选项。"
+msgstr "Choose one option in a radio group."
+
+msgid "名称"
+msgstr "Name"
+
+msgid "名称控件"
+msgstr "Name control"
+
+msgid "后台采样计数：{}"
+msgstr "Background sample count: {}"
+
+msgid "启动任务，按钮显示进度并避免重复提交。"
+msgstr "Start a task and display progress while preventing duplicate submissions."
+
+msgid "启用功能"
+msgstr "Enable feature"
+
+msgid "启用通知"
+msgstr "Enable notifications"
+
+msgid "周"
+msgstr "Week"
+
+msgid "周工"
+msgstr "Zhou"
+
+msgid "四月"
+msgstr "April"
+
+msgid "回归测试"
+msgstr "Regression testing"
+
+msgid "图例"
+msgstr "Legend"
+
+msgid "图例上方"
+msgstr "Legend above"
+
+msgid "图例下方"
+msgstr "Legend below"
+
+msgid "图例区域内"
+msgstr "Legend inside plot"
+
+msgid "图例区域外"
+msgstr "Legend outside plot"
+
+msgid "图例右上"
+msgstr "Legend upper right"
+
+msgid "图例右下"
+msgstr "Legend lower right"
+
+msgid "图例右侧"
+msgstr "Legend right"
+
+msgid "图例左上"
+msgstr "Legend upper left"
+
+msgid "图例左下"
+msgstr "Legend lower left"
+
+msgid "图例左侧"
+msgstr "Legend left"
+
+msgid "图例最新值"
+msgstr "Legend latest values"
+
+msgid "图例简洁"
+msgstr "Plain legend"
+
+msgid "图例紧凑"
+msgstr "Compact legend"
+
+msgid "图例边框"
+msgstr "Framed legend"
+
+msgid "图文组合"
+msgstr "Icon and text"
+
+msgid "图标、标题与说明组合显示，可切换排列方向。"
+msgstr "Display an icon, title, and description in either orientation."
+
+msgid "图标与文字保持一致的字体和间距。"
+msgstr "The icon and text use consistent typography and spacing."
+
+msgid "图标与文字按钮 · ForgeIconButton"
+msgstr "Icon and text button · ForgeIconButton"
+
+msgid "图标字体"
+msgstr "Icon font"
+
+msgid "图标字体库"
+msgstr "Icon font library"
+
+msgid "图片按区域裁切并显示圆角边框。"
+msgstr "The image is cropped to its bounds and shown with rounded corners."
+
+msgid "圆角"
+msgstr "Rounded"
+
+msgid "在内容对话框中编辑文字，并确认或取消。"
+msgstr "Edit text in a content dialog, then confirm or cancel."
+
+msgid "在容器内容上叠加低对比度的重复水印。"
+msgstr "Overlay a subtle repeating watermark on the container content."
+
+msgid "在彩色背景上比较半透明材质。"
+msgstr "Compare translucent materials over a colorful backdrop."
+
+msgid "在明暗主题中比较前景、背景和主色。"
+msgstr "Compare foreground, background, and accent colors in both themes."
+
+msgid "在此区域右击打开原生菜单"
+msgstr "Right-click here to open a native menu"
+
+msgid "在此粘贴以验证复制"
+msgstr "Paste here to verify copying"
+
+msgid "在演示区右击，选择菜单中的操作。"
+msgstr "Right-click the preview and choose a menu action."
+
+msgid "在背景上预览玻璃效果及内容交互。"
+msgstr "Preview the glass effect and interact with its content."
+
+msgid "垂直排列"
+msgstr "Vertical layout"
+
+msgid "基本示例"
+msgstr "Basic example"
+
+msgid "堆叠"
+msgstr "Stacked"
+
+msgid "处理中…"
+msgstr "Processing…"
+
+msgid "复位"
+msgstr "Reset"
+
+msgid "复制代码"
+msgstr "Copy code"
+
+msgid "复制全部"
+msgstr "Copy all"
+
+msgid "外观"
+msgstr "Appearance"
+
+msgid "多绘图区"
+msgstr "Multiple panels"
+
+msgid "多轴"
+msgstr "Multiple axes"
+
+msgid "多选"
+msgstr "Multiple selection"
+
+msgid "大数据"
+msgstr "Large data"
+
+msgid "大量卡片"
+msgstr "More cards"
+
+msgid "大量矩形"
+msgstr "More tiles"
+
+msgid "字体"
+msgstr "Typography"
+
+msgid "字体排版"
+msgstr "Typography"
+
+msgid "字号比例"
+msgstr "Font scale"
+
+msgid "安全输入"
+msgstr "Secure input"
+
+msgid "完成"
+msgstr "Finish"
+
+msgid "完成组件"
+msgstr "Complete components"
+
+msgid "实时数据"
+msgstr "Live data"
+
+msgid "宽屏时控件靠右；宽度低于断点后，控件移到标题和说明下方。"
+msgstr "Controls align right on wide screens and move below the label and description below the breakpoint."
+
+msgid "宽屏预览"
+msgstr "Wide preview"
+
+msgid "对数轴"
+msgstr "Log axis"
+
+msgid "对比多个维度上的系列表现。"
+msgstr "Compare series across multiple dimensions."
+
+msgid "对话框关闭后此输入保持"
+msgstr "This input persists after closing the dialog"
+
+msgid "对话窗口内容"
+msgstr "Dialog content"
+
+msgid "导出"
+msgstr "Export"
+
+msgid "导出 PNG"
+msgstr "Export PNG"
+
+msgid "导出失败，请检查目标路径"
+msgstr "Export failed. Check the destination path."
+
+msgid "导出成功"
+msgstr "Export succeeded"
+
+msgid "导航窗格"
+msgstr "Navigation pane"
+
+msgid "将状态、操作和内容放在同一卡片中。"
+msgstr "Combine status, actions, and content in one card."
+
+msgid "将鼠标停在按钮上查看提示。"
+msgstr "Hover over a button to display a tooltip."
+
+msgid "小于 560px"
+msgstr "Below 560 px"
+
+msgid "少量卡片"
+msgstr "Fewer cards"
+
+msgid "少量矩形"
+msgstr "Fewer tiles"
+
+msgid "尚未绑定图表服务"
+msgstr "Chart services are not bound."
+
+msgid "尚未选择卡片"
+msgstr "No card selected"
+
+msgid "就绪"
+msgstr "Ready"
+
+msgid "展开"
+msgstr "Expanded"
+
+msgid "展开分组、搜索并选择导航项。"
+msgstr "Expand groups, search, and select a navigation item."
+
+msgid "展开列表，选中多个选项。"
+msgstr "Open the list and select multiple options."
+
+msgid "展开列表，选择一个选项。"
+msgstr "Open a list and choose an option."
+
+msgid "展开或折叠内容，输入状态在折叠后保留。"
+msgstr "Expand or collapse content. Input state persists while collapsed."
+
+msgid "展开树节点，选择一个或多个子项。"
+msgstr "Expand tree nodes and select one or more children."
+
+msgid "展开目录，选择文件和子节点。"
+msgstr "Expand folders and select files and child nodes."
+
+msgid "展开行"
+msgstr "Expand row"
+
+msgid "展示已选、未选与禁用状态。"
+msgstr "Checked, unchecked, and disabled states."
+
+msgid "展示操作结果，以及继续处理的入口。"
+msgstr "Display an operation result and its follow-up action."
+
+msgid "展示数值、单位、精度和趋势。"
+msgstr "Display values, units, precision, and trends."
+
+msgid "展示标题 · Display"
+msgstr "Display heading"
+
+msgid "工作区名称"
+msgstr "Workspace name"
+
+msgid "工程"
+msgstr "Project"
+
+msgid "工程详情"
+msgstr "Project details"
+
+msgid "左侧"
+msgstr "Left"
+
+msgid "左侧内容"
+msgstr "Left content"
+
+msgid "左阶梯"
+msgstr "Left steps"
+
+msgid "已保存"
+msgstr "Saved"
+
+msgid "已关闭"
+msgstr "Off"
+
+msgid "已取消"
+msgstr "Canceled"
+
+msgid "已启用"
+msgstr "Enabled"
+
+msgid "已完成"
+msgstr "Complete"
+
+msgid "已完成任务"
+msgstr "Completed tasks"
+
+msgid "已展开：{}"
+msgstr "Expanded: {}"
+
+msgid "已归档"
+msgstr "Archived"
+
+msgid "已恢复示例数据。"
+msgstr "Sample data restored."
+
+msgid "已打开"
+msgstr "Opened"
+
+msgid "已折叠：{}"
+msgstr "Collapsed: {}"
+
+msgid "已操作 {} 次"
+msgstr "Actions: {}"
+
+msgid "已暂停"
+msgstr "Paused"
+
+msgid "已更新：{} · {} = {}"
+msgstr "Updated: {} - {} = {}"
+
+msgid "已确认"
+msgstr "Confirmed"
+
+msgid "已选中"
+msgstr "Selected"
+
+msgid "已选择 {}，原始索引 {}，数值 {}"
+msgstr "Selected {}, original index {}, value {}"
+
+msgid "已选择卡片 {}"
+msgstr "Selected card {}"
+
+msgid "已选择：系列 {}，数据 {}，值 {}"
+msgstr "Selected: series {}, point {}, value {}"
+
+msgid "带图标"
+msgstr "With icon"
+
+msgid "带标题的内容容器 · ForgeCard"
+msgstr "Titled content container · ForgeCard"
+
+msgid "帧校验"
+msgstr "Frame validation"
+
+msgid "常用示例"
+msgstr "Common examples"
+
+msgid "常驻页面容器与当前可视区域截图"
+msgstr "Persistent page container and visible-area capture"
+
+msgid "平滑曲线"
+msgstr "Smooth curve"
+
+msgid "底部"
+msgstr "Bottom"
+
+msgid "开启"
+msgstr "On"
+
+msgid "开启或暂停内容加载的扫光效果。"
+msgstr "Start or pause the loading shimmer."
+
+msgid "开始任务"
+msgstr "Start task"
+
+msgid "开始使用"
+msgstr "Get started"
+
+msgid "开始引导"
+msgstr "Start tour"
+
+msgid "引导已完成"
+msgstr "Tour completed"
+
+msgid "引导已跳过"
+msgstr "Tour skipped"
+
+msgid "张工"
+msgstr "Zhang"
+
+msgid "归档记录"
+msgstr "Archive record"
+
+msgid "当前 Gallery 主窗口就是 ForgeWindow 实例。"
+msgstr "The Gallery window is an instance of ForgeWindow."
+
+msgid "当前值：{}"
+msgstr "Current value: {}"
+
+msgid "当前无需滚动"
+msgstr "No scrolling needed"
+
+msgid "当前行：{}"
+msgstr "Current row: {}"
+
+msgid "当前页：{}，总页数：{}"
+msgstr "Current page: {}, total pages: {}"
+
+msgid "当前：已展开"
+msgstr "Current: expanded"
+
+msgid "当前：已折叠"
+msgstr "Current: collapsed"
+
+msgid "录制快捷键"
+msgstr "Record shortcut"
+
+msgid "待开始"
+msgstr "Pending"
+
+msgid "性能测试"
+msgstr "Performance testing"
+
+msgid "总行数 {} · 可见 {} · 已选 {}"
+msgstr "Total {} - visible {} - selected {}"
+
+msgid "恢复数据"
+msgstr "Reset data"
+
+msgid "恢复标签"
+msgstr "Restore tag"
+
+msgid "恢复验证"
+msgstr "Recovery validation"
+
+msgid "悬停查看提示"
+msgstr "Hover for a tooltip"
+
+msgid "悬停查看数值，点击选择数据，点击图例显示或隐藏系列。"
+msgstr "Hover for values, click to select, and use legends to show or hide series."
+
+msgid "成功"
+msgstr "Success"
+
+msgid "截图将在此处显示"
+msgstr "The captured image will appear here"
+
+msgid "截图尺寸：{} × {} 像素"
+msgstr "Capture size: {} x {} pixels"
+
+msgid "截图服务未接入"
+msgstr "Capture service is not connected"
+
+msgid "所有任务已完成，可继续下一步。"
+msgstr "All tasks are complete. Continue to the next step."
+
+msgid "扇区角度相同，面积随类别数值变化。"
+msgstr "Sectors have equal angles; area changes with each value."
+
+msgid "打开"
+msgstr "Open"
+
+msgid "打开内容对话框"
+msgstr "Open content dialog"
+
+msgid "打开原生对话窗口"
+msgstr "Open native dialog"
+
+msgid "打开原生窗口"
+msgstr "Open native window"
+
+msgid "打开对话窗口，确认或取消操作。"
+msgstr "Open a dialog to confirm or cancel an action."
+
+msgid "打开抽屉"
+msgstr "Open drawer"
+
+msgid "打开独立窗口，再隐藏或重新显示。"
+msgstr "Open an independent window, then hide or show it again."
+
+msgid "执行"
+msgstr "Run"
+
+msgid "执行任务"
+msgstr "Run task"
+
+msgid "执行验证"
+msgstr "Run verification"
+
+msgid "折叠行"
+msgstr "Collapse row"
+
+msgid "抽屉已关闭"
+msgstr "Drawer closed"
+
+msgid "抽屉设置"
+msgstr "Drawer settings"
+
+msgid "拖动分隔条调整两个内容区域的比例，可切换水平或垂直布局。"
+msgstr "Drag the divider to resize both panes, and switch between horizontal and vertical layouts."
+
+msgid "拖动四条分隔线调整尺寸；独立隐藏边区后，中央区自动填充。"
+msgstr "Drag any of the four dividers; hiding an edge lets the center fill its space."
+
+msgid "拖动标题栏可移动窗口；双击标题栏切换最大化；拖动窗口边缘可调整大小。"
+msgstr "Drag the title bar to move; double-click to maximize; drag an edge to resize."
+
+msgid "拖动水平或垂直滑块调整数值。"
+msgstr "Adjust values with horizontal or vertical sliders."
+
+msgid "按住 1.2 秒确认"
+msgstr "Hold for 1.2 seconds to confirm"
+
+msgid "按住按钮完成确认，提前松开会取消。"
+msgstr "Hold to confirm; releasing early cancels."
+
+msgid "按住确认"
+msgstr "Hold to confirm"
+
+msgid "按分类浏览已实现和规划中的页面"
+msgstr "Browse implemented and planned pages by category"
+
+msgid "按名称搜索，例如 home、settings、arrow"
+msgstr "Search by name, such as home, settings, or arrow"
+
+msgid "按层级查看数据，展开分组并对同级节点排序。"
+msgstr "Browse hierarchical data, expand groups, and sort sibling rows."
+
+msgid "按测试域组织任务。"
+msgstr "Organize tasks by test area."
+
+msgid "按稳定 ID 切换页签"
+msgstr "Switch tabs by stable ID"
+
+msgid "按稳定 ID 立即切换预编译页面；隐藏页的输入内容保持不变。"
+msgstr "Switch precompiled pages instantly by stable ID; hidden pages retain their input."
+
+msgid "排序、筛选与单元格编辑"
+msgstr "Sort, filter and edit cells"
+
+msgid "接口检查"
+msgstr "Interface checks"
+
+msgid "搜索图标名称，查看图形和对应码位。"
+msgstr "Search icon names and inspect glyphs and code points."
+
+msgid "搜索组件"
+msgstr "Search components"
+
+msgid "操作成功"
+msgstr "Operation successful"
+
+msgid "操作菜单"
+msgstr "Action menu"
+
+msgid "数字、提示点和状态徽标。"
+msgstr "Numeric, dot, and status badges."
+
+msgid "数据或坐标范围无效"
+msgstr "Invalid data or coordinate range"
+
+msgid "数量"
+msgstr "Count"
+
+msgid "整数：{}"
+msgstr "Integer: {}"
+
+msgid "文字字体"
+msgstr "Text font"
+
+msgid "断连恢复"
+msgstr "Reconnect recovery"
+
+msgid "新增条目"
+msgstr "New item"
+
+msgid "新增行"
+msgstr "Add row"
+
+msgid "方案一"
+msgstr "Option A"
+
+msgid "方案三"
+msgstr "Option C"
+
+msgid "方案二"
+msgstr "Option B"
+
+msgid "旋转拨盘或拖动滑块调整同一数值。"
+msgstr "Rotate the dial or drag the slider to adjust the same value."
+
+msgid "无"
+msgstr "None"
+
+msgid "无边框窗口与标题栏"
+msgstr "Frameless window and title bar"
+
+msgid "无边框窗口与自定义标题栏"
+msgstr "Frameless window and custom title bar"
+
+msgid "无需滚动"
+msgstr "No scrolling needed"
+
+msgid "日"
+msgstr "Day"
+
+msgid "时间 / s"
+msgstr "Time / s"
+
+msgid "显示加载动画"
+msgstr "Show loading animation"
+
+msgid "显示建议"
+msgstr "Show suggestions"
+
+msgid "显示数据"
+msgstr "Show data"
+
+msgid "显示说明"
+msgstr "Show notes"
+
+msgid "普通、主色和禁用的胶囊按钮。"
+msgstr "Standard, primary, and disabled pill buttons."
+
+msgid "普通、带图标和禁用按钮，点击查看反馈。"
+msgstr "Standard, icon, and disabled buttons with click feedback."
+
+msgid "暂停滚动"
+msgstr "Pause scrolling"
+
+msgid "暂无可显示的数据"
+msgstr "No data to display"
+
+msgid "暂无数据"
+msgstr "No data"
+
+msgid "暂无数据。"
+msgstr "No data."
+
+msgid "暂缓实现"
+msgstr "Deferred"
+
+msgid "曲线 / 误差 / 填充"
+msgstr "Graph / errors / fill"
+
+msgid "曲线、统计图、二维色图、极坐标与多绘图区，支持缩放、选择和五种格式导出。"
+msgstr "Graphs, statistics, color maps, polar plots and multiple panels with zoom, selection and five export formats."
+
+msgid "更新数据"
+msgstr "Update data"
+
+msgid "更新首行"
+msgstr "Update first row"
+
+msgid "最大化"
+msgstr "Maximize"
+
+msgid "最小化"
+msgstr "Minimize"
+
+msgid "最近添加的示例"
+msgstr "Recently added examples"
+
+msgid "月"
+msgstr "Month"
+
+msgid "未找到匹配的组件"
+msgstr "No matching components"
+
+msgid "未知 ID"
+msgstr "Unknown ID"
+
+msgid "未选中"
+msgstr "Not selected"
+
+msgid "末页"
+msgstr "Last"
+
+msgid "李工"
+msgstr "Li"
+
+msgid "极坐标"
+msgstr "Polar plot"
+
+msgid "构建、行为测试与页面截图"
+msgstr "Builds, behavior tests, and page captures"
+
+msgid "查看两个系列的分布和相关性。"
+msgstr "Explore distributions and correlations of two series."
+
+msgid "查看和编辑表格数据，调整列宽并选择多行。"
+msgstr "Browse and edit tabular data, resize columns, and select multiple rows."
+
+msgid "查看基础组件的可交互示例"
+msgstr "Explore interactive examples of basic components"
+
+msgid "柱状图"
+msgstr "Bars"
+
+msgid "标签数量：{}"
+msgstr "Tag count: {}"
+
+msgid "树形层级与数据展示"
+msgstr "Hierarchical data and tree navigation"
+
+msgid "检查保护触发与恢复。"
+msgstr "Check protection activation and recovery."
+
+msgid "检查断连恢复与重启行为。"
+msgstr "Check reconnection and restart behavior."
+
+msgid "检查稳态与动态输出。"
+msgstr "Check steady-state and dynamic output."
+
+msgid "检查输出电压与保护阈值。"
+msgstr "Check output voltage and protection thresholds."
+
+msgid "概览"
+msgstr "Overview"
+
+msgid "模块数：{}"
+msgstr "Module count: {}"
+
+msgid "正在滚动"
+msgstr "Scrolling"
+
+msgid "正常帧与异常帧"
+msgstr "Valid and invalid frames"
+
+msgid "正文 · Body：你好 SlintForge，Hello World!"
+msgstr "Body: Hello SlintForge, Hello World!"
+
+msgid "此单元格无法编辑。"
+msgstr "This cell cannot be edited."
+
+msgid "此处输入工程参数。"
+msgstr "Enter project parameters here."
+
+msgid "此窗口由 Rust/C++ 宿主创建并持有。"
+msgstr "This window is created and retained by the Rust/C++ host."
+
+msgid "此项不能为空"
+msgstr "This field is required"
+
+msgid "比较各月份的数据，切换分组或堆叠。"
+msgstr "Compare monthly values in grouped or stacked bars."
+
+msgid "比较各类别占比，切换饼图或环形图。"
+msgstr "Compare category proportions as a pie or doughnut chart."
+
+msgid "水印覆盖在内容上方。"
+msgstr "The watermark is overlaid on the content."
+
+msgid "水平排列"
+msgstr "Horizontal layout"
+
+msgid "没有匹配的行。"
+msgstr "No matching rows."
+
+msgid "沿时间顺序查看已完成和待完成的步骤。"
+msgstr "Follow completed and pending steps in chronological order."
+
+msgid "浅色"
+msgstr "Light"
+
+msgid "测试计划"
+msgstr "Test plan"
+
+msgid "测量 / 不对称误差"
+msgstr "Measurement / asymmetric errors"
+
+msgid "测量上方"
+msgstr "Measurement top"
+
+msgid "测量下方"
+msgstr "Measurement bottom"
+
+msgid "测量与参考值"
+msgstr "Measurement and reference"
+
+msgid "测量区域内"
+msgstr "Measurement inside plot"
+
+msgid "测量区域外"
+msgstr "Measurement outside plot"
+
+msgid "测量右上"
+msgstr "Measurement top right"
+
+msgid "测量右下"
+msgstr "Measurement bottom right"
+
+msgid "测量右侧"
+msgstr "Measurement right"
+
+msgid "测量左上"
+msgstr "Measurement top left"
+
+msgid "测量左下"
+msgstr "Measurement bottom left"
+
+msgid "测量左侧"
+msgstr "Measurement left"
+
+msgid "测量曲线 1"
+msgstr "Measure series 1"
+
+msgid "测量曲线 2"
+msgstr "Measure series 2"
+
+msgid "浏览 Fluent System Icons Regular 的完整图标目录，按名称搜索并查看码位。"
+msgstr "Browse the full Fluent System Icons Regular catalog, search by name, and inspect code points."
+
+msgid "浏览完整目录"
+msgstr "Browse full catalog"
+
+msgid "深色"
+msgstr "Dark"
+
+msgid "添加"
+msgstr "Add"
+
+msgid "清空图片"
+msgstr "Clear image"
+
+msgid "清空数据"
+msgstr "Clear data"
+
+msgid "清除"
+msgstr "Clear"
+
+msgid "温度"
+msgstr "Temperature"
+
+msgid "温度 / ℃"
+msgstr "Temperature / C"
+
+msgid "温度循环"
+msgstr "Thermal cycling"
+
+msgid "滚动查看长文本，内容仍可编辑。"
+msgstr "Scroll through long text while keeping it editable."
+
+msgid "滚轮缩放，拖动平移，Shift 框选缩放，Ctrl 框选数据。"
+msgstr "Wheel to zoom, drag to pan, Shift-drag to zoom a rectangle, Ctrl-drag to select."
+
+msgid "灰色"
+msgstr "Grey"
+
+msgid "点击 {} 次"
+msgstr "Clicked {} times"
+
+msgid "点击录制快捷键，按 Escape 取消。"
+msgstr "Record a keyboard shortcut or press Escape to cancel."
+
+msgid "点击按钮"
+msgstr "Click button"
+
+msgid "点击按钮切换选中状态。"
+msgstr "Click a button to toggle its selected state."
+
+msgid "点击星级评分，使用键盘继续调整。"
+msgstr "Choose a star rating and adjust it with the keyboard."
+
+msgid "点击次数：{}"
+msgstr "Click count: {}"
+
+msgid "点击计数"
+msgstr "Click counter"
+
+msgid "点击路径节点返回对应层级。"
+msgstr "Click a breadcrumb to return to its level."
+
+msgid "点击链接在浏览器打开页面。"
+msgstr "Open a page in the browser through a link."
+
+msgid "状态"
+msgstr "Status"
+
+msgid "状态提示"
+msgstr "Status notice"
+
+msgid "王工"
+msgstr "Wang"
+
+msgid "环境"
+msgstr "Environment"
+
+msgid "环境测试分组"
+msgstr "Environment test group"
+
+msgid "环境试验"
+msgstr "Environmental testing"
+
+msgid "环形图"
+msgstr "Doughnut"
+
+msgid "用于在设置页和窗口标题中区分工作区。"
+msgstr "Distinguishes the workspace in settings and the window title."
+
+msgid "用法与状态"
+msgstr "Usage and states"
+
+msgid "电压"
+msgstr "Voltage"
+
+msgid "电压 / V"
+msgstr "Voltage / V"
+
+msgid "电源"
+msgstr "Power"
+
+msgid "电源测试"
+msgstr "Power testing"
+
+msgid "电源测试分组"
+msgstr "Power test group"
+
+msgid "界面语言，切换后立即更新"
+msgstr "Interface language, updated immediately"
+
+msgid "目标一：输入"
+msgstr "Target 1: input"
+
+msgid "目标二：执行"
+msgstr "Target 2: run"
+
+msgid "直角"
+msgstr "Square"
+
+msgid "睡眠"
+msgstr "Sleeping"
+
+msgid "矩形 {}"
+msgstr "Tile {}"
+
+msgid "矩形按可用宽度自动换行，内容超出时出现竖向滚动条。"
+msgstr "Tiles wrap to fit the available width, and a vertical scrollbar appears when content overflows."
+
+msgid "确定"
+msgstr "OK"
+
+msgid "确定进度"
+msgstr "Determinate progress"
+
+msgid "确定进度与持续加载两种状态。"
+msgstr "Determinate progress and continuous loading."
+
+msgid "确认后执行下一步。"
+msgstr "Confirm to proceed to the next step."
+
+msgid "确认操作"
+msgstr "Confirm action"
+
+msgid "确认次数：{}"
+msgstr "Confirmation count: {}"
+
+msgid "确认版本、资源和参数配置。"
+msgstr "Verify versions, resources, and parameter settings."
+
+msgid "示例文档"
+msgstr "Example documentation"
+
+msgid "禁用"
+msgstr "Disabled"
+
+msgid "禁用操作"
+msgstr "Disabled action"
+
+msgid "禁用文本"
+msgstr "Disabled text"
+
+msgid "禁用标签"
+msgstr "Disabled tag"
+
+msgid "禁用状态"
+msgstr "Disabled"
+
+msgid "禁用行不可选择或编辑。"
+msgstr "Disabled rows cannot be selected or edited."
+
+msgid "禁用选项"
+msgstr "Disabled option"
+
+msgid "移除标签"
+msgstr "Remove tag"
+
+msgid "窄屏预览"
+msgstr "Narrow preview"
+
+msgid "窗口"
+msgstr "Window"
+
+msgid "窗口置顶"
+msgstr "Always on top"
+
+msgid "窗口边角"
+msgstr "Window corners"
+
+msgid "竖向滚动条已显示"
+msgstr "Vertical scrollbar visible"
+
+msgid "第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行"
+msgstr "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10"
+
+msgid "第一页"
+msgstr "First page"
+
+msgid "第一页：输入内容，切走后再返回"
+msgstr "First page: type something, switch away, then return"
+
+msgid "第三页"
+msgstr "Third page"
+
+msgid "第二个标签页"
+msgstr "Second tab"
+
+msgid "第二页"
+msgstr "Second page"
+
+msgid "策略控件"
+msgstr "Policy control"
+
+msgid "筛选名称、负责人或说明"
+msgstr "Filter by name, owner, or notes"
+
+msgid "系列一"
+msgstr "Series one"
+
+msgid "系列乙"
+msgstr "Series B"
+
+msgid "系列二"
+msgstr "Series two"
+
+msgid "系列甲"
+msgstr "Series A"
+
+msgid "系统默认"
+msgstr "System default"
+
+msgid "红色"
+msgstr "Red"
+
+msgid "级别控件"
+msgstr "Level control"
+
+msgid "组件目录"
+msgstr "Component catalog"
+
+msgid "组合标题、说明、返回入口和操作按钮。"
+msgstr "Combine a title, description, back action, and controls."
+
+msgid "终点"
+msgstr "Endpoint"
+
+msgid "统计延迟、吞吐量及峰值负载。"
+msgstr "Measure latency, throughput, and peak load."
+
+msgid "统计箱"
+msgstr "Statistical box"
+
+msgid "统计箱 / 离群值"
+msgstr "Statistical box / outliers"
+
+msgid "继续"
+msgstr "Continue"
+
+msgid "继续滚动"
+msgstr "Resume scrolling"
+
+msgid "绿色"
+msgstr "Green"
+
+msgid "编程"
+msgstr "Coding"
+
+msgid "编辑多行文字，输入框内可滚动。"
+msgstr "Edit multiple lines and scroll inside the field."
+
+msgid "编辑文本，切换语言并查看高亮结果。"
+msgstr "Edit text, switch languages, and inspect syntax highlighting."
+
+msgid "背景图上的材质效果"
+msgstr "Material effect on a background image"
+
+msgid "胶囊按钮"
+msgstr "Pill button"
+
+msgid "脉冲"
+msgstr "Impulses"
+
+msgid "获取截图"
+msgstr "Capture image"
+
+msgid "蓝色"
+msgstr "Blue"
+
+msgid "蜡烛图"
+msgstr "Candlesticks"
+
+msgid "行或列标识重复、父节点缺失或树关系存在循环。"
+msgstr "Duplicate row or column IDs, missing parents, or a hierarchy cycle."
+
+msgid "表格服务尚未绑定。"
+msgstr "Grid services are not connected."
+
+msgid "覆盖本轮修改和已有功能。"
+msgstr "Cover current changes and existing behavior."
+
+msgid "观察趋势，切换折线、平滑曲线和面积填充。"
+msgstr "Explore trends with lines, smooth curves, and area fills."
+
+msgid "角度 / °"
+msgstr "Angle / degrees"
+
+msgid "警告"
+msgstr "Warning"
+
+msgid "让 Gallery 保持在其他窗口上方，也可点击标题栏图钉。"
+msgstr "Keep Gallery above other windows. You can also use the title bar pin."
+
+msgid "记录温度与运行状态。"
+msgstr "Record temperature and operating status."
+
+msgid "记录温度循环与运行状态。"
+msgstr "Record thermal cycles and operating status."
+
+msgid "设备状态"
+msgstr "Device status"
+
+msgid "设置"
+msgstr "Settings"
+
+msgid "设计"
+msgstr "Designing"
+
+msgid "评分：{}"
+msgstr "Rating: {}"
+
+msgid "详情"
+msgstr "Details"
+
+msgid "语法高亮服务未绑定"
+msgstr "Syntax highlighting service is not connected"
+
+msgid "语言"
+msgstr "Language"
+
+msgid "说明"
+msgstr "Notes"
+
+msgid "请按快捷键…"
+msgstr "Press a shortcut…"
+
+msgid "请绑定图表服务"
+msgstr "Bind chart services to display data"
+
+msgid "请输入 3～24 个字符"
+msgstr "Enter 3 to 24 characters"
+
+msgid "请输入文本"
+msgstr "Enter text"
+
+msgid "请输入有限的有效数字。"
+msgstr "Enter a valid finite number."
+
+msgid "调整 Gallery 的外观、语言、字体与导航方式。更改会立即生效。"
+msgstr "Adjust Gallery appearance, language, fonts, and navigation. Changes take effect immediately."
+
+msgid "调整后台任务的默认运行方式。"
+msgstr "Adjust how background tasks run by default."
+
+msgid "调整四个颜色通道，预览颜色和透明度。"
+msgstr "Adjust four color channels and preview color and opacity."
+
+msgid "负责人"
+msgstr "Owner"
+
+msgid "赵工"
+msgstr "Zhao"
+
+msgid "起点"
+msgstr "Start"
+
+msgid "超时、重连和状态恢复"
+msgstr "Timeouts, reconnection, and state recovery"
+
+msgid "跑步"
+msgstr "Running"
+
+msgid "路由参数：{}"
+msgstr "Route parameters: {}"
+
+msgid "跳过"
+msgstr "Skip"
+
+msgid "辅助文字 · Caption"
+msgstr "Supporting text · Caption"
+
+msgid "输入、只读和禁用的单行文本框。"
+msgstr "Editable, read-only, and disabled text fields."
+
+msgid "输入一些文字"
+msgstr "Type something"
+
+msgid "输入以搜索"
+msgstr "Type to search"
+
+msgid "输入会保留"
+msgstr "Input persists"
+
+msgid "输入内容生成二维码，空内容显示提示。"
+msgstr "Generate a QR code from text or show a message for empty input."
+
+msgid "输入前缀，展开并选择匹配的建议。"
+msgstr "Type a prefix and select a matching suggestion."
+
+msgid "输入参数"
+msgstr "Enter parameters"
+
+msgid "输入密码"
+msgstr "Enter password"
+
+msgid "输入密码，并切换显示或隐藏。"
+msgstr "Enter a password and toggle its visibility."
+
+msgid "输入建议与快速选择"
+msgstr "Input suggestions and quick selection"
+
+msgid "输入文字 → 切到其他页面 → 等待后返回。"
+msgstr "Enter text → switch pages → wait → return."
+
+msgid "输入文字后折叠并重新展开"
+msgstr "Enter text, then collapse and reopen"
+
+msgid "输入文字后验证长度与必填规则。"
+msgstr "Validate required text and length limits."
+
+msgid "输入标签并回车"
+msgstr "Enter a tag and press Enter"
+
+msgid "输入标签并按回车添加，点击叉号移除。"
+msgstr "Press Enter to add a tag and click its close icon to remove it."
+
+msgid "输入水印文字"
+msgstr "Enter watermark text"
+
+msgid "输入浮点数，或按设定步长增减。"
+msgstr "Enter a decimal value or change it by the configured step."
+
+msgid "输入长度不符合要求"
+msgstr "Input length is outside the allowed range"
+
+msgid "输出电压"
+msgstr "Output voltage"
+
+msgid "运行动画"
+msgstr "Animate"
+
+msgid "返回后应保留输入内容"
+msgstr "Input should be retained when you return"
+
+msgid "返回次数：{}"
+msgstr "Back action count: {}"
+
+msgid "还原"
+msgstr "Restore"
+
+msgid "这是一条可关闭的反馈信息。"
+msgstr "This feedback message can be dismissed."
+
+msgid "这是保留页面状态的内容对话框。"
+msgstr "This content dialog preserves page state."
+
+msgid "这里还可以放置任意业务组件。"
+msgstr "Any application component can be placed here."
+
+msgid "进行中"
+msgstr "In progress"
+
+msgid "连续折线"
+msgstr "Continuous line"
+
+msgid "选择、移除和恢复标签。"
+msgstr "Select, remove, and restore chips."
+
+msgid "选择全部可见行"
+msgstr "Select all visible rows"
+
+msgid "选择多个项目"
+msgstr "Select multiple items"
+
+msgid "选择或复制文本，然后在输入框粘贴。"
+msgstr "Select or copy text and paste it into the input."
+
+msgid "选择操作"
+msgstr "Select action"
+
+msgid "选择日期"
+msgstr "Select date"
+
+msgid "选择日期，并确认或取消修改。"
+msgstr "Select a date, then confirm or cancel."
+
+msgid "选择时间"
+msgstr "Select time"
+
+msgid "选择时间，并确认或取消修改。"
+msgstr "Select a time, then confirm or cancel."
+
+msgid "选择树节点"
+msgstr "Select tree nodes"
+
+msgid "选择行 {} "
+msgstr "Select row {} "
+
+msgid "逐步浏览功能提示，支持返回、继续和关闭。"
+msgstr "Follow a guided tour with back, next, and close actions."
+
+msgid "通信"
+msgstr "Communication"
+
+msgid "通信测试分组"
+msgstr "Communication test group"
+
+msgid "通信验证"
+msgstr "Communication validation"
+
+msgid "通知级别"
+msgstr "Notification level"
+
+msgid "重置"
+msgstr "Reset"
+
+msgid "重置尺寸"
+msgstr "Reset sizes"
+
+msgid "重置比例"
+msgstr "Reset ratio"
+
+msgid "错误"
+msgstr "Error"
+
+msgid "错误数量"
+msgstr "Error count"
+
+msgid "长文本在固定区域内连续滚动，可暂停和继续。"
+msgstr "Long text scrolls continuously within a fixed area and can be paused or resumed."
+
+msgid "阶梯"
+msgstr "Steps"
+
+msgid "陈工"
+msgstr "Chen"
+
+msgid "隐藏"
+msgstr "Hidden"
+
+msgid "隐藏再打开会保留输入"
+msgstr "Hiding and reopening preserves input"
+
+msgid "隐藏密码"
+msgstr "Hide password"
+
+msgid "隐藏示例窗口"
+msgstr "Hide demo windows"
+
+msgid "需要滚动"
+msgstr "Scroll available"
+
+msgid "面板状态"
+msgstr "Pane state"
+
+msgid "面积填充"
+msgstr "Area fill"
+
+msgid "页面"
+msgstr "Page"
+
+msgid "页面截图目标"
+msgstr "Page capture target"
+
+msgid "页面未激活"
+msgstr "Page is not active"
+
+msgid "页面标题 · Title"
+msgstr "Page title"
+
+msgid "页面生命周期"
+msgstr "Page lifecycle"
+
+msgid "页面隐藏后保留输入；截图包含当前区域的背景、内容和覆盖层。"
+msgstr "Hidden pages retain input. Captures include the current area's background, content, and overlays."
+
+msgid "顶部"
+msgstr "Top"
+
+msgid "项"
+msgstr "items"
+
+msgid "预览：你好，SlintForge！ABC 123"
+msgstr "Preview: Hello, SlintForge! ABC 123"
+
+msgid "饮水"
+msgstr "Drinking"
+
+msgid "饮食"
+msgstr "Eating"
+
+msgid "首区 {}%"
+msgstr "First pane {}%"
+
+msgid "首页"
+msgstr "Home"
+
+msgid "验证"
+msgstr "Validate"
+
+msgid "验证正常帧、异常帧和超时处理。"
+msgstr "Validate good frames, invalid frames, and timeout handling."
+
+msgid "验证步骤"
+msgstr "Verification steps"
+
+msgid "验证通过"
+msgstr "Valid"
+
+msgid "骑行"
+msgstr "Cycling"
+
+msgid "高级选项"
+msgstr "Advanced options"
+
+msgid "黄色"
+msgstr "Yellow"
+

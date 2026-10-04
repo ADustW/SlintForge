@@ -1,0 +1,6 @@
+import { LineEdit } from "std-widgets.slint";
+import { ForgeDrawer } from "@slintforge";
+export component Example inherits Window {
+    width: 520px; height: 320px;
+    ForgeDrawer { open: true; title: "Settings"; LineEdit { placeholder-text: "Value"; } }
+}

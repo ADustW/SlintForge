@@ -1,0 +1,22 @@
+// 导航契约：Rust 与 C++ 宿主编译同一份类型。
+
+export enum ForgeNavPlacement { left, right, top }
+
+export enum ForgePaneState { expanded, compact, hidden }
+
+export enum ForgeNavItemKind { page, group, header, separator }
+
+export struct ForgeRouteParam { key: string, value: string }
+
+export struct ForgeNavigationItem {
+    id: string,
+    parent-id: string,
+    title: string,
+    icon: string,
+    kind: ForgeNavItemKind,
+    depth: int,
+    expanded: bool,
+    has-children: bool,
+    child-count: int,
+    enabled: bool,
+}

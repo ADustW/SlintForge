@@ -1,0 +1,30 @@
+import { Palette } from "std-widgets.slint";
+import { ForgePagination, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：Pagination。
+export component GalleryNavigationPaginationPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "Pagination";
+        subtitle: @tr("切换页码，或跳至第一页和最后一页。");
+        example-title: @tr("用法与状态");
+        preview-height: 170px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            pages := ForgePagination { total-items: 237; page-size: 10; page-changed(value) => { root.count = value; } }
+Text { text: @tr("当前页：{}，总页数：{}", pages.current-page, pages.page-count); color: Palette.foreground; }
+        }
+    }
+    
+}

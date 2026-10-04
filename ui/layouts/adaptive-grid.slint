@@ -1,0 +1,41 @@
+import { ScrollView } from "std-widgets.slint";
+
+// 调用方把卡片宽度绑定到 item-width；布局负责换列和按需竖向滚动。
+export component ForgeAdaptiveGrid inherits Rectangle {
+    in property<length> min-item-width: 180px;
+    in property<length> column-gap: 12px;
+    in property<length> row-gap: 12px;
+    in property<length> content-padding: 12px;
+    in property<int> max-columns: 0;
+    private property<length> available-width: Math.max(0px, root.width - 2 * root.content-padding - 14px);
+    out property<int> column-count: Math.max(1, root.max-columns > 0
+        ? Math.min(root.max-columns, Math.floor((root.available-width + root.column-gap) / (Math.max(1px, root.min-item-width) + root.column-gap)))
+        : Math.floor((root.available-width + root.column-gap) / (Math.max(1px, root.min-item-width) + root.column-gap)));
+    out property<length> item-width: Math.max(0px, (root.available-width - (root.column-count - 1) * root.column-gap) / root.column-count);
+    out property<length> content-height: scroll.content-height;
+    out property<bool> vertical-scrollbar-visible: scroll.content-height > scroll.visible-height;
+    background: transparent;
+    clip: true;
+
+    scroll := ScrollView {
+        width: root.width;
+        height: root.height;
+        vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
+        horizontal-scrollbar-policy: ScrollBarPolicy.always-off;
+        FlexboxLayout {
+            width: parent.width;
+            padding-left: root.content-padding;
+            padding-right: root.content-padding + 14px;
+            padding-top: root.content-padding;
+            padding-bottom: root.content-padding;
+            spacing-horizontal: root.column-gap;
+            spacing-vertical: root.row-gap;
+            flex-direction: row;
+            flex-wrap: wrap;
+            alignment: start;
+            cross-axis-alignment: start;
+            cross-axis-line-alignment: start;
+            @children
+        }
+    }
+}

@@ -1,0 +1,235 @@
+import { Palette, Button, CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
+import { ForgePlot, ForgePlotScene, ForgePlotSeries, ForgePlotPoint, ForgePlotAxis, ForgePlotPanel,
+    ForgePlotColorMap, ForgePlotItem, ForgePlotExportResult, ForgePlotScale,
+    ForgePlotLegendPosition, ForgePlotLegendStyle, ForgePlotXWindowMode, ForgePlotTicker } from "@slintforge";
+export { ForgePlotServices, ForgePlotScene, ForgePlotAxis, ForgePlotRange, ForgePlotRect,
+    ForgePlotHit, ForgePlotSelection, ForgePlotExportResult, ForgePlotPoint } from "@slintforge";
+
+// 专用于八方向选择，一次展开全部项目，避免最后两项藏在默认六行滚动区。
+component ProfessionalPlotPositionPicker inherits Rectangle {
+    in property<[string]> model;
+    in property<bool> enabled: true;
+    in-out property<int> current-index: 0;
+    out property<bool> open: popup.is-open;
+    public function show() {if root.enabled {focus.focus();popup.show();}}
+    public function close() {popup.close();}
+    min-width:80px;preferred-height:34px;horizontal-stretch:1;vertical-stretch:0;
+    background:Palette.control-background;border-width:1px;border-color:Palette.border;border-radius:3px;
+    opacity:root.enabled?1:0.45;forward-focus:focus;
+    accessible-role:combobox;accessible-enabled:root.enabled;accessible-expanded:root.open;
+    accessible-expandable:true;accessible-value:root.model[root.current-index];accessible-action-expand=>{root.show();}
+    Text {x:10px;width:parent.width - 34px;height:parent.height;text:root.model[root.current-index];color:Palette.foreground;vertical-alignment:center;overflow:elide;}
+    Text {x:parent.width - 24px;width:16px;height:parent.height;text:"⌄";color:Palette.foreground;vertical-alignment:center;horizontal-alignment:center;}
+    focus:=FocusScope {enabled:root.enabled;key-pressed(event)=>{
+        if event.text==Key.Return || event.text==" " {root.show();return accept;}
+        if event.text==Key.DownArrow {root.current-index=Math.min(root.model.length - 1,root.current-index+1);return accept;}
+        if event.text==Key.UpArrow {root.current-index=Math.max(0,root.current-index - 1);return accept;}
+        return reject;
+    }}
+    TouchArea {enabled:root.enabled;clicked=>{root.show();}}
+    popup:=PopupWindow {
+        x:0px;y:root.height+4px;width:Math.max(root.width,140px);height:root.model.length*32px+8px;
+        close-policy:close-on-click-outside;forward-focus:popup-focus;
+        Rectangle {background:Palette.control-background;border-width:1px;border-color:Palette.border;border-radius:4px;
+            VerticalLayout {padding:4px;spacing:0px;
+                for value[index] in root.model:Rectangle {
+                    height:32px;vertical-stretch:0;background:item-touch.has-hover || root.current-index==index?Palette.accent-background.with-alpha(0.18):transparent;
+                    Text {x:10px;width:parent.width - 20px;height:parent.height;text:value;color:Palette.foreground;vertical-alignment:center;}
+                    item-touch:=TouchArea {clicked=>{root.current-index=index;root.close();}}
+                }
+            }
+        }
+        popup-focus:=FocusScope {key-pressed(event)=>{
+            if event.text==Key.Return || event.text==Key.Escape {root.close();return accept;}
+            if event.text==Key.DownArrow {root.current-index=Math.min(root.model.length - 1,root.current-index+1);return accept;}
+            if event.text==Key.UpArrow {root.current-index=Math.max(0,root.current-index - 1);return accept;}
+            if event.text==Key.Home {root.current-index=0;return accept;}
+            if event.text==Key.End {root.current-index=root.model.length - 1;return accept;}
+            return reject;
+        }}
+    }
+    changed enabled=>{if !root.enabled {root.close();}}
+}
+
+export component ProfessionalPlotDemo inherits Rectangle {
+    preferred-width: 1080px; preferred-height: 760px;
+    background: Palette.background;
+    in-out property<int> mode: 0;
+    in-out property<bool> steps: false;
+    in-out property<bool> stacked: false;
+    in-out property<bool> logarithmic: false;
+    in-out property<bool> live: false;
+    in-out property<bool> streaming: false;
+    in-out property<int> window-mode: 2;
+    in-out property<int> legend-position-index: 0;
+    in-out property<int> legend-placement-index: 0;
+    in-out property<int> legend-style-index: 0;
+    in-out property<bool> legend-values: true;
+    in-out property<bool> measure: false;
+    in-out property<int> measurement-series: 0;
+    in-out property<int> measurement-position-index: 0;
+    in-out property<int> measurement-placement-index: 1;
+    in-out property<int> line-style-index: 0;
+    in-out property<int> axis-ticker-index: 0;
+    in-out property<[ForgePlotPoint]> live-points;
+    in-out property<[ForgePlotPoint]> benchmark-points;
+    in-out property<string> export-path: "plot.svg";
+    in-out property<int> export-format: 3;
+    in-out property<string> message: @tr("滚轮缩放，拖动平移，Shift 框选缩放，Ctrl 框选数据。");
+    out property<ForgePlotScene> scene: plot.scene;
+    out property<float> plot-offset-x: plot.x / 1px;
+    out property<float> plot-offset-y: plot.y / 1px;
+    out property<float> cursor-a:plot.cursor-a;
+    out property<float> cursor-b:plot.cursor-b;
+    out property<float> cursor-a-pixel:plot.cursor-a-pixel;
+    out property<float> cursor-b-pixel:plot.cursor-b-pixel;
+    out property<bool> legend-menu-open:legend-position.open;
+    out property<bool> measurement-menu-open:measurement-position.open;
+    out property<float> legend-picker-x:legend-row.x / 1px + legend-position.x / 1px;
+    out property<float> legend-picker-y:legend-row.y / 1px + legend-position.y / 1px;
+    out property<float> measurement-picker-x:measurement-row.x / 1px + measurement-position.x / 1px;
+    out property<float> measurement-picker-y:measurement-row.y / 1px + measurement-position.y / 1px;
+    callback show-legend-positions();show-legend-positions=>{legend-position.show();}
+    callback show-measurement-positions();show-measurement-positions=>{measurement-position.show();}
+    callback close-position-menus();close-position-menus=>{legend-position.close();measurement-position.close();}
+    callback reset-measurement();reset-measurement=>{plot.reset-measurement-cursors();}
+    private property<bool> hidden-first: false;
+    private property<bool> hidden-second: false;
+    // 模式和实时模型变化后重新发布配置，保留图例状态与用户的当前视图。
+    changed mode => {root.hidden-first=false;root.hidden-second=false;plot.axes=root.axes;plot.series=root.data;plot.clear-selection();plot.reset-view();}
+    changed logarithmic => {plot.axes=root.axes;plot.reset-view();}
+    changed steps => {plot.series=root.data;}
+    changed stacked => {plot.series=root.data;}
+    changed line-style-index => {plot.series=root.data;}
+    changed axis-ticker-index => {plot.axes=root.axes;}
+    changed streaming => {plot.series=root.data;plot.reset-view();}
+    changed live-points => {plot.series=root.data;}
+    changed benchmark-points => {plot.series=root.data;}
+    callback refresh(); refresh => {plot.series=root.data;plot.refresh();}
+    callback reset(); reset => {plot.axes=root.axes;plot.series=root.data;plot.reset-view();}
+    callback benchmark-pan(float,float);benchmark-pan(dx,dy)=>{plot.pan-by(dx,dy,0);}
+    callback benchmark-zoom();benchmark-zoom=>{plot.zoom-at(root.width / 2px,root.height / 2px,0.1,0);}
+    callback export-file(string,string) -> ForgePlotExportResult;
+    export-file(path, format) => {return plot.export-file(path,format);}
+    callback sample-running(bool);
+    callback append-points(int, [ForgePlotPoint]) -> bool;
+    append-points(id, points) => {plot.series=root.data;return plot.append-points(id, points);}
+    callback flush();flush=>{plot.flush();}
+    callback scroll-history(float);scroll-history(position) => {plot.scroll-history(position);}
+    property<[ForgePlotPoint]> empty-points: [];
+    property<[ForgePlotPoint]> reference: [{x:0,y:1},{x:1,y:2},{x:2,y:2},{x:3,y:3},{x:4,y:2},{x:5,y:4}];
+    property<[ForgePlotPoint]> trend: [{x:0,y:3,error-y-minus:0.5,error-y-plus:1},
+        {x:1,y:7,error-y-minus:1,error-y-plus:2},{x:2,y:5},{x:3,y:11},{x:4,y:8},{x:5,y:13}];
+    property<[ForgePlotPoint]> prices: [{x:0,y:8,low:4,high:11,open:6,close:9},
+        {x:1,y:9,low:5,high:12,open:10,close:7},{x:2,y:12,low:8,high:15,open:9,close:14},
+        {x:3,y:11,low:7,high:14,open:13,close:8},{x:4,y:10,low:5,high:16,open:7,close:13}];
+    property<[ForgePlotAxis]> axes-panels: [
+        {id:0,panel:0,side:bottom,label:@tr("时间 / s"),precision:1}, {id:1,panel:0,side:left,label:@tr("电压 / V"),precision:1},
+        {id:2,panel:1,side:bottom,label:@tr("时间 / s"),precision:1}, {id:3,panel:1,side:left,label:@tr("温度 / ℃"),precision:1}
+    ];
+    property<[ForgePlotAxis]> axes-multiple: [
+        {id:0,side:bottom,label:@tr("时间 / s"),precision:1}, {id:1,side:left,label:@tr("电压 / V"),precision:1},
+        {id:2,side:right,label:@tr("温度 / ℃"),precision:1}
+    ];
+    property<[ForgePlotAxis]> axes-basic: [{id:0,side:bottom,precision:1,label:root.mode==8?@tr("角度 / °"):root.mode==0?@tr("时间 / s"):"X",
+        ticker: root.axis-ticker-index==1?date-time:root.axis-ticker-index==2?duration:root.axis-ticker-index==3?pi:root.axis-ticker-index==4?text:numeric,
+        time-origin: "1791033600",format: "%H:%M:%S",ticks:root.axis-ticker-index==4?[{value:0,label:@tr("起点")},{value:2.5,label:@tr("中点")},{value:5,label:@tr("终点")}]:[]},
+        {id:1,side:left,precision:1,label:"Y",scale:root.logarithmic?ForgePlotScale.logarithmic:ForgePlotScale.linear,minimum:1,maximum:100}];
+    property<[ForgePlotAxis]> axes: root.mode==9?root.axes-panels:root.mode==7?root.axes-multiple:root.axes-basic;
+    property<[ForgePlotPanel]> panels: root.mode == 9 ? [
+        {id:0,x:0,y:0,width:1,height:0.5,title:@tr("电压")},{id:1,x:0,y:0.5,width:1,height:0.5,title:@tr("温度")}
+    ] : [];
+    property<[ForgePlotSeries]> data-graph: [
+        {id:0,hidden:root.hidden-first,name:@tr("测量 / 不对称误差"),y-axis:1,color:#36a2eb,fill-color:root.streaming?transparent:#36a2eb33,
+            channel-fill:!root.streaming,fill-target:1,scatter-style:root.streaming?(root.line-style-index==5?disc:none):disc,
+            line-style:root.steps?step-center:root.line-style-index==1?step-left:root.line-style-index==2?step-right:root.line-style-index==3?step-center:root.line-style-index==4?impulse:root.line-style-index==5?none:auto,
+            points:root.streaming?root.empty-points:root.live-points.length>0?root.live-points:root.trend},
+        {id:1,hidden:root.hidden-second,name:@tr("参考下界"),y-axis:1,color:#4bc0c0,points:root.streaming?root.empty-points:root.reference}
+    ];
+    property<[ForgePlotSeries]> data-curve: [{id:0,hidden:root.hidden-first,name:@tr("参数曲线"),kind:curve,y-axis:1,color:#9966ff,scatter-style:diamond,
+        points:[{x:1,y:0},{x:0.7,y:0.7},{x:0,y:1},{x:-0.7,y:0.7},{x:-1,y:0},{x:-0.7,y:-0.7},{x:0,y:-1},{x:0.7,y:-0.7},{x:1,y:0}]}];
+    property<[ForgePlotSeries]> data-bars: [
+        {id:0,hidden:root.hidden-first,name:@tr("系列甲"),kind:bars,y-axis:1,stacked:root.stacked,color:#36a2eb,points:[{x:0,y:4},{x:1,y:-3},{x:2,y:5},{x:3,y:7}]},
+        {id:1,hidden:root.hidden-second,name:@tr("系列乙"),kind:bars,y-axis:1,stacked:root.stacked,color:#ff6384,points:[{x:0,y:3},{x:1,y:-2},{x:2,y:4},{x:3,y:2}]}
+    ];
+    property<[ForgePlotSeries]> data-box: [{id:0,hidden:root.hidden-first,name:@tr("统计箱 / 离群值"),kind:statistical-box,y-axis:1,fill-color:#36a2eb44,
+        points:[{x:0,y:5,low:1,q1:3,q3:7,high:10,outliers:[-2,13]},{x:1,y:8,low:3,q1:6,q3:10,high:12,outliers:[15]},{x:2,y:4,low:0,q1:2,q3:6,high:9}]}];
+    property<[ForgePlotSeries]> data-prices: [{id:0,hidden:root.hidden-first,name:@tr("价格"),kind:root.mode==4?candlestick:ohlc,y-axis:1,color:#4bc0c0,points:root.prices}];
+    property<[ForgePlotSeries]> data-multiple: [
+        {id:0,hidden:root.hidden-first,name:@tr("电压"),y-axis:1,color:#36a2eb,points:root.trend},
+        {id:1,hidden:root.hidden-second,name:@tr("温度"),y-axis:2,color:#ff6384,points:[{x:0,y:22},{x:1,y:24},{x:2,y:27},{x:3,y:23},{x:4,y:26},{x:5,y:29}]}
+    ];
+    property<[ForgePlotSeries]> data-polar: [{id:0,hidden:root.hidden-first,name:@tr("极坐标"),kind:polar,y-axis:1,color:#9966ff,scatter-style:disc,
+        points:[{x:0,y:4},{x:45,y:8},{x:90,y:5},{x:135,y:9},{x:180,y:4},{x:225,y:8},{x:270,y:5},{x:315,y:9},{x:360,y:4}]}];
+    property<[ForgePlotSeries]> data-panels: [{id:0,hidden:root.hidden-first,name:@tr("电压"),y-axis:1,color:#36a2eb,points:root.trend},
+        {id:1,hidden:root.hidden-second,name:@tr("温度"),x-axis:2,y-axis:3,color:#ff6384,points:[{x:0,y:22},{x:1,y:24},{x:2,y:27},{x:3,y:23},{x:4,y:26},{x:5,y:29}]}];
+    property<[ForgePlotSeries]> benchmark-data: [{id:0,hidden:root.hidden-first,name:@tr("大数据"),y-axis:1,color:#36a2eb,points:root.benchmark-points}];
+    property<[ForgePlotSeries]> data: root.benchmark-points.length>0?root.benchmark-data:root.mode==0?root.data-graph:root.mode==1?root.data-curve:root.mode==2?root.data-bars:
+        root.mode==3?root.data-box:root.mode==4||root.mode==5?root.data-prices:root.mode==6?[]:root.mode==7?root.data-multiple:root.mode==8?root.data-polar:root.data-panels;
+    property<[ForgePlotColorMap]> maps: root.mode==6 ? [{id:0,x-axis:0,y-axis:1,columns:5,rows:5,x-min:0,x-max:5,y-min:0,y-max:5,name:@tr("二维场"),
+        values:[0,1,2,3,4,1,2,4,6,3,2,4,8,4,2,3,6,4,2,1,4,3,2,1,0]}] : [];
+    VerticalLayout {
+        padding: 16px; spacing: 12px;
+        HorizontalLayout {
+            height:34px;vertical-stretch:0;spacing:8px;
+            ComboBox {model:[@tr("曲线 / 误差 / 填充"),@tr("参数曲线"),@tr("柱状图"),@tr("统计箱"),@tr("蜡烛图"),"OHLC",@tr("二维色图"),@tr("多轴"),@tr("极坐标"),@tr("多绘图区")];current-index<=>root.mode;}
+            ComboBox {model:[@tr("X 自动适配"),@tr("X 无限历史"),@tr("X 固定 10 秒")];current-index<=>root.window-mode;min-width:80px;}
+            ComboBox {model:[@tr("X 数值刻度"),@tr("X 日期时间"),@tr("X 持续时间"),@tr("X π 刻度"),@tr("X 文本刻度")];current-index<=>root.axis-ticker-index;enabled:root.mode!=7&&root.mode!=9&&root.mode!=8;}
+        }
+        HorizontalLayout {
+            height: 34px;vertical-stretch: 0;spacing:8px;
+            CheckBox {text:@tr("阶梯");checked<=>root.steps;enabled:root.mode==0;}
+            CheckBox {text:@tr("堆叠");checked<=>root.stacked;enabled:root.mode==2;}
+            CheckBox {text:@tr("对数轴");checked<=>root.logarithmic;enabled:root.mode!=7&&root.mode!=9;}
+            CheckBox {text:@tr("实时数据");checked<=>root.live;toggled=>{root.mode=0;if self.checked {root.streaming=true;}root.sample-running(self.checked);}}
+            ComboBox {model:[@tr("连续折线"),@tr("左阶梯"),@tr("右阶梯"),@tr("中间阶梯"),@tr("脉冲"),@tr("仅散点")];current-index<=>root.line-style-index;enabled:root.mode==0;min-width:80px;}
+            Button {text:@tr("复位");clicked=>{plot.reset-view();}}
+        }
+        legend-row:=HorizontalLayout {
+            height: 34px;vertical-stretch: 0;spacing:8px;
+            Text {text:@tr("图例");color:Palette.foreground;vertical-alignment:center;horizontal-stretch:0;}
+            ComboBox {model:[@tr("图例区域内"),@tr("图例区域外")];current-index<=>root.legend-placement-index;min-width:80px;}
+            legend-position:=ProfessionalPlotPositionPicker {model:[@tr("图例下方"),@tr("图例上方"),@tr("图例左侧"),@tr("图例右侧"),@tr("图例右上"),@tr("图例右下"),@tr("图例左上"),@tr("图例左下")];current-index<=>root.legend-position-index;}
+            ComboBox {model:[@tr("图例简洁"),@tr("图例边框"),@tr("图例紧凑")];current-index<=>root.legend-style-index;min-width:80px;}
+            CheckBox {text:@tr("图例最新值");checked<=>root.legend-values;}
+        }
+        measurement-row:=HorizontalLayout {
+            height: 34px;vertical-stretch: 0;spacing:8px;
+            CheckBox {text:@tr("双光标测量");checked<=>root.measure;}
+            ComboBox {model:[@tr("测量区域内"),@tr("测量区域外")];current-index<=>root.measurement-placement-index;enabled:root.measure;min-width:80px;}
+            measurement-position:=ProfessionalPlotPositionPicker {model:[@tr("测量下方"),@tr("测量上方"),@tr("测量左侧"),@tr("测量右侧"),@tr("测量右上"),@tr("测量右下"),@tr("测量左上"),@tr("测量左下")];current-index<=>root.measurement-position-index;enabled:root.measure;}
+            ComboBox {model:[@tr("测量曲线 1"),@tr("测量曲线 2")];current-index<=>root.measurement-series;enabled:root.measure;min-width:80px;}
+            Button {text:@tr("光标复位");enabled:root.measure;clicked=>{root.reset-measurement();}}
+        }
+        plot:=ForgePlot {
+            title:@tr("专业二维绘图");series:root.data;axes:root.axes;panels:root.panels;color-maps:root.maps;
+            legend-position: root.legend-position-index == 1 ? top : root.legend-position-index == 2 ? left : root.legend-position-index == 3 ? right : root.legend-position-index == 4 ? top-right : root.legend-position-index == 5 ? bottom-right : root.legend-position-index == 6 ? top-left : root.legend-position-index == 7 ? bottom-left : bottom;
+            legend-style: root.legend-style-index == 1 ? framed : root.legend-style-index == 2 ? compact : plain;
+            legend-placement: root.legend-placement-index == 1 ? outside : inside;
+            measurement-placement: root.measurement-placement-index == 0 ? inside : outside;
+            measurement-position: root.measurement-position-index == 1 ? top : root.measurement-position-index == 2 ? left : root.measurement-position-index == 3 ? right : root.measurement-position-index == 4 ? top-right : root.measurement-position-index == 5 ? bottom-right : root.measurement-position-index == 6 ? top-left : root.measurement-position-index == 7 ? bottom-left : bottom;
+            legend-latest-value: root.legend-values;
+            x-window-mode: root.streaming ? (root.window-mode == 0 ? fit : root.window-mode == 1 ? unlimited : fixed) : fit;
+            x-window-size: 10;measure-enabled: root.measure;measurement-series: root.measurement-series;cursor-a: 1;cursor-b: 3;
+            items: root.mode==0 ? [{id:10,kind:text,coordinates:ratio,x:0.04,y:0.12,text:@tr("测量与参考值"),color:#ff9f40,layer:20},
+                {id:11,kind:arrow,coordinates:ratio,x:0.3,y:0.2,x2:0.5,y2:0.6,color:#ff9f40,width:2,layer:20}] : [];
+            point-selected(hit)=>{root.message=@tr("已选择 {}，原始索引 {}，数值 {}",hit.label,hit.index,hit.value);}
+            legend-clicked(id)=>{
+                root.hidden-first=plot.series.length>0?plot.series[0].hidden:false;
+                root.hidden-second=plot.series.length>1?plot.series[1].hidden:false;
+                plot.series=root.data;
+            }
+        }
+        Text {text:root.message;color:Palette.foreground;wrap:word-wrap;vertical-stretch:0;}
+        HorizontalLayout {
+            height:34px;
+            LineEdit {text<=>root.export-path;}
+            ComboBox {model:["PNG","JPEG","BMP","SVG","PDF"];current-index<=>root.export-format;}
+            Button {text:@tr("导出");clicked=>{
+                root.message=plot.export-file(root.export-path,root.export-format==0?"png":root.export-format==1?"jpeg":root.export-format==2?"bmp":root.export-format==3?"svg":"pdf").ok?@tr("导出成功"):@tr("导出失败，请检查目标路径");
+            }}
+        }
+    }
+}
+
+

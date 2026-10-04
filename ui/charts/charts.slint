@@ -1,0 +1,249 @@
+import { Palette, CheckBox } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeChartKind, ForgeChartSeries, ForgeChartSlice, ForgeChartOptions, ForgeChartScene, ForgeChartServices } from "../types/charts.slint";
+
+// 共享绘图层使用原生 Rectangle/Path；SDK 返回的数据不含界面或平台窗口。
+export component ForgeChart inherits Rectangle {
+    in property<ForgeChartKind> kind: bar;
+    in-out property<[ForgeChartSeries]> series;
+    in-out property<[ForgeChartSlice]> slices;
+    in property<[string]> categories;
+    in property<bool> auto-range: true;
+    in property<float> x-min: 0;
+    in property<float> x-max: 10;
+    in property<float> y-min: 0;
+    in property<float> y-max: 100;
+    in property<bool> include-zero: false;
+    in property<bool> stacked: false;
+    in property<bool> smooth: false;
+    in property<bool> fill-area: false;
+    in property<bool> doughnut: false;
+    in property<float> point-size: 5;
+    in property<int> precision: 2;
+    in property<bool> show-grid: true;
+    in property<bool> show-legend: true;
+    in property<bool> enabled: true;
+    in property<color> chart-background: Palette.alternate-background;
+    in-out property<int> selected-index: -1;
+    out property<int> hovered-index: root.hovered;
+    out property<int> selected-series: root.valid-selection ? root.scene.marks[root.selected-index].series-index : -1;
+    out property<int> selected-point: root.valid-selection ? root.scene.marks[root.selected-index].point-index : -1;
+    out property<ForgeChartScene> scene: ForgeChartServices.connected
+        ? ForgeChartServices.prepare(root.kind-number, root.series, root.slices, root.categories, root.options)
+        : { status: 3, x-min: 0, x-max: 1, y-min: 0, y-max: 1, zero-y: 1, inner-radius: 0,
+            marks: [], areas: [], lines: [], x-ticks: [], y-ticks: [], labels: [] };
+    callback point-selected(int, int, float);
+    private property<int> revision: 0;
+    private property<int> hovered: -1;
+    private property<bool> valid-selection: root.selected-index >= 0 && root.selected-index < root.scene.marks.length;
+    private property<bool> radial: root.kind == ForgeChartKind.pie || root.kind == ForgeChartKind.polar || root.kind == ForgeChartKind.radar;
+    private property<int> kind-number: root.kind == ForgeChartKind.bar ? 0 : root.kind == ForgeChartKind.line ? 1 : root.kind == ForgeChartKind.pie ? 2 :
+        root.kind == ForgeChartKind.polar ? 3 : root.kind == ForgeChartKind.bubble ? 4 : root.kind == ForgeChartKind.scatter ? 5 : 6;
+    private property<ForgeChartOptions> options: {
+        auto-range: root.auto-range, x-min: root.x-min, x-max: root.x-max, y-min: root.y-min, y-max: root.y-max,
+        include-zero: root.include-zero, stacked: root.stacked, smooth: root.smooth, fill-area: root.fill-area,
+        doughnut: root.doughnut, point-size: root.point-size, precision: root.precision, revision: root.revision,
+    };
+    private property<[color]> colors: [#36a2eb, #ff6384, #4bc0c0, #ffcd56, #9966ff, #ff9f40, #788694];
+    min-width: 280px; min-height: 220px;
+    preferred-width: 500px; preferred-height: 370px;
+    background: root.chart-background;
+    forward-focus: scope;
+    public function refresh() { root.revision += 1; }
+    public function select-point(index: int) {
+        if root.enabled && index >= 0 && index < root.scene.marks.length {
+            root.selected-index = index;
+            root.point-selected(root.scene.marks[index].series-index, root.scene.marks[index].point-index, root.scene.marks[index].value);
+        }
+    }
+    public function clear-selection() { root.selected-index = -1; }
+    public function hide-series(index: int, hidden: bool) {
+        if index >= 0 && index < root.series.length { root.series[index].hidden = hidden; root.refresh(); }
+    }
+    public function hide-slice(index: int, hidden: bool) {
+        if index >= 0 && index < root.slices.length { root.slices[index].hidden = hidden; root.refresh(); }
+    }
+    pure function legend-color(value: color, index: int) -> color { return value.alpha > 0 ? value : root.colors[mod(index, 7)]; }
+    changed scene => { root.hovered = -1; root.selected-index = -1; }
+    changed enabled => { if !root.enabled { root.hovered = -1; } }
+
+    scope := FocusScope {
+        x: root.radial ? (root.width - self.width) / 2 : 52px;
+        y: root.radial ? 24px : 12px;
+        width: root.radial ? Math.max(1px, Math.min(root.width - 140px, root.height - 88px)) : Math.max(1px, root.width - 72px);
+        height: root.radial ? self.width : Math.max(1px, root.height - (root.show-legend ? 92px : 62px));
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if !root.enabled || root.scene.marks.length == 0 { return reject; }
+            if event.text == Key.RightArrow || event.text == Key.DownArrow { root.select-point(mod(root.selected-index + 1, root.scene.marks.length)); return accept; }
+            if event.text == Key.LeftArrow || event.text == Key.UpArrow { root.select-point(root.selected-index < 0 ? root.scene.marks.length - 1 : mod(root.selected-index + root.scene.marks.length - 1, root.scene.marks.length)); return accept; }
+            if event.text == Key.Home { root.select-point(0); return accept; }
+            if event.text == Key.End { root.select-point(root.scene.marks.length - 1); return accept; }
+            if event.text == Key.Escape { root.clear-selection(); return accept; }
+            return reject;
+        }
+        plot := Rectangle {
+            width: scope.width; height: scope.height;
+            background: transparent; clip: true;
+            visible: root.scene.status == 0;
+            for tick in root.scene.y-ticks : Rectangle {
+                visible: !root.radial && root.show-grid;
+                x: 0px; y: (1 - tick.position) * plot.height; width: plot.width; height: 1px;
+                background: Palette.border.with-alpha(0.65);
+            }
+            for index in 5 : Rectangle {
+                visible: root.show-grid && (root.kind == ForgeChartKind.polar || root.kind == ForgeChartKind.radar);
+                width: (index + 1) / 5 * 0.9 * plot.width; height: self.width;
+                x: (plot.width - self.width) / 2; y: (plot.height - self.height) / 2;
+                border-radius: self.width / 2; border-width: 1px; border-color: Palette.border; background: transparent;
+            }
+            for label in root.scene.labels : Path {
+                width: plot.width; height: plot.height; viewbox-width: 1; viewbox-height: 1; fit: fill;
+                stroke: Palette.border; stroke-width: 1px; fill: transparent;
+                MoveTo { x: 0.5; y: 0.5; } LineTo { x: 0.5 + (label.x - 0.5) * 0.45 / 0.51; y: 0.5 + (label.y - 0.5) * 0.45 / 0.51; }
+            }
+            for area[index] in root.scene.areas : Path {
+                width: plot.width; height: plot.height; viewbox-width: 1; viewbox-height: 1; fit: fill;
+                fill: area.color.with-alpha(0.16); stroke: transparent;
+                MoveTo { x: area.x; y: area.y; }
+                CubicTo {
+                    control-1-x: root.scene.lines[index].c1x; control-1-y: root.scene.lines[index].c1y;
+                    control-2-x: root.scene.lines[index].c2x; control-2-y: root.scene.lines[index].c2y;
+                    x: area.x1; y: area.y1;
+                }
+                LineTo { x: area.x2; y: area.y2; } LineTo { x: area.x3; y: area.y3; } Close {}
+            }
+            Rectangle {
+                visible: !root.radial && root.scene.zero-y >= 0 && root.scene.zero-y <= 1;
+                x: 0px; y: root.scene.zero-y * plot.height; width: plot.width; height: 1px; background: Palette.foreground.with-alpha(0.4);
+            }
+            for mark[index] in root.scene.marks : Rectangle {
+                visible: mark.kind == 0;
+                x: mark.x * plot.width; y: mark.y * plot.height;
+                width: mark.width * plot.width; height: mark.height * plot.height;
+                background: root.hovered == index || root.selected-index == index ? mark.color.brighter(0.15) : mark.color;
+                border-width: root.selected-index == index ? 2px : 0px; border-color: Palette.foreground;
+            }
+            for line in root.scene.lines : Path {
+                width: plot.width; height: plot.height; viewbox-width: 1; viewbox-height: 1; fit: fill;
+                stroke: line.color; stroke-width: 2px; stroke-line-cap: round; fill: transparent;
+                MoveTo { x: line.x; y: line.y; }
+                CubicTo { control-1-x: line.c1x; control-1-y: line.c1y; control-2-x: line.c2x; control-2-y: line.c2y; x: line.x1; y: line.y1; }
+            }
+            for mark[index] in root.scene.marks : Rectangle {
+                visible: mark.kind == 1 && mark.radius > 0;
+                x: mark.x * plot.width - self.width / 2; y: mark.y * plot.height - self.height / 2;
+                width: (mark.radius + (root.hovered == index ? 2 : 0)) * 2px; height: self.width;
+                border-radius: self.width / 2; background: mark.color.with-alpha(root.kind == ForgeChartKind.bubble ? 0.65 : 1);
+                border-width: root.selected-index == index ? 2px : 1px;
+                border-color: root.selected-index == index ? Palette.foreground : mark.color;
+            }
+            for mark[index] in root.scene.marks : Path {
+                visible: mark.kind == 2;
+                width: plot.width; height: plot.height; viewbox-width: 1; viewbox-height: 1; fit: fill;
+                fill: root.hovered == index || root.selected-index == index ? mark.color.brighter(0.15) : mark.color;
+                stroke: root.selected-index == index ? Palette.foreground : root.chart-background; stroke-width: root.selected-index == index ? 2px : 1px;
+                MoveTo { x: mark.x1; y: mark.y1; }
+                ArcTo { x: mark.x2; y: mark.y2; radius-x: mark.radius; radius-y: mark.radius; sweep: true; }
+                ArcTo { x: mark.x3; y: mark.y3; radius-x: mark.radius; radius-y: mark.radius; sweep: true; }
+                LineTo { x: mark.sweep-angle >= 359.999 ? mark.x1 : 0.5; y: mark.sweep-angle >= 359.999 ? mark.y1 : 0.5; }
+                Close {}
+            }
+            Rectangle {
+                visible: root.scene.inner-radius > 0;
+                width: root.scene.inner-radius * 2 * plot.width; height: self.width;
+                x: (plot.width - self.width) / 2; y: (plot.height - self.height) / 2;
+                border-radius: self.width / 2; background: root.chart-background;
+            }
+            pointer := TouchArea {
+                enabled: root.enabled;
+                pointer-event(event) => {
+                    if event.kind == PointerEventKind.move {
+                        root.hovered = ForgeChartServices.hit-test(root.scene.marks, self.mouse-x / plot.width, self.mouse-y / plot.height, plot.width / 1px, plot.height / 1px, root.scene.inner-radius);
+                    }
+                }
+                changed has-hover => { if !self.has-hover { root.hovered = -1; } }
+                clicked => {
+                    scope.focus();
+                    root.select-point(ForgeChartServices.hit-test(root.scene.marks, self.mouse-x / plot.width, self.mouse-y / plot.height, plot.width / 1px, plot.height / 1px, root.scene.inner-radius));
+                }
+            }
+            Rectangle { width: plot.width; height: plot.height; background: transparent; border-width: scope.has-focus ? 1px : 0px; border-color: Palette.accent-background; }
+        }
+    }
+    for tick in root.scene.y-ticks : Text {
+        visible: !root.radial && root.scene.status == 0;
+        x: 0px; y: scope.y + (1 - tick.position) * scope.height - 8px; width: 44px; height: 18px;
+        text: tick.label; color: Palette.foreground; font-size: 11px * ForgeTypography.scale; horizontal-alignment: right;
+    }
+    for tick in root.scene.x-ticks : Text {
+        visible: !root.radial && root.scene.status == 0;
+        x: scope.x + tick.position * scope.width - 34px; y: scope.y + scope.height + 8px; width: 68px; height: 20px;
+        text: tick.label; color: Palette.foreground; font-size: 11px * ForgeTypography.scale; horizontal-alignment: center; overflow: elide;
+    }
+    for label in root.scene.labels : Text {
+        x: scope.x + label.x * scope.width - 48px; y: scope.y + label.y * scope.height - 9px;
+        width: 96px; height: 32px; text: label.text; color: Palette.foreground;
+        font-size: 11px * ForgeTypography.scale; horizontal-alignment: center; wrap: word-wrap;
+    }
+    for tick[index] in root.scene.y-ticks : Text {
+        visible: root.kind == ForgeChartKind.polar && index > 0;
+        x: scope.x + scope.width / 2 + 4px; y: scope.y + scope.height / 2 - tick.position * 0.45 * scope.height - 8px;
+        text: tick.label; color: Palette.foreground; font-size: 10px * ForgeTypography.scale;
+    }
+    HorizontalLayout {
+        x: 12px; y: root.height - 30px; width: Math.max(0px, root.width - 24px); height: 26px;
+        spacing: 16px; alignment: center;
+        visible: root.show-legend && root.kind != ForgeChartKind.pie && root.kind != ForgeChartKind.polar;
+        for item[index] in root.series : HorizontalLayout {
+            spacing: 5px; horizontal-stretch: 0;
+            // 外层填满图例行，色块与复选框、文字保持同一垂直中心。
+            Rectangle {
+                width: 10px * ForgeTypography.scale; horizontal-stretch: 0;
+                Rectangle {
+                    y: (parent.height - self.height) / 2;
+                    width: parent.width; height: self.width;
+                    background: root.legend-color(item.color, index);
+                }
+            }
+            CheckBox { text: item.name; enabled: root.enabled; checked: !item.hidden; toggled => { root.hide-series(index, !self.checked); } }
+        }
+    }
+    HorizontalLayout {
+        x: 12px; y: root.height - 30px; width: Math.max(0px, root.width - 24px); height: 26px;
+        spacing: 12px; alignment: center;
+        visible: root.show-legend && (root.kind == ForgeChartKind.pie || root.kind == ForgeChartKind.polar);
+        for item[index] in root.slices : HorizontalLayout {
+            spacing: 4px; horizontal-stretch: 0;
+            Rectangle {
+                width: 10px * ForgeTypography.scale; horizontal-stretch: 0;
+                Rectangle {
+                    y: (parent.height - self.height) / 2;
+                    width: parent.width; height: self.width;
+                    background: root.legend-color(item.color, index);
+                }
+            }
+            CheckBox { text: item.label; enabled: root.enabled; checked: !item.hidden; toggled => { root.hide-slice(index, !self.checked); } }
+        }
+    }
+    if root.scene.status != 0 : Text {
+        x: 20px; y: root.height / 2 - 20px; width: Math.max(0px, root.width - 40px); height: 40px;
+        text: root.scene.status == 3 ? @tr("请绑定图表服务") : root.scene.status == 2 ? @tr("数据或坐标范围无效") : @tr("暂无可显示的数据");
+        color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; font-size: 13px * ForgeTypography.scale;
+    }
+    if root.hovered >= 0 && root.hovered < root.scene.marks.length : Rectangle {
+        x: Math.min(Math.max(8px, scope.x + pointer.mouse-x + 12px), root.width - self.width - 8px);
+        y: Math.min(Math.max(8px, scope.y + pointer.mouse-y + 12px), root.height - self.height - 8px);
+        width: Math.min(250px, root.width - 16px); height: 44px; border-radius: 5px;
+        background: Palette.control-background; border-color: Palette.border; border-width: 1px;
+        Text { x: 10px; width: parent.width - 20px; height: parent.height; text: root.scene.marks[root.hovered].label;
+            color: Palette.foreground; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; wrap: word-wrap; }
+    }
+}
+export component ForgeBarChart inherits ForgeChart { kind: bar; include-zero: true; }
+export component ForgeLineChart inherits ForgeChart { kind: line; }
+export component ForgePieChart inherits ForgeChart { kind: pie; show-grid: false; }
+export component ForgePolarAreaChart inherits ForgeChart { kind: polar; }
+export component ForgeBubbleChart inherits ForgeChart { kind: bubble; }
+export component ForgeScatterChart inherits ForgeChart { kind: scatter; }
+export component ForgeRadarChart inherits ForgeChart { kind: radar; fill-area: true; include-zero: true; }

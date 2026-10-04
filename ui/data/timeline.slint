@@ -1,0 +1,21 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeTimelineItem } from "../types/widgets.slint";
+
+export component ForgeTimeline inherits Rectangle {
+    in property<[ForgeTimelineItem]> items;
+    preferred-height: layout.preferred-height;
+    layout := VerticalLayout {
+        spacing: 0px;
+        for item[index] in root.items : Rectangle {
+            preferred-height: Math.max(76px, content.preferred-height + 18px);
+            Rectangle { x: 7px; y: 18px; width: 2px; height: parent.height - 18px; visible: index < root.items.length - 1; background: Palette.border; }
+            Rectangle { x: 2px; y: 7px; width: 12px; height: 12px; border-radius: 6px; background: item.completed ? Palette.accent-background : Palette.border; }
+            content := VerticalLayout {
+                x: 30px; y: 0px; width: parent.width - 30px; spacing: 5px;
+                Text { text: item.time + " · " + item.title; color: Palette.foreground; font-weight: 600; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
+                Text { text: item.description; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; wrap: word-wrap; }
+            }
+        }
+    }
+}

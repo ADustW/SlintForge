@@ -1,0 +1,24 @@
+import { Palette } from "std-widgets.slint";
+import { GalleryPageFrame } from "page-frame.slint";
+import { GalleryDemoCard } from "demo-card.slint";
+
+// 与 FluentUI Gallery 一致：说明、示例标题、内容卡片；高度由示例指定。
+export component GallerySamplePage inherits Rectangle {
+    in property<string> title;
+    in property<string> subtitle;
+    in property<string> example-title: @tr("基本示例");
+    in property<length> preview-height: 240px;
+    out property<length> preview-width: Math.max(0px, sample-card.width - 2px);
+    out property<length> preview-area-height: Math.max(0px, sample-card.height - 2px);
+    background: Palette.background;
+    GalleryPageFrame {
+        width: parent.width; height: parent.height;
+        title: root.title;
+        subtitle: root.subtitle;
+        Text { text: root.example-title; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        sample-card := GalleryDemoCard {
+            preview-height: root.preview-height;
+            @children
+        }
+    }
+}

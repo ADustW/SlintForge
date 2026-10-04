@@ -1,0 +1,90 @@
+import { Palette, Button, CheckBox } from "std-widgets.slint";
+import { ForgeChart, ForgeChartKind, ForgeChartSeries, ForgeChartSlice } from "@slintforge";
+import { GalleryPageFrame } from "page-frame.slint";
+import { GalleryDemoCard } from "demo-card.slint";
+
+// 七类图表共享演示框架；切换数据、图例和选项均操作实际组件。
+export component GalleryChartPage inherits Rectangle {
+    in property<string> title;
+    in property<ForgeChartKind> kind;
+    in-out property<bool> updated: false;
+    in-out property<bool> empty: false;
+    in-out property<bool> stacked: false;
+    in-out property<bool> smooth: false;
+    in-out property<bool> filled: true;
+    in-out property<bool> doughnut: false;
+    in-out property<string> selection: @tr("悬停查看数值，点击选择数据，点击图例显示或隐藏系列。");
+    property<bool> radial: root.kind == pie || root.kind == polar || root.kind == radar;
+    property<[string]> categories: root.kind == radar
+        ? [@tr("饮食"), @tr("饮水"), @tr("睡眠"), @tr("设计"), @tr("编程"), @tr("骑行"), @tr("跑步")]
+        : [@tr("一月"), @tr("二月"), @tr("三月"), @tr("四月"), @tr("五月"), @tr("六月"), @tr("七月")];
+    property<[ForgeChartSeries]> series: [
+        { name: @tr("系列一"), color: #36a2eb, points: [
+            {x: 0, y: root.updated ? 38 : 65, size: 12}, {x: 1, y: root.updated ? 74 : 59, size: 20},
+            {x: 2, y: 80, size: 9}, {x: 3, y: root.updated ? 48 : 81, size: 24},
+            {x: 4, y: 56, size: 15}, {x: 5, y: root.updated ? 68 : 55, size: 10}, {x: 6, y: 40, size: 18}
+        ] },
+        { name: @tr("系列二"), color: #ff6384, points: [
+            {x: 0, y: 28, size: 18}, {x: 1, y: 48, size: 12}, {x: 2, y: root.updated ? 70 : 40, size: 22},
+            {x: 3, y: 19, size: 8}, {x: 4, y: root.updated ? 48 : 96, size: 16},
+            {x: 5, y: 27, size: 13}, {x: 6, y: 100, size: 20}
+        ] }
+    ];
+    property<[ForgeChartSlice]> slices: [
+        {label: @tr("红色"), value: root.updated ? 22 : 11, color: #ff6384},
+        {label: @tr("绿色"), value: root.updated ? 9 : 16, color: #4bc0c0},
+        {label: @tr("黄色"), value: 7, color: #ffcd56},
+        {label: @tr("灰色"), value: root.updated ? 12 : 3, color: #788694},
+        {label: @tr("蓝色"), value: 14, color: #36a2eb}
+    ];
+    callback prepare-preview(bool);
+    prepare-preview(open) => {
+        root.stacked = open && root.kind == bar;
+        root.smooth = open && root.kind == line;
+        root.doughnut = open && root.kind == pie;
+        if open { chart.select-point(0); } else { chart.clear-selection(); }
+    }
+    GalleryPageFrame {
+        title: root.title;
+        subtitle: root.kind == bar ? @tr("比较各月份的数据，切换分组或堆叠。")
+            : root.kind == line ? @tr("观察趋势，切换折线、平滑曲线和面积填充。")
+            : root.kind == pie ? @tr("比较各类别占比，切换饼图或环形图。")
+            : root.kind == polar ? @tr("扇区角度相同，面积随类别数值变化。")
+            : root.kind == bubble ? @tr("位置表示两个数值，圆的大小表示第三个数值。")
+            : root.kind == scatter ? @tr("查看两个系列的分布和相关性。")
+            : @tr("对比多个维度上的系列表现。");
+        Text { text: @tr("交互示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        card := GalleryDemoCard {
+            preview-height: 480px;
+            VerticalLayout {
+                x: 20px; y: 20px; width: parent.width - 40px; height: parent.height - 40px;
+                spacing: 16px;
+                chart := ForgeChart {
+                    width: Math.min(parent.width, 620px); height: 370px;
+                    horizontal-stretch: 0;
+                    kind: root.kind;
+                    series: root.empty ? [] : root.series;
+                    slices: root.empty ? [] : root.slices;
+                    categories: root.categories;
+                    include-zero: true;
+                    stacked: root.stacked; smooth: root.smooth;
+                    fill-area: root.filled; doughnut: root.doughnut;
+                    point-selected(series, point, value) => {
+                        root.selection = @tr("已选择：系列 {}，数据 {}，值 {}", series + 1, point + 1, value);
+                    }
+                }
+                Text { text: root.selection; color: Palette.foreground; wrap: word-wrap; vertical-stretch: 0; }
+            }
+        }
+        HorizontalLayout {
+            height: 34px; vertical-stretch: 0;
+            spacing: 12px; alignment: start;
+            Button { text: root.updated ? @tr("恢复数据") : @tr("更新数据"); clicked => { root.updated = !root.updated; root.empty = false; } }
+            Button { text: root.empty ? @tr("显示数据") : @tr("清空数据"); clicked => { root.empty = !root.empty; } }
+            if root.kind == bar : CheckBox { text: @tr("堆叠"); checked <=> root.stacked; }
+            if root.kind == line : CheckBox { text: @tr("平滑曲线"); checked <=> root.smooth; }
+            if root.kind == line || root.kind == radar : CheckBox { text: @tr("面积填充"); checked <=> root.filled; }
+            if root.kind == pie : CheckBox { text: @tr("环形图"); checked <=> root.doughnut; }
+        }
+    }
+}

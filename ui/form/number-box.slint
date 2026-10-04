@@ -1,0 +1,44 @@
+import { Button, LineEdit, Palette } from "std-widgets.slint";
+
+export component ForgeNumberBox inherits Rectangle {
+    in-out property<float> value: 0;
+    in property<float> minimum: 0;
+    in property<float> maximum: 100;
+    in property<float> step: 0.1;
+    in property<bool> enabled: true;
+    out property<bool> input-valid: field.text.is-float();
+    callback value-changed(float);
+    init => { root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), root.value)); }
+    public function commit() {
+        if root.enabled && field.text.is-float() { root.set-value(field.text.to-float()); }
+        field.text = "\{root.value}";
+    }
+    public function set-value(candidate: float) {
+        if !root.enabled { return; }
+        root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), candidate));
+        root.value-changed(root.value);
+    }
+    changed value => {
+        // 宿主赋值也遵守范围约束；只有用户操作触发 value-changed。
+        root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), root.value));
+        field.text = "\{root.value}";
+    }
+    changed minimum => { root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), root.value)); }
+    changed maximum => { root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), root.value)); }
+    min-width: 160px; preferred-height: 36px;
+    forward-focus: field;
+    HorizontalLayout {
+        spacing: 4px;
+        Button { text: "−"; enabled: root.enabled && root.value > root.minimum && root.step > 0; clicked => { root.set-value(root.value - Math.max(0, root.step)); } }
+        field := LineEdit {
+            text: "\{root.value}"; input-type: decimal; enabled: root.enabled;
+            accepted => { root.commit(); }
+            key-pressed(event) => {
+                if event.text == Key.UpArrow { root.set-value(root.value + Math.max(0, root.step)); return accept; }
+                if event.text == Key.DownArrow { root.set-value(root.value - Math.max(0, root.step)); return accept; }
+                return reject;
+            }
+        }
+        Button { text: "+"; enabled: root.enabled && root.value < root.maximum && root.step > 0; clicked => { root.set-value(root.value + Math.max(0, root.step)); } }
+    }
+}

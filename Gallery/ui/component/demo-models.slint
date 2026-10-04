@@ -1,0 +1,15 @@
+import { ForgeTreeItem } from "@slintforge";
+// 两种宿主绑定同一组演示模型，业务数据不写进组件内部。
+export global GalleryDemoModels {
+    in-out property<[string]> tags: ["Slint", "Rust", "C++"];
+    in-out property<[ForgeTreeItem]> tree-items;
+    in-out property<string> tree-selection;
+    in-out property<image> backdrop-image;
+    callback add-tag(string);
+    callback remove-tag(int);
+    callback expand-tree(string, bool);
+    callback select-tree(string, bool, bool);
+    callback show-window(bool);
+    callback close-windows();
+    callback export-image(image) -> string;
+}

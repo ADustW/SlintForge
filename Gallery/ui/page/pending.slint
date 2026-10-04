@@ -1,0 +1,44 @@
+import { ForgeTypography } from "@slintforge";
+import { Palette } from "std-widgets.slint";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+
+export struct GalleryPendingItem {
+    id: string,
+    title: string,
+    category: string,
+}
+
+// 用户明确暂缓的表格页面。
+export component GalleryPendingPage inherits Rectangle {
+    in property<GalleryPendingItem> item;
+    background: transparent;
+
+    GalleryPageFrame {
+        width: parent.width;
+        height: parent.height;
+        title: root.item.title;
+        subtitle: root.item.category;
+        Rectangle {
+            height: 112px;
+            background: transparent;
+            Text {
+                x: 0px; y: 0px; width: parent.width; height: 28px;
+                text: @tr("暂缓实现");
+                color: Palette.foreground;
+                font-size: 17px * ForgeTypography.scale;
+                font-weight: 600;
+                horizontal-alignment: left;
+            }
+            Text {
+                x: 0px; y: 36px;
+                width: parent.width;
+                height: 58px;
+                text: @tr("{} 属于表格组件，继续按要求暂缓。", root.item.title);
+                color: Palette.foreground;
+                font-size: 13px * ForgeTypography.scale;
+                horizontal-alignment: left;
+                wrap: word-wrap;
+            }
+        }
+    }
+}

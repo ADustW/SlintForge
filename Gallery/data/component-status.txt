@@ -1,0 +1,97 @@
+# id|状态(existing/native/custom/deferred)|组件或原生替代
+home|existing|Home
+inputs-validation|custom|ForgeInputValidation
+inputs-standard-button|native|Button
+inputs-filled-button|native|Button.primary
+inputs-pill-button|custom|ForgePillButton
+inputs-delay-button|custom|ForgeDelayButton
+iconbutton|existing|IconButton
+inputs-dropdown-button|custom|ForgeDropDownButton
+inputs-hyperlink-button|native|StyledText / Platform.open-url
+inputs-toggle-button|native|Button.checkable / checked
+inputs-radio-button|native|RadioGroup
+inputs-progress-button|custom|ForgeProgressButton
+inputs-chip|custom|ForgeChip
+inputs-tag-input|custom|ForgeTagInputBox
+inputs-copyable-text|native|TextEdit.read-only / select-all / copy
+inputs-checkbox|native|CheckBox
+inputs-slider|native|Slider
+inputs-toggle-switch|native|Switch
+form-time-picker|native|TimePickerPopup
+form-date-picker|native|DatePickerPopup
+form-calendar-picker|native|DatePickerPopup
+form-color-picker|custom|ForgeColorPicker
+form-shortcut-picker|custom|ForgeShortcutPicker
+form-textbox|native|LineEdit
+form-multiline-textbox|native|TextEdit
+form-scrollable-textbox|native|TextEdit.content-x / content-y
+form-password-box|native|LineEdit.input-type=password
+form-auto-suggest|custom|ForgeAutoSuggestBox
+form-combo-box|native|ComboBox
+form-multi-select-combo|custom|ForgeMultiSelectComboBox
+form-multi-tree-combo|custom|ForgeMultiTreeSelectComboBox
+form-number-box|custom|ForgeNumberBox
+form-spin-box|native|SpinBox
+navigation|existing|ForgeNavigationView
+breadcrumb|existing|ForgeBreadcrumb
+navigation-stack-page|existing|ForgePageStack / ForgeStackPage
+tabbar|existing|ForgeTabBar
+navigation-tab-view|native|TabWidget
+navigation-segmented|custom|ForgeSegmentedControl
+navigation-pagination|custom|ForgePagination
+navigation-multi-window|native|Window / 宿主 show、hide
+pageheader|existing|ForgePageHeader
+data-grid|custom|ForgeDataGrid
+data-tree-grid|custom|ForgeTreeDataGrid
+data-file-tree|custom|ForgeFileTree
+data-timeline|custom|ForgeTimeline
+data-statistic|custom|ForgeStatistic
+data-selection|native|TextEdit.read-only / 文本选择与复制
+data-qrcode|custom|ForgeQRCode
+infobar|existing|InfoBar
+feedback-info-badge|custom|ForgeInfoBadge
+feedback-progress-bar|native|ProgressIndicator
+feedback-progress-ring|native|Spinner
+feedback-result|custom|ForgeResult
+feedback-rating|custom|ForgeRatingControl
+feedback-shimmer|custom|ForgeShimmer
+feedback-skeleton|custom|ForgeSkeletonView
+layouts-split|existing|SplitLayout
+layouts-staggered|existing|StaggeredGridView
+layouts-flow|existing|FlowLayout
+layouts-adaptive-grid|existing|AdaptiveGrid
+layouts-dock|existing|DockLayout
+layouts-page-stack|existing|PageStack
+layouts-form-row|existing|FormRow
+surfaces-page|existing|ForgePage
+surfaces-round-image|existing|RoundImageView
+surfaces-icon-label|existing|IconLabel
+surfaces-expander|existing|Expander
+surfaces-watermark|existing|Watermark
+surfaces-marquee|existing|Marquee
+card|existing|Card
+forge-window|existing|ForgeWindow
+popups-menu|native|ContextMenuArea / Menu / MenuItem
+popups-content-dialog|custom|ForgeContentDialog
+popups-dialog-window|native|Dialog / StandardButton
+popups-tooltip|native|Tooltip
+popups-drawer|custom|ForgeDrawer
+chart-professional|custom|ForgePlot
+chart-bar|custom|ForgeBarChart
+chart-line|custom|ForgeLineChart
+chart-pie|custom|ForgePieChart
+chart-polar|custom|ForgePolarAreaChart
+chart-bubble|custom|ForgeBubbleChart
+chart-scatter|custom|ForgeScatterChart
+chart-radar|custom|ForgeRadarChart
+theme-acrylic|custom|ForgeAcrylic
+theme-liquid-glass|custom|ForgeLiquidGlass
+theme-colors|native|Palette
+theme-typography|existing|Typography
+theme-icons|existing|Icons
+other-tour|custom|ForgeTour
+other-syntax|custom|ForgeSyntaxView
+other-dial|custom|ForgeDial
+about|existing|About
+settings|existing|Settings
+lifecycle|existing|页面生命周期

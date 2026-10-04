@@ -1,0 +1,22 @@
+import { Palette } from "std-widgets.slint";
+
+import { ForgeTabItem } from "../types/content.slint";
+
+export component ForgeTabBar inherits Rectangle {
+    in property<[ForgeTabItem]> items;
+    in property<string> active-id;
+    callback selected(string);
+    height: 40px;
+    background: Palette.background;
+    HorizontalLayout {
+        spacing: 4px;
+        for tab in root.items : Rectangle {
+            width: tab-text.preferred-width + 28px;
+            height: parent.height;
+            border-radius: 6px;
+            background: root.active-id == tab.id ? Palette.control-background : transparent;
+            tab-text := Text { text: tab.title; horizontal-alignment: center; vertical-alignment: center; color: Palette.foreground; }
+            TouchArea { clicked => { root.selected(tab.id); } }
+        }
+    }
+}

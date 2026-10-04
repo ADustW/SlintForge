@@ -1,0 +1,104 @@
+# Gallery 展示页调整清单
+
+参考本地 FluentUI-Pro Gallery 源码。统一 24px 页边距、24px 分区间距、8px 圆角与 1px 边框，卡片内留白 20px。示例按内容指定高度，并保留导航、输入、弹层和窗口状态。用法代码位于独立示例目录，页面不显示代码面板。
+
+逐项记录覆盖全部 96 个路由；DataGrid、TreeDataGrid 和专业图表 ForgePlot 均提供交互演示。没有对应 FluentUI 页面的扩展布局使用同一 ScrollablePage / CardHighlight 展示约定。
+
+| 路由 | 标题 | 参考页面 | 参考示例区数量 | 本轮展示内容 |
+|---|---|---|---:|---|
+| `home` | Home | `page/T_Home.qml` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `inputs-validation` | InputValidation | `page/T_TextBox.qml` | 1 | 用法与状态；卡片高度 210px，随字体缩放 |
+| `inputs-standard-button` | Button | `component/CardHighlight.qml + ScrollablePage` | 0 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `inputs-filled-button` | FilledButton | `page/T_FilledButton.qml` | 2 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `inputs-pill-button` | PillButton | `page/T_PillButton.qml` | 2 | 用法与状态；卡片高度 250px，随字体缩放 |
+| `inputs-delay-button` | DelayButton | `page/T_DelayButton.qml` | 1 | 用法与状态；卡片高度 180px，随字体缩放 |
+| `iconbutton` | IconButton | `page/T_IconButton.qml` | 2 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `inputs-dropdown-button` | DropDownButton | `page/T_DropDownButton.qml` | 1 | 用法与状态；卡片高度 160px，随字体缩放 |
+| `inputs-hyperlink-button` | HyperlinkButton | `page/T_HyperlinkButton.qml` | 1 | 用法与状态；卡片高度 100px，随字体缩放 |
+| `inputs-toggle-button` | ToggleButton | `page/T_ToggleButton.qml` | 1 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `inputs-radio-button` | RadioButton | `page/T_RadioButton.qml` | 2 | 用法与状态；卡片高度 190px，随字体缩放 |
+| `inputs-progress-button` | ProgressButton | `page/T_ProgressButton.qml` | 1 | 用法与状态；卡片高度 170px，随字体缩放 |
+| `inputs-chip` | Chip | `page/T_Chip.qml` | 1 | 用法与状态；卡片高度 190px，随字体缩放 |
+| `inputs-tag-input` | TagInputBox | `page/T_TagInputBox.qml` | 5 | 用法与状态；卡片高度 170px，随字体缩放 |
+| `inputs-copyable-text` | CopyableText | `page/T_CopyableText.qml` | 1 | 用法与状态；卡片高度 340px，随字体缩放 |
+| `inputs-checkbox` | Checkbox | `page/T_Checkbox.qml` | 3 | 用法与状态；卡片高度 190px，随字体缩放 |
+| `inputs-slider` | Slider | `page/T_Slider.qml` | 2 | 用法与状态；卡片高度 310px，随字体缩放 |
+| `inputs-toggle-switch` | ToggleSwitch | `page/T_ToggleSwitch.qml` | 1 | 用法与状态；卡片高度 190px，随字体缩放 |
+| `form-time-picker` | TimePicker | `page/T_TimePicker.qml` | 3 | 用法与状态；卡片高度 160px，随字体缩放 |
+| `form-date-picker` | DatePicker | `page/T_DatePicker.qml` | 2 | 用法与状态；卡片高度 160px，随字体缩放 |
+| `form-calendar-picker` | CalendarPicker | `page/T_CalendarPicker.qml` | 2 | 用法与状态；卡片高度 160px，随字体缩放 |
+| `form-color-picker` | ColorPicker | `page/T_ColorPicker.qml` | 1 | 用法与状态；卡片高度 350px，随字体缩放 |
+| `form-shortcut-picker` | ShortcutPicker | `page/T_ShortcutPicker.qml` | 0 | 用法与状态；卡片高度 160px，随字体缩放 |
+| `form-textbox` | TextBox | `page/T_TextBox.qml` | 1 | 用法与状态；卡片高度 240px，随字体缩放 |
+| `form-multiline-textbox` | MultiLineTextBox | `page/T_MultiLineTextBox.qml` | 1 | 用法与状态；卡片高度 250px，随字体缩放 |
+| `form-scrollable-textbox` | ScrollableTextBox | `page/T_ScrollableTextBox.qml` | 1 | 用法与状态；卡片高度 250px，随字体缩放 |
+| `form-password-box` | PasswordBox | `page/T_PasswordBox.qml` | 1 | 用法与状态；卡片高度 170px，随字体缩放 |
+| `form-auto-suggest` | AutoSuggestBox | `page/T_AutoSuggestBox.qml` | 1 | 用法与状态；卡片高度 190px，随字体缩放 |
+| `form-combo-box` | ComboBox | `page/T_ComboBox.qml` | 2 | 用法与状态；卡片高度 180px，随字体缩放 |
+| `form-multi-select-combo` | MultiSelectComboBox | `page/T_MultiSelectComboBox.qml` | 7 | 用法与状态；卡片高度 120px，随字体缩放 |
+| `form-multi-tree-combo` | MultiTreeSelectComboBox | `component/CardHighlight.qml + ScrollablePage` | 0 | 用法与状态；卡片高度 160px，随字体缩放 |
+| `form-number-box` | NumberBox | `page/T_NumberBox.qml` | 2 | 用法与状态；卡片高度 180px，随字体缩放 |
+| `form-spin-box` | SpinBox | `page/T_SpinBox.qml` | 1 | 用法与状态；卡片高度 180px，随字体缩放 |
+| `navigation` | NavigationView | `page/T_NavigationView.qml` | 1 | 用法与状态；卡片高度 370px，随字体缩放 |
+| `breadcrumb` | Breadcrumb | `page/T_Breadcrumb.qml` | 1 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `navigation-stack-page` | StackPage | `page/T_StackPage.qml` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `tabbar` | TabBar | `page/T_TabBar.qml` | 0 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `navigation-tab-view` | TabView | `page/T_TabView.qml` | 0 | 用法与状态；卡片高度 310px，随字体缩放 |
+| `navigation-segmented` | SegmentedControl | `page/T_SegmentedControl.qml` | 0 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `navigation-pagination` | Pagination | `page/T_Pagination.qml` | 1 | 用法与状态；卡片高度 170px，随字体缩放 |
+| `navigation-multi-window` | MultiWindow | `page/T_MultiWindow.qml` | 0 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `pageheader` | PageHeader | `component/CardHighlight.qml + ScrollablePage` | 0 | 用法与状态；卡片高度 180px，随字体缩放 |
+| `data-grid` | DataGrid | `page/T_DataGrid.qml` | 1 | 表格卡片 600px，随字体缩放；排序、编辑、多选、冻结/隐藏列、数据更新与万行加载；树页增加展开/折叠 |
+| `data-tree-grid` | TreeDataGrid | `page/T_TreeDataGrid.qml` | 1 | 表格卡片 600px，随字体缩放；排序、编辑、多选、冻结/隐藏列、数据更新与万行加载；树页增加展开/折叠 |
+| `data-file-tree` | FileTreeData | `page/T_FileTreeData.qml` | 0 | 用法与状态；卡片高度 370px，随字体缩放 |
+| `data-timeline` | Timeline | `page/T_Timeline.qml` | 1 | 用法与状态；卡片高度 330px，随字体缩放 |
+| `data-statistic` | Statistic | `page/T_Statistic.qml` | 7 | 用法与状态；卡片高度 230px，随字体缩放 |
+| `data-selection` | SelectionArea | `page/T_SelectionArea.qml` | 0 | 用法与状态；卡片高度 340px，随字体缩放 |
+| `data-qrcode` | QRCode | `page/T_QRCode.qml` | 1 | 用法与状态；卡片高度 450px，随字体缩放 |
+| `infobar` | InfoBar | `page/T_InfoBar.qml` | 1 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `feedback-info-badge` | InfoBadge | `page/T_InfoBadge.qml` | 1 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `feedback-progress-bar` | ProgressBar | `page/T_ProgressBar.qml` | 2 | 用法与状态；卡片高度 190px，随字体缩放 |
+| `feedback-progress-ring` | ProgressRing | `page/T_ProgressRing.qml` | 2 | 用法与状态；卡片高度 220px，随字体缩放 |
+| `feedback-result` | Result | `page/T_Result.qml` | 4 | 用法与状态；卡片高度 230px，随字体缩放 |
+| `feedback-rating` | RatingControl | `page/T_RatingControl.qml` | 2 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `feedback-shimmer` | Shimmer | `page/T_Shimmer.qml` | 0 | 用法与状态；卡片高度 210px，随字体缩放 |
+| `feedback-skeleton` | SkeletonView | `page/T_SkeletonView.qml` | 0 | 用法与状态；卡片高度 330px，随字体缩放 |
+| `layouts-split` | SplitLayout | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `layouts-staggered` | StaggeredGridView | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `layouts-flow` | FlowLayout | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `layouts-adaptive-grid` | AdaptiveGrid | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `layouts-dock` | DockLayout | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `layouts-page-stack` | PageStack | `page/T_StackPage.qml` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `layouts-form-row` | FormRow | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `surfaces-page` | ForgePage | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `surfaces-round-image` | RoundImageView | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `surfaces-icon-label` | IconLabel | `page/T_IconLabel.qml` | 2 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `surfaces-expander` | Expander | `page/T_Expander.qml` | 1 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `surfaces-watermark` | Watermark | `page/T_Watermark.qml` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `surfaces-marquee` | Marquee | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `card` | Card | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `forge-window` | ForgeWindow | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `popups-menu` | Menu | `page/T_Menu.qml` | 1 | 用法与状态；卡片高度 280px，随字体缩放 |
+| `popups-content-dialog` | ContentDialog | `page/T_ContentDialog.qml` | 1 | 用法与状态；卡片高度 200px，随字体缩放 |
+| `popups-dialog-window` | DialogWindow | `page/T_DialogWindow.qml` | 1 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `popups-tooltip` | ToolTip | `page/T_ToolTip.qml` | 1 | 用法与状态；卡片高度 100px，随字体缩放 |
+| `popups-drawer` | Drawer | `page/T_Drawer.qml` | 1 | 用法与状态；卡片高度 150px，随字体缩放 |
+| `chart-bar` | Bar Chart | `chart/T_BarChart.qml` | 1 | 370px 图表、图例、悬停、选择、更新/清空；类型对应选项 |
+| `chart-line` | Line Chart | `chart/T_LineChart.qml` | 1 | 370px 图表、图例、悬停、选择、更新/清空；类型对应选项 |
+| `chart-pie` | Pie Chart | `chart/T_PieChart.qml` | 1 | 370px 图表、图例、悬停、选择、更新/清空；类型对应选项 |
+| `chart-polar` | Polar Area Chart | `chart/T_PolarAreaChart.qml` | 1 | 370px 图表、图例、悬停、选择、更新/清空；类型对应选项 |
+| `chart-bubble` | Bubble Chart | `chart/T_BubbleChart.qml` | 1 | 370px 图表、图例、悬停、选择、更新/清空；类型对应选项 |
+| `chart-scatter` | Scatter Chart | `chart/T_ScatterChart.qml` | 1 | 370px 图表、图例、悬停、选择、更新/清空；类型对应选项 |
+| `chart-radar` | Radar Chart | `chart/T_RadarChart.qml` | 1 | 370px 图表、图例、悬停、选择、更新/清空；类型对应选项 |
+| `chart-professional` | ForgePlot | 专业二维图表扩展 | 1 | 图表菜单第一项；首页和搜索均可进入；560px 示例随字号缩放；十种绘图模式、实时数据、多轴/多绘图区、极坐标与五种格式导出 |
+| `theme-acrylic` | Acrylic | `page/T_Acrylic.qml` | 1 | 用法与状态；卡片高度 420px，随字体缩放 |
+| `theme-liquid-glass` | Liquid Glass | `page/T_LiquidGlass.qml` | 0 | 用法与状态；卡片高度 420px，随字体缩放 |
+| `theme-colors` | Colors | `page/T_Colors.qml` | 0 | 用法与状态；卡片高度 190px，随字体缩放 |
+| `theme-typography` | Typography | `page/T_Typography.qml` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `theme-icons` | Icons | `page/T_Icons.qml` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `other-tour` | Tour | `page/T_Tour.qml` | 2 | 用法与状态；卡片高度 460px，随字体缩放 |
+| `other-syntax` | SyntaxView | `page/T_SyntaxView.qml` | 0 | 用法与状态；卡片高度 570px，随字体缩放 |
+| `other-dial` | Dial | `page/T_Dial.qml` | 1 | 用法与状态；卡片高度 250px，随字体缩放 |
+| `about` | About | `page/T_About.qml` | 0 | 用法与状态；卡片高度 160px，随字体缩放 |
+| `settings` | Settings | `page/T_Settings.qml` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |
+| `lifecycle` | 页面生命周期 | `component/CardHighlight.qml + ScrollablePage` | 0 | 分区演示；按内容调整卡片高度，移除 API 展示文字 |

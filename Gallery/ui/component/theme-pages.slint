@@ -1,0 +1,11 @@
+import { GalleryThemeColorsPage } from "../page/theme-colors.slint";
+import { GalleryThemeAcrylicPage } from "../page/theme-acrylic.slint";
+import { GalleryThemeLiquidGlassPage } from "../page/theme-liquid-glass.slint";
+export component GalleryThemePages inherits Rectangle {
+    in property<string> active-route-id;
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => { if route == "theme-colors" { page-0.prepare-preview(open); } if route == "theme-acrylic" { page-1.prepare-preview(open); } if route == "theme-liquid-glass" { page-2.prepare-preview(open); } }
+    page-0 := GalleryThemeColorsPage { width: root.width; height: root.height; visible: root.active-route-id == "theme-colors"; }
+    page-1 := GalleryThemeAcrylicPage { width: root.width; height: root.height; visible: root.active-route-id == "theme-acrylic"; }
+    page-2 := GalleryThemeLiquidGlassPage { width: root.width; height: root.height; visible: root.active-route-id == "theme-liquid-glass"; }
+}

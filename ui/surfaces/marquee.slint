@@ -1,0 +1,56 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export component ForgeMarquee inherits Rectangle {
+    in property<string> text;
+    in property<duration> cycle-duration: 8s;
+    in-out property<bool> running: true;
+    property<duration> started-at: 0s;
+    property<duration> paused-at: 0s;
+    property<duration> paused-total: 0s;
+    property<duration> elapsed: Math.max(0s, (root.running ? animation-tick() : root.paused-at) - root.started-at - root.paused-total);
+    out property<length> text-width: caption.preferred-width;
+    out property<bool> overflowing: root.text-width > Math.max(0px, root.width - 24px);
+    out property<length> text-position: root.overflowing && root.cycle-duration > 0s
+        ? 12px - (root.text-width + 24px) * Math.mod(root.elapsed, root.cycle-duration) / root.cycle-duration
+        : 12px;
+    function restart() {
+        root.started-at = animation-tick();
+        root.paused-at = root.started-at;
+        root.paused-total = 0s;
+    }
+    init => { root.restart(); }
+    changed text => { root.restart(); }
+    changed width => { root.restart(); }
+    changed text-width => { root.restart(); }
+    changed cycle-duration => { root.restart(); }
+    changed running => {
+        if (root.running) {
+            root.paused-total += Math.max(0s, animation-tick() - root.paused-at);
+        } else {
+            root.paused-at = animation-tick();
+        }
+    }
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: Palette.border;
+    background: Palette.alternate-background;
+    clip: true;
+    caption := Text {
+        x: root.text-position;
+        width: self.preferred-width;
+        height: parent.height;
+        text: root.text;
+        color: Palette.foreground;
+        font-size: 15px * ForgeTypography.scale;
+        vertical-alignment: center;
+    }
+    Text {
+        visible: root.overflowing && root.cycle-duration > 0s;
+        x: root.text-position + root.text-width + 24px;
+        width: root.text-width; height: parent.height;
+        text: root.text; color: Palette.foreground;
+        font-size: 15px * ForgeTypography.scale;
+        vertical-alignment: center;
+    }
+}

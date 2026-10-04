@@ -1,0 +1,13 @@
+import { GalleryOtherSyntaxPage } from "../page/other-syntax.slint";
+import { GalleryOtherDialPage } from "../page/other-dial.slint";
+import { GalleryOtherTourPage } from "../page/other-tour.slint";
+import { GalleryAboutPage } from "../page/about.slint";
+export component GalleryOtherPages inherits Rectangle {
+    in property<string> active-route-id;
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => { if route == "other-syntax" { page-0.prepare-preview(open); } if route == "other-dial" { page-1.prepare-preview(open); } if route == "other-tour" { page-2.prepare-preview(open); } if route == "about" { page-3.prepare-preview(open); } }
+    page-0 := GalleryOtherSyntaxPage { width: root.width; height: root.height; visible: root.active-route-id == "other-syntax"; }
+    page-1 := GalleryOtherDialPage { width: root.width; height: root.height; visible: root.active-route-id == "other-dial"; }
+    page-2 := GalleryOtherTourPage { width: root.width; height: root.height; visible: root.active-route-id == "other-tour"; }
+    page-3 := GalleryAboutPage { width: root.width; height: root.height; visible: root.active-route-id == "about"; }
+}

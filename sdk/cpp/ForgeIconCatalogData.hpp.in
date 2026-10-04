@@ -1,0 +1,3 @@
+#pragma once
+
+static constexpr char forge_icon_catalog_data[] = R"forgeicons(@FORGE_ICON_CATALOG_TEXT@)forgeicons";

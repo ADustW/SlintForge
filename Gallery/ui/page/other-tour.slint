@@ -1,0 +1,30 @@
+import { Button, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeTour, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：Tour。
+export component GalleryOtherTourPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => { if open { guide.start(); } else { guide.dismiss(); } }
+    
+    sample := GallerySamplePage {
+        title: "Tour";
+        subtitle: @tr("逐步浏览功能提示，支持返回、继续和关闭。");
+        example-title: @tr("用法与状态");
+        preview-height: 460px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            Rectangle { height: 370px; Button { x: 30px; y: 12px; text: @tr("开始引导"); clicked => { guide.start(); } } LineEdit { x: 30px; y: 100px; width: 260px; placeholder-text: @tr("目标一：输入"); } Button { x: 30px; y: 210px; width: 180px; text: @tr("目标二：执行"); } guide := ForgeTour { steps: [{title: @tr("输入参数"), description: @tr("此处输入工程参数。"), x: 30px, y: 100px, width: 260px, height: 36px}, {title: @tr("执行任务"), description: @tr("确认后执行下一步。"), x: 30px, y: 210px, width: 180px, height: 36px}]; finished => { root.status = @tr("引导已完成"); } dismissed => { root.status = @tr("引导已跳过"); } } }
+Text { text: root.status; color: Palette.foreground; }
+        }
+    }
+    
+}

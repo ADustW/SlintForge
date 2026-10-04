@@ -1,0 +1,48 @@
+import { ForgeWindow, ForgePage, ForgeCard, ForgeIconButton, ForgeIcon, ForgeIcons, ForgeTypography, ForgeCaptureResult } from "@slintforge";
+export { ForgeCaptureService, ForgeCaptureResult, ForgeCaptureRect } from "@slintforge";
+export { WidgetsWindow, ForgeWidgetServices, ForgeQRCodeResult, ForgeSyntaxLine } from "widgets.slint";
+export { ChartsWindow, ForgeChartServices, ForgeChartScene, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel } from "charts.slint";
+export { GridsWindow, ForgeGridServices, ForgeGridScene, ForgeGridViewRow, ForgeGridViewColumn, ForgeGridRow, ForgeGridCell, ForgeGridColumn, ForgeGridEditResult } from "grids.slint";
+
+export component MinimalWindow inherits ForgeWindow {
+    title: "SlintForge Rust/C++ Consumer";
+    brand-symbol: "F";
+    show-pin-button: true;
+    preferred-width: 640px;
+    preferred-height: 360px;
+    in-out property<int> clicks: 0;
+    in-out property<ForgeCaptureResult> capture-result;
+    in-out property<string> capture-message;
+    callback export-capture(image) -> string;
+    callback qa-capture-window() -> ForgeCaptureResult;
+    callback qa-capture-page() -> ForgeCaptureResult;
+    qa-capture-window => { return root.capture(); }
+    qa-capture-page => { return page.capture(); }
+    page := ForgePage {
+        width: root.width - 32px;
+        height: root.height - root.title-bar-height - 32px;
+        x: 16px;
+        y: 16px;
+        ForgeCard {
+          title: "最小消费者";
+          VerticalLayout {
+            spacing: 12px;
+            HorizontalLayout {
+                spacing: 8px;
+                ForgeIcon { glyph: ForgeIcons.home; width: 22px; height: 22px; }
+                Text { text: "同一份 .slint 同时由 Rust 和 C++ 编译。"; font-size: 13px * ForgeTypography.scale; }
+            }
+            ForgeIconButton { icon: "+"; label: "点击"; clicked => { root.clicks += 1; } }
+            Text { text: "点击次数: " + root.clicks; }
+            HorizontalLayout {
+                spacing: 8px;
+                ForgeIconButton { label: "页面截图"; clicked => { root.capture-result = page.capture(); root.capture-message = root.capture-result.error; } }
+                ForgeIconButton { label: "窗口截图"; clicked => { root.capture-result = root.capture(); root.capture-message = root.capture-result.error; } }
+                ForgeIconButton { label: "导出 PNG"; enabled: root.capture-result.ok; clicked => { root.capture-message = root.export-capture(root.capture-result.image); } }
+            }
+            Text { text: root.capture-result.ok ? "截图: " + root.capture-result.pixel-width + " × " + root.capture-result.pixel-height : ""; }
+            Text { text: root.capture-message; wrap: word-wrap; }
+          }
+        }
+    }
+}

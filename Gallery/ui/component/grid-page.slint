@@ -1,0 +1,89 @@
+import { Palette, Button, LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
+import { ForgeDataGrid, ForgeGridColumn, ForgeGridSelectionMode, ForgeTypography } from "@slintforge";
+import { GalleryGridDemoModels } from "grid-demo-models.slint";
+import { GalleryPageFrame } from "page-frame.slint";
+import { GalleryDemoCard } from "demo-card.slint";
+
+export component GalleryGridPage inherits Rectangle {
+    in property<bool> tree: false;
+    out property<bool> qa-editing: grid.editing;
+    private property<bool> disabled: false;
+    private property<bool> multi-enabled: true;
+    private property<string> message: @tr("单击表头排序，拖动列边界调整宽度，双击单元格编辑。");
+    function default-columns() -> [ForgeGridColumn] { return [
+        {id: "name", title: @tr("名称"), width: root.tree ? 240 : 180, min-width: 120, max-width: 520, sortable: true, editable: true, frozen: true},
+        {id: "count", title: @tr("数量"), width: 90, min-width: 60, max-width: 200, numeric: true, sortable: true, editable: true},
+        {id: "owner", title: @tr("负责人"), width: 120, min-width: 70, max-width: 240, sortable: true, editable: true},
+        {id: "status", title: @tr("状态"), width: 120, min-width: 80, max-width: 260, sortable: true},
+        {id: "notes", title: @tr("说明"), width: 320, min-width: 160, max-width: 600, editable: true}
+    ]; }
+    function reset() {
+        grid.cancel-edit();
+        grid.rows = root.tree ? GalleryGridDemoModels.tree-seed : GalleryGridDemoModels.flat-seed;
+        grid.filter = ""; grid.sort-column = -1; grid.sort-descending = false;
+        grid.columns = root.default-columns(); grid.current-row-id = "";
+        root.disabled = false; root.multi-enabled = true;
+    }
+    callback prepare-preview(bool);
+    prepare-preview(open) => {
+        root.reset();
+        if open {
+            if root.tree { grid.expand-all(true); }
+            else { grid.sort-by(1); }
+            grid.select-row(1, false, false);
+            grid.begin-edit(1, 1);
+        }
+    }
+    GalleryPageFrame {
+        title: root.tree ? "TreeDataGrid" : "DataGrid";
+        subtitle: root.tree ? @tr("按层级查看数据，展开分组并对同级节点排序。") : @tr("查看和编辑表格数据，调整列宽并选择多行。");
+        Text { text: @tr("交互示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        GalleryDemoCard {
+            preview-height: 600px * ForgeTypography.scale;
+            VerticalLayout {
+                x: 20px; y: 20px; width: parent.width - 40px; height: parent.height - 40px;
+                spacing: 12px;
+                HorizontalLayout {
+                    height: 34px; vertical-stretch: 0; spacing: 8px;
+                    search := LineEdit { placeholder-text: @tr("筛选名称、负责人或说明"); text <=> grid.filter; enabled: !root.disabled; }
+                    Button {
+                        text: @tr("重置");
+                        clicked => { root.reset(); root.message = @tr("已恢复示例数据。"); }
+                    }
+                }
+                HorizontalLayout {
+                    height: 34px; vertical-stretch: 0; spacing: 8px; alignment: start;
+                    Button { text: @tr("新增行"); enabled: !root.disabled; clicked => { grid.rows = GalleryGridDemoModels.action(root.tree, "append", grid.rows); } }
+                    Button { text: @tr("删除所选"); enabled: !root.disabled && grid.selected-row-count > 0; clicked => { grid.delete-selected(); } }
+                    Button { text: @tr("更新首行"); enabled: !root.disabled && grid.rows.length > 0; clicked => { grid.rows = GalleryGridDemoModels.action(root.tree, "update", grid.rows); } }
+                    Button { text: @tr("加载万行"); enabled: !root.disabled; clicked => { grid.cancel-edit(); grid.rows = GalleryGridDemoModels.action(root.tree, "large", grid.rows); } }
+                }
+                HorizontalLayout {
+                    height: 34px; vertical-stretch: 0; spacing: 10px; alignment: start;
+                    CheckBox { text: @tr("多选"); checked <=> root.multi-enabled; enabled: !root.disabled; }
+                    CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                    CheckBox { text: @tr("冻结名称列"); checked: grid.columns[0].frozen; enabled: !root.disabled; toggled => { grid.columns[0].frozen = self.checked; grid.refresh(); } }
+                    CheckBox { text: @tr("显示说明"); checked: !grid.columns[4].hidden; enabled: !root.disabled; toggled => { grid.columns[4].hidden = !self.checked; grid.refresh(); } }
+                }
+                if root.tree : HorizontalLayout {
+                    height: 30px; vertical-stretch: 0; spacing: 8px; alignment: start;
+                    Button { text: @tr("全部展开"); enabled: !root.disabled; clicked => { grid.expand-all(true); } }
+                    Button { text: @tr("全部折叠"); enabled: !root.disabled; clicked => { grid.expand-all(false); } }
+                }
+                grid := ForgeDataGrid {
+                    tree: root.tree; columns: root.default-columns();
+                    rows: root.tree ? GalleryGridDemoModels.tree-seed : GalleryGridDemoModels.flat-seed;
+                    enabled: !root.disabled; selection-mode: root.multi-enabled ? ForgeGridSelectionMode.multiple : ForgeGridSelectionMode.single;
+                    row-clicked(id) => { root.message = @tr("当前行：{}", id); }
+                    cell-edited(id, column, text) => { root.message = @tr("已更新：{} · {} = {}", id, column, text); }
+                    expansion-changed(id, expanded) => { root.message = expanded ? @tr("已展开：{}", id) : @tr("已折叠：{}", id); }
+                }
+                Text { text: @tr("总行数 {} · 可见 {} · 已选 {}", grid.rows.length, grid.visible-row-count, grid.selected-row-count);
+                    height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; }
+                Text { text: root.message; height: self.preferred-height; vertical-stretch: 0; wrap: word-wrap; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; }
+            }
+        }
+        Text { text: @tr("Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑，Enter 确认，Esc 取消。");
+            height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; wrap: word-wrap; }
+    }
+}

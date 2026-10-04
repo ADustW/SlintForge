@@ -1,0 +1,82 @@
+import { ScrollView } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export struct ForgeStaggeredItem {
+    id: string,
+    title: string,
+    description: string,
+    tile-height: length,
+    accent: color,
+    column: int,
+    top: length,
+}
+
+component ForgeStaggeredTile inherits Rectangle {
+    in property<ForgeStaggeredItem> item;
+    callback activated(string);
+    border-radius: 8px;
+    background: root.item.accent;
+    clip: true;
+    Text {
+        x: 18px; y: 15px;
+        width: Math.max(0px, parent.width - 36px);
+        text: root.item.title;
+        color: white;
+        font-size: 25px * ForgeTypography.scale;
+        font-weight: 700;
+        overflow: elide;
+    }
+    Text {
+        x: 18px;
+        y: Math.max(48px, parent.height - 38px);
+        width: Math.max(0px, parent.width - 36px);
+        height: 22px;
+        text: root.item.description;
+        color: white;
+        font-size: 13px * ForgeTypography.scale;
+        overflow: elide;
+    }
+    TouchArea { clicked => { root.activated(root.item.id); } }
+}
+
+// 宿主在列数变化时用 Rust/C++ 同一算法重算 column、top 和 content-height。
+export component ForgeStaggeredGridView inherits Rectangle {
+    in property<[ForgeStaggeredItem]> items;
+    in property<length> min-column-width: 220px;
+    in property<int> max-columns: 4;
+    in property<length> gap: 12px;
+    in property<length> content-padding: 12px;
+    in property<length> content-height: 0px;
+    private property<length> available-width: Math.max(0px, root.width - 2 * root.content-padding - 14px);
+    out property<int> column-count: Math.max(1, Math.min(Math.max(1, root.max-columns),
+        Math.floor((root.available-width + root.gap) / (Math.max(1px, root.min-column-width) + root.gap))));
+    out property<length> column-width: Math.max(0px, (root.available-width - (root.column-count - 1) * root.gap) / root.column-count);
+    out property<bool> vertical-scrollbar-visible: scroll.content-height > scroll.visible-height;
+    callback layout-requested(int);
+    callback selected(string);
+    changed column-count => { root.layout-requested(root.column-count); }
+    background: transparent;
+    clip: true;
+
+    scroll := ScrollView {
+        width: root.width;
+        height: root.height;
+        content-width: root.width;
+        content-height: Math.max(root.height, root.content-height);
+        vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
+        horizontal-scrollbar-policy: ScrollBarPolicy.always-off;
+        Rectangle {
+            width: scroll.content-width;
+            height: scroll.content-height;
+            background: transparent;
+            for item in root.items : ForgeStaggeredTile {
+                x: root.content-padding + item.column * (root.column-width + root.gap);
+                y: item.top;
+                width: root.column-width;
+                height: Math.max(0px, item.tile-height);
+                item: item;
+                activated(id) => { root.selected(id); }
+            }
+        }
+    }
+}

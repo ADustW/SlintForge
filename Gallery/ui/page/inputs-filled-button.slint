@@ -1,0 +1,34 @@
+import { Button, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// Slint 原生示例：FilledButton。
+export component GalleryInputsFilledButtonPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "FilledButton";
+        subtitle: @tr("主色按钮用于强调当前操作。");
+        example-title: @tr("用法与状态");
+        preview-height: 150px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            HorizontalLayout { spacing: 12px; alignment: start;
+            Button { text: @tr("点击按钮"); primary: true; clicked => { root.count += 1; } }
+            Button { text: @tr("带图标") + " ↗"; primary: true; clicked => { root.count += 1; } }
+            Button { text: @tr("禁用"); primary: true; enabled: false; }
+        }
+        Text { text: @tr("点击次数：{}", root.count); color: Palette.foreground; }
+        }
+    }
+    
+}

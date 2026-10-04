@@ -1,0 +1,47 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeAdaptiveGrid, ForgeIconButton, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+
+export component GalleryAdaptiveGridPage inherits Rectangle {
+    in-out property<int> tile-count: 18;
+    GalleryPageFrame {
+        width: parent.width; height: parent.height;
+        title: "AdaptiveGrid";
+        subtitle: @tr("卡片等宽、逐行对齐；缩放窗口时自动换列，内容过高时竖向滚动。");
+        HorizontalLayout {
+            height: 34px; vertical-stretch: 0; spacing: 10px;
+            ForgeIconButton { label: @tr("少量卡片"); selected: root.tile-count == 8; clicked => { root.tile-count = 8; } }
+            ForgeIconButton { label: @tr("大量卡片"); selected: root.tile-count == 30; clicked => { root.tile-count = 30; } }
+            Rectangle { horizontal-stretch: 1; }
+            Text {
+                text: @tr("{} 列 · {}", grid.column-count, grid.vertical-scrollbar-visible ? @tr("需要滚动") : @tr("无需滚动"));
+                color: Palette.foreground; font-size: 13px * ForgeTypography.scale; vertical-alignment: center;
+            }
+        }
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        preview := GalleryDemoCard {
+            preview-height: 360px;
+            grid := ForgeAdaptiveGrid {
+                x: 18px; y: 16px;
+                width: Math.max(0px, preview.width - 36px);
+                height: Math.max(0px, preview.height - 32px);
+                min-item-width: 180px;
+                max-columns: 5;
+                for index in root.tile-count : Rectangle {
+                    width: grid.item-width;
+                    height: Math.mod(index, 3) == 0 ? 130px : Math.mod(index, 3) == 1 ? 90px : 110px;
+                    border-radius: 6px;
+                    background: Math.mod(index, 4) == 0 ? #3762a8 : Math.mod(index, 4) == 1 ? #8756aa : Math.mod(index, 4) == 2 ? #247b6f : #a05332;
+                    Text {
+                        width: parent.width; height: parent.height;
+                        text: @tr("卡片 {}", index + 1);
+                        color: white; font-size: 16px * ForgeTypography.scale;
+                        horizontal-alignment: center; vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+    }
+}

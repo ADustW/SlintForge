@@ -1,0 +1,36 @@
+import { Button, Palette, ScrollView, TextEdit } from "std-widgets.slint";
+import { ForgeSyntaxLine, ForgeWidgetServices } from "../types/widgets.slint";
+
+export component ForgeSyntaxView inherits Rectangle {
+    in property<string> code;
+    in property<string> language: "slint";
+    in property<bool> line-numbers: true;
+    in property<length> font-size: 14px;
+    out property<[ForgeSyntaxLine]> lines;
+    private property<bool> service-ready: ForgeWidgetServices.connected;
+    public function refresh() { root.lines = root.service-ready ? ForgeWidgetServices.syntax-lines(root.code, root.language) : []; }
+    public function copy() { raw.select-all(); raw.copy(); }
+    init => { root.refresh(); }
+    changed code => { root.refresh(); }
+    changed language => { root.refresh(); }
+    changed service-ready => { root.refresh(); }
+    background: #151a24; border-radius: 6px; clip: true;
+    raw := TextEdit { visible: false; text: root.code; read-only: true; }
+    ScrollView {
+        y: 40px; height: Math.max(0px, root.height - 40px);
+        VerticalLayout {
+            spacing: 0px; padding: 12px;
+            for line in root.lines : HorizontalLayout {
+                height: Math.max(24px, root.font-size * 1.6); vertical-stretch: 0; spacing: 12px;
+                if root.line-numbers : Text { text: "\{line.number}"; width: 44px; color: #667088; font-family: "Consolas"; font-size: root.font-size; horizontal-alignment: right; }
+                StyledText { text: line.content; default-color: #dce3f0; default-font-family: "Consolas"; default-font-size: root.font-size; width: self.preferred-width; horizontal-stretch: 0; }
+            }
+        }
+    }
+    if !root.service-ready : Text { text: @tr("语法高亮服务未绑定"); color: #f09090; horizontal-alignment: center; vertical-alignment: center; }
+    HorizontalLayout {
+        x: 12px; y: 4px; width: Math.max(0px, root.width - 24px); height: 32px;
+        Text { text: root.language; color: #aab5c8; vertical-alignment: center; }
+        Button { text: @tr("复制代码"); clicked => { root.copy(); } }
+    }
+}

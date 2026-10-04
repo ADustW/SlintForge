@@ -1,0 +1,79 @@
+import { Palette, Switch } from "std-widgets.slint";
+import { ForgeIconButton, ForgeSplitLayout, ForgeSplitOrientation, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+
+export component GallerySplitLayoutPage inherits Rectangle {
+    in-out property<bool> vertical: false;
+
+    GalleryPageFrame {
+        width: parent.width;
+        height: parent.height;
+        title: "SplitLayout";
+        subtitle: @tr("拖动分隔条调整两个内容区域的比例，可切换水平或垂直布局。");
+
+        HorizontalLayout {
+            height: 34px;
+            vertical-stretch: 0;
+            spacing: 12px;
+            Switch {
+                text: root.vertical ? @tr("垂直排列") : @tr("水平排列");
+                checked <=> root.vertical;
+            }
+            Rectangle { horizontal-stretch: 1; }
+            ForgeIconButton {
+                label: @tr("重置比例");
+                clicked => { split.ratio = 0.5; }
+            }
+            Text {
+                text: @tr("首区 {}%", Math.round(split.ratio * 100));
+                color: Palette.foreground;
+                font-size: 13px * ForgeTypography.scale;
+                vertical-alignment: center;
+                horizontal-stretch: 0;
+            }
+        }
+
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        preview := GalleryDemoCard {
+            preview-height: 240px;
+            split := ForgeSplitLayout {
+                x: 18px;
+                y: 16px;
+                width: Math.max(0px, preview.width - 38px);
+                height: Math.max(0px, preview.height - 34px);
+                ratio: 0.5;
+                orientation: root.vertical ? ForgeSplitOrientation.vertical : ForgeSplitOrientation.horizontal;
+                Rectangle {
+                    x: 0px;
+                    y: 0px;
+                    width: split.first-width;
+                    height: split.first-height;
+                    background: #39305b;
+                    Text {
+                        text: root.vertical ? @tr("上方内容") : @tr("左侧内容");
+                        color: white;
+                        font-size: 16px * ForgeTypography.scale;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+                Rectangle {
+                    x: split.second-x;
+                    y: split.second-y;
+                    width: split.second-width;
+                    height: split.second-height;
+                    background: #285872;
+                    Text {
+                        text: root.vertical ? @tr("下方内容") : @tr("右侧内容");
+                        color: white;
+                        font-size: 16px * ForgeTypography.scale;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+    }
+}

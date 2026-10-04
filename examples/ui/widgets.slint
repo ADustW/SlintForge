@@ -1,0 +1,25 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeQRCode, ForgeSyntaxView, ForgeAcrylic, ForgeQRCodeResult, ForgeWidgetServices } from "@slintforge";
+export { ForgeWidgetServices, ForgeQRCodeResult, ForgeSyntaxLine } from "@slintforge";
+
+// 服务接入示例：两种宿主共享同一份二维码、词法高亮和材质 UI。
+export component WidgetsWindow inherits Window {
+    title: "SlintForge Widget Services"; width: 760px; height: 600px;
+    in property<image> source;
+    out property<ForgeQRCodeResult> qr-result: qr.result;
+    out property<int> syntax-line-count: syntax.lines.length;
+    out property<image> processed: acrylic.processed;
+    background: Palette.background;
+    VerticalLayout {
+        padding: 24px; spacing: 20px;
+        HorizontalLayout {
+            spacing: 24px;
+            qr := ForgeQRCode { text: "消费者验证|SlintForge"; width: 220px; height: 220px; }
+            acrylic := ForgeAcrylic {
+                source: root.source;
+                Text { text: "背景图材质 · 双端 SDK"; color: white; font-size: 22px; wrap: word-wrap; vertical-alignment: center; horizontal-alignment: center; }
+            }
+        }
+        syntax := ForgeSyntaxView { language: "rust"; code: "fn main() {\n    let value = 42; // 消费者\n    println!(\"SlintForge\");\n}"; }
+    }
+}

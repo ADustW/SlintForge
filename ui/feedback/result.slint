@@ -1,0 +1,20 @@
+import { Palette, Button } from "std-widgets.slint";
+import { ForgeInfoLevel } from "../types/feedback.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeIcon, ForgeIcons } from "../icons/icon.slint";
+
+export component ForgeResult inherits Rectangle {
+    in property<ForgeInfoLevel> level: success;
+    in property<string> title: @tr("操作成功");
+    in property<string> description;
+    in property<string> action-text: @tr("继续");
+    callback action-requested();
+    preferred-height: layout.preferred-height;
+    layout := VerticalLayout {
+        spacing: 14px; alignment: center;
+        ForgeIcon { glyph: root.level == ForgeInfoLevel.success ? ForgeIcons.checkmark : root.level == ForgeInfoLevel.error ? ForgeIcons.dismiss : root.level == ForgeInfoLevel.warning ? ForgeIcons.warning : ForgeIcons.info; color: root.level == ForgeInfoLevel.success ? #49b981 : root.level == ForgeInfoLevel.error ? #e45c5c : root.level == ForgeInfoLevel.warning ? #e2b14b : Palette.accent-background; font-size: 48px * ForgeTypography.scale; }
+        Text { text: root.title; color: Palette.foreground; font-size: 23px * ForgeTypography.scale; font-weight: 600; horizontal-alignment: center; wrap: word-wrap; }
+        Text { text: root.description; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; wrap: word-wrap; }
+        if root.action-text != "" : Button { text: root.action-text; primary: true; clicked => { root.action-requested(); } }
+    }
+}

@@ -1,0 +1,15 @@
+import { GalleryDataSelectionPage } from "../page/data-selection.slint";
+import { GalleryDataFileTreePage } from "../page/data-file-tree.slint";
+import { GalleryDataTimelinePage } from "../page/data-timeline.slint";
+import { GalleryDataStatisticPage } from "../page/data-statistic.slint";
+import { GalleryDataQrcodePage } from "../page/data-qrcode.slint";
+export component GalleryDataPages inherits Rectangle {
+    in property<string> active-route-id;
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => { if route == "data-selection" { page-0.prepare-preview(open); } if route == "data-file-tree" { page-1.prepare-preview(open); } if route == "data-timeline" { page-2.prepare-preview(open); } if route == "data-statistic" { page-3.prepare-preview(open); } if route == "data-qrcode" { page-4.prepare-preview(open); } }
+    page-0 := GalleryDataSelectionPage { width: root.width; height: root.height; visible: root.active-route-id == "data-selection"; }
+    page-1 := GalleryDataFileTreePage { width: root.width; height: root.height; visible: root.active-route-id == "data-file-tree"; }
+    page-2 := GalleryDataTimelinePage { width: root.width; height: root.height; visible: root.active-route-id == "data-timeline"; }
+    page-3 := GalleryDataStatisticPage { width: root.width; height: root.height; visible: root.active-route-id == "data-statistic"; }
+    page-4 := GalleryDataQrcodePage { width: root.width; height: root.height; visible: root.active-route-id == "data-qrcode"; }
+}

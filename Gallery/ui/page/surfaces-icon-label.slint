@@ -1,0 +1,22 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeIconButton, ForgeIconLabel, ForgeIcons, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+
+export component GalleryIconLabelPage inherits Rectangle {
+    in-out property<bool> vertical: false;
+    sample-page := GallerySamplePage {
+        width: parent.width; height: parent.height;
+        title: "IconLabel";
+        subtitle: @tr("图标、标题与说明组合显示，可切换排列方向。");
+        preview-height: 250px;
+
+        ForgeIconLabel {
+            x: 18px; y: 16px; width: sample-page.preview-width - 36px; height: self.preferred-height;
+            icon: ForgeIcons.info;
+            label: @tr("状态提示");
+            description: @tr("图标与文字保持一致的字体和间距。");
+            vertical: root.vertical;
+        }
+        ForgeIconButton { x: 18px; y: sample-page.preview-area-height - 52px; label: root.vertical ? @tr("水平排列") : @tr("垂直排列"); clicked => { root.vertical = !root.vertical; } }
+    }
+}

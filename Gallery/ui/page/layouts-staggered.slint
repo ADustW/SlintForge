@@ -1,0 +1,44 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeStaggeredGridView, ForgeStaggeredItem, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+
+export component GalleryStaggeredGridPage inherits Rectangle {
+    in property<[ForgeStaggeredItem]> items;
+    in property<length> layout-content-height;
+    out property<int> column-count: grid.column-count;
+    callback layout-requested(int);
+    property<string> selected-title: @tr("尚未选择卡片");
+
+    GalleryPageFrame {
+        width: parent.width;
+        height: parent.height;
+        title: "StaggeredGridView";
+        subtitle: @tr("卡片自动进入当前最短列；缩放窗口可观察列数和位置变化。");
+
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        preview := GalleryDemoCard {
+            preview-height: 360px;
+            grid := ForgeStaggeredGridView {
+                x: 18px;
+                y: 16px;
+                width: Math.max(0px, preview.width - 38px);
+                height: Math.max(0px, preview.height - 70px);
+                gap: 12px;
+                items: root.items;
+                content-height: root.layout-content-height;
+                layout-requested(columns) => { root.layout-requested(columns); }
+                selected(id) => { root.selected-title = @tr("已选择卡片 {}", id); }
+            }
+            Text {
+                x: 18px;
+                y: preview.height - 41px;
+                width: Math.max(0px, preview.width - 36px);
+                text: root.selected-title;
+                color: Palette.foreground;
+                font-size: 13px * ForgeTypography.scale;
+            }
+        }
+
+    }
+}

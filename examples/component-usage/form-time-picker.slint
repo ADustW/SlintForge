@@ -1,0 +1,6 @@
+import { Button, TimePickerPopup } from "std-widgets.slint";
+export component Example inherits Window {
+    width: 520px; height: 320px;
+    Button { text: "Time"; clicked => { picker.show(); } }
+picker := TimePickerPopup { accepted(value) => { picker.close(); } canceled => { picker.close(); } }
+}

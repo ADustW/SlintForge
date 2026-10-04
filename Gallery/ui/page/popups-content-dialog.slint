@@ -1,0 +1,31 @@
+import { Button, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeContentDialog, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：ContentDialog。
+export component GalleryPopupsContentDialogPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => { root.dialog-open = open; }
+    in-out property<bool> dialog-open: false;
+    sample := GallerySamplePage {
+        title: "ContentDialog";
+        subtitle: @tr("在内容对话框中编辑文字，并确认或取消。");
+        example-title: @tr("用法与状态");
+        preview-height: 200px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            Button { text: @tr("打开内容对话框"); clicked => { root.dialog-open = true; } }
+LineEdit { placeholder-text: @tr("对话框关闭后此输入保持"); }
+Text { text: root.status; color: Palette.foreground; }
+        }
+    }
+    ForgeContentDialog { open <=> root.dialog-open; title: @tr("确认操作"); message: @tr("这是保留页面状态的内容对话框。"); accepted => { root.status = @tr("已确认"); } canceled => { root.status = @tr("已取消"); } }
+}

@@ -1,0 +1,129 @@
+import { Button, Palette, Spinner } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeChoiceItem } from "../types/widgets.slint";
+import { ForgeIcon, ForgeIcons } from "../icons/icon.slint";
+
+export component ForgePillButton inherits Rectangle {
+    in property<string> text;
+    in property<bool> enabled: true;
+    in property<bool> primary: false;
+    out property<bool> pressed: touch.pressed || root.key-held;
+    private property<bool> key-held: false;
+    callback clicked();
+    public function focus-button() { focus.focus(); }
+    min-width: label.preferred-width + 32px;
+    preferred-height: Math.max(36px, label.preferred-height + 14px);
+    horizontal-stretch: 0; vertical-stretch: 0;
+    border-radius: root.height / 2;
+    border-width: focus.has-focus ? 2px : 1px;
+    border-color: focus.has-focus || root.primary ? Palette.accent-background : Palette.border;
+    background: root.primary ? Palette.accent-background : root.pressed || touch.has-hover ? Palette.control-background : Palette.background;
+    opacity: root.enabled ? 1 : 0.45;
+    forward-focus: focus;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
+    accessible-action-default => { if root.enabled { root.clicked(); } }
+    label := Text {
+        text: root.text; color: root.primary ? Palette.accent-foreground : Palette.foreground;
+        font-size: 13px * ForgeTypography.scale;
+        horizontal-alignment: center; vertical-alignment: center;
+    }
+    focus := FocusScope {
+        enabled: root.enabled;
+        focus-lost(reason) => { root.key-held = false; }
+        key-pressed(event) => {
+            if event.text == Key.Return || event.text == " " { root.key-held = true; return accept; }
+            return reject;
+        }
+        key-released(event) => {
+            if event.text == Key.Return || event.text == " " {
+                if root.key-held && root.enabled { root.clicked(); }
+                root.key-held = false; return accept;
+            }
+            return reject;
+        }
+    }
+    changed enabled => { if !root.enabled { root.key-held = false; } }
+    touch := TouchArea { enabled: root.enabled; clicked => { focus.focus(); root.clicked(); } }
+}
+
+// 持续按住达到时长后，松开才确认；提前松开和禁用均不会确认。
+export component ForgeDelayButton inherits Rectangle {
+    in property<string> text: @tr("按住确认");
+    in property<duration> delay: 1200ms;
+    in property<bool> enabled: true;
+    out property<float> progress: root.delay <= 0ms ? 1 : Math.min(1, root.elapsed / root.delay);
+    private property<duration> elapsed: 0ms;
+    private property<bool> armed: false;
+    callback clicked();
+    min-width: button.min-width; preferred-height: button.preferred-height;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    button := ForgePillButton {
+        text: root.text + (self.pressed ? " · " + round(root.progress * 100) + "%" : "");
+        enabled: root.enabled;
+        changed pressed => {
+            if self.pressed { root.elapsed = 0ms; root.armed = root.delay <= 0ms; }
+            else { root.elapsed = 0ms; root.armed = false; }
+        }
+        clicked => { if root.armed && root.enabled { root.clicked(); root.armed = false; } }
+    }
+    Timer {
+        interval: 25ms; running: button.pressed && root.enabled && !root.armed;
+        triggered => { root.elapsed += 25ms; if root.elapsed >= root.delay { root.armed = true; } }
+    }
+    changed enabled => { if !root.enabled { root.armed = false; root.elapsed = 0ms; } }
+}
+
+export component ForgeProgressButton inherits Rectangle {
+    in property<string> text: @tr("执行");
+    in property<bool> busy: false;
+    in property<bool> enabled: true;
+    in property<float> progress: -1;
+    callback clicked();
+    min-width: layout.min-width; preferred-height: Math.max(36px, layout.preferred-height);
+    horizontal-stretch: 0; vertical-stretch: 0;
+    layout := HorizontalLayout {
+        spacing: 8px;
+        if root.busy : Spinner { width: 26px; height: 26px; }
+        Button {
+            text: root.busy ? (root.progress < 0 ? @tr("处理中…") : round(Math.max(0, Math.min(1, root.progress)) * 100) + "%") : root.text;
+            enabled: root.enabled && !root.busy; primary: true;
+            clicked => { root.clicked(); }
+        }
+    }
+}
+
+export component ForgeDropDownButton inherits Rectangle {
+    in property<string> text: @tr("选择操作");
+    in property<[ForgeChoiceItem]> items;
+    in property<bool> enabled: true;
+    out property<bool> open: popup.is-open;
+    callback selected(string);
+    public function show() { if root.enabled { popup.show(); } }
+    public function close() { popup.close(); }
+    min-width: button.min-width; preferred-height: button.preferred-height;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    button := Button { width: root.width; height: root.height; text: root.text + "      "; enabled: root.enabled; clicked => { popup.show(); } }
+    ForgeIcon {
+        x: root.width - self.width - 8px; width: 14px * ForgeTypography.scale; height: root.height;
+        glyph: ForgeIcons.chevron-down; font-size: 14px * ForgeTypography.scale;
+        opacity: root.enabled ? 1 : 0.45;
+    }
+    popup := PopupWindow {
+        x: 0px; y: root.height;
+        width: Math.max(180px, root.width); height: Math.max(42px, root.items.length * 38px + 12px);
+        close-policy: close-on-click-outside;
+        Rectangle {
+            background: Palette.background; border-radius: 6px; border-width: 1px; border-color: Palette.border;
+            VerticalLayout {
+                padding: 6px; spacing: 4px;
+                for item in root.items : Button {
+                    text: item.label; enabled: item.enabled && root.enabled;
+                    clicked => { root.selected(item.id); popup.close(); }
+                }
+            }
+        }
+    }
+    changed enabled => { if !root.enabled { popup.close(); } }
+}

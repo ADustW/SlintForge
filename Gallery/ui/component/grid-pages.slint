@@ -1,0 +1,14 @@
+import { GalleryDataGridPage } from "../page/data-grid.slint";
+import { GalleryDataTreeGridPage } from "../page/data-tree-grid.slint";
+export component GalleryGridPages inherits Rectangle {
+    in property<string> active-route-id;
+    out property<bool> qa-editing: root.active-route-id == "data-grid" ? flat.qa-editing :
+        root.active-route-id == "data-tree-grid" ? tree.qa-editing : false;
+    callback prepare-preview(string, bool);
+    prepare-preview(route, open) => {
+        if route == "data-grid" { flat.prepare-preview(open); }
+        if route == "data-tree-grid" { tree.prepare-preview(open); }
+    }
+    flat := GalleryDataGridPage { width: root.width; height: root.height; visible: root.active-route-id == "data-grid"; }
+    tree := GalleryDataTreeGridPage { width: root.width; height: root.height; visible: root.active-route-id == "data-tree-grid"; }
+}

@@ -1,0 +1,132 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeIcon, ForgeIconButton, ForgeIcons, ForgeNavPlacement, ForgePaneState, ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GallerySettingsChoice, GallerySettingsToggle } from "../component/settings-controls.slint";
+
+// 设置状态由宿主确认后回写，两种语言和字体效果无需重启即可预览。
+export component GallerySettingsPage inherits Rectangle {
+    in property<bool> dark-mode;
+    in property<bool> pinned;
+    in property<bool> rounded-corners: true;
+    in property<string> language: "zh";
+    in property<string> font-family;
+    in property<float> font-scale: 1.0;
+    in property<ForgeNavPlacement> placement;
+    in property<ForgePaneState> pane-state;
+    callback theme-requested(bool);
+    callback pin-requested(bool);
+    callback corner-style-requested(bool);
+    callback open-icons-requested();
+    callback language-requested(string);
+    callback font-family-requested(string);
+    callback font-scale-requested(float);
+    callback placement-requested(ForgeNavPlacement);
+    callback pane-state-requested(ForgePaneState);
+    background: Palette.background;
+
+    GalleryPageFrame {
+        width: parent.width; height: parent.height;
+        title: @tr("设置");
+        subtitle: @tr("调整 Gallery 的外观、语言、字体与导航方式。更改会立即生效。");
+
+        Rectangle {
+            height: 150px; border-radius: 8px; border-width: 1px; border-color: Palette.border; background: Palette.alternate-background;
+            ForgeIcon { x: 16px; y: 15px; width: 24px; height: 24px; glyph: root.dark-mode ? ForgeIcons.moon : ForgeIcons.sun; }
+            Text { x: 48px; y: 18px; text: @tr("外观"); color: Palette.foreground; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            Text { x: 18px; y: 55px; text: @tr("主题模式"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+            HorizontalLayout {
+                x: 18px; y: 78px; height: 34px; spacing: 8px;
+                GallerySettingsChoice { icon: ForgeIcons.sun; label: @tr("浅色"); selected: !root.dark-mode; clicked => { root.theme-requested(false); } }
+                GallerySettingsChoice { icon: ForgeIcons.moon; label: @tr("深色"); selected: root.dark-mode; clicked => { root.theme-requested(true); } }
+            }
+        }
+        Rectangle {
+            height: 149px; border-radius: 8px; border-width: 1px; border-color: Palette.border; background: Palette.alternate-background;
+            ForgeIcon { x: 16px; y: 15px; width: 24px; height: 24px; glyph: ForgeIcons.globe; }
+            Text { x: 48px; y: 18px; text: @tr("语言"); color: Palette.foreground; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            Text { x: 18px; y: 55px; text: @tr("界面语言，切换后立即更新"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+            HorizontalLayout {
+                x: 18px; y: 78px; height: 34px; spacing: 8px;
+                GallerySettingsChoice { label: "简体中文"; selected: root.language == "zh"; clicked => { root.language-requested("zh"); } }
+                GallerySettingsChoice { label: "English"; selected: root.language == "en"; clicked => { root.language-requested("en"); } }
+            }
+        }
+        Rectangle {
+            height: 205px; border-radius: 8px; border-width: 1px; border-color: Palette.border; background: Palette.alternate-background;
+            ForgeIcon { x: 16px; y: 15px; width: 24px; height: 24px; glyph: ForgeIcons.window; }
+            Text { x: 48px; y: 18px; text: @tr("窗口"); color: Palette.foreground; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            GallerySettingsToggle {
+                x: 18px; y: 54px; width: parent.width - 36px;
+                label: @tr("窗口置顶");
+                description: @tr("让 Gallery 保持在其他窗口上方，也可点击标题栏图钉。");
+                checked: root.pinned;
+                toggled(value) => { root.pin-requested(value); }
+            }
+            Text { x: 18px; y: 127px; text: @tr("窗口边角"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+            HorizontalLayout {
+                x: 18px; y: 151px; height: 34px; spacing: 8px;
+                GallerySettingsChoice { label: @tr("圆角"); selected: root.rounded-corners; clicked => { root.corner-style-requested(true); } }
+                GallerySettingsChoice { label: @tr("直角"); selected: !root.rounded-corners; clicked => { root.corner-style-requested(false); } }
+            }
+        }
+        Rectangle {
+            height: 239px; border-radius: 8px; border-width: 1px; border-color: Palette.border; background: Palette.alternate-background;
+            ForgeIcon { x: 16px; y: 15px; width: 24px; height: 24px; glyph: ForgeIcons.text-font; }
+            Text { x: 48px; y: 18px; text: @tr("字体"); color: Palette.foreground; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            Text { x: 18px; y: 53px; text: @tr("文字字体"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+            HorizontalLayout {
+                x: 18px; y: 76px; height: 34px; spacing: 8px;
+                GallerySettingsChoice { label: @tr("系统默认"); selected: root.font-family == ""; clicked => { root.font-family-requested(""); } }
+                GallerySettingsChoice { label: "Microsoft YaHei UI"; selected: root.font-family == "Microsoft YaHei UI"; clicked => { root.font-family-requested("Microsoft YaHei UI"); } }
+                GallerySettingsChoice { label: "Segoe UI"; selected: root.font-family == "Segoe UI"; clicked => { root.font-family-requested("Segoe UI"); } }
+                GallerySettingsChoice { label: "Consolas"; selected: root.font-family == "Consolas"; clicked => { root.font-family-requested("Consolas"); } }
+            }
+            Text { x: 18px; y: 122px; text: @tr("字号比例"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+            HorizontalLayout {
+                x: 18px; y: 145px; height: 34px; spacing: 8px;
+                GallerySettingsChoice { label: "90%"; selected: root.font-scale < 0.95; clicked => { root.font-scale-requested(0.9); } }
+                GallerySettingsChoice { label: "100%"; selected: root.font-scale >= 0.95 && root.font-scale < 1.05; clicked => { root.font-scale-requested(1.0); } }
+                GallerySettingsChoice { label: "110%"; selected: root.font-scale >= 1.05 && root.font-scale < 1.175; clicked => { root.font-scale-requested(1.1); } }
+                GallerySettingsChoice { label: "125%"; selected: root.font-scale >= 1.175; clicked => { root.font-scale-requested(1.25); } }
+            }
+            Text { x: 18px; y: 194px; text: @tr("预览：你好，SlintForge！ABC 123"); color: Palette.foreground; font-size: 16px * ForgeTypography.scale; }
+        }
+        Rectangle {
+            height: 171px; border-radius: 8px; border-width: 1px; border-color: Palette.border; background: Palette.alternate-background;
+            ForgeIcon { x: 16px; y: 15px; width: 24px; height: 24px; glyph: ForgeIcons.apps; }
+            Text { x: 48px; y: 18px; text: @tr("图标字体库"); color: Palette.foreground; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            ForgeIconButton { x: parent.width - 154px; y: 12px; label: @tr("浏览完整目录"); clicked => { root.open-icons-requested(); } }
+            Text { x: 18px; y: 53px; text: @tr("Microsoft Fluent System Icons · Regular，支持直接传入字形码位。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+            HorizontalLayout {
+                x: 18px; y: 85px; height: 48px; spacing: 16px;
+                ForgeIcon { width: 36px; height: 36px; glyph: ForgeIcons.home; }
+                ForgeIcon { width: 36px; height: 36px; glyph: ForgeIcons.search; }
+                ForgeIcon { width: 36px; height: 36px; glyph: ForgeIcons.settings; }
+                ForgeIcon { width: 36px; height: 36px; glyph: ForgeIcons.pin; }
+                ForgeIcon { width: 36px; height: 36px; glyph: ForgeIcons.globe; }
+                ForgeIcon { width: 36px; height: 36px; glyph: ForgeIcons.info; }
+            }
+
+        }
+        Rectangle {
+            height: 178px; border-radius: 8px; border-width: 1px; border-color: Palette.border; background: Palette.alternate-background;
+            ForgeIcon { x: 16px; y: 15px; width: 24px; height: 24px; glyph: ForgeIcons.apps; }
+            Text { x: 48px; y: 18px; text: @tr("导航窗格"); color: Palette.foreground; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            Text { x: 18px; y: 54px; text: @tr("位置"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+            HorizontalLayout {
+                x: 18px; y: 76px; height: 34px; spacing: 8px;
+                GallerySettingsChoice { label: @tr("左侧"); selected: root.placement == ForgeNavPlacement.left; clicked => { root.placement-requested(ForgeNavPlacement.left); } }
+                GallerySettingsChoice { label: @tr("右侧"); selected: root.placement == ForgeNavPlacement.right; clicked => { root.placement-requested(ForgeNavPlacement.right); } }
+                GallerySettingsChoice { label: @tr("顶部"); selected: root.placement == ForgeNavPlacement.top; clicked => { root.placement-requested(ForgeNavPlacement.top); } }
+            }
+            Text { x: 18px; y: 122px; text: @tr("面板状态"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+            HorizontalLayout {
+                x: 18px; y: 145px; height: 34px; spacing: 8px;
+                GallerySettingsChoice { label: @tr("展开"); selected: root.pane-state == ForgePaneState.expanded; clicked => { root.pane-state-requested(ForgePaneState.expanded); } }
+                GallerySettingsChoice { label: @tr("仅图标"); selected: root.pane-state == ForgePaneState.compact; clicked => { root.pane-state-requested(ForgePaneState.compact); } }
+                GallerySettingsChoice { label: @tr("隐藏"); selected: root.pane-state == ForgePaneState.hidden; clicked => { root.pane-state-requested(ForgePaneState.hidden); } }
+            }
+        }
+        Text { text: @tr("SlintForge Gallery · Rust / C++ 共用 Slint UI"); color: Palette.foreground; font-size: 12px * ForgeTypography.scale; }
+    }
+}

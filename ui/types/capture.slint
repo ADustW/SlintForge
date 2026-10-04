@@ -1,0 +1,22 @@
+// 坐标采用所属窗口的逻辑像素；结果尺寸采用物理像素。
+export struct ForgeCaptureRect {
+    x: length,
+    y: length,
+    width: length,
+    height: length,
+}
+
+export struct ForgeCaptureResult {
+    ok: bool,
+    image: image,
+    pixel-width: int,
+    pixel-height: int,
+    error: string,
+}
+
+// 每个顶层窗口拥有自己的服务实例，宿主以弱引用接入截图回调。
+export global ForgeCaptureService {
+    in-out property<bool> connected: false;
+    callback capture-window() -> ForgeCaptureResult;
+    callback capture-region(ForgeCaptureRect) -> ForgeCaptureResult;
+}

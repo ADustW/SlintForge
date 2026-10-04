@@ -1,0 +1,45 @@
+import { Button, LineEdit, Palette, ScrollView } from "std-widgets.slint";
+
+export component ForgeAutoSuggestBox inherits Rectangle {
+    in-out property<string> text;
+    in property<[string]> suggestions;
+    in property<bool> enabled: true;
+    in property<string> placeholder-text: @tr("输入以搜索");
+    in-out property<bool> open: false;
+    callback edited(string);
+    callback selected(string);
+    init => { if !root.enabled { root.open = false; } }
+    changed enabled => { if !root.enabled { root.open = false; } }
+    changed open => { if !root.enabled { root.open = false; } }
+    public function choose(value: string) {
+        if root.enabled { root.text = value; root.open = false; root.selected(value); }
+    }
+    min-width: 180px; preferred-height: layout.preferred-height;
+    forward-focus: field;
+    layout := VerticalLayout {
+        spacing: 4px;
+        field := LineEdit {
+            text <=> root.text; enabled: root.enabled; placeholder-text: root.placeholder-text;
+            edited(value) => { root.open = true; root.edited(value); }
+            key-pressed(event) => {
+                if event.text == Key.Escape { root.open = false; return accept; }
+                if event.text == Key.DownArrow { root.open = true; return accept; }
+                return reject;
+            }
+            accepted => { root.choose(root.text); }
+        }
+        if root.open : ScrollView {
+            height: 150px;
+            VerticalLayout {
+                spacing: 2px;
+                for suggestion in root.suggestions : Button {
+                    text: suggestion;
+                    visible: root.text == "" || suggestion.to-lowercase().starts-with(root.text.to-lowercase());
+                    height: self.visible ? 32px : 0px;
+                    enabled: root.enabled;
+                    clicked => { root.choose(suggestion); }
+                }
+            }
+        }
+    }
+}

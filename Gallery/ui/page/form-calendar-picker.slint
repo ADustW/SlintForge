@@ -1,0 +1,30 @@
+import { Button, DatePickerPopup, Date, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// Slint 原生示例：CalendarPicker。
+export component GalleryFormCalendarPickerPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => { if open { picker.show(); } else { picker.close(); } }
+    in-out property<Date> selected-date: {year: 2026, month: 10, day: 3};
+    sample := GallerySamplePage {
+        title: "CalendarPicker";
+        subtitle: @tr("切换月份，在月历中选择日期。");
+        example-title: @tr("用法与状态");
+        preview-height: 160px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            Button { text: @tr("选择日期"); clicked => { picker.show(); } }
+Text { text: root.selected-date.year + "-" + root.selected-date.month + "-" + root.selected-date.day; color: Palette.foreground; }
+        }
+    }
+    picker := DatePickerPopup { x: 30px; y: 100px; title: @tr("选择日期"); date: root.selected-date; accepted(value) => { root.selected-date = value; picker.close(); } canceled => { picker.close(); } }
+}

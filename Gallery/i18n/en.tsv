@@ -1,0 +1,758 @@
+{} 的 Slint 组件实现、交互示例与 Rust/C++ 用法将在后续版本补充。|The Slint component, interactive demo, and Rust/C++ usage for {} will be added in a future release.
+{} 列 · {}|{} columns · {}
+X π 刻度|X pi ticks
+X 固定 10 秒|X fixed 10 seconds
+X 持续时间|X duration
+X 数值刻度|X numeric ticks
+X 文本刻度|X text ticks
+X 无限历史|X unlimited history
+X 日期时间|X date and time
+X 自动适配|X auto fit
+中点|Midpoint
+中间阶梯|Centered steps
+仅散点|Scatter only
+双光标测量|Dual cursor measurement
+右阶梯|Right steps
+图例上方|Legend above
+图例下方|Legend below
+图例右上|Legend upper right
+图例右下|Legend lower right
+图例右侧|Legend right
+图例左上|Legend upper left
+图例左下|Legend lower left
+图例左侧|Legend left
+图例最新值|Legend latest values
+图例简洁|Plain legend
+图例紧凑|Compact legend
+图例边框|Framed legend
+左阶梯|Left steps
+测量曲线 1|Measure series 1
+测量曲线 2|Measure series 2
+终点|Endpoint
+脉冲|Impulses
+起点|Start
+连续折线|Continuous line
+小于 560px|Below 560 px
+不小于 560px|At least 560 px
+无需滚动|No scrolling needed
+需要滚动|Scroll available
+卡片 {}|Card {}
+卡片等宽、逐行对齐；缩放窗口时自动换列，内容过高时竖向滚动。|Cards have equal widths and align by row; resizing changes columns and overflow scrolls vertically.
+卡片自动进入当前最短列；缩放窗口可观察列数和位置变化。|Cards enter the shortest column; resize the window to see columns and positions change.
+少量卡片|Fewer cards
+大量卡片|More cards
+拖动四条分隔线调整尺寸；独立隐藏边区后，中央区自动填充。|Drag any of the four dividers; hiding an edge lets the center fill its space.
+重置尺寸|Reset sizes
+中央|Center
+按稳定 ID 立即切换预编译页面；隐藏页的输入内容保持不变。|Switch precompiled pages instantly by stable ID; hidden pages retain their input.
+第一页|First page
+第二页|Second page
+第三页|Third page
+未知 ID|Unknown ID
+第一页：输入内容，切走后再返回|First page: type something, switch away, then return
+输入一些文字|Type something
+已选择卡片 {}|Selected card {}
+宽屏时控件靠右；宽度低于断点后，控件移到标题和说明下方。|Controls align right on wide screens and move below the label and description below the breakpoint.
+宽屏预览|Wide preview
+窄屏预览|Narrow preview
+工作区名称|Workspace name
+用于在设置页和窗口标题中区分工作区。|Distinguishes the workspace in settings and the window title.
+名称控件|Name control
+同步策略|Sync policy
+调整后台任务的默认运行方式。|Adjust how background tasks run by default.
+策略控件|Policy control
+通知级别|Notification level
+仅显示与当前工作相关的通知。|Show only notifications relevant to the current work.
+级别控件|Level control
+公共 API：min-item-width、item-width、column-count、column-gap、row-gap、content-padding、max-columns、content-height、vertical-scrollbar-visible、@children。|Public API: min-item-width, item-width, column-count, column-gap, row-gap, content-padding, max-columns, content-height, vertical-scrollbar-visible, @children.
+公共 API：top/bottom-height、left/right-width、show-*、五区 ForgeDockRect、pane-size-changed(edge, size)、@children。|Public API: top/bottom-height, left/right-width, show-*, five ForgeDockRect regions, pane-size-changed(edge, size), @children.
+公共 API：ForgePageStack.active-id、ForgeStackPage.page-id / active-id、@children。未知 ID 时全部隐藏。|Public API: ForgePageStack.active-id, ForgeStackPage.page-id / active-id, @children. Unknown IDs hide all pages.
+公共 API：title、description、breakpoint、label-width、spacing、stacked-layout、@children。多行由官方 VerticalLayout 排列。|Public API: title, description, breakpoint, label-width, spacing, stacked-layout, @children. Use the standard VerticalLayout for multiple rows.
+公共 API：items、min-column-width、max-columns、layout-requested(columns)、selected(id)。宿主计算最短列位置。|Public API: items, min-column-width, max-columns, layout-requested(columns), selected(id). The host computes shortest-column positions.
+安全输入|Secure input
+按分类浏览已实现和规划中的页面|Browse implemented and planned pages by category
+按稳定 ID 切换页签|Switch tabs by stable ID
+标题和内容插槽|Title and content slot
+查看基础组件的可交互示例|Explore interactive examples of basic components
+成功|Success
+窗口|Window
+窗口置顶|Always on top
+错误|Error
+带标题的内容容器 · ForgeCard|Titled content container · ForgeCard
+待实现|Coming soon
+当前 Gallery 主窗口就是 ForgeWindow 实例。|The Gallery window is an instance of ForgeWindow.
+导航窗格|Navigation pane
+点击 {} 次|Clicked {} times
+点击计数|Click counter
+调整 Gallery 的外观、语言、字体与导航方式。更改会立即生效。|Adjust Gallery appearance, language, fonts, and navigation. Changes take effect immediately.
+顶部|Top
+底部|Bottom
+返回后应保留输入内容|Input should be retained when you return
+概览|Overview
+公共 API：ForgeIcon.glyph、ForgeIcons、ForgeTypography.family / scale|Public API: ForgeIcon.glyph, ForgeIcons, ForgeTypography.family / scale
+公共 API：icon · label · selected · enabled · clicked()|Public API: icon · label · selected · enabled · clicked()
+公共 API：level · message · dismissible · dismissed()|Public API: level · message · dismissible · dismissed()
+公共 API：title · @children 内容插槽|Public API: title · @children content slot
+规划中的示例|Planned examples
+还原|Restore
+后台采样计数：{}|Background sample count: {}
+界面语言，切换后立即更新|Interface language, updated immediately
+仅图标|Icons only
+仅文字|Text only
+禁用|Disabled
+警告|Warning
+卡片尺寸由页面控制。|The page controls the card size.
+卡片内操作|Card action
+开始使用|Get started
+可选中|Selectable
+路由参数：{}|Route parameters: {}
+面板状态|Pane state
+内部验收 · 已注册页面常驻，隐藏时宿主继续采样|Internal verification · registered pages remain mounted while sampling continues
+内联状态反馈 · ForgeInfoBar|Inline status feedback · ForgeInfoBar
+浅色|Light
+全部分类|All categories
+让 Gallery 保持在其他窗口上方，也可点击标题栏图钉。|Keep Gallery above other windows. You can also use the title bar pin.
+设备状态|Device status
+设置|Settings
+深色|Dark
+输入建议与快速选择|Input suggestions and quick selection
+输入文字 → 切到其他页面 → 等待后返回。|Enter text → switch pages → wait → return.
+四类状态反馈|Four feedback levels
+搜索组件|Search components
+图标与文字按钮 · ForgeIconButton|Icon and text button · ForgeIconButton
+图标与文字按钮|Icon and text button
+图标字体库|Icon font library
+图文组合|Icon and text
+拖动标题栏可移动窗口；双击标题栏切换最大化；拖动窗口边缘可调整大小。|Drag the title bar to move; double-click to maximize; drag an edge to resize.
+外观|Appearance
+未找到匹配的组件|No matching components
+位置|Position
+文字字体|Text font
+无|None
+无边框窗口与标题栏|Frameless window and title bar
+无边框窗口与自定义标题栏|Frameless window and custom title bar
+系统默认|System default
+信息|Information
+行列数据展示|Rows and columns
+验证步骤|Verification steps
+业务内容通过 @children 插入，卡片保持统一边框和留白。|Insert content through @children; the card keeps consistent borders and spacing.
+页面生命周期|Page lifecycle
+一套 Slint 组件，同时服务 Rust 与 C++ 应用|One Slint component set for both Rust and C++ apps
+已操作 {} 次|Actions: {}
+隐藏|Hidden
+右侧|Right
+语言|Language
+预览：你好，SlintForge！ABC 123|Preview: Hello, SlintForge! ABC 123
+源代码|Source code
+展开|Expanded
+这是一条可关闭的反馈信息。|This feedback message can be dismissed.
+主题模式|Theme mode
+字号比例|Font scale
+字体|Typography
+组件目录|Component catalog
+最大化|Maximize
+最近添加的示例|Recently added examples
+最小化|Minimize
+左侧|Left
+Gallery 布局预览|Gallery layout preview
+Microsoft Fluent System Icons · Regular，支持直接传入字形码位。|Microsoft Fluent System Icons · Regular; glyph code points can be passed directly.
+SlintForge Gallery · Rust / C++ 共用 Slint UI|SlintForge Gallery · shared Slint UI for Rust and C++
+SlintForge Gallery|SlintForge Gallery
+字体排版|Typography
+使用 ForgeTypography 统一控制文字字体和字号比例。|Use ForgeTypography to control text font and scale consistently.
+展示标题 · Display|Display heading
+页面标题 · Title|Page title
+正文 · Body：你好 SlintForge，Hello World!|Body: Hello SlintForge, Hello World!
+辅助文字 · Caption|Supporting text · Caption
+前往设置调整字体|Adjust fonts in Settings
+公共 API：ForgeTypography.family 和 ForgeTypography.scale。ForgeWindow 使用该字体，组件文字按比例缩放。|Public API: ForgeTypography.family and ForgeTypography.scale. ForgeWindow uses the selected font and component text scales accordingly.
+图标字体|Icon font
+ForgeIcon 使用独立授权的 Fluent System Icons 字体，可按字形码位扩展。|ForgeIcon uses a separately licensed Fluent System Icons font and supports additional glyph code points.
+取消置顶|Stop keeping on top
+浏览 Fluent System Icons Regular 的完整图标目录，按名称搜索并查看码位。|Browse the full Fluent System Icons Regular catalog, search by name, and inspect code points.
+常用码位可直接从 ForgeIcons 读取；完整目录由 Rust/C++ 的 IconCatalog 按名称查找。|Read common glyphs from ForgeIcons; look up the full catalog by name with the Rust/C++ IconCatalog.
+按名称搜索，例如 home、settings、arrow|Search by name, such as home, settings, or arrow
+匹配图标|Matching icons
+上一页|Previous
+下一页|Next
+公共 API：ForgeIcon.glyph、ForgeIcons 常用码位、Rust IconCatalog 与 C++ ForgeIconCatalog。官方字体与完整码位表随组件库提供。|Public API: ForgeIcon.glyph, common ForgeIcons glyphs, Rust IconCatalog, and C++ ForgeIconCatalog. The official font and complete code point map are included.
+窗口边角|Window corners
+圆角|Rounded
+直角|Square
+切换直角|Use square corners
+切换圆角|Use rounded corners
+公开属性：title、brand-icon、version-text、rounded-corners、show-pin-button、pinned、show-settings-button、dark-mode。|Public properties: title, brand-icon, version-text, rounded-corners, show-pin-button, pinned, show-settings-button, dark-mode.
+回调：pin-state-changed、settings-requested、menu-requested、theme-toggle-requested；@children 放置页面内容。|Callbacks: pin-state-changed, settings-requested, menu-requested, theme-toggle-requested; place page content in @children.
+Windows 宿主在窗口创建后调用 apply_window_corners / forge_apply_window_corners 设置原生边角。|On Windows, call apply_window_corners / forge_apply_window_corners after window creation to set native corners.
+浏览完整目录|Browse full catalog
+Gallery 软件图标|Gallery app icon
+SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例。|SlintForge notice: layout and surface components are now available in Gallery.
+一致的交互|Consistent interaction
+上方内容|Upper content
+下方内容|Lower content
+不同高度由数据项指定。|Each item specifies its own height.
+不同高度的卡片交错排列，点击卡片查看选择结果。|Cards of different heights form a staggered grid. Select a card to inspect it.
+交错排列保持阅读顺序。|The staggered layout keeps reading order.
+任务状态|Task status
+使用主题背景与边框的圆角内容面板。|A rounded content panel with themed background and border.
+使用前后按钮切换轮播页，当前序号可双向绑定。|Use the previous and next buttons to switch slides. The current index supports two-way binding.
+使用大圆角|Use larger corners
+使用小圆角|Use smaller corners
+公共 API：ForgeStaggeredItem、items、gap、selected(index)。适合规模适中的双列卡片展示。|Public API: ForgeStaggeredItem, items, gap, and selected(index). Suitable for a moderate number of cards in two columns.
+公共 API：content-height、depth、backdrop-text、scroll-offset、@children。前景由 Flickable 滚动。|Public API: content-height, depth, backdrop-text, scroll-offset, and @children. Flickable scrolls the foreground.
+公共 API：corner-radius、background、border-color、@children。适合卡片与分组容器。|Public API: corner-radius, background, border-color, and @children. Suitable for cards and grouped content.
+公共 API：corner-radius、clip、@children。子项超出边界时保持圆角裁剪。|Public API: corner-radius, clip, and @children. Overflowing child content is clipped to rounded bounds.
+公共 API：icon、label、description、vertical。icon 使用 Fluent System Icons 字形。|Public API: icon, label, description, and vertical. The icon uses a Fluent System Icons glyph.
+公共 API：mark、mark-opacity、@children。水印只负责视觉提示，不提供访问控制。|Public API: mark, mark-opacity, and @children. The watermark is a visual cue and provides no access control.
+公共 API：orientation、ratio、first-width/height、second-x/y/width/height、ratio-changed。子项通过 @children 保持实例与状态。|Public API: orientation, ratio, first-width/height, second-x/y/width/height, and ratio-changed. @children keeps child instances and state.
+公共 API：refresh-label、refreshing、refresh-requested、@children。宿主负责数据加载与完成状态。|Public API: refresh-label, refreshing, refresh-requested, and @children. The host loads data and controls completion state.
+公共 API：source、corner-radius。图像以 cover 方式填满容器。|Public API: source and corner-radius. The image fills the container using cover mode.
+公共 API：text、cycle-duration、running。动画使用 Slint animation-tick 驱动。|Public API: text, cycle-duration, and running. Slint animation-tick drives the animation.
+公共 API：title、expanded、content-height、toggled(bool)、@children。折叠只隐藏内容，不销毁子项。|Public API: title, expanded, content-height, toggled(bool), and @children. Collapsing hides content without destroying children.
+共享的 Slint 组件可同时用于 Rust 与 C++。|Shared Slint components work with both Rust and C++.
+内容已裁剪|Content is clipped
+内容通过 @children 插入。|Content is inserted through @children.
+切换圆形|Toggle circular shape
+切换垂直|Switch to vertical
+切换水平|Switch to horizontal
+刷新数据|Refresh data
+前景卡片 A|Foreground card A
+前景卡片 B|Foreground card B
+前景卡片 C|Foreground card C
+右侧内容|Right content
+图标、标题与说明组合显示，可切换排列方向。|Display an icon, title, and description in either orientation.
+图标与文字保持一致的字体和间距。|The icon and text use consistent typography and spacing.
+图片按区域裁切并显示圆角边框。|The image is cropped to its bounds and shown with rounded corners.
+圆角容器|Rounded container
+在容器内容上叠加低对比度的重复水印。|Overlay a subtle repeating watermark on the container content.
+垂直排列|Vertical layout
+增大圆角|Increase corner radius
+将超出边界的子内容裁剪为圆角形状。|Clip child content that extends beyond rounded bounds.
+尚未选择卡片|No card selected
+展开或折叠内容，输入状态在折叠后保留。|Expand or collapse content. Input state persists while collapsed.
+左侧内容|Left content
+已刷新 {} 次|Refreshed {} times
+已暂停|Paused
+已选择第 {} 项|Selected item {}
+高度 {} px|Height {} px
+当前第 {} 页|Page {}
+当前：已展开|Current: expanded
+当前：已折叠|Current: collapsed
+快捷操作|Quick actions
+恢复圆角|Restore rounded corners
+拖动分隔条调整两个内容区域的宽度。|Drag the divider to resize the two content areas.
+拖动分隔条调整两个内容区域的比例，可切换水平或垂直布局。|Drag the divider to resize both panes, and switch between horizontal and vertical layouts.
+暂停滚动|Pause scrolling
+欢迎使用 SlintForge|Welcome to SlintForge
+正在滚动|Scrolling
+水印覆盖在内容上方。|The watermark is overlaid on the content.
+水平排列|Horizontal layout
+滚动内容示例：第一段|Scrollable content example: first section
+滚动内容示例：第三段|Scrollable content example: third section
+滚动内容示例：第二段|Scrollable content example: second section
+滚动前景内容，背景以较慢速度移动。|Scroll the foreground; the background moves more slowly.
+点击刷新栏发出刷新请求，内容区域保持可滚动。|Click the refresh bar to request a refresh. The content remains scrollable.
+状态提示|Status notice
+示例文档|Example documentation
+示例页面演示公开属性、回调和内容插槽。|Example pages demonstrate public properties, callbacks, and content slots.
+紧凑卡片|Compact card
+组件状态可由宿主确认，也可在界面内直接切换。|The host can confirm component state, or it can be changed directly in the UI.
+继续滚动|Resume scrolling
+设备概览|Device overview
+详细信息|Details
+轻量的组合|Lightweight composition
+较高的卡片可以容纳更多描述内容。|Taller cards can hold more descriptive content.
+输入文字后折叠并重新展开|Enter text, then collapse and reopen
+输入水印文字|Enter watermark text
+这里还可以放置任意业务组件。|Any application component can be placed here.
+重置比例|Reset ratio
+长文本在固定区域内连续滚动，可暂停和继续。|Long text scrolls continuously within a fixed area and can be paused or resumed.
+首区 {}%|First pane {}%
+高级选项|Advanced options
+矩形按可用宽度自动换行，内容超出时出现竖向滚动条。|Tiles wrap to fit the available width, and a vertical scrollbar appears when content overflows.
+少量矩形|Fewer tiles
+大量矩形|More tiles
+竖向滚动条已显示|Vertical scrollbar visible
+当前无需滚动|No scrolling needed
+矩形 {}|Tile {}
+公共 API：spacing、content-padding、content-height、vertical-scrollbar-visible、@children。子组件保持实例，宽度不足时自动换行。|Public API: spacing, content-padding, content-height, vertical-scrollbar-visible, and @children. Child instances persist and wrap when space is limited.
+修改输入后获取截图|Edit the input before capturing
+公共 API：mark、mark-opacity、tile-width、tile-height、@children。水印按容器尺寸铺满，内容保持可交互。|Public API: mark, mark-opacity, tile-width, tile-height, @children. Tiles cover the container without blocking input.
+公共 API：source、corner-radius、image-fit、border-width、border-color。默认 cover，支持空图片。|Public API: source, corner-radius, image-fit, border-width, border-color. Defaults to cover; empty images are supported.
+公共 API：text、cycle-duration、running。仅溢出时滚动，暂停后原位继续，非正周期静止显示。|Public API: text, cycle-duration, running. Scrolls only on overflow, resumes in place, and stays still for non-positive durations.
+公共 API：title、expanded、content-height、content-padding、enabled、toggled(bool)。默认自然高度，支持 Enter 和空格键。|Public API: title, expanded, content-height, content-padding, enabled, toggled(bool). Natural height by default; supports Enter and Space.
+导出 PNG|Export PNG
+常驻页面容器与当前可视区域截图|Persistent page container and visible-area capture
+截图将在此处显示|The captured image will appear here
+截图尺寸：{} × {} 像素|Capture size: {} x {} pixels
+截图服务未接入|Capture service is not connected
+清空图片|Clear image
+获取截图|Capture image
+页面截图目标|Page capture target
+页面未激活|Page is not active
+页面隐藏后保留输入；截图包含当前区域的背景、内容和覆盖层。|Hidden pages retain input. Captures include the current area's background, content, and overlays.
+Button.checkable=true；checked 双向绑定，原生键盘与焦点行为。|Button.checkable=true; checked uses two-way binding with native keyboard and focus behavior.
+ContextMenuArea + Menu/MenuItem 已提供菜单与键盘交互。|ContextMenuArea and Menu/MenuItem provide native menus and keyboard interaction.
+DatePickerPopup 已包含月历、年月切换和确认取消。|DatePickerPopup provides a calendar, month/year navigation, and accept/cancel actions.
+LineEdit.input-type=password；切换类型保留输入。|LineEdit.input-type=password; switching the type preserves the input.
+RGBA 四通道，value 输出颜色；color-changed(color)，所有通道限制在 0～255。|Four RGBA channels; value exposes the color and color-changed(color) reports edits. Channels range from 0 to 255.
+RadioGroup 管理 RadioButton 的互斥、方向键与焦点。|RadioGroup manages mutually exclusive RadioButtons, arrow keys, and focus.
+Rust 与 C++ 使用同一套界面|Rust and C++ share the same UI
+Slint 1.18.0 / fluent / Windows x64；接口与实现记录见 docs/COMPONENT_AUDIT.md。|Slint 1.18.0 / Fluent / Windows x64. See docs/COMPONENT_AUDIT.md for the API and implementation audit.
+Slint 原生 Tooltip，支持自定义内容。|Native Slint Tooltip with custom content.
+Slint 原生多窗口|Native Slint windows
+Slint 原生对话窗口|Native Slint dialog window
+Slint 原生组件|Native Slint widget
+Slint 用法|Slint usage
+SlintForge 共享组件|SlintForge shared component
+StyledText 原生渲染链接，Platform.open-url 处理用户激活。|StyledText renders links natively; Platform.open-url handles user activation.
+TabWidget / Tab 提供原生标签栏、页面选择和焦点管理。|TabWidget and Tab provide native tabs, page selection, and focus management.
+TextEdit 自带多行编辑及滚动视口，无需包装。|TextEdit provides multiline editing and a scrolling viewport.
+TimePickerPopup 提供时钟、输入和 24 小时格式。|TimePickerPopup provides a clock, text input, and 24-hour formatting.
+Window 由宿主持有并执行 show()/hide()，隐藏后保留实例。|The host retains Window instances and calls show()/hide(), preserving state while hidden.
+busy 禁止重复提交；progress<0 显示不确定状态，进度由宿主或应用回传。|busy prevents repeated submission; progress<0 displays an indeterminate state. The application supplies progress.
+code / language / line-numbers / copy；Slint、Rust、C/C++、Python、JSON 的词法高亮，未知语言使用普通颜色。|code / language / line-numbers / copy; lexical highlighting for Slint, Rust, C/C++, Python, and JSON. Unknown languages use plain colors.
+items / selected-id / selected(id)；使用原生可选按钮提供键盘行为。|items / selected-id / selected(id); native checkable buttons provide keyboard behavior.
+items.selected 双向更新；selection-changed(id,bool)。关闭弹出层后选中状态保留。|items.selected is updated with selection-changed(id,bool). Selection persists when the popup closes.
+items: [ForgeChoiceItem] / selected(id)；点击外部或 Escape 关闭。|items: [ForgeChoiceItem] / selected(id); click outside or press Escape to close.
+items: [ForgeTimelineItem]；时间、描述、完成状态，长文字按自然高度换行。|items: [ForgeTimelineItem]; time, description, and completion state. Long text wraps at its natural height.
+level / title / description / action-text / action-requested；支持成功、错误、警告和信息。|level / title / description / action-text / action-requested; success, error, warning, and information states.
+loading=false 显示 @children；隐藏内容不销毁，animate 控制骨架动画。|loading=false reveals @children. Hidden content persists; animate controls the skeleton animation.
+open / edge / panel-width / @children / dismissed；点击遮罩或 Escape 关闭，隐藏时保留内容。|open / edge / panel-width / @children / dismissed; click the backdrop or press Escape to close. Hidden content persists.
+open / title / message / @children / accepted / canceled；遮罩阻止背景鼠标输入，Escape 关闭，Tab 在操作按钮间切换。|open / title / message / @children / accepted / canceled; the backdrop blocks pointer input. Escape closes; Tab moves between action buttons.
+required / minimum-length / maximum-length / error-message；valid、validation-message、accepted。|required / minimum-length / maximum-length / error-message; valid, validation-message, and accepted.
+running / cycle；停下后保留相位，非正周期静止显示。|running / cycle; stopping preserves the phase. Non-positive cycles display a static shimmer.
+selected / removable / enabled；toggled(bool)、removed()。|selected / removable / enabled; toggled(bool) and removed().
+source / blur-radius / tint / content-padding；SDK 处理背景图，动态场景需应用更新 source。玻璃模式加入边缘折射和内高光。|source / blur-radius / tint / content-padding; the SDK processes the background image. Update source for dynamic scenes. Glass adds edge refraction and inner highlights.
+steps: [ForgeTourStep] / active / current-step / next / previous；目标高亮、完成、跳过与 Escape。|steps: [ForgeTourStep] / active / current-step / next / previous; target highlighting, completion, skipping, and Escape.
+tags 模型由应用持有；add-requested(text)、remove-requested(index)。演示去空白、去重并限制数量。|The application owns tags; add-requested(text) and remove-requested(index). This demo trims, deduplicates, and limits tags.
+text / primary / enabled / clicked；Enter 和 Space 与鼠标行为一致。|text / primary / enabled / clicked; Enter and Space match pointer behavior.
+text / result；UTF-8 ECI、纠错与静区由 SDK 编码，PNG 可扫码验证。需绑定 ForgeWidgetServices。|text / result; the SDK encodes UTF-8 ECI, error correction, and quiet zones. Bind ForgeWidgetServices and scan the exported PNG.
+title / value / suffix / trend / show-trend；数字格式由应用提供。|title / value / suffix / trend / show-trend; the application formats the value.
+total-items / page-size / current-page / go-to；空数据返回第 0 页，首末页、页数变化均限制范围。|total-items / page-size / current-page / go-to; empty data uses page 0. Page navigation and count changes are clamped.
+value / maximum / dot / show-zero；超过上限显示 99+。|value / maximum / dot / show-zero; values above the default maximum display 99+.
+value / minimum / maximum / step；上下拖动、滚轮、方向键、Home、End；支持禁用。|value / minimum / maximum / step; vertical drag, wheel, arrow keys, Home, and End. Supports disabled state.
+{} 属于表格或图表组件，本次按要求暂缓。|{} is a table or chart component and is deferred as requested.
+{} 星|{} stars
+上一步|Previous
+下一步|Next
+不区分大小写的前缀匹配；Down 展开，Escape 收起，Enter 提交；应用也可回传 suggestions。|Case-insensitive prefix matching; Down opens, Escape closes, and Enter submits. The application can also provide suggestions.
+不确定进度圆环直接使用原生 Spinner。|The indeterminate progress ring uses the native Spinner.
+主色 · 背景 · 控件背景 · 前景|Accent · Background · Control background · Foreground
+主色胶囊|Primary pill
+二维码服务未绑定|QR code service is not connected
+保存|Save
+共享 Slint 契约|Shared Slint contract
+共享 Slint 组件 · Rust / C++ SDK\n95 个导航页面，表格与图表 9 页暂缓。\n原生控件示例与组件 API 使用同一套 UI 契约。|Shared Slint components · Rust / C++ SDK\n96 navigation pages; 9 table/chart pages are deferred.\nNative widget demos and component APIs share the same UI contract.
+关闭|Close
+内容仍可交互|Content remains interactive
+切换按钮|Toggle button
+切换标签保留输入|Switching tabs preserves input
+创建工程|Create project
+加载中|Loading
+加载完成，输入状态保留|Loaded; input state is preserved
+原生 CheckBox.checked 双向绑定。|Native CheckBox.checked uses two-way binding.
+原生 ComboBox 提供单选、弹出列表和键盘选择。|Native ComboBox provides single selection, a popup list, and keyboard selection.
+原生 Dialog 与 StandardButton，宿主处理确认/取消并持有实例。|Native Dialog and StandardButton; the host retains the instance and handles accept/cancel.
+原生 Dialog 自动排列标准操作按钮。|Native Dialog arranges standard action buttons automatically.
+原生 ProgressIndicator 支持确定和不确定进度。|Native ProgressIndicator supports determinate and indeterminate progress.
+原生 Slider.minimum、maximum、value、changed。|Native Slider.minimum, maximum, value, and changed.
+原生标签内容|Native tab content
+取消|Cancel
+只读 TextEdit 保留鼠标/键盘选择与复制，无需再实现选择层。|Read-only TextEdit supports pointer/keyboard selection and copying.
+可移除标签|Removable tag
+可返回的页面标题|Page header with back navigation
+可选择、复制的文本。\n使用鼠标选择，或按 Ctrl+A、Ctrl+C。\n此示例使用 Slint 原生 TextEdit。|Selectable, copyable text.\nSelect with the pointer or press Ctrl+A and Ctrl+C.\nThis example uses native Slint TextEdit.
+启用功能|Enable feature
+启用通知|Enable notifications
+周|Week
+在此区域右击打开原生菜单|Right-click here to open a native menu
+在此粘贴以验证复制|Paste here to verify copying
+处理中…|Processing…
+复制代码|Copy code
+复制全部|Copy all
+复用全局 Palette，可在设置中切换亮/暗主题。|Uses the global Palette. Switch between light and dark themes in settings.
+复用现有 ForgeBreadcrumb.items 和 selected(id)。|Uses the existing ForgeBreadcrumb.items and selected(id).
+复用现有 ForgeNavigationView：items、active-route-id、navigate-requested。|Uses the existing ForgeNavigationView: items, active-route-id, and navigate-requested.
+复用现有 ForgePageHeader.title / subtitle / can-go-back / back-requested。|Uses the existing ForgePageHeader.title / subtitle / can-go-back / back-requested.
+复用现有 ForgeTabBar.items / active-id / selected(id)。|Uses the existing ForgeTabBar.items / active-id / selected(id).
+完成|Finish
+完成组件|Complete components
+对话框关闭后此输入保持|This input persists after closing the dialog
+对话窗口内容|Dialog content
+就绪|Ready
+工程|Project
+工程详情|Project details
+已保存|Saved
+已关闭|Off
+已取消|Canceled
+已启用|Enabled
+已完成任务|Completed tasks
+已打开|Opened
+已确认|Confirmed
+已选中|Selected
+开启|On
+开始任务|Start task
+开始引导|Start tour
+引导已完成|Tour completed
+引导已跳过|Tour skipped
+当前值：{}|Current value: {}
+当前页：{}，总页数：{}|Current page: {}, total pages: {}
+录制快捷键|Record shortcut
+恢复标签|Restore tag
+悬停查看提示|Hover for a tooltip
+所有任务已完成，可继续下一步。|All tasks are complete. Continue to the next step.
+打开|Open
+打开内容对话框|Open content dialog
+打开原生对话窗口|Open native dialog
+打开原生窗口|Open native window
+打开抽屉|Open drawer
+执行|Run
+执行任务|Run task
+执行验证|Run verification
+抽屉已关闭|Drawer closed
+抽屉设置|Drawer settings
+按住 1.2 秒确认|Hold for 1.2 seconds to confirm
+按住确认|Hold to confirm
+按住至 delay 后松开触发；提前松开或禁用不会确认，支持键盘持续按住。|Hold for delay and release to confirm. Early release or disabling cancels. Keyboard holding is supported.
+操作成功|Operation successful
+操作菜单|Action menu
+支持 Ctrl/Alt/Shift/Meta 组合；Escape 取消录制，单独修饰键不提交，clear 清除。|Supports Ctrl/Alt/Shift/Meta combinations. Escape cancels; modifiers alone do not commit. clear removes the shortcut.
+整数星级 value / maximum / read-only；鼠标与方向键、Home、End；值限制到有效范围。|Integer star rating: value / maximum / read-only; pointer, arrow keys, Home, and End. Values are clamped.
+整数步进使用原生 SpinBox；浮点数使用 ForgeNumberBox。|Use native SpinBox for integer stepping and ForgeNumberBox for floating-point values.
+整数：{}|Integer: {}
+文件模型由应用提供；支持目录展开、单选、多选和禁用节点，组件不读取文件系统。|The application supplies the file model. Supports expansion, single/multiple selection, and disabled nodes.
+方案一|Option A
+方案三|Option C
+方案二|Option B
+日|Day
+显示加载动画|Show loading animation
+显示建议|Show suggestions
+暂缓实现|Deferred
+月|Month
+未选中|Not selected
+末页|Last
+构建、行为测试与页面截图|Builds, behavior tests, and page captures
+标签数量：{}|Tag count: {}
+树模型包含父 ID、深度与可见状态；宿主执行展开和父子选择传播，禁用节点不参与选择。|Tree models include parent IDs, depth, and visibility. The host handles expansion and parent/child selection; disabled nodes are excluded.
+模块数：{}|Module count: {}
+此处输入工程参数。|Enter project parameters here.
+此窗口由 Rust/C++ 宿主创建并持有。|This window is created and retained by the Rust/C++ host.
+此项不能为空|This field is required
+浮点 value / minimum / maximum / step；回车提交、方向键步进，非法输入恢复原值。|Floating-point value / minimum / maximum / step; Enter commits, arrow keys step, and invalid input restores the current value.
+添加|Add
+清除|Clear
+点击按钮|Click button
+点击次数：{}|Click count: {}
+目标一：输入|Target 1: input
+目标二：执行|Target 2: run
+直接使用 Button；primary=true 使用主色。|Uses Button directly; primary=true uses the accent color.
+直接使用 LineEdit，沿用原生选区、输入法和撤销行为。|Uses LineEdit with native selection, input methods, and undo behavior.
+直接使用 Switch 的原生开关行为。|Uses the native Switch behavior.
+直接使用 Tooltip，延迟、定位和消失由 Slint 处理。|Uses Tooltip directly; Slint handles delay, positioning, and dismissal.
+确定|OK
+确定进度|Determinate progress
+确认后执行下一步。|Confirm to proceed to the next step.
+确认操作|Confirm action
+确认次数：{}|Confirmation count: {}
+禁用操作|Disabled action
+禁用标签|Disabled tag
+禁用状态|Disabled
+禁用选项|Disabled option
+移除标签|Remove tag
+第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行|Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10
+第二个标签页|Second tab
+继续|Continue
+背景图上的材质效果|Material effect on a background image
+胶囊按钮|Pill button
+评分：{}|Rating: {}
+详情|Details
+语法高亮服务未绑定|Syntax highlighting service is not connected
+请按快捷键…|Press a shortcut…
+请输入 3～24 个字符|Enter 3 to 24 characters
+请输入文本|Enter text
+跳过|Skip
+输入以搜索|Type to search
+输入会保留|Input persists
+输入参数|Enter parameters
+输入密码|Enter password
+输入标签并回车|Enter a tag and press Enter
+输入长度不符合要求|Input length is outside the allowed range
+运行动画|Animate
+返回次数：{}|Back action count: {}
+这是保留页面状态的内容对话框。|This content dialog preserves page state.
+选择多个项目|Select multiple items
+选择操作|Select action
+选择日期|Select date
+选择时间|Select time
+选择树节点|Select tree nodes
+错误数量|Error count
+隐藏再打开会保留输入|Hiding and reopening preserves input
+隐藏密码|Hide password
+隐藏示例窗口|Hide demo windows
+页面|Page
+项|items
+首页|Home
+验证|Validate
+验证通过|Valid
+
+一月|January
+二月|February
+三月|March
+四月|April
+五月|May
+六月|June
+七月|July
+交互示例|Interactive example
+位置表示两个数值，圆的大小表示第三个数值。|Position represents two values; bubble size represents a third.
+堆叠|Stacked
+对比多个维度上的系列表现。|Compare series across multiple dimensions.
+已选择：系列 {}，数据 {}，值 {}|Selected: series {}, point {}, value {}
+平滑曲线|Smooth curve
+恢复数据|Reset data
+悬停查看数值，点击选择数据，点击图例显示或隐藏系列。|Hover for values, click to select, and use legends to show or hide series.
+扇区角度相同，面积随类别数值变化。|Sectors have equal angles; area changes with each value.
+数据或坐标范围无效|Invalid data or coordinate range
+显示数据|Show data
+暂无可显示的数据|No data to display
+更新数据|Update data
+查看两个系列的分布和相关性。|Explore distributions and correlations of two series.
+比较各月份的数据，切换分组或堆叠。|Compare monthly values in grouped or stacked bars.
+比较各类别占比，切换饼图或环形图。|Compare category proportions as a pie or doughnut chart.
+清空数据|Clear data
+灰色|Grey
+环形图|Doughnut
+睡眠|Sleeping
+系列一|Series one
+系列二|Series two
+红色|Red
+绿色|Green
+编程|Coding
+蓝色|Blue
+观察趋势，切换折线、平滑曲线和面积填充。|Explore trends with lines, smooth curves, and area fills.
+设计|Designing
+请绑定图表服务|Bind chart services to display data
+跑步|Running
+面积填充|Area fill
+饮水|Drinking
+饮食|Eating
+骑行|Cycling
+黄色|Yellow
+
+普通、带图标和禁用按钮，点击查看反馈。|Standard, icon, and disabled buttons with click feedback.
+主色按钮用于强调当前操作。|Primary buttons emphasize the current action.
+点击按钮切换选中状态。|Click a button to toggle its selected state.
+同组内只能选择一个选项。|Choose one option in a radio group.
+点击链接在浏览器打开页面。|Open a page in the browser through a link.
+选择或复制文本，然后在输入框粘贴。|Select or copy text and paste it into the input.
+使用鼠标和键盘选择、复制文本。|Select and copy text with the mouse and keyboard.
+展示已选、未选与禁用状态。|Checked, unchecked, and disabled states.
+拖动水平或垂直滑块调整数值。|Adjust values with horizontal or vertical sliders.
+切换开关，查看开启、关闭和禁用状态。|Explore on, off, and disabled switch states.
+选择时间，并确认或取消修改。|Select a time, then confirm or cancel.
+选择日期，并确认或取消修改。|Select a date, then confirm or cancel.
+切换月份，在月历中选择日期。|Browse months and select a date in the calendar.
+输入、只读和禁用的单行文本框。|Editable, read-only, and disabled text fields.
+编辑多行文字，输入框内可滚动。|Edit multiple lines and scroll inside the field.
+滚动查看长文本，内容仍可编辑。|Scroll through long text while keeping it editable.
+输入密码，并切换显示或隐藏。|Enter a password and toggle its visibility.
+展开列表，选择一个选项。|Open a list and choose an option.
+使用按钮或键盘调整整数。|Adjust an integer with buttons or the keyboard.
+切换标签页，输入内容会保留。|Switch tabs while preserving the entered text.
+打开独立窗口，再隐藏或重新显示。|Open an independent window, then hide or show it again.
+确定进度与持续加载两种状态。|Determinate progress and continuous loading.
+控制圆环加载动画的显示状态。|Show or hide the circular loading indicator.
+在演示区右击，选择菜单中的操作。|Right-click the preview and choose a menu action.
+打开对话窗口，确认或取消操作。|Open a dialog to confirm or cancel an action.
+将鼠标停在按钮上查看提示。|Hover over a button to display a tooltip.
+在明暗主题中比较前景、背景和主色。|Compare foreground, background, and accent colors in both themes.
+输入文字后验证长度与必填规则。|Validate required text and length limits.
+普通、主色和禁用的胶囊按钮。|Standard, primary, and disabled pill buttons.
+按住按钮完成确认，提前松开会取消。|Hold to confirm; releasing early cancels.
+从按钮下拉菜单中选择操作。|Choose an action from a button menu.
+启动任务，按钮显示进度并避免重复提交。|Start a task and display progress while preventing duplicate submissions.
+选择、移除和恢复标签。|Select, remove, and restore chips.
+输入标签并按回车添加，点击叉号移除。|Press Enter to add a tag and click its close icon to remove it.
+调整四个颜色通道，预览颜色和透明度。|Adjust four color channels and preview color and opacity.
+点击录制快捷键，按 Escape 取消。|Record a keyboard shortcut or press Escape to cancel.
+输入前缀，展开并选择匹配的建议。|Type a prefix and select a matching suggestion.
+展开列表，选中多个选项。|Open the list and select multiple options.
+展开树节点，选择一个或多个子项。|Expand tree nodes and select one or more children.
+输入浮点数，或按设定步长增减。|Enter a decimal value or change it by the configured step.
+切换日、周、月三个视图。|Switch between day, week, and month views.
+切换页码，或跳至第一页和最后一页。|Change pages or jump to the first and last page.
+展开目录，选择文件和子节点。|Expand folders and select files and child nodes.
+沿时间顺序查看已完成和待完成的步骤。|Follow completed and pending steps in chronological order.
+展示数值、单位、精度和趋势。|Display values, units, precision, and trends.
+输入内容生成二维码，空内容显示提示。|Generate a QR code from text or show a message for empty input.
+数字、提示点和状态徽标。|Numeric, dot, and status badges.
+展示操作结果，以及继续处理的入口。|Display an operation result and its follow-up action.
+点击星级评分，使用键盘继续调整。|Choose a star rating and adjust it with the keyboard.
+开启或暂停内容加载的扫光效果。|Start or pause the loading shimmer.
+切换加载占位和实际内容，输入会保留。|Switch between loading placeholders and content while preserving input.
+在内容对话框中编辑文字，并确认或取消。|Edit text in a content dialog, then confirm or cancel.
+从侧边展开抽屉，关闭后输入会保留。|Open a side drawer and preserve input after closing.
+在彩色背景上比较半透明材质。|Compare translucent materials over a colorful backdrop.
+在背景上预览玻璃效果及内容交互。|Preview the glass effect and interact with its content.
+编辑文本，切换语言并查看高亮结果。|Edit text, switch languages, and inspect syntax highlighting.
+旋转拨盘或拖动滑块调整同一数值。|Rotate the dial or drag the slider to adjust the same value.
+逐步浏览功能提示，支持返回、继续和关闭。|Follow a guided tour with back, next, and close actions.
+展开分组、搜索并选择导航项。|Expand groups, search, and select a navigation item.
+点击路径节点返回对应层级。|Click a breadcrumb to return to its level.
+切换标签，关闭可移除的标签。|Switch tabs and close removable ones.
+组合标题、说明、返回入口和操作按钮。|Combine a title, description, back action, and controls.
+SlintForge 组件与示例应用。|SlintForge components and sample application.
+基本示例|Basic example
+用法与状态|Usage and states
+带图标|With icon
+只读文本|Read-only text
+禁用文本|Disabled text
+
+内容组合|Content composition
+将状态、操作和内容放在同一卡片中。|Combine status, actions, and content in one card.
+搜索图标名称，查看图形和对应码位。|Search icon names and inspect glyphs and code points.
+{} 属于表格组件，继续按要求暂缓。|{} is a table component and remains deferred.
+可选择、复制的文本。\n使用鼠标选择，或按 Ctrl+A、Ctrl+C。\n选中内容可复制到其他应用。|Selectable text.\nSelect with the mouse, or press Ctrl+A and Ctrl+C.\nCopy the selection into other applications.
+
+常用示例|Common examples
+共享 Slint 组件 · Rust / C++ SDK\n95 个导航页面，93 页已提供演示，2 个表格页面暂缓。\n原生控件示例与组件 API 使用同一套 UI 契约。|Shared Slint components · Rust / C++ SDK\n96 navigation pages: 93 demos and 2 deferred table pages.\nNative widgets and component APIs share the same UI contract.
+Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑，Enter 确认，Esc 取消。|Ctrl-click toggles selection; Shift-click selects a range. Use arrows to move, F2 to edit, Enter to confirm, and Esc to cancel.
+保护阈值|Protection threshold
+全部展开|Expand all
+全部折叠|Collapse all
+共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。|Shared Slint components - Rust / C++ SDK\nAll 96 navigation pages have working demos.\nNative widgets and component APIs share the same UI contract.
+冻结名称列|Freeze name column
+分组|Group
+删除所选|Delete selected
+加载万行|Load 10,000 rows
+单击表头排序，拖动列边界调整宽度，双击单元格编辑。|Click a header to sort, drag its edge to resize, and double-click a cell to edit.
+历史归档|Historical archive
+只读|Read-only
+名称|Name
+周工|Zhou
+回归测试|Regression testing
+多选|Multiple selection
+展开行|Expand row
+已完成|Complete
+已展开：{}|Expanded: {}
+已归档|Archived
+已恢复示例数据。|Sample data restored.
+已折叠：{}|Collapsed: {}
+已更新：{} · {} = {}|Updated: {} - {} = {}
+帧校验|Frame validation
+张工|Zhang
+归档记录|Archive record
+当前行：{}|Current row: {}
+待开始|Pending
+性能测试|Performance testing
+总行数 {} · 可见 {} · 已选 {}|Total {} - visible {} - selected {}
+恢复验证|Recovery validation
+折叠行|Collapse row
+按层级查看数据，展开分组并对同级节点排序。|Browse hierarchical data, expand groups, and sort sibling rows.
+按测试域组织任务。|Organize tasks by test area.
+接口检查|Interface checks
+数量|Count
+断连恢复|Reconnect recovery
+新增条目|New item
+新增行|Add row
+显示说明|Show notes
+暂无数据。|No data.
+更新首行|Update first row
+李工|Li
+查看和编辑表格数据，调整列宽并选择多行。|Browse and edit tabular data, resize columns, and select multiple rows.
+检查保护触发与恢复。|Check protection activation and recovery.
+检查断连恢复与重启行为。|Check reconnection and restart behavior.
+检查稳态与动态输出。|Check steady-state and dynamic output.
+检查输出电压与保护阈值。|Check output voltage and protection thresholds.
+正常帧与异常帧|Valid and invalid frames
+此单元格无法编辑。|This cell cannot be edited.
+没有匹配的行。|No matching rows.
+测试计划|Test plan
+温度循环|Thermal cycling
+状态|Status
+王工|Wang
+环境|Environment
+环境测试分组|Environment test group
+环境试验|Environmental testing
+电源|Power
+电源测试|Power testing
+电源测试分组|Power test group
+确认版本、资源和参数配置。|Verify versions, resources, and parameter settings.
+禁用行不可选择或编辑。|Disabled rows cannot be selected or edited.
+筛选名称、负责人或说明|Filter by name, owner, or notes
+统计延迟、吞吐量及峰值负载。|Measure latency, throughput, and peak load.
+行或列标识重复、父节点缺失或树关系存在循环。|Duplicate row or column IDs, missing parents, or a hierarchy cycle.
+表格服务尚未绑定。|Grid services are not connected.
+覆盖本轮修改和已有功能。|Cover current changes and existing behavior.
+记录温度与运行状态。|Record temperature and operating status.
+记录温度循环与运行状态。|Record thermal cycles and operating status.
+说明|Notes
+请输入有限的有效数字。|Enter a valid finite number.
+负责人|Owner
+赵工|Zhao
+超时、重连和状态恢复|Timeouts, reconnection, and state recovery
+输出电压|Output voltage
+进行中|In progress
+选择全部可见行|Select all visible rows
+选择行 {} |Select row {} 
+通信|Communication
+通信测试分组|Communication test group
+通信验证|Communication validation
+重置|Reset
+陈工|Chen
+验证正常帧、异常帧和超时处理。|Validate good frames, invalid frames, and timeout handling.
+尚未绑定图表服务|Chart services are not bound.
+暂无数据|No data
+专业图表|Professional Plot
+专业绘图、交互与导出|Professional plots, interaction and export
+排序、筛选与单元格编辑|Sort, filter and edit cells
+树形层级与数据展示|Hierarchical data and tree navigation
+曲线、统计图、二维色图、极坐标与多绘图区，支持缩放、选择和五种格式导出。|Graphs, statistics, color maps, polar plots and multiple panels with zoom, selection and five export formats.
+滚轮缩放，拖动平移，Shift 框选缩放，Ctrl 框选数据。|Wheel to zoom, drag to pan, Shift-drag to zoom a rectangle, Ctrl-drag to select.
+时间 / s|Time / s
+电压 / V|Voltage / V
+温度 / ℃|Temperature / C
+电压|Voltage
+温度|Temperature
+角度 / °|Angle / degrees
+测量 / 不对称误差|Measurement / asymmetric errors
+参考下界|Lower reference
+参数曲线|Parametric curve
+系列甲|Series A
+系列乙|Series B
+统计箱 / 离群值|Statistical box / outliers
+价格|Price
+极坐标|Polar plot
+大数据|Large data
+二维场|2D field
+曲线 / 误差 / 填充|Graph / errors / fill
+柱状图|Bars
+统计箱|Statistical box
+蜡烛图|Candlesticks
+二维色图|Color map
+多轴|Multiple axes
+多绘图区|Multiple panels
+阶梯|Steps
+对数轴|Log axis
+实时数据|Live data
+复位|Reset
+专业二维绘图|Professional 2D plot
+测量与参考值|Measurement and reference
+导出|Export
+导出成功|Export succeeded
+导出失败，请检查目标路径|Export failed. Check the destination path.
+已选择 {}，原始索引 {}，数值 {}|Selected {}, original index {}, value {}
+图例区域内|Legend inside plot
+图例区域外|Legend outside plot
+测量区域内|Measurement inside plot
+测量区域外|Measurement outside plot
+测量下方|Measurement bottom
+测量上方|Measurement top
+测量左侧|Measurement left
+测量右侧|Measurement right
+测量右上|Measurement top right
+测量右下|Measurement bottom right
+测量左上|Measurement top left
+测量左下|Measurement bottom left
+光标复位|Reset cursors
+图例|Legend

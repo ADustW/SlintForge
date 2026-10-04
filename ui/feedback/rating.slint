@@ -1,0 +1,36 @@
+import { Button, Palette } from "std-widgets.slint";
+
+export component ForgeRatingControl inherits Rectangle {
+    in-out property<int> value: 0;
+    in property<int> maximum: 5;
+    in property<bool> enabled: true;
+    in property<bool> read-only: false;
+    callback value-changed(int);
+    init => { root.value = Math.max(0, Math.min(Math.max(0, root.maximum), root.value)); }
+    public function set-value(candidate: int) {
+        if root.enabled && !root.read-only { root.value = Math.max(0, Math.min(Math.max(0, root.maximum), candidate)); root.value-changed(root.value); }
+    }
+    changed maximum => { root.value = Math.max(0, Math.min(Math.max(0, root.maximum), root.value)); }
+    changed value => { root.value = Math.max(0, Math.min(Math.max(0, root.maximum), root.value)); }
+    preferred-height: 38px; min-width: layout.min-width; horizontal-stretch: 0; vertical-stretch: 0;
+    forward-focus: scope;
+    scope := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == Key.LeftArrow || event.text == Key.DownArrow { root.set-value(root.value - 1); return accept; }
+            if event.text == Key.RightArrow || event.text == Key.UpArrow { root.set-value(root.value + 1); return accept; }
+            if event.text == Key.Home { root.set-value(0); return accept; }
+            if event.text == Key.End { root.set-value(root.maximum); return accept; }
+            return reject;
+        }
+    }
+    layout := HorizontalLayout {
+        spacing: 2px;
+        for index in Math.max(0, root.maximum) : Button {
+            text: index < root.value ? "★" : "☆";
+            primary: index < root.value; enabled: root.enabled && !root.read-only;
+            accessible-label: @tr("{} 星", index + 1);
+            clicked => { scope.focus(); root.set-value(index + 1); }
+        }
+    }
+}

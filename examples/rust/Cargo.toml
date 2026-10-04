@@ -1,0 +1,14 @@
+[package]
+name = "slintforge-example-rust"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+slint = "=1.18.0"
+slintforge = { path = "../../sdk/rust" }
+
+[build-dependencies]
+slint-build = "=1.18.0"
+slintforge = { path = "../../sdk/rust" }
+

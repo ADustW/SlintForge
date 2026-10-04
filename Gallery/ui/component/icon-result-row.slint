@@ -1,0 +1,30 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeIcon, ForgeTypography } from "@slintforge";
+
+export component GalleryIconResultRow inherits Rectangle {
+    in property<string> glyph;
+    in property<string> name;
+    in property<string> codepoint;
+    height: 48px;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: Palette.border;
+    background: Palette.alternate-background;
+    ForgeIcon {
+        x: 12px; y: 6px; width: 36px; height: 36px;
+        glyph: root.glyph; font-size: 25px * ForgeTypography.scale;
+        color: Palette.accent-background;
+    }
+    Text {
+        x: 62px; y: 0px; width: parent.width - 158px; height: parent.height;
+        text: root.name; color: Palette.foreground;
+        font-size: 13px * ForgeTypography.scale; overflow: elide;
+        vertical-alignment: center;
+    }
+    Text {
+        x: parent.width - 90px; y: 0px; width: 78px; height: parent.height;
+        text: "U+" + root.codepoint; color: Palette.foreground;
+        font-size: 11px * ForgeTypography.scale; font-family: "Consolas";
+        horizontal-alignment: right; vertical-alignment: center;
+    }
+}

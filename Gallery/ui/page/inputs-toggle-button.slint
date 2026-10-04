@@ -1,0 +1,34 @@
+import { Button, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// Slint 原生示例：ToggleButton。
+export component GalleryInputsToggleButtonPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "ToggleButton";
+        subtitle: @tr("点击按钮切换选中状态。");
+        example-title: @tr("用法与状态");
+        preview-height: 150px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            HorizontalLayout { spacing: 12px; alignment: start;
+        Button { text: @tr("切换按钮"); checkable: true; checked <=> root.flag; }
+        Button { text: @tr("已选中"); checkable: true; checked: true; }
+        Button { text: @tr("禁用"); checkable: true; enabled: false; }
+    }
+    Text { text: root.flag ? @tr("已选中") : @tr("未选中"); color: Palette.foreground; }
+        }
+    }
+    
+}

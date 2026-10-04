@@ -1,0 +1,30 @@
+import { Button, TimePickerPopup, Time, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// Slint 原生示例：TimePicker。
+export component GalleryFormTimePickerPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => { if open { picker.show(); } else { picker.close(); } }
+    in-out property<Time> selected-time: {hour: 9, minute: 30, second: 0};
+    sample := GallerySamplePage {
+        title: "TimePicker";
+        subtitle: @tr("选择时间，并确认或取消修改。");
+        example-title: @tr("用法与状态");
+        preview-height: 160px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            Button { text: @tr("选择时间"); clicked => { picker.show(); } }
+Text { text: root.selected-time.hour + ":" + root.selected-time.minute + ":" + root.selected-time.second; color: Palette.foreground; }
+        }
+    }
+    picker := TimePickerPopup { x: 30px; y: 100px; title: @tr("选择时间"); use-24-hour-format: true; time: root.selected-time; accepted(value) => { root.selected-time = value; picker.close(); } canceled => { picker.close(); } }
+}

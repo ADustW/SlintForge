@@ -1,0 +1,29 @@
+import { Slider, SpinBox, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export component ForgeColorPicker inherits Rectangle {
+    in-out property<int> red: 64;
+    in-out property<int> green: 128;
+    in-out property<int> blue: 224;
+    in-out property<int> alpha: 255;
+    in property<bool> enabled: true;
+    out property<color> value: rgba(Math.max(0, Math.min(255, root.red)), Math.max(0, Math.min(255, root.green)), Math.max(0, Math.min(255, root.blue)), Math.max(0, Math.min(255, root.alpha)) / 255);
+    callback color-changed(color);
+    changed red => { root.color-changed(root.value); }
+    changed green => { root.color-changed(root.value); }
+    changed blue => { root.color-changed(root.value); }
+    changed alpha => { root.color-changed(root.value); }
+    min-width: 260px; preferred-height: layout.preferred-height;
+    layout := VerticalLayout {
+        spacing: 10px;
+        Rectangle {
+            height: 70px; border-radius: 6px; background: root.value;
+            border-width: 1px; border-color: Palette.border;
+            Text { text: "RGBA \{root.red}, \{root.green}, \{root.blue}, \{root.alpha}"; color: root.red + root.green + root.blue > 380 ? #111 : #fff; horizontal-alignment: center; vertical-alignment: center; font-size: 13px * ForgeTypography.scale; }
+        }
+        HorizontalLayout { spacing: 8px; Text { text: "R"; width: 20px; color: Palette.foreground; vertical-alignment: center; } Slider { minimum: 0; maximum: 255; value: root.red; enabled: root.enabled; changed(value) => { root.red = round(value); } } SpinBox { minimum: 0; maximum: 255; value <=> root.red; enabled: root.enabled; } }
+        HorizontalLayout { spacing: 8px; Text { text: "G"; width: 20px; color: Palette.foreground; vertical-alignment: center; } Slider { minimum: 0; maximum: 255; value: root.green; enabled: root.enabled; changed(value) => { root.green = round(value); } } SpinBox { minimum: 0; maximum: 255; value <=> root.green; enabled: root.enabled; } }
+        HorizontalLayout { spacing: 8px; Text { text: "B"; width: 20px; color: Palette.foreground; vertical-alignment: center; } Slider { minimum: 0; maximum: 255; value: root.blue; enabled: root.enabled; changed(value) => { root.blue = round(value); } } SpinBox { minimum: 0; maximum: 255; value <=> root.blue; enabled: root.enabled; } }
+        HorizontalLayout { spacing: 8px; Text { text: "A"; width: 20px; color: Palette.foreground; vertical-alignment: center; } Slider { minimum: 0; maximum: 255; value: root.alpha; enabled: root.enabled; changed(value) => { root.alpha = round(value); } } SpinBox { minimum: 0; maximum: 255; value <=> root.alpha; enabled: root.enabled; } }
+    }
+}

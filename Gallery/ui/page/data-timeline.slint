@@ -1,0 +1,28 @@
+import { ForgeTimeline, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// 共享组件演示：Timeline。
+export component GalleryDataTimelinePage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "Timeline";
+        subtitle: @tr("沿时间顺序查看已完成和待完成的步骤。");
+        example-title: @tr("用法与状态");
+        preview-height: 330px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            ForgeTimeline { items: [{title: @tr("创建工程"), description: @tr("共享 Slint 契约"), time: "09:00", completed: true}, {title: @tr("完成组件"), description: @tr("Rust 与 C++ 使用同一套界面"), time: "10:00", completed: true}, {title: @tr("执行验证"), description: @tr("构建、行为测试与页面截图"), time: "11:00", completed: false}]; }
+        }
+    }
+    
+}

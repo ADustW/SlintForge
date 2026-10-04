@@ -1,0 +1,32 @@
+import { LineEdit, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryDemoModels } from "../component/demo-models.slint";
+
+// Slint 原生示例：TextBox。
+export component GalleryFormTextboxPage inherits Rectangle {
+    in-out property<int> count: 0;
+    in-out property<bool> flag: true;
+    in-out property<float> number: 30;
+    in-out property<string> draft;
+    in-out property<string> status: @tr("就绪");
+    callback prepare-preview(bool);
+    prepare-preview(open) => {  }
+    
+    sample := GallerySamplePage {
+        title: "TextBox";
+        subtitle: @tr("输入、只读和禁用的单行文本框。");
+        example-title: @tr("用法与状态");
+        preview-height: 240px * ForgeTypography.scale;
+        VerticalLayout {
+            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
+            height: Math.max(0px, sample.preview-area-height - 40px);
+            spacing: 16px; alignment: start;
+            LineEdit { text <=> root.draft; placeholder-text: @tr("请输入文本"); }
+Text { text: root.draft; color: Palette.foreground; wrap: word-wrap; }
+    LineEdit { text: @tr("只读文本"); read-only: true; }
+    LineEdit { text: @tr("禁用文本"); enabled: false; }
+        }
+    }
+    
+}

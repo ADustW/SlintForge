@@ -1,0 +1,29 @@
+import { Palette, ComboBox, CheckBox } from "std-widgets.slint";
+import { ForgeIconButton, ForgeRoundImageView, ForgeTypography } from "@slintforge";
+import { GallerySamplePage } from "../component/sample-page.slint";
+
+export component GalleryRoundImagePage inherits Rectangle {
+    in-out property<bool> circle: false;
+    in-out property<int> fit-index: 0;
+    in-out property<bool> empty: false;
+    in property<image> empty-source;
+    sample-page := GallerySamplePage {
+        width: parent.width; height: parent.height;
+        title: "RoundImageView";
+        subtitle: @tr("图片按区域裁切并显示圆角边框。");
+        preview-height: 250px;
+
+        preview := ForgeRoundImageView {
+            x: 18px; y: 16px;
+            width: Math.min(sample-page.preview-width * 0.6, sample-page.preview-area-height - 80px);
+            height: root.circle ? self.width : self.width * 0.65;
+            source: root.empty ? root.empty-source : @image-url("../assets/brand/slintforge-gallery.png");
+            corner-radius: root.circle ? self.width / 2 : 18px;
+            image-fit: root.fit-index == 0 ? cover : root.fit-index == 1 ? contain : fill;
+        }
+        Text { x: preview.x + preview.width + 24px; y: 48px; text: @tr("Gallery 软件图标"); color: Palette.foreground; font-size: 17px * ForgeTypography.scale; }
+        ForgeIconButton { x: preview.x + preview.width + 24px; y: 105px; label: root.circle ? @tr("切换圆角") : @tr("切换圆形"); clicked => { root.circle = !root.circle; } }
+        ComboBox { x: preview.x + preview.width + 24px; y: 160px; model: ["cover", "contain", "fill"]; current-index <=> root.fit-index; }
+        CheckBox { x: preview.x + preview.width + 24px; y: 215px; text: @tr("清空图片"); checked <=> root.empty; }
+    }
+}

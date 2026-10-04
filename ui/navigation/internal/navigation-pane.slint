@@ -1,0 +1,105 @@
+import { ForgeTypography } from "../../typography/typography.slint";
+import { LineEdit, Palette, ScrollView } from "std-widgets.slint";
+import { ForgeNavigationItem, ForgeNavItemKind, ForgePaneState } from "../../types/navigation.slint";
+import { ForgeNavigationRow } from "navigation-row.slint";
+import { ForgeIcon, ForgeIcons } from "../../icons/icon.slint";
+
+// 侧栏结构参考 Fluent 风格的 Gallery，内容与素材由 SlintForge 独立实现。
+export component ForgeNavigationPane inherits Rectangle {
+    in property<[ForgeNavigationItem]> items;
+    in property<[ForgeNavigationItem]> footer-items;
+    in property<string> active-route-id;
+    in property<ForgePaneState> pane-state;
+    in property<string> search-query;
+    callback navigate-requested(string);
+    callback group-toggle-requested(string);
+    callback search-requested(string);
+    callback expand-requested();
+    background: Palette.alternate-background;
+
+    function activate(id: string, kind: ForgeNavItemKind) {
+        if (root.pane-state == ForgePaneState.compact && kind == ForgeNavItemKind.group) {
+            root.expand-requested();
+        } else if (kind == ForgeNavItemKind.group) {
+            root.group-toggle-requested(id);
+        } else if (kind == ForgeNavItemKind.page) {
+            root.navigate-requested(id);
+        }
+    }
+
+    VerticalLayout {
+        width: parent.width;
+        height: parent.height;
+        spacing: 0px;
+        if root.pane-state == ForgePaneState.expanded : Rectangle {
+            height: 80px;
+            background: transparent;
+            Rectangle {
+                x: 13px; y: 17px; width: 46px; height: 46px;
+                border-radius: 23px;
+                background: Palette.accent-background;
+                Text { text: "S"; color: Palette.accent-foreground; font-size: 23px * ForgeTypography.scale; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+            }
+            Text { x: 71px; y: 19px; text: "SlintForge"; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; font-weight: 600; }
+            Text { x: 71px; y: 41px; text: "Rust + C++ Gallery"; color: Palette.foreground; font-size: 11px * ForgeTypography.scale; }
+        }
+        Rectangle {
+            height: 48px;
+            background: transparent;
+            if root.pane-state == ForgePaneState.expanded : LineEdit {
+                x: 12px; y: 6px; width: parent.width - 24px; height: 34px;
+                placeholder-text: @tr("搜索组件");
+                text: root.search-query;
+                edited(value) => { root.search-requested(value); }
+            }
+            if root.pane-state == ForgePaneState.compact : Rectangle {
+                x: 7px; y: 6px; width: 36px; height: 34px;
+                border-radius: 4px;
+                background: search-touch.has-hover ? Palette.control-background : transparent;
+                ForgeIcon { glyph: ForgeIcons.search; color: Palette.foreground; width: parent.width; height: parent.height; font-size: 19px * ForgeTypography.scale; }
+                search-touch := TouchArea { clicked => { root.expand-requested(); } }
+            }
+        }
+        ScrollView {
+            vertical-stretch: 1;
+            width: parent.width;
+            VerticalLayout {
+                width: parent.width;
+                padding-left: 5px;
+                padding-right: 5px;
+                spacing: 1px;
+                for item in root.items : ForgeNavigationRow {
+                    visible: root.pane-state != ForgePaneState.compact || (item.depth == 0 && item.kind != ForgeNavItemKind.header && item.kind != ForgeNavItemKind.separator);
+                    item: item;
+                    compact: root.pane-state == ForgePaneState.compact;
+                    selected: root.active-route-id == item.id;
+                    activated(id, kind) => { root.activate(id, kind); }
+                }
+                if root.search-query != "" && root.items.length == 0 : Text {
+                    text: @tr("未找到匹配的组件");
+                    color: Palette.foreground;
+                    horizontal-alignment: center;
+                    height: 48px;
+                }
+            }
+        }
+        Rectangle { height: 1px; background: Palette.border; }
+        if root.pane-state == ForgePaneState.expanded : Rectangle {
+            height: 36px;
+            background: transparent;
+            Text { text: "SlintForge · v0.1"; color: Palette.foreground; font-size: 11px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+        }
+        VerticalLayout {
+            width: parent.width;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-bottom: 6px;
+            for item in root.footer-items : ForgeNavigationRow {
+                item: item;
+                compact: root.pane-state == ForgePaneState.compact;
+                selected: root.active-route-id == item.id;
+                activated(id, kind) => { root.activate(id, kind); }
+            }
+        }
+    }
+}

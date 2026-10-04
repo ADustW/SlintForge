@@ -1,0 +1,56 @@
+import { ForgeTypography, ForgeCaptureResult } from "@slintforge";
+import { Palette } from "std-widgets.slint";
+import { ForgeIconButton } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryDemoCard } from "../component/demo-card.slint";
+import { GalleryCapturePreview } from "../component/capture-preview.slint";
+
+// 此页操作外层 GalleryWindow；Window 类型不能作为普通页面嵌入。
+export component GalleryForgeWindowPage inherits Rectangle {
+    in property<bool> window-maximized;
+    in property<bool> window-pinned;
+    in property<bool> window-rounded;
+    callback toggle-maximize-requested();
+    callback minimize-requested();
+    callback pin-requested(bool);
+    callback corner-style-requested(bool);
+    callback capture-requested() -> ForgeCaptureResult;
+    callback export-capture(image) -> string;
+    in-out property<ForgeCaptureResult> capture-result;
+    in-out property<string> export-message;
+    background: transparent;
+
+    GalleryPageFrame {
+        width: parent.width;
+        height: parent.height;
+        title: "ForgeWindow";
+        subtitle: @tr("无边框窗口与自定义标题栏");
+        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        GalleryDemoCard {
+            preview-height: 170px;
+            VerticalLayout {
+                x: 20px; y: Math.max(18px, (parent.height - 134px) / 2); width: parent.width - 40px; height: 134px;
+                spacing: 12px;
+                Text { text: @tr("当前 Gallery 主窗口就是 ForgeWindow 实例。"); height: 22px; color: Palette.foreground; }
+                HorizontalLayout {
+                    height: 34px;
+                    spacing: 10px;
+                    ForgeIconButton { label: root.window-maximized ? @tr("还原") : @tr("最大化"); clicked => { root.toggle-maximize-requested(); } }
+                    ForgeIconButton { label: @tr("最小化"); clicked => { root.minimize-requested(); } }
+                    ForgeIconButton { label: root.window-pinned ? @tr("取消置顶") : @tr("窗口置顶"); clicked => { root.pin-requested(!root.window-pinned); } }
+                    ForgeIconButton { label: root.window-rounded ? @tr("切换直角") : @tr("切换圆角"); clicked => { root.corner-style-requested(!root.window-rounded); } }
+                }
+                Text { text: @tr("拖动标题栏可移动窗口；双击标题栏切换最大化；拖动窗口边缘可调整大小。"); height: 38px; color: Palette.foreground; wrap: word-wrap; }
+            }
+        }
+
+
+        GalleryCapturePreview {
+            result: root.capture-result;
+            export-message: root.export-message;
+            capture-requested => { root.capture-result = root.capture-requested(); root.export-message = ""; }
+            export-requested => { root.export-message = root.export-capture(root.capture-result.image); }
+        }
+
+    }
+}

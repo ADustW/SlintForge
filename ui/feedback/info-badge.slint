@@ -1,0 +1,17 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+
+export component ForgeInfoBadge inherits Rectangle {
+    in property<int> value: 0;
+    in property<int> maximum: 99;
+    in property<bool> dot: false;
+    in property<bool> show-zero: false;
+    out property<string> display-text: root.value > Math.max(0, root.maximum) ? Math.max(0, root.maximum) + "+" : "\{Math.max(0, root.value)}";
+    visible: root.dot || root.show-zero || root.value > 0;
+    preferred-width: root.dot ? 9px : Math.max(22px, label.preferred-width + 12px);
+    preferred-height: root.dot ? 9px : Math.max(22px, label.preferred-height + 5px);
+    max-width: root.preferred-width; max-height: root.preferred-height;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    border-radius: root.height / 2; background: Palette.accent-background;
+    label := Text { text: root.dot ? "" : root.display-text; color: Palette.accent-foreground; font-size: 11px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+}

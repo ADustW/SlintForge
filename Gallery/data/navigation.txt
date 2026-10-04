@@ -1,0 +1,112 @@
+# kind|id|parent|title|icon|area|zh-title（可省略）
+P|home||Home|home_20_regular|main|首页
+S|main-separator||| |main
+H|components-header||Components||main|组件
+G|inputs||Inputs|cursor_click_20_regular|main|输入
+G|inputs-button|inputs|Button|cursor_click_20_regular|main
+P|inputs-validation|inputs-button|InputValidation|checkmark_circle_20_regular|main
+P|inputs-standard-button|inputs-button|Button|cursor_click_20_regular|main
+P|inputs-filled-button|inputs-button|FilledButton|cursor_click_20_regular|main
+P|inputs-pill-button|inputs-button|PillButton|cursor_click_20_regular|main
+P|inputs-delay-button|inputs-button|DelayButton|cursor_click_20_regular|main
+P|iconbutton|inputs-button|IconButton|cursor_click_20_regular|main
+P|inputs-dropdown-button|inputs-button|DropDownButton|cursor_click_20_regular|main
+P|inputs-hyperlink-button|inputs-button|HyperlinkButton|cursor_click_20_regular|main
+P|inputs-toggle-button|inputs-button|ToggleButton|toggle_left_20_regular|main
+P|inputs-radio-button|inputs-button|RadioButton|radio_button_20_regular|main
+P|inputs-progress-button|inputs-button|ProgressButton|cursor_click_20_regular|main
+P|inputs-chip|inputs-button|Chip|tag_20_regular|main
+P|inputs-tag-input|inputs-button|TagInputBox|tag_20_regular|main
+P|inputs-copyable-text|inputs|CopyableText|copy_20_regular|main
+P|inputs-checkbox|inputs|Checkbox|checkbox_checked_20_regular|main
+P|inputs-slider|inputs|Slider|options_20_regular|main
+P|inputs-toggle-switch|inputs|ToggleSwitch|toggle_left_20_regular|main
+G|form||Form|form_20_regular|main|表单
+G|form-picker|form|Picker|calendar_month_20_regular|main
+P|form-time-picker|form-picker|TimePicker|clock_20_regular|main
+P|form-date-picker|form-picker|DatePicker|calendar_month_20_regular|main
+P|form-calendar-picker|form-picker|CalendarPicker|calendar_month_20_regular|main
+P|form-color-picker|form-picker|ColorPicker|color_20_regular|main
+P|form-shortcut-picker|form-picker|ShortcutPicker|keyboard_20_regular|main
+P|form-textbox|form|TextBox|text_field_20_regular|main
+P|form-multiline-textbox|form|MultiLineTextBox|text_field_20_regular|main
+P|form-scrollable-textbox|form|ScrollableTextBox|text_field_20_regular|main
+P|form-password-box|form|PasswordBox|lock_closed_20_regular|main
+P|form-auto-suggest|form|AutoSuggestBox|search_20_regular|main
+P|form-combo-box|form|ComboBox|options_20_regular|main
+P|form-multi-select-combo|form|MultiSelectComboBox|options_20_regular|main
+P|form-multi-tree-combo|form|MultiTreeSelectComboBox|options_20_regular|main
+P|form-number-box|form|NumberBox|number_symbol_20_regular|main
+P|form-spin-box|form|SpinBox|arrow_sync_20_regular|main
+G|navigation-group||Navigation|navigation_20_regular|main|导航
+P|navigation|navigation-group|NavigationView|navigation_20_regular|main
+P|breadcrumb|navigation-group|Breadcrumb|navigation_20_regular|main
+P|navigation-stack-page|navigation-group|StackPage|layer_20_regular|main
+P|tabbar|navigation-group|TabBar|tab_20_regular|main
+P|navigation-tab-view|navigation-group|TabView|tab_20_regular|main
+P|navigation-segmented|navigation-group|SegmentedControl|options_20_regular|main
+P|navigation-pagination|navigation-group|Pagination|number_symbol_20_regular|main
+P|navigation-multi-window|navigation-group|MultiWindow|window_20_regular|main
+P|pageheader|navigation-group|PageHeader|text_font_20_regular|main
+G|data-display||Data Display|table_20_regular|main|数据展示
+P|data-grid|data-display|DataGrid|table_20_regular|main
+P|data-tree-grid|data-display|TreeDataGrid|folder_20_regular|main
+P|data-file-tree|data-display|FileTreeData|folder_20_regular|main
+P|data-timeline|data-display|Timeline|clock_20_regular|main
+P|data-statistic|data-display|Statistic|data_bar_vertical_20_regular|main
+P|data-selection|data-display|SelectionArea|select_object_20_regular|main
+P|data-qrcode|data-display|QRCode|qr_code_20_regular|main
+G|feedback||Feedback|alert_20_regular|main|反馈
+P|infobar|feedback|InfoBar|info_20_regular|main
+P|feedback-info-badge|feedback|InfoBadge|info_20_regular|main
+P|feedback-progress-bar|feedback|ProgressBar|arrow_sync_20_regular|main
+P|feedback-progress-ring|feedback|ProgressRing|arrow_sync_20_regular|main
+P|feedback-result|feedback|Result|checkmark_circle_20_regular|main
+P|feedback-rating|feedback|RatingControl|star_20_regular|main
+P|feedback-shimmer|feedback|Shimmer|sparkle_20_regular|main
+P|feedback-skeleton|feedback|SkeletonView|box_20_regular|main
+G|layouts||Layouts|slide_layout_20_regular|main|布局
+P|layouts-split|layouts|SplitLayout|split_horizontal_20_regular|main
+P|layouts-staggered|layouts|StaggeredGridView|grid_kanban_20_regular|main
+P|layouts-flow|layouts|FlowLayout|flow_20_regular|main
+P|layouts-adaptive-grid|layouts|AdaptiveGrid|grid_20_regular|main
+P|layouts-dock|layouts|DockLayout|dock_row_20_regular|main
+P|layouts-page-stack|layouts|PageStack|navigation_20_regular|main
+P|layouts-form-row|layouts|FormRow|form_20_regular|main
+G|surfaces||Surfaces|box_20_regular|main|容器
+P|surfaces-page|surfaces|ForgePage|window_20_regular|main
+P|surfaces-round-image|surfaces|RoundImageView|image_20_regular|main
+P|surfaces-icon-label|surfaces|IconLabel|image_alt_text_20_regular|main
+P|surfaces-expander|surfaces|Expander|arrow_expand_20_regular|main
+P|surfaces-watermark|surfaces|Watermark|image_copy_20_regular|main
+P|surfaces-marquee|surfaces|Marquee|text_wrap_20_regular|main
+P|card|surfaces|Card|card_ui_20_regular|main
+P|forge-window|surfaces|ForgeWindow|window_20_regular|main
+G|popups||Popups|window_20_regular|main|弹出层
+P|popups-menu|popups|Menu|list_20_regular|main
+P|popups-content-dialog|popups|ContentDialog|chat_20_regular|main
+P|popups-dialog-window|popups|DialogWindow|window_20_regular|main
+P|popups-tooltip|popups|ToolTip|info_20_regular|main
+P|popups-drawer|popups|Drawer|panel_right_20_regular|main
+G|chart||Chart|data_bar_vertical_20_regular|main|图表
+P|chart-professional|chart|ForgePlot|data_area_20_regular|main|ForgePlot
+P|chart-bar|chart|Bar Chart|data_bar_vertical_20_regular|main
+P|chart-line|chart|Line Chart|data_line_20_regular|main
+P|chart-pie|chart|Pie Chart|data_pie_20_regular|main
+P|chart-polar|chart|Polar Area Chart|data_area_20_regular|main
+P|chart-bubble|chart|Bubble Chart|data_scatter_20_regular|main
+P|chart-scatter|chart|Scatter Chart|data_scatter_20_regular|main
+P|chart-radar|chart|Radar Chart|data_area_20_regular|main
+G|theme||Theme|color_20_regular|main|主题
+P|theme-acrylic|theme|Acrylic|color_background_20_regular|main
+P|theme-liquid-glass|theme|Liquid Glass|color_fill_20_regular|main
+P|theme-colors|theme|Colors|color_20_regular|main
+P|theme-typography|theme|Typography|text_font_20_regular|main|字体排版
+P|theme-icons|theme|Icons|apps_20_regular|main|图标字体
+G|other||Other|apps_20_regular|main|其他
+P|other-tour|other|Tour|navigation_20_regular|main
+P|other-syntax|other|SyntaxView|code_20_regular|main
+P|other-dial|other|Dial|gauge_20_regular|main
+P|about||About|info_20_regular|footer|关于
+P|settings||Settings|settings_20_regular|footer|设置
+P|lifecycle||页面生命周期|window_20_regular|hidden

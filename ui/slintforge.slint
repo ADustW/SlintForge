@@ -1,0 +1,71 @@
+// 唯一公共入口；实现按类别存放，内部组件不在此导出。
+export { ForgeNavPlacement, ForgePaneState, ForgeNavItemKind, ForgeRouteParam, ForgeNavigationItem } from "types/navigation.slint";
+export { ForgeBreadcrumbItem, ForgeTabItem } from "types/content.slint";
+export { ForgeInfoLevel } from "types/feedback.slint";
+export { ForgeTypography } from "typography/typography.slint";
+export { ForgeIcon, ForgeIcons, ForgeIconEntry } from "icons/icon.slint";
+
+export { ForgeIconButton } from "basic/icon-button.slint";
+export { ForgeCard } from "basic/card.slint";
+export { ForgeInfoBar } from "basic/info-bar.slint";
+
+export { ForgeSplitLayout, ForgeSplitOrientation } from "layouts/split-layout.slint";
+export { ForgeStaggeredGridView, ForgeStaggeredItem } from "layouts/staggered-grid-view.slint";
+export { ForgeFlowLayout } from "layouts/flow-layout.slint";
+export { ForgeAdaptiveGrid } from "layouts/adaptive-grid.slint";
+export { ForgePageStack, ForgeStackPage } from "layouts/page-stack.slint";
+export { ForgeFormRow } from "layouts/form-row.slint";
+export { ForgeDockLayout, ForgeDockRect, ForgeDockEdge } from "layouts/dock-layout.slint";
+
+export { ForgeCaptureRect, ForgeCaptureResult, ForgeCaptureService } from "types/capture.slint";
+export { ForgePage } from "surfaces/page.slint";
+export { ForgeRoundImageView } from "surfaces/round-image-view.slint";
+export { ForgeIconLabel } from "surfaces/icon-label.slint";
+export { ForgeExpander } from "surfaces/expander.slint";
+export { ForgeWatermark } from "surfaces/watermark.slint";
+export { ForgeMarquee } from "surfaces/marquee.slint";
+
+export { ForgeWindow } from "window/forge-window.slint";
+
+export { ForgeNavigationView } from "navigation/navigation-view.slint";
+export { ForgeBreadcrumb } from "navigation/breadcrumb.slint";
+export { ForgeTabBar } from "navigation/tab-bar.slint";
+export { ForgePageHeader } from "navigation/page-header.slint";
+
+export { ForgeChoiceItem, ForgeTreeItem, ForgeTimelineItem, ForgeTourStep, ForgeSyntaxLine, ForgeQRCodeResult, ForgeWidgetServices } from "types/widgets.slint";
+export { ForgePillButton, ForgeDelayButton, ForgeDropDownButton, ForgeProgressButton } from "inputs/action-buttons.slint";
+export { ForgeInputValidation } from "inputs/validation.slint";
+export { ForgeChip, ForgeTagInputBox } from "inputs/tags.slint";
+export { ForgeNumberBox } from "form/number-box.slint";
+export { ForgeAutoSuggestBox } from "form/auto-suggest.slint";
+export { ForgeColorPicker } from "form/color-picker.slint";
+export { ForgeShortcutPicker } from "form/shortcut-picker.slint";
+export { ForgeMultiSelectComboBox, ForgeMultiTreeSelectComboBox } from "form/multi-select.slint";
+export { ForgeSegmentedControl } from "navigation/segmented-control.slint";
+export { ForgePagination } from "navigation/pagination.slint";
+export { ForgeFileTree } from "data/file-tree.slint";
+export { ForgeDataGrid, ForgeTreeDataGrid } from "data/data-grid.slint";
+export { ForgeGridSelectionMode, ForgeGridCell, ForgeGridColumn, ForgeGridRow, ForgeGridViewRow, ForgeGridViewColumn, ForgeGridScene, ForgeGridEditResult, ForgeGridServices } from "types/grids.slint";
+export { ForgeTimeline } from "data/timeline.slint";
+export { ForgeStatistic } from "data/statistic.slint";
+export { ForgeQRCode } from "data/qrcode.slint";
+export { ForgeInfoBadge } from "feedback/info-badge.slint";
+export { ForgeResult } from "feedback/result.slint";
+export { ForgeRatingControl } from "feedback/rating.slint";
+export { ForgeShimmer, ForgeSkeletonView } from "feedback/shimmer.slint";
+export { ForgeContentDialog } from "popups/content-dialog.slint";
+export { ForgeDrawer, ForgeDrawerEdge } from "popups/drawer.slint";
+export { ForgeAcrylic, ForgeLiquidGlass } from "theme/backdrop.slint";
+export { ForgeSyntaxView } from "other/syntax-view.slint";
+export { ForgeTour } from "other/tour.slint";
+export { ForgeDial } from "other/dial.slint";
+
+// 图表使用共享绘图层，数值服务由对应宿主绑定。
+export { ForgeChart, ForgeBarChart, ForgeLineChart, ForgePieChart, ForgePolarAreaChart, ForgeBubbleChart, ForgeScatterChart, ForgeRadarChart } from "charts/charts.slint";
+export { ForgeChartKind, ForgeChartPoint, ForgeChartSeries, ForgeChartSlice, ForgeChartOptions, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel, ForgeChartScene, ForgeChartServices } from "types/charts.slint";
+export { ForgePlot } from "charts/plot.slint";
+export { ForgePlotKind, ForgePlotLineStyle, ForgePlotScatterStyle, ForgePlotAxisSide, ForgePlotScale, ForgePlotTicker,
+    ForgePlotLegendPosition, ForgePlotLegendStyle, ForgePlotPlacement, ForgePlotXWindowMode,
+    ForgePlotItemKind, ForgePlotCoordinates, ForgePlotPoint, ForgePlotTick, ForgePlotAxis, ForgePlotPanel,
+    ForgePlotSeries, ForgePlotColorMap, ForgePlotItem, ForgePlotOptions, ForgePlotRange, ForgePlotRect,
+    ForgePlotHit, ForgePlotSelection, ForgePlotScene, ForgePlotExportResult, ForgePlotServices } from "types/plot.slint";

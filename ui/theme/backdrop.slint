@@ -1,0 +1,46 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeWidgetServices } from "../types/widgets.slint";
+
+// source 为应用采样的背景；处理只在图片或参数变化时执行。
+export component ForgeAcrylic inherits Rectangle {
+    in property<image> source;
+    in property<int> blur-radius: 10;
+    in property<bool> refraction: false;
+    in property<color> tint: #7080a04c;
+    in property<length> content-padding: 18px;
+    out property<image> processed;
+    private property<bool> service-ready: ForgeWidgetServices.connected;
+    public function refresh() {
+        root.processed = root.service-ready ? ForgeWidgetServices.backdrop(root.source, root.blur-radius, root.refraction) : root.source;
+    }
+    init => { root.refresh(); }
+    changed source => { root.refresh(); }
+    changed blur-radius => { root.refresh(); }
+    changed refraction => { root.refresh(); }
+    changed service-ready => { root.refresh(); }
+    border-radius: 14px; border-width: 1px; border-color: #ffffff40;
+    background: Palette.background; clip: true;
+    Image { width: parent.width; height: parent.height; source: root.processed; image-fit: cover; }
+    Rectangle { background: root.tint; }
+    Rectangle {
+        background: @linear-gradient(120deg, #ffffff20, transparent, #ffffff08);
+    }
+    Rectangle {
+        x: Math.max(0px, root.content-padding); y: self.x;
+        width: Math.max(0px, parent.width - 2 * self.x); height: Math.max(0px, parent.height - 2 * self.y);
+        @children
+    }
+}
+
+export component ForgeLiquidGlass inherits ForgeAcrylic {
+    blur-radius: 4;
+    refraction: true;
+    tint: #c0e0ff28;
+    border-radius: 24px;
+    border-width: 2px;
+    border-color: #ffffff70;
+    inner-shadow-blur: 6px;
+    inner-shadow-color: #ffffff50;
+    inner-shadow-offset-x: 2px;
+    inner-shadow-offset-y: 2px;
+}

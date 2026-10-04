@@ -1,0 +1,17 @@
+// 扩展控件共享的数据类型；可直接映射到 Rust/C++ 模型。
+export struct ForgeChoiceItem { id: string, label: string, enabled: bool, selected: bool }
+export struct ForgeTreeItem {
+    id: string, parent-id: string, label: string, depth: int,
+    folder: bool, expanded: bool, selected: bool, visible: bool, enabled: bool,
+}
+export struct ForgeTimelineItem { title: string, description: string, time: string, completed: bool }
+export struct ForgeTourStep { title: string, description: string, x: length, y: length, width: length, height: length }
+export struct ForgeSyntaxLine { number: int, content: styled-text }
+export struct ForgeQRCodeResult { ok: bool, image: image, modules: int, error: string }
+// 图像和词法处理由所属应用绑定，UI 不访问文件系统。
+export global ForgeWidgetServices {
+    in-out property<bool> connected: false;
+    callback qr-code(string) -> ForgeQRCodeResult;
+    callback syntax-lines(string, string) -> [ForgeSyntaxLine];
+    callback backdrop(image, int, bool) -> image;
+}

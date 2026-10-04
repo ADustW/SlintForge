@@ -1,0 +1,55 @@
+import { Button, LineEdit, Palette, ScrollView } from "std-widgets.slint";
+
+export component ForgeChip inherits Rectangle {
+    in property<string> text;
+    in property<bool> enabled: true;
+    in property<bool> removable: true;
+    in-out property<bool> selected: false;
+    callback toggled(bool);
+    callback removed();
+    min-width: layout.min-width; preferred-height: layout.preferred-height;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    layout := HorizontalLayout {
+        spacing: 0px;
+        Button { text: root.text; checkable: true; checked <=> root.selected; enabled: root.enabled; clicked => { root.toggled(root.selected); } }
+        if root.removable : Button { text: "×"; enabled: root.enabled; accessible-label: @tr("移除标签"); clicked => { root.removed(); } }
+    }
+}
+
+// 标签模型由应用持有；回调提供已输入文本或待移除下标。
+export component ForgeTagInputBox inherits Rectangle {
+    in property<[string]> tags;
+    in property<bool> enabled: true;
+    in property<int> maximum-tags: 20;
+    in-out property<string> draft;
+    callback add-requested(string);
+    callback remove-requested(int);
+    public function submit() {
+        if root.enabled && root.draft != "" && root.tags.length < Math.max(0, root.maximum-tags) {
+            root.add-requested(root.draft); root.draft = "";
+        }
+    }
+    preferred-height: layout.preferred-height;
+    layout := VerticalLayout {
+        spacing: 10px;
+        ScrollView {
+            height: root.tags.length == 0 ? 0px : 42px;
+            visible: root.tags.length > 0;
+            HorizontalLayout {
+                spacing: 6px;
+                for tag[index] in root.tags : ForgeChip {
+                    text: tag; enabled: root.enabled;
+                    removed => { root.remove-requested(index); }
+                }
+            }
+        }
+        HorizontalLayout {
+            spacing: 6px;
+            LineEdit {
+                text <=> root.draft; placeholder-text: @tr("输入标签并回车"); enabled: root.enabled;
+                accepted => { root.submit(); }
+            }
+            Button { text: @tr("添加"); enabled: root.enabled && root.draft != "" && root.tags.length < root.maximum-tags; clicked => { root.submit(); } }
+        }
+    }
+}

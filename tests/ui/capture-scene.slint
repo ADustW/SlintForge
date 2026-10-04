@@ -1,0 +1,52 @@
+import { ScrollView } from "std-widgets.slint";
+import { ForgePage, ForgeRoundImageView, ForgeCaptureRect, ForgeCaptureResult } from "@slintforge";
+
+// 两端宿主共用的原生渲染场景：嵌套偏移、滚动、外部覆盖层与图片适配。
+export component ForgeCaptureSceneWindow inherits Window {
+    width: 800px; height: 600px;
+    title: "SlintForge Capture Verification";
+    background: #101010;
+    in-out property<length> scroll-offset: 0px;
+    in property<image> test-image;
+    in property<image> empty-image;
+    in-out property<bool> image-empty: false;
+    in-out property<int> fit-index: 1;
+    in-out property<length> image-width: 120px;
+    in-out property<length> image-height: 100px;
+    out property<ForgeCaptureRect> page-rect: page.capture-rect;
+    callback capture-page() -> ForgeCaptureResult;
+    capture-page => { return page.capture(); }
+
+    Rectangle {
+        x: 40px; y: 60px; width: 400px; height: 260px;
+        page := ForgePage {
+            x: 30px; y: 20px; width: 280px; height: 160px;
+            content-padding: 8px;
+            background: #204060;
+            ScrollView {
+                x: 0px; y: 0px;
+                width: parent.width; height: parent.height;
+                content-width: self.width;
+                content-height: 400px;
+                content-y: -root.scroll-offset;
+                Rectangle {
+                    x: 0px; y: 0px;
+                    width: 264px; height: 400px;
+                    Rectangle { x: 0px; y: 0px; width: parent.width; height: 80px; background: #e05040; }
+                    Rectangle { x: 0px; y: 80px; width: parent.width; height: 80px; background: #40b080; }
+                    Rectangle { x: 0px; y: 160px; width: parent.width; height: 240px; background: #4080d0; }
+                }
+            }
+        }
+    }
+    // 此覆盖层不属于 ForgePage 子树，截图仍应包含已合成的可见画面。
+    Rectangle { x: 310px; y: 98px; width: 20px; height: 20px; background: #f0c020; }
+    ForgeRoundImageView {
+        x: 500px; y: 40px;
+        width: root.image-width; height: root.image-height;
+        source: root.image-empty ? root.empty-image : root.test-image;
+        image-fit: root.fit-index == 0 ? cover : root.fit-index == 1 ? contain : fill;
+        corner-radius: 16px; border-width: 4px; border-color: #000000;
+        background: #606060;
+    }
+}

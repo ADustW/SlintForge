@@ -1,0 +1,25 @@
+import { ForgeTypography } from "../typography/typography.slint";
+import { Palette, StyleMetrics } from "std-widgets.slint";
+
+export component ForgeCard inherits Rectangle {
+    in property<string> title;
+    in property<length> content-padding: StyleMetrics.layout-padding;
+    in property<length> spacing: 8px;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: Palette.border;
+    background: Palette.background;
+    VerticalLayout {
+        padding: Math.max(0px, root.content-padding);
+        spacing: Math.max(0px, root.spacing);
+        if root.title != "" : Text {
+            text: root.title;
+            color: Palette.foreground;
+            font-size: 18px * ForgeTypography.scale;
+            font-weight: 600;
+            wrap: word-wrap;
+            vertical-stretch: 0;
+        }
+        @children
+    }
+}

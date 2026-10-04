@@ -1,0 +1,5 @@
+#pragma once
+
+// CMake 从 Gallery/data/navigation.txt 生成此编译期字符串。
+inline constexpr char ForgeGalleryNavigationData[] = R"FORGE_NAV(@FORGE_GALLERY_NAV_TEXT@)FORGE_NAV";
+inline constexpr char ForgeGalleryComponentStatus[] = R"FORGE_STATUS(@FORGE_GALLERY_STATUS_TEXT@)FORGE_STATUS";
