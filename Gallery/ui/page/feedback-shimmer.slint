@@ -14,6 +14,8 @@ export component GalleryFeedbackShimmerPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "feedback-shimmer";
+        active: root.visible;
         title: "Shimmer";
         subtitle: @tr("开启或暂停内容加载的扫光效果。");
         example-title: @tr("用法与状态");

@@ -8,6 +8,7 @@ export component ForgePillButton inherits Rectangle {
     in property<bool> enabled: true;
     in property<bool> primary: false;
     out property<bool> pressed: touch.pressed || root.key-held;
+    out property<bool> has-focus: focus.has-focus;
     private property<bool> key-held: false;
     callback clicked();
     public function focus-button() { focus.focus(); }
@@ -48,31 +49,122 @@ export component ForgePillButton inherits Rectangle {
     touch := TouchArea { enabled: root.enabled; clicked => { focus.focus(); root.clicked(); } }
 }
 
-// 持续按住达到时长后，松开才确认；提前松开和禁用均不会确认。
+export enum ForgeDelayButtonMode { hold, hold-release, click }
+
+// 三种确认方式共用内部填色；取消、失焦和禁用均清理未完成的确认。
 export component ForgeDelayButton inherits Rectangle {
     in property<string> text: @tr("按住确认");
     in property<duration> delay: 1200ms;
     in property<bool> enabled: true;
-    out property<float> progress: root.delay <= 0ms ? 1 : Math.min(1, root.elapsed / root.delay);
+    in property<ForgeDelayButtonMode> mode: hold-release;
+    in property<bool> primary: false;
+    in property<bool> pill: false;
+    in property<bool> show-progress: true;
+    out property<bool> running: root.active;
+    out property<bool> pressed: touch.pressed || root.key-held;
+    out property<bool> has-focus: focus.has-focus;
+    out property<float> progress: !root.active ? 0 : root.delay <= 0ms ? 1 : min(1, root.elapsed / root.delay);
     private property<duration> elapsed: 0ms;
-    private property<bool> armed: false;
+    private property<duration> started: 0ms;
+    private property<bool> active: false;
+    private property<bool> completed: false;
+    private property<bool> key-held: false;
     callback clicked();
-    min-width: button.min-width; preferred-height: button.preferred-height;
-    horizontal-stretch: 0; vertical-stretch: 0;
-    button := ForgePillButton {
-        text: root.text + (self.pressed ? " · " + round(root.progress * 100) + "%" : "");
-        enabled: root.enabled;
-        changed pressed => {
-            if self.pressed { root.elapsed = 0ms; root.armed = root.delay <= 0ms; }
-            else { root.elapsed = 0ms; root.armed = false; }
+    callback canceled();
+    public function focus-button() { focus.focus(); }
+    public function cancel() {
+        let pending = root.active && !root.completed;
+        root.active = false; root.completed = false; root.elapsed = 0ms;
+        if pending { root.canceled(); }
+    }
+    public function begin() {
+        if !root.enabled { return; }
+        if root.active { if root.mode == ForgeDelayButtonMode.click { root.cancel(); } return; }
+        root.active = true; root.completed = false; root.elapsed = 0ms; root.started = animation-tick();
+        if root.delay <= 0ms && root.mode != ForgeDelayButtonMode.hold-release { root.complete(); }
+    }
+    function complete() {
+        if root.active && !root.completed && root.enabled {
+            root.completed = true; root.clicked();
+            if root.mode == ForgeDelayButtonMode.click { root.active = false; root.elapsed = 0ms; }
         }
-        clicked => { if root.armed && root.enabled { root.clicked(); root.armed = false; } }
+    }
+    public function finish() {
+        if root.mode == ForgeDelayButtonMode.click { return; }
+        if root.progress >= 1 { root.complete(); }
+        root.cancel();
+    }
+    min-width: max(160px * ForgeTypography.scale, label.preferred-width + 32px);
+    preferred-height: 36px * ForgeTypography.scale;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    border-radius: root.pill ? root.height / 2 : 4px;
+    background: root.primary ? Palette.accent-background : touch.has-hover ? Palette.control-background : Palette.alternate-background;
+    opacity: root.enabled ? 1 : 0.45;
+    clip: true;
+    forward-focus: focus;
+    accessible-role: button; accessible-label: root.text; accessible-enabled: root.enabled;
+    accessible-action-default => { if root.mode == ForgeDelayButtonMode.click { root.begin(); } }
+    Rectangle {
+        x: 0px; y: 0px;
+        width: root.width * root.progress; height: root.height;
+        background: root.primary ? Palette.accent-foreground.with-alpha(0.25) : Palette.accent-background;
+    }
+    label := Text {
+        text: root.text + (root.active && root.show-progress ? " · " + round(root.progress * 100) + "%" : "");
+        color: root.primary ? Palette.accent-foreground : Palette.foreground;
+        font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center;
+    }
+    Rectangle {
+        x: 0px; y: 0px; width: root.width * root.progress; height: root.height; clip: true;
+        Text {
+            x: 0px; y: 0px; width: root.width; height: root.height;
+            text: label.text; color: Palette.accent-foreground;
+            font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center;
+        }
+    }
+    Rectangle {
+        border-radius: root.border-radius; border-width: root.has-focus ? 2px : 1px;
+        border-color: root.has-focus ? Palette.accent-background : Palette.border; background: transparent;
+    }
+    focus := FocusScope {
+        enabled: root.enabled;
+        focus-lost(reason) => { root.key-held = false; root.cancel(); }
+        key-pressed(event) => {
+            if event.text == Key.Escape { root.cancel(); return accept; }
+            if event.text == Key.Return || event.text == " " {
+                if !root.key-held { root.key-held = true; root.begin(); } return accept;
+            }
+            return reject;
+        }
+        key-released(event) => {
+            if event.text == Key.Return || event.text == " " {
+                if root.key-held { root.finish(); } root.key-held = false; return accept;
+            }
+            return reject;
+        }
+    }
+    touch := TouchArea {
+        enabled: root.enabled;
+        pointer-event(event) => {
+            if event.button == PointerEventButton.left {
+                if event.kind == PointerEventKind.down { focus.focus(); root.begin(); }
+                if event.kind == PointerEventKind.up {
+                    if self.mouse-x >= 0px && self.mouse-x < root.width && self.mouse-y >= 0px && self.mouse-y < root.height { root.finish(); }
+                    else { root.cancel(); }
+                }
+            }
+            if event.kind == PointerEventKind.cancel { root.cancel(); }
+        }
     }
     Timer {
-        interval: 25ms; running: button.pressed && root.enabled && !root.armed;
-        triggered => { root.elapsed += 25ms; if root.elapsed >= root.delay { root.armed = true; } }
+        interval: 16ms; running: root.active && root.enabled && !root.completed && root.progress < 1;
+        triggered => {
+            root.elapsed = max(0ms, animation-tick() - root.started);
+            if root.progress >= 1 && root.mode != ForgeDelayButtonMode.hold-release { root.complete(); }
+        }
     }
-    changed enabled => { if !root.enabled { root.armed = false; root.elapsed = 0ms; } }
+    changed enabled => { if !root.enabled { root.key-held = false; root.cancel(); } }
+    changed mode => { root.cancel(); }
 }
 
 export component ForgeProgressButton inherits Rectangle {

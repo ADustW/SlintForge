@@ -14,9 +14,6 @@ NATIVE = {
     "inputs-checkbox": "CheckBox",
     "inputs-slider": "Slider",
     "inputs-toggle-switch": "Switch",
-    "form-time-picker": "TimePickerPopup",
-    "form-date-picker": "DatePickerPopup",
-    "form-calendar-picker": "DatePickerPopup",
     "form-textbox": "LineEdit",
     "form-multiline-textbox": "TextEdit",
     "form-scrollable-textbox": "TextEdit.content-x / content-y",
@@ -39,6 +36,15 @@ EXISTING_DEMOS = {
     "pageheader": "ForgePageHeader",
 }
 CUSTOM = {
+    "flow-basic": "ForgeFlow",
+    "flow-custom": "ForgeFlowCanvas",
+    "flow-flowchart": "ForgeFlow",
+    "flow-topology": "ForgeFlow",
+    "flow-mindmap": "ForgeFlow",
+
+    "form-time-picker": "ForgeTimePicker",
+    "form-date-picker": "ForgeDatePicker",
+    "form-calendar-picker": "ForgeCalendarPicker",
     "inputs-validation": "ForgeInputValidation",
     "inputs-pill-button": "ForgePillButton",
     "inputs-delay-button": "ForgeDelayButton",
@@ -97,6 +103,13 @@ def main():
     manifest = ROOT / "Gallery/data/component-status.txt"
     data = "\n".join(lines) + "\n"
     if "--check" in sys.argv:
+        # 导航各层级必须提供中文名称，避免中文模式回退到英文组件名。
+        for line in (ROOT / "Gallery/data/navigation.txt").read_text(encoding="utf-8").splitlines():
+            if not line or line.startswith('#'):
+                continue
+            fields = line.split('|')
+            if fields[0] != 'S':
+                assert len(fields) == 7 and re.search(r'[\u4e00-\u9fff]', fields[6]), f"缺少导航中文名称: {fields[1]}"
         assert manifest.read_text(encoding="utf-8") == data, "组件状态目录未同步"
         sources = "\n".join(p.read_text(encoding="utf-8") for p in (ROOT / "Gallery/ui").rglob("*.slint"))
         routes = set(re.findall(r'active-route-id == "([^"]+)"', sources))

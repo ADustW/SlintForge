@@ -1,0 +1,62 @@
+import { Date, Time } from "std-widgets.slint";
+import { ForgeDateTime } from "../../ui/form/date-time.slint";
+import { ForgeDatePickerPopup } from "../../ui/form/date-picker.slint";
+import { ForgeTimePickerPopup } from "../../ui/form/time-picker.slint";
+
+export component ForgeDateTimeTestWindow inherits Window {
+    width: 800px; height: 720px;
+    in-out property<string> language: "zh";
+    in-out property<Date> selected-date: { year: 2024, month: 2, day: 28 };
+    in-out property<Date> minimum-date: { year: 1, month: 1, day: 1 };
+    in-out property<Date> maximum-date: { year: 9999, month: 12, day: 31 };
+    in-out property<Time> selected-time: { hour: 0, minute: 7, second: 9 };
+    in-out property<bool> use-24-hour-format: false;
+    in-out property<int> date-accepted: 0;
+    in-out property<int> date-canceled: 0;
+    in-out property<int> time-accepted: 0;
+    in-out property<int> time-canceled: 0;
+    out property<Date> draft-date: date-picker.current-date;
+    out property<Time> draft-time: time-picker.current-time;
+    out property<string> date-text: date-picker.date-text;
+    out property<string> month-text: date-picker.month-text;
+    out property<string> time-text: time-picker.time-text;
+    callback open-date();
+    callback choose-day(int);
+    callback browse-month(int);
+    callback confirm-date();
+    callback cancel-date();
+    callback open-time();
+    callback set-hour(int);
+    callback set-minute(int);
+    callback set-second(int);
+    callback set-period(bool);
+    callback confirm-time();
+    callback cancel-time();
+    callback weekday(Date) -> int;
+    callback days-in-month(int, int) -> int;
+    open-date => { date-picker.open(); }
+    choose-day(day) => { date-picker.choose-day(day); }
+    browse-month(delta) => { date-picker.browse-month(delta); }
+    confirm-date => { date-picker.confirm(); }
+    cancel-date => { date-picker.cancel(); }
+    open-time => { time-picker.open(); }
+    set-hour(hour) => { time-picker.set-hour(hour); }
+    set-minute(minute) => { time-picker.set-minute(minute); }
+    set-second(second) => { time-picker.set-second(second); }
+    set-period(pm) => { time-picker.set-period(pm); }
+    confirm-time => { time-picker.confirm(); }
+    cancel-time => { time-picker.cancel(); }
+    weekday(value) => { return ForgeDateTime.weekday(value); }
+    days-in-month(year, month) => { return ForgeDateTime.days-in-month(year, month); }
+    date-picker := ForgeDatePickerPopup {
+        x: 20px; y: 20px; language: root.language; date: root.selected-date;
+        minimum-date: root.minimum-date; maximum-date: root.maximum-date;
+        accepted(value) => { root.selected-date = value; root.date-accepted += 1; }
+        canceled => { root.date-canceled += 1; }
+    }
+    time-picker := ForgeTimePickerPopup {
+        x: 20px; y: 20px; language: root.language; time: root.selected-time; use-24-hour-format <=> root.use-24-hour-format;
+        accepted(value) => { root.selected-time = value; root.time-accepted += 1; }
+        canceled => { root.time-canceled += 1; }
+    }
+}

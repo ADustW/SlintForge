@@ -1,0 +1,17 @@
+[package]
+name = "slintforge-runtime"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+slintforge-runtime-api = { path = "../runtime-api", version = "=0.1.2" }
+png = "=0.18.1"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp"] }
+slintforge-qrcodegen = { version = "=1.8.0", path = "../../third_party/qrcodegen/rust" }
+
+[build-dependencies]
+cc = "1"

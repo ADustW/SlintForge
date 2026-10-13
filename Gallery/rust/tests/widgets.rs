@@ -48,6 +48,7 @@ slint::slint! {
         out property<string> shortcut-value: shortcut.shortcut;
         callback record(); record => { shortcut.start-recording(); }
         callback clear-shortcut(); clear-shortcut => { shortcut.clear(); }
+        callback confirm-shortcut(); confirm-shortcut => { shortcut.confirm(); }
         in-out property<string> suggest-text <=> suggest.text;
         in-out property<bool> suggestions-open <=> suggest.open;
         in-out property<string> suggestion-picked;
@@ -276,6 +277,8 @@ fn widgets_handle_pointer_keyboard_models_and_edge_values() {
     ui.window().dispatch_event(WindowEvent::KeyReleased {
         text: Key::Control.into(),
     });
+    assert_eq!(ui.get_shortcut_value().as_str(), "Ctrl+K");
+    ui.invoke_confirm_shortcut();
     assert_eq!(ui.get_shortcut_value().as_str(), "Ctrl+J");
     ui.invoke_clear_shortcut();
     assert!(ui.get_shortcut_value().is_empty());

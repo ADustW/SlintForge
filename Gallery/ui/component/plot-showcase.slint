@@ -1,0 +1,78 @@
+import { Button, Palette } from "std-widgets.slint";
+import { ForgePlot, ForgePlotAxis, ForgePlotPanel, ForgePlotSeries, ForgePlotColorMap, ForgePlotPoint, ForgeTypography } from "@slintforge";
+
+// 总览使用实际 ForgePlot 场景，数据保持静态以便同时比较不同绘图效果。
+component GalleryPlotPreset inherits Rectangle {
+    in property<int> mode;
+    callback explore(int);
+    out property<int> scene-status: plot.scene.status;
+    property<[string]> titles: [@tr("曲线、误差与填充"), @tr("参数曲线与散点"), @tr("正负柱状图"), @tr("统计箱与离群值"), @tr("蜡烛图"), "OHLC", @tr("二维色图"), @tr("左右双轴"), @tr("极坐标曲线"), @tr("多个绘图区")];
+    property<[ForgePlotPoint]> trend: [{x:0,y:3,error-y-minus:0.5,error-y-plus:1},{x:1,y:7,error-y-minus:1,error-y-plus:2},{x:2,y:5},{x:3,y:11},{x:4,y:8},{x:5,y:13}];
+    property<[ForgePlotPoint]> prices: [{x:0,y:8,low:4,high:11,open:6,close:9},{x:1,y:9,low:5,high:12,open:10,close:7},{x:2,y:12,low:8,high:15,open:9,close:14},{x:3,y:11,low:7,high:14,open:13,close:8}];
+    property<[ForgePlotPoint]> temperatures: [{x:0,y:22},{x:1,y:24},{x:2,y:27},{x:3,y:23},{x:4,y:26},{x:5,y:29}];
+    property<[ForgePlotAxis]> axes: root.mode == 7 ? [{id:0,side:bottom,label:@tr("时间 / s"),precision:1},{id:1,side:left,label:"V",precision:1},{id:2,side:right,label:"℃",precision:1}]
+        : root.mode == 9 ? [{id:0,panel:0,side:bottom,precision:1},{id:1,panel:0,side:left,label:"V",precision:1},{id:2,panel:1,side:bottom,precision:1},{id:3,panel:1,side:left,label:"℃",precision:1}]
+        : [{id:0,side:bottom,precision:1,label:root.mode==8?@tr("角度 / °"):"X"},{id:1,side:left,precision:1,label:"Y"}];
+    property<[ForgePlotSeries]> graphs: [
+        {id:0,name:@tr("测量"),y-axis:1,color:#36a2eb,fill-color:#36a2eb33,channel-fill:true,fill-target:1,scatter-style:disc,points:root.trend},
+        {id:1,name:@tr("参考"),y-axis:1,color:#4bc0c0,points:[{x:0,y:1},{x:1,y:2},{x:2,y:2},{x:3,y:3},{x:4,y:2},{x:5,y:4}]}
+    ];
+    property<[ForgePlotSeries]> curves: [{id:0,name:@tr("轨迹"),kind:curve,y-axis:1,color:#9966ff,scatter-style:diamond,points:[{x:1,y:0},{x:0.7,y:0.7},{x:0,y:1},{x:-0.7,y:0.7},{x:-1,y:0},{x:-0.7,y:-0.7},{x:0,y:-1},{x:0.7,y:-0.7},{x:1,y:0}]}];
+
+    property<[ForgePlotSeries]> bar-data: [{id:0,name:@tr("系列甲"),kind:bars,y-axis:1,color:#36a2eb,points:[{x:0,y:4},{x:1,y:-3},{x:2,y:5},{x:3,y:7}]},{id:1,name:@tr("系列乙"),kind:bars,y-axis:1,color:#ff6384,points:[{x:0,y:3},{x:1,y:-2},{x:2,y:4},{x:3,y:2}]}];
+
+    property<[ForgePlotSeries]> boxes: [{id:0,name:@tr("统计分布"),kind:statistical-box,y-axis:1,color:#36a2eb,fill-color:#36a2eb44,points:[{x:0,y:5,low:1,q1:3,q3:7,high:10,outliers:[-2,13]},{x:1,y:8,low:3,q1:6,q3:10,high:12,outliers:[15]},{x:2,y:4,low:0,q1:2,q3:6,high:9}]}];
+
+    property<[ForgePlotSeries]> financial: [{id:0,name:@tr("价格"),kind:root.mode==4?candlestick:ohlc,y-axis:1,color:#4bc0c0,points:root.prices}];
+
+    property<[ForgePlotSeries]> empty: [];
+
+    property<[ForgePlotSeries]> multiple: [{id:0,name:@tr("电压"),y-axis:1,color:#36a2eb,points:root.trend},{id:1,name:@tr("温度"),y-axis:2,color:#ff6384,points:root.temperatures}];
+
+    property<[ForgePlotSeries]> polar-data: [{id:0,name:@tr("极坐标"),kind:polar,y-axis:1,color:#9966ff,scatter-style:disc,points:[{x:0,y:4},{x:45,y:8},{x:90,y:5},{x:135,y:9},{x:180,y:4},{x:225,y:8},{x:270,y:5},{x:315,y:9},{x:360,y:4}]}];
+    property<[ForgePlotSeries]> panels-data: [{id:0,name:@tr("电压"),y-axis:1,color:#36a2eb,points:root.trend},{id:1,name:@tr("温度"),x-axis:2,y-axis:3,color:#ff6384,points:root.temperatures}];
+    property<[ForgePlotSeries]> data: root.mode==0?root.graphs:root.mode==1?root.curves:root.mode==2?root.bar-data:root.mode==3?root.boxes:root.mode==4||root.mode==5?root.financial:root.mode==6?root.empty:root.mode==7?root.multiple:root.mode==8?root.polar-data:root.panels-data;
+    border-radius: 8px; border-width: 1px; border-color: Palette.border; background: Palette.alternate-background;
+    VerticalLayout {
+        padding: 12px; spacing: 8px;
+        Text { text: root.titles[root.mode]; color: Palette.foreground; font-weight: 600; vertical-stretch: 0; }
+        plot := ForgePlot {
+            axes: root.axes; series: root.data; min-width: 260px; min-height: 250px;
+            legend-position: bottom; legend-placement: outside; legend-style: compact;
+            panels: root.mode == 9 ? [{id:0,x:0,y:0,width:1,height:0.5,title:@tr("电压")},{id:1,x:0,y:0.5,width:1,height:0.5,title:@tr("温度")}] : [];
+            color-maps: root.mode == 6 ? [{id:0,x-axis:0,y-axis:1,columns:5,rows:5,x-min:0,x-max:5,y-min:0,y-max:5,name:@tr("二维场"),values:[0,1,2,3,4,1,2,4,6,3,2,4,8,4,2,3,6,4,2,1,4,3,2,1,0]}] : [];
+        }
+        Button { text: @tr("在交互示例中打开"); clicked => { root.explore(root.mode); } }
+    }
+}
+
+component GalleryPlotCell inherits GalleryPlotPreset {
+    in property<int> slot;
+    in property<int> columns;
+    in property<bool> scientific;
+    in property<length> card-height;
+    in property<length> row-height;
+    in property<length> grid-width;
+    x: mod(root.slot, root.columns) * (root.grid-width / root.columns);
+    y: floor(root.slot / root.columns) * (root.row-height + 16px);
+    width: root.grid-width / root.columns - 12px; height: root.card-height;
+    mode: root.slot + (root.scientific ? 5 : 0);
+}
+
+export component GalleryPlotShowcase inherits Rectangle {
+    in property<bool> scientific: false;
+    callback explore(int);
+    property<int> columns: root.width >= 800px ? 2 : 1;
+    // 直接读取各场景状态，不在求值过程中通过 changed 回调写回模型。
+    out property<bool> scenes-ready: preset-0.scene-status == 0 && preset-1.scene-status == 0 && preset-2.scene-status == 0 && preset-3.scene-status == 0 && preset-4.scene-status == 0;
+    property<length> card-height: 370px * ForgeTypography.scale;
+    // 多绘图区保留各自的标题、坐标轴和图例，最后一张卡需要更大的垂直空间。
+    property<length> last-card-height: (root.scientific ? 560px : 370px) * ForgeTypography.scale;
+    preferred-height: ceil(5 / root.columns) * (root.card-height + 16px) + root.last-card-height - root.card-height;
+    height: root.preferred-height; vertical-stretch: 0;
+    preset-0 := GalleryPlotCell { slot: 0; columns: root.columns; grid-width: root.width; card-height: root.card-height; row-height: root.card-height; scientific: root.scientific; explore(mode) => { root.explore(mode); } }
+    preset-1 := GalleryPlotCell { slot: 1; columns: root.columns; grid-width: root.width; card-height: root.card-height; row-height: root.card-height; scientific: root.scientific; explore(mode) => { root.explore(mode); } }
+    preset-2 := GalleryPlotCell { slot: 2; columns: root.columns; grid-width: root.width; card-height: root.card-height; row-height: root.card-height; scientific: root.scientific; explore(mode) => { root.explore(mode); } }
+    preset-3 := GalleryPlotCell { slot: 3; columns: root.columns; grid-width: root.width; card-height: root.card-height; row-height: root.card-height; scientific: root.scientific; explore(mode) => { root.explore(mode); } }
+    preset-4 := GalleryPlotCell { slot: 4; columns: root.columns; grid-width: root.width; card-height: root.last-card-height; row-height: root.card-height; scientific: root.scientific; explore(mode) => { root.explore(mode); } }
+}

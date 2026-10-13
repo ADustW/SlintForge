@@ -14,6 +14,8 @@ export component GalleryInputsChipPage inherits Rectangle {
     prepare-preview(open) => {  }
     in-out property<bool> removed: false;
     sample := GallerySamplePage {
+        showcase-route: "inputs-chip";
+        active: root.visible;
         title: "Chip";
         subtitle: @tr("选择、移除和恢复标签。");
         example-title: @tr("用法与状态");

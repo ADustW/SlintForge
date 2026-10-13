@@ -1,0 +1,285 @@
+import { Palette, Button, LineEdit, ComboBox, CheckBox, SpinBox } from "std-widgets.slint";
+import { ForgeFlowServices, ForgeFlowState, ForgeFlowAction, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport } from "../types/flow.slint";
+import { ForgeFlowControls, ForgeFlowMiniMap } from "controls.slint";
+
+export component ForgeFlowCanvas inherits Rectangle {
+    in property<string> mode: "graph";
+    in property<int> demo: -1;
+    in property<bool> read-only: false;
+    in property<bool> grid: true;
+    in property<bool> snap: false;
+    in property<bool> chinese: true;
+    in property<bool> show-controls: true;
+    in property<bool> show-minimap: true;
+    in property<bool> show-edit-controls: false;
+    in property<bool> show-edge-editor: true;
+    in-out property<int> edge-style: 1;
+    in property<bool> edge-arrow: true;
+    in-out property<ForgeFlowState> state;
+    in-out property<ForgeFlowViewport> viewport: {x: 40, y: 40, zoom: 1};
+    out property<string> error;
+    out property<bool> pan-mode: root.space-down;
+    callback changed-document(ForgeFlowState);
+    callback connection-allowed(ForgeFlowAction) -> bool;
+    connection-allowed(a) => { return true; }
+    private property<bool> ready: ForgeFlowServices.connected;
+    private property<bool> space-down: false;
+    private property<bool> panning: false;
+    private property<bool> boxing: false;
+    private property<float> start-x;
+    private property<float> start-y;
+    private property<float> pan-x;
+    private property<float> pan-y;
+    private property<bool> additive: false;
+    private property<bool> linking: false;
+    private property<ForgeFlowAction> pending;
+    private property<float> end-x;
+    private property<float> end-y;
+    private property<float> grid-step: Math.max(20, Math.ceil(12 / root.viewport.zoom / 20) * 20) * root.viewport.zoom;
+    background: Palette.alternate-background; clip: true;
+
+    init => { root.initialize(); }
+    changed ready => { root.initialize(); }
+    public function initialize() {
+        if root.ready && root.state.token == 0 {
+            root.state = ForgeFlowServices.create(root.mode);
+            if root.demo >= 0 { root.state = ForgeFlowServices.execute(root.state.token, {op: "demo", number: root.demo}); }
+            root.viewport = root.state.viewport;
+        }
+    }
+    public pure function node-visible(n: ForgeFlowNodeData) -> bool {
+        return !n.hidden && (n.x + n.width) * root.viewport.zoom + root.viewport.x >= -24 && n.x * root.viewport.zoom + root.viewport.x <= root.width / 1px + 24 && (n.y + n.height) * root.viewport.zoom + root.viewport.y >= -24 && n.y * root.viewport.zoom + root.viewport.y <= root.height / 1px + 24;
+    }
+    public function commit-view() {
+        if root.state.token > 0 { root.state = ForgeFlowServices.execute(root.state.token, {op: "view", x: root.viewport.x, y: root.viewport.y, zoom: root.viewport.zoom}); }
+    }
+    public function zoom-at(value: float, px: float, py: float) {
+        let z = Math.clamp(value, 0.1, 4);
+        root.viewport = {x: px - (px - root.viewport.x) * z / root.viewport.zoom, y: py - (py - root.viewport.y) * z / root.viewport.zoom, zoom: z};
+        root.commit-view();
+    }
+    public function fit() {
+        let b = root.state.bounds;
+        let z = Math.clamp(Math.min((root.width / 1px - 80) / Math.max(1, b.width), (root.height / 1px - 80) / Math.max(1, b.height)), 0.1, 4);
+        root.viewport = {x: (root.width / 1px - b.width * z) / 2 - b.x * z, y: (root.height / 1px - b.height * z) / 2 - b.y * z, zoom: z};
+        root.commit-view();
+    }
+    public function change-edge-style(style: int) {
+        if root.read-only { return; }
+        if root.state.selected-edge-count > 0 { root.act({op: "edge-appearance", target: "style", number: style}); }
+        else { root.edge-style = style; }
+    }
+    public function act(a: ForgeFlowAction) {
+        root.initialize();
+        if a.op == "pan-begin" { root.start-x = a.x * root.viewport.zoom + root.viewport.x; root.start-y = a.y * root.viewport.zoom + root.viewport.y; root.pan-x = root.viewport.x; root.pan-y = root.viewport.y; return; }
+        if a.op == "pan-move" { root.viewport = {x: root.pan-x + a.x * root.viewport.zoom + root.viewport.x - root.start-x, y: root.pan-y + a.y * root.viewport.zoom + root.viewport.y - root.start-y, zoom: root.viewport.zoom}; return; }
+        if a.op == "pan-end" { root.commit-view(); return; }
+        if a.op == "cancel" { root.linking = false; root.boxing = false; root.panning = false; }
+        if root.read-only && a.op != "pick" && a.op != "select" && a.op != "refresh" { return; }
+        if a.op == "connection-begin" {
+            if a.number == 0 { root.error = root.chinese ? "请从输出或双向端口拖动" : "Start at an output port"; return; }
+            root.commit-view(); root.pending = a; root.linking = true; root.end-x = a.x; root.end-y = a.y; return;
+        }
+        if a.op == "connection-move" { root.end-x = a.x; root.end-y = a.y; return; }
+        if a.op == "connection-end" {
+            if !root.linking { return; }
+            root.linking = false;
+            let proposal = ForgeFlowServices.resolve(root.state.token, {id: root.pending.id, port: root.pending.port, target: root.pending.target, number: root.pending.target == "reconnect" ? root.pending.number : root.edge-style, flag: root.edge-arrow, x: a.x, y: a.y});
+            if proposal.op == "" { root.error = root.chinese ? "请拖到有效端口" : "Drop on a compatible port"; return; }
+            if !root.connection-allowed(proposal) { root.error = root.chinese ? "业务规则拒绝此连接" : "Connection rejected"; return; }
+            root.state = ForgeFlowServices.execute(root.state.token, proposal);
+        } else {
+            if a.op == "drag-begin" { focus.focus(); }
+            root.state = ForgeFlowServices.execute(root.state.token, a);
+        }
+        root.error = root.state.error;
+        if a.op == "load" || a.op == "demo" { root.viewport = root.state.viewport; }
+        root.changed-document(root.state);
+    }
+    public function save(path: string) { root.commit-view(); root.error = ForgeFlowServices.save-file(root.state.token, path); }
+    public function load(path: string) {
+        if root.read-only { return; }
+        root.state = ForgeFlowServices.load-file(root.state.token, path); root.error = root.state.error;
+        if root.state.ok { root.viewport = root.state.viewport; }
+        root.changed-document(root.state);
+    }
+    public function document-json() -> string { root.commit-view(); return ForgeFlowServices.export-json(root.state.token); }
+
+    focus := FocusScope {
+        key-pressed(e) => {
+            if e.text == " " { root.space-down = true; return accept; }
+            if e.text == Key.Escape { root.act({op: "cancel"}); return accept; }
+            if e.modifiers.control && (e.text == "z" || e.text == "Z") { root.act({op: e.modifiers.shift ? "redo" : "undo"}); return accept; }
+            if e.modifiers.control && (e.text == "y" || e.text == "Y") { root.act({op: "redo"}); return accept; }
+            if e.modifiers.control && (e.text == "a" || e.text == "A") { root.act({op: "select-all"}); return accept; }
+            if e.modifiers.control && (e.text == "d" || e.text == "D") { root.act({op: "duplicate"}); return accept; }
+            if e.text == Key.Delete { root.act({op: "delete"}); return accept; }
+            return reject;
+        }
+        key-released(e) => { if e.text == " " { root.space-down = false; return accept; } return reject; }
+        for i in (root.grid ? Math.min(180, Math.ceil(root.width / 1px / root.grid-step) + 1) : 0) : Rectangle {
+            x: (Math.mod(root.viewport.x, root.grid-step) + i * root.grid-step) * 1px;
+            width: 1px; height: parent.height; background: Palette.foreground.with-alpha(0.06);
+        }
+        for i in (root.grid ? Math.min(120, Math.ceil(root.height / 1px / root.grid-step) + 1) : 0) : Rectangle {
+            y: (Math.mod(root.viewport.y, root.grid-step) + i * root.grid-step) * 1px;
+            height: 1px; width: parent.width; background: Palette.foreground.with-alpha(0.06);
+        }
+        surface := TouchArea {
+            scroll-event(e) => {
+                root.zoom-at(root.viewport.zoom * (e.delta-y > 0px ? 1.12 : 1 / 1.12), self.mouse-x / 1px, self.mouse-y / 1px); return accept;
+            }
+            pointer-event(e) => {
+                if e.kind == PointerEventKind.down {
+                    focus.focus(); root.start-x = self.mouse-x / 1px; root.start-y = self.mouse-y / 1px;
+                    root.pan-x = root.viewport.x; root.pan-y = root.viewport.y;
+                    root.additive = e.modifiers.control || e.modifiers.shift;
+                    root.panning = e.button == PointerEventButton.middle || (e.button == PointerEventButton.left && root.space-down);
+                    root.boxing = !root.read-only && !root.panning && e.button == PointerEventButton.left;
+                }
+                if e.kind == PointerEventKind.up {
+                    if root.panning { root.commit-view(); }
+                    if root.boxing {
+                        if Math.abs(self.mouse-x / 1px - root.start-x) + Math.abs(self.mouse-y / 1px - root.start-y) < 4 {
+                            root.act({op: "pick", x: (root.start-x - root.viewport.x) / root.viewport.zoom, y: (root.start-y - root.viewport.y) / root.viewport.zoom, additive: root.additive});
+                        } else {
+                            root.act({op: "select-rect", x: (root.start-x - root.viewport.x) / root.viewport.zoom, y: (root.start-y - root.viewport.y) / root.viewport.zoom, width: (self.mouse-x / 1px - root.viewport.x) / root.viewport.zoom, height: (self.mouse-y / 1px - root.viewport.y) / root.viewport.zoom, additive: root.additive});
+                        }
+                    }
+                    root.panning = false; root.boxing = false;
+                }
+                if e.kind == PointerEventKind.cancel { root.panning = false; root.boxing = false; }
+            }
+            moved => { if root.panning { root.viewport = {x: root.pan-x + self.mouse-x / 1px - root.start-x, y: root.pan-y + self.mouse-y / 1px - root.start-y, zoom: root.viewport.zoom}; } }
+        }
+        world := Rectangle {
+            x: root.viewport.x * 1px; y: root.viewport.y * 1px;
+            width: root.width / root.viewport.zoom; height: root.height / root.viewport.zoom;
+            transform-origin: {x: 0px, y: 0px}; transform-scale: root.viewport.zoom;
+            for e in root.state.edges : Rectangle {
+                visible: !e.hidden && e.max-x * root.viewport.zoom + root.viewport.x >= 0 && e.min-x * root.viewport.zoom + root.viewport.x <= root.width / 1px && e.max-y * root.viewport.zoom + root.viewport.y >= 0 && e.min-y * root.viewport.zoom + root.viewport.y <= root.height / 1px;
+                x: e.min-x * 1px; y: e.min-y * 1px; width: (e.max-x - e.min-x) * 1px; height: (e.max-y - e.min-y) * 1px;
+                Path { width: parent.width; height: parent.height; viewbox-x: e.min-x; viewbox-y: e.min-y; viewbox-width: e.max-x - e.min-x; viewbox-height: e.max-y - e.min-y;
+                    commands: e.path; stroke: e.selected ? Palette.accent-background : Palette.foreground.with-alpha(0.55); stroke-width: (e.stroke-width + (e.selected ? 1 : 0)) * 1px; fill: transparent; }
+                Path { width: parent.width; height: parent.height; viewbox-x: e.min-x; viewbox-y: e.min-y; viewbox-width: e.max-x - e.min-x; viewbox-height: e.max-y - e.min-y;
+                    commands: e.arrow-path; fill: e.selected ? Palette.accent-background : Palette.foreground.with-alpha(0.65); }
+                if e.label != "" : Rectangle {
+                    x: (e.label-x - e.min-x) * 1px - self.width / 2; y: (e.label-y - e.min-y) * 1px - 12px;
+                    width: label.preferred-width + 12px; height: 24px; background: Palette.background; border-radius: 4px;
+                    label := Text { text: e.label; color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; font-size: 11px; }
+                }
+
+            }
+            @children
+            for e in root.state.edges : Rectangle {
+                visible: e.selected && !e.hidden;
+                x: e.min-x * 1px; y: e.min-y * 1px; width: (e.max-x - e.min-x) * 1px; height: (e.max-y - e.min-y) * 1px;
+                for endpoint in (e.selected && !root.read-only && root.state.mode != "mindmap" ? 2 : 0) : Rectangle {
+                    x: ((endpoint == 0 ? e.source-x : e.target-x) - e.min-x) * 1px - 9px;
+                    y: ((endpoint == 0 ? e.source-y : e.target-y) - e.min-y) * 1px - 9px;
+                    width: 18px; height: 18px; border-radius: 9px; border-width: 3px; border-color: Palette.accent-background; background: Palette.background;
+                    TouchArea {
+                        pointer-event(p) => {
+                            if p.kind == PointerEventKind.down { root.pending = {id: e.id, target: "reconnect", number: endpoint, x: endpoint == 0 ? e.target-x : e.source-x, y: endpoint == 0 ? e.target-y : e.source-y}; root.linking = true; root.end-x = endpoint == 0 ? e.source-x : e.target-x; root.end-y = endpoint == 0 ? e.source-y : e.target-y; }
+                            if p.kind == PointerEventKind.up { root.act({op: "connection-end", x: e.min-x + parent.x / 1px + self.mouse-x / 1px, y: e.min-y + parent.y / 1px + self.mouse-y / 1px}); }
+                            if p.kind == PointerEventKind.cancel { root.act({op: "cancel"}); }
+                        }
+                        moved => { if self.pressed { root.end-x = e.min-x + parent.x / 1px + self.mouse-x / 1px; root.end-y = e.min-y + parent.y / 1px + self.mouse-y / 1px; } }
+                    }
+                }
+            }
+            if root.linking : Path {
+                x: Math.min(root.pending.x, root.end-x) * 1px - 2px; y: Math.min(root.pending.y, root.end-y) * 1px - 2px;
+                width: (Math.abs(root.pending.x - root.end-x) + 4) * 1px; height: (Math.abs(root.pending.y - root.end-y) + 4) * 1px;
+                viewbox-x: Math.min(root.pending.x, root.end-x) - 2; viewbox-y: Math.min(root.pending.y, root.end-y) - 2;
+                viewbox-width: Math.abs(root.pending.x - root.end-x) + 4; viewbox-height: Math.abs(root.pending.y - root.end-y) + 4;
+                commands: "M " + root.pending.x + " " + root.pending.y + " L " + root.end-x + " " + root.end-y;
+                stroke: Palette.accent-background; stroke-width: 2px; fill: transparent;
+            }
+        }
+        if root.boxing : Rectangle {
+            x: Math.min(root.start-x * 1px, surface.mouse-x); y: Math.min(root.start-y * 1px, surface.mouse-y);
+            width: Math.abs(root.start-x * 1px - surface.mouse-x); height: Math.abs(root.start-y * 1px - surface.mouse-y);
+            background: Palette.accent-background.with-alpha(0.12); border-color: Palette.accent-background; border-width: 1px;
+        }
+    }
+    if root.show-controls : ForgeFlowControls {
+        x: 12px; y: parent.height - self.height - 12px; width: 336px; height: 40px;
+        zoom: root.viewport.zoom; can-undo: root.state.can-undo; can-redo: root.state.can-redo; read-only: root.read-only; chinese: root.chinese;
+        command(op) => {
+            if op == "fit" { root.fit(); }
+            else if op == "zoom-in" || op == "zoom-out" { root.zoom-at(root.viewport.zoom * (op == "zoom-in" ? 1.2 : 1 / 1.2), root.width / 2px, root.height / 2px); }
+            else { root.act({op: op}); }
+        }
+    }
+    if root.show-edit-controls : Rectangle {
+        x: 12px; y: 10px; width: parent.width - 24px; height: 38px; background: Palette.background;
+        HorizontalLayout {
+            spacing: 4px; padding: 3px;
+            Button { text: root.state.mode == "mindmap" ? (root.chinese ? "子主题" : "Child") : (root.chinese ? "新增" : "Add"); enabled: !root.read-only;
+                clicked => { root.act({op: root.state.mode == "mindmap" ? "add-child" : "add", id: root.state.selected-id, text: root.chinese ? "新节点" : "New node", x: (root.width / 2px - root.viewport.x) / root.viewport.zoom, y: (root.height / 2px - root.viewport.y) / root.viewport.zoom}); }
+            }
+            Button { text: root.chinese ? "删除" : "Delete"; enabled: !root.read-only; clicked => { root.act({op: "delete"}); } }
+            rename := LineEdit { text: root.state.selected-title; placeholder-text: root.chinese ? "标题，回车提交" : "Title, Enter to apply"; enabled: !root.read-only && root.state.selected-id != "";
+                accepted => { root.act({op: "title", id: root.state.selected-id, text: self.text}); }
+            }
+            if root.state.mode == "mindmap" : Button { text: root.chinese ? "布局" : "Layout"; enabled: !root.read-only; clicked => { root.act({op: "layout"}); root.fit(); } }
+        }
+    }
+    Rectangle {
+        visible: root.show-edge-editor && root.state.selected-edge-count > 0;
+        private property<ForgeFlowEdgeData> edge: root.state.selected-edge;
+        private property<string> last-id;
+        private property<string> last-label;
+        changed edge => {
+            // 原生输入控件会持有本地编辑值，外部修改和撤销后显式同步回显。
+            style-choice.current-index = self.edge.style;
+            width-choice.value = Math.round(self.edge.stroke-width);
+            arrow-choice.checked = self.edge.arrow;
+            if self.last-id != self.edge.id || self.last-label != self.edge.label { edge-label.text = self.edge.label; }
+            self.last-id = self.edge.id; self.last-label = self.edge.label;
+        }
+        x: 12px; y: parent.height - self.height - (root.show-controls ? 64px : 12px);
+        width: Math.min(420px, parent.width - 24px); height: 102px;
+        background: Palette.background; border-color: Palette.border; border-width: 1px; border-radius: 6px;
+        // 样式编辑放在画布层，默认组件和调用方自定义卡片共用同一入口。
+        VerticalLayout {
+            padding: 8px; spacing: 5px;
+            Text { text: (root.chinese ? "连线样式" : "Edge appearance") + (root.state.selected-edge-count > 1 ? " · " + root.state.selected-edge-count : ""); color: Palette.foreground; font-size: 11px; }
+            HorizontalLayout {
+                spacing: 6px;
+                style-choice := ComboBox { width: 120px; model: root.chinese ? ["直线", "曲线", "折线"] : ["Straight", "Bezier", "Step"];
+                    current-index: root.state.selected-edge.style; enabled: !root.read-only;
+                    selected(v) => { root.change-edge-style(self.current-index); }
+                }
+                Text { text: root.chinese ? "线宽" : "Width"; color: Palette.foreground; vertical-alignment: center; }
+                width-choice := SpinBox { width: 82px; minimum: 1; maximum: 8; value: Math.round(root.state.selected-edge.stroke-width); enabled: !root.read-only;
+                    edited(v) => { root.act({op: "edge-appearance", target: "stroke_width", width: v}); }
+                }
+                arrow-choice := CheckBox { text: root.chinese ? "箭头" : "Arrow"; checked: root.state.selected-edge.arrow; enabled: !root.read-only;
+                    toggled => { root.act({op: "edge-appearance", target: "arrow", flag: self.checked}); }
+                }
+            }
+            HorizontalLayout {
+                spacing: 6px;
+                edge-label := LineEdit { text: root.state.selected-edge.label; placeholder-text: root.chinese ? "连线标签" : "Edge label"; enabled: !root.read-only;
+                    accepted => { root.act({op: "edge-appearance", target: "label", text: self.text}); }
+                }
+                Button { text: root.chinese ? "应用" : "Apply"; enabled: !root.read-only;
+                    clicked => { root.act({op: "edge-appearance", target: "label", text: edge-label.text}); }
+                }
+            }
+        }
+    }
+    if root.show-minimap && root.width > 600px : ForgeFlowMiniMap {
+        x: parent.width - self.width - 12px; y: parent.height - self.height - 12px;
+        nodes: root.state.nodes; bounds: root.state.bounds; viewport: root.viewport;
+        canvas-width: root.width / 1px; canvas-height: root.height / 1px;
+        navigate(x,y) => { root.viewport = {x: root.width / 2px - x * root.viewport.zoom, y: root.height / 2px - y * root.viewport.zoom, zoom: root.viewport.zoom}; root.commit-view(); }
+    }
+    if root.error != "" : Rectangle {
+        x: 12px; y: root.show-edit-controls ? 54px : 10px; width: Math.min(parent.width - 24px, notice.preferred-width + 24px); height: 34px;
+        background: Palette.background; border-color: #c46b40; border-width: 1px; border-radius: 4px;
+        notice := Text { x: 10px; width: parent.width - 20px; text: root.error; color: Palette.foreground; vertical-alignment: center; overflow: elide; }
+    }
+}

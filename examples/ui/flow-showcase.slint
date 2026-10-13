@@ -1,0 +1,117 @@
+import { Button, LineEdit, ComboBox, CheckBox, Palette } from "std-widgets.slint";
+import { ForgeFlowCanvas, ForgeFlowNode, ForgeFlowAction, ForgeFlowState, ForgeFlowServices } from "@slintforge";
+
+// 节点循环由调用方持有，每种业务组件仅创建一次，移动时只更新容器位置。
+export component ForgeFlowMixedCanvas inherits ForgeFlowCanvas {
+    callback business-action(string);
+    for n in root.state.nodes : ForgeFlowNode {
+        node: n; tree: root.state.mode == "mindmap"; snap: root.snap; read-only: root.read-only; pan-mode: root.pan-mode;
+        visible: root.node-visible(n);
+        action(a) => { root.act(a); }
+        if n.kind == "form" : VerticalLayout {
+            spacing: 4px;
+            editor := LineEdit { text: ForgeFlowServices.field(n.data-json, "text"); enabled: !root.read-only; placeholder-text: root.chinese ? "输入参数" : "Parameter";
+                accepted => { root.act({op: "field", id: n.id, target: "text", text: self.text}); }
+            }
+            HorizontalLayout {
+                Button { text: root.chinese ? "提交" : "Apply"; enabled: !root.read-only; clicked => { root.act({op: "field", id: n.id, target: "text", text: editor.text}); } }
+                ComboBox { model: root.chinese ? ["手动", "自动"] : ["Manual", "Auto"]; enabled: !root.read-only;
+                    current-index: ForgeFlowServices.field(n.data-json, "mode") == "Auto" ? 1 : 0;
+                    selected(v) => { root.act({op: "field", id: n.id, target: "mode", text: self.current-index == 1 ? "Auto" : "Manual"}); }
+                }
+            }
+        }
+        if n.kind == "device" : VerticalLayout {
+            spacing: 4px;
+            Text { text: (root.chinese ? "设备状态 · " : "Status · ") + (ForgeFlowServices.field(n.data-json,"status") == "stopped" ? (root.chinese ? "已停止" : "Stopped") : (root.chinese ? "运行中" : "Running")); color: Palette.foreground; }
+            Button { text: ForgeFlowServices.field(n.data-json,"status") == "stopped" ? (root.chinese ? "启动" : "Start") : (root.chinese ? "停止" : "Stop"); enabled: !root.read-only;
+                clicked => { root.act({op: "field", id: n.id, target: "status", text: ForgeFlowServices.field(n.data-json,"status") == "stopped" ? "running" : "stopped"}); root.business-action(n.id); }
+            }
+        }
+        if n.kind == "image" : Image { source: @image-url("flow-device.svg"); image-fit: contain; }
+        if n.kind != "form" && n.kind != "device" && n.kind != "image" : Text {
+            text: n.kind == "text" ? ForgeFlowServices.field(n.data-json, "text") : (root.chinese ? "未注册的卡片类型：" : "Unknown card type: ") + n.kind;
+            color: Palette.foreground; wrap: word-wrap; font-size: 12px;
+        }
+    }
+}
+
+export component ForgeFlowShowcase inherits Rectangle {
+    min-width: 0px; preferred-width: 900px; min-height: 0px; preferred-height: 600px;
+    in property<int> variant: 0;
+    in property<bool> chinese: true;
+    in property<bool> active: true;
+    in-out property<bool> read-only: false;
+    in-out property<bool> snap: false;
+    in property<string> blocked-target;
+    out property<ForgeFlowState> state: canvas.state;
+    out property<int> business-count;
+    private property<string> file-path: "flow-document.json";
+    callback edit(ForgeFlowAction);
+    edit(a) => { canvas.act(a); }
+    callback fit();
+    fit => { canvas.fit(); }
+    callback zoom(float);
+    zoom(z) => { canvas.zoom-at(z, canvas.width / 2px, canvas.height / 2px); }
+    callback document-json() -> string;
+    document-json => { return canvas.document-json(); }
+    callback set-view(float, float, float);
+    set-view(x,y,z) => { canvas.viewport = {x:x,y:y,zoom:z}; canvas.commit-view(); }
+    background: Palette.background;
+    VerticalLayout {
+        spacing: 0px;
+        Rectangle {
+            height: 44px;
+            HorizontalLayout {
+                padding: 6px; spacing: 4px;
+                Button { text: root.variant == 4 ? (root.chinese ? "子主题" : "Child") : (root.chinese ? "新增" : "Add"); enabled: !root.read-only;
+                    clicked => { canvas.act({op: root.variant == 4 ? "add-child" : "add", id: canvas.state.selected-id, text: root.chinese ? "新节点" : "New node", x: (canvas.width / 2px - canvas.viewport.x) / canvas.viewport.zoom, y: (canvas.height / 2px - canvas.viewport.y) / canvas.viewport.zoom}); }
+                }
+                Button { text: root.variant == 4 ? (root.chinese ? "同级" : "Sibling") : (root.chinese ? "复制" : "Copy"); enabled: !root.read-only && root.state.selected-id != "";
+                    clicked => { canvas.act({op: root.variant == 4 ? "add-sibling" : "duplicate", id: root.state.selected-id, text: root.chinese ? "新主题" : "New topic"}); }
+                }
+                Button { text: root.chinese ? "删除" : "Delete"; enabled: !root.read-only; clicked => { canvas.act({op: "delete"}); } }
+                if root.variant == 4 : Button { text: root.chinese ? "布局" : "Layout"; enabled: !root.read-only; clicked => { canvas.act({op: "layout"}); canvas.fit(); } }
+                if root.variant != 4 : ComboBox { width: 100px; model: root.chinese ? ["直线", "曲线", "折线"] : ["Straight", "Bezier", "Step"]; enabled: !root.read-only;
+                    private property<int> effective-style: root.state.selected-edge-count > 0 ? root.state.selected-edge.style : canvas.edge-style;
+                    current-index: self.effective-style;
+                    changed effective-style => { self.current-index = self.effective-style; }
+                    selected(v) => { canvas.change-edge-style(self.current-index); }
+                }
+                CheckBox { text: root.chinese ? "吸附" : "Snap"; checked <=> root.snap; }
+                CheckBox { text: root.chinese ? "只读" : "Read only"; checked <=> root.read-only; }
+                Rectangle { horizontal-stretch: 1; }
+                if root.width > 720px : Button { text: "500 / 1000"; enabled: !root.read-only && root.variant != 4; clicked => { canvas.act({op: "demo", number: root.variant, count: 500}); } }
+            }
+        }
+        Rectangle {
+            height: 42px;
+            HorizontalLayout {
+                padding: 6px; spacing: 6px;
+                title-edit := LineEdit { placeholder-text: root.chinese ? "选中节点后编辑标题" : "Select a node to rename"; text: root.state.selected-title; enabled: !root.read-only && root.state.selected-id != "";
+                    accepted => { canvas.act({op: "title", id: root.state.selected-id, text: self.text}); }
+                }
+                Button { text: root.chinese ? "改标题" : "Rename"; enabled: !root.read-only && root.state.selected-id != ""; clicked => { canvas.act({op: "title", id: root.state.selected-id, text: title-edit.text}); } }
+                if root.variant == 4 : parent-edit := LineEdit { placeholder-text: root.chinese ? "父主题 ID" : "Parent ID"; width: 110px;
+                    accepted => { canvas.act({op: "reparent", id: root.state.selected-id, target: self.text}); }
+                }
+                if root.width > 640px : LineEdit { text <=> root.file-path; width: 155px; }
+                if root.width > 640px : Button { text: root.chinese ? "保存" : "Save"; clicked => { canvas.save(root.file-path); } }
+                if root.width > 640px : Button { text: root.chinese ? "加载" : "Load"; enabled: !root.read-only; clicked => { canvas.load(root.file-path); } }
+            }
+        }
+        canvas := ForgeFlowMixedCanvas {
+            demo: root.variant; mode: root.variant == 4 ? "mindmap" : "graph";
+            chinese: root.chinese; read-only: root.read-only; snap: root.snap;
+            business-action(id) => { root.business-count += 1; }
+            connection-allowed(a) => { return a.target != root.blocked-target; }
+            vertical-stretch: 1;
+        }
+        Rectangle {
+            height: 26px;
+            Text { x: 8px; width: parent.width - 16px; vertical-alignment: center; font-size: 11px; color: Palette.foreground.with-alpha(0.7); overflow: elide;
+                text: root.state.node-count + (root.chinese ? " 节点 · " : " nodes · ") + root.state.edge-count + (root.chinese ? " 连线    标题拖动 · 端口连接 · 滚轮缩放 · 中键平移 · Ctrl 多选" : " edges    Drag headers · Connect ports · Wheel zoom · Middle pan · Ctrl select");
+            }
+        }
+    }
+}

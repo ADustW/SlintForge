@@ -64,7 +64,7 @@ export component ForgeNavigationView inherits Rectangle {
                     Text { text: root.dark-mode ? "☼" : "☾"; color: Palette.foreground; font-size: 17px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
                     theme-touch := TouchArea { clicked => { root.theme-toggle-requested(); } }
                 }
-                Text { text: "v0.1"; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                Text { text: "v0.1.2"; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
             }
         }
         if root.placement == ForgeNavPlacement.top && root.pane-state != ForgePaneState.hidden : ForgeTopNavigation {

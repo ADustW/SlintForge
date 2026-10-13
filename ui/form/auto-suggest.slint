@@ -1,4 +1,5 @@
 import { Button, LineEdit, Palette, ScrollView } from "std-widgets.slint";
+import { ForgeWidgetServices } from "../types/widgets.slint";
 
 export component ForgeAutoSuggestBox inherits Rectangle {
     in-out property<string> text;
@@ -6,11 +7,39 @@ export component ForgeAutoSuggestBox inherits Rectangle {
     in property<bool> enabled: true;
     in property<string> placeholder-text: @tr("输入以搜索");
     in-out property<bool> open: false;
+    // 源 suggestions 的索引；-1 表示没有激活的候选。
+    in-out property<int> current-suggestion: -1;
+    out property<bool> keyboard-navigation-ready: ForgeWidgetServices.connected;
     callback edited(string);
     callback selected(string);
     init => { if !root.enabled { root.open = false; } }
     changed enabled => { if !root.enabled { root.open = false; } }
-    changed open => { if !root.enabled { root.open = false; } }
+    changed open => { if !root.enabled { root.open = false; } if !root.open { root.current-suggestion = -1; } }
+    changed text => { root.current-suggestion = -1; }
+    changed suggestions => { root.current-suggestion = -1; }
+    changed current-suggestion => { if !root.matches(root.current-suggestion) { root.current-suggestion = -1; } }
+    function matches(index: int) -> bool {
+        return index >= 0 && index < root.suggestions.length &&
+            (root.text == "" || root.suggestions[index].to-lowercase().starts-with(root.text.to-lowercase()));
+    }
+    // 线性查找由已绑定的控件服务执行，避免 UI 递归和栈深度限制。
+    function find-candidate(index: int, direction: int) -> int {
+        return ForgeWidgetServices.connected ? ForgeWidgetServices.suggestion-index(root.suggestions, root.text, index, direction) : -1;
+    }
+    public function move-candidate(direction: int) {
+        if root.enabled && direction != 0 {
+            root.open = true;
+            let step = direction < 0 ? -1 : 1;
+            let start = root.matches(root.current-suggestion) ? root.current-suggestion + step : (step > 0 ? 0 : root.suggestions.length - 1);
+            let candidate = root.find-candidate(start, step);
+            if candidate >= 0 { root.current-suggestion = candidate; }
+        }
+    }
+    public function accept-current() {
+        let first = root.open ? root.find-candidate(0, 1) : -1;
+        let index = root.matches(root.current-suggestion) ? root.current-suggestion : first;
+        root.choose(index >= 0 ? root.suggestions[index] : root.text);
+    }
     public function choose(value: string) {
         if root.enabled { root.text = value; root.open = false; root.selected(value); }
     }
@@ -23,20 +52,32 @@ export component ForgeAutoSuggestBox inherits Rectangle {
             edited(value) => { root.open = true; root.edited(value); }
             key-pressed(event) => {
                 if event.text == Key.Escape { root.open = false; return accept; }
-                if event.text == Key.DownArrow { root.open = true; return accept; }
+                if event.text == Key.DownArrow { root.move-candidate(1); return accept; }
+                if event.text == Key.UpArrow { root.move-candidate(-1); return accept; }
+                if event.text == Key.Tab { root.open = false; }
                 return reject;
             }
-            accepted => { root.choose(root.text); }
+            accepted => { root.accept-current(); }
         }
-        if root.open : ScrollView {
+        if root.open : suggestion-view := ScrollView {
             height: 150px;
             VerticalLayout {
                 spacing: 2px;
-                for suggestion in root.suggestions : Button {
+                for suggestion[index] in root.suggestions : Button {
                     text: suggestion;
                     visible: root.text == "" || suggestion.to-lowercase().starts-with(root.text.to-lowercase());
                     height: self.visible ? 32px : 0px;
                     enabled: root.enabled;
+                    checkable: true;
+                    checked: root.current-suggestion == index;
+                    changed checked => {
+                        if self.checked {
+                            if self.y < -suggestion-view.content-y { suggestion-view.content-y = -self.y; }
+                            else if self.y + self.height > -suggestion-view.content-y + suggestion-view.height {
+                                suggestion-view.content-y = Math.min(0px, suggestion-view.height - self.y - self.height);
+                            }
+                        }
+                    }
                     clicked => { root.choose(suggestion); }
                 }
             }

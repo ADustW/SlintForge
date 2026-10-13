@@ -1,11 +1,21 @@
-import { Button, Palette } from "std-widgets.slint";
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgePickerField, ForgePickerAction } from "picker-base.slint";
 
 export component ForgeShortcutPicker inherits Rectangle {
+    in property<string> language: "zh";
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> enabled: true;
     in-out property<string> shortcut;
     in-out property<bool> recording: false;
-    in property<bool> enabled: true;
-    callback shortcut-changed(string);
+    out property<bool> is-open: popup.is-open;
+    out property<string> draft-shortcut: root.draft;
     private property<string> previous;
+    private property<string> draft;
+    private property<int> focus-token: 0;
+    callback shortcut-changed(string);
+    callback accepted(string);
+    callback canceled();
     function key-name(key: string) -> string {
         return key == Key.Return ? "Enter" : key == " " ? "Space" : key == Key.Tab ? "Tab"
             : key == Key.LeftArrow ? "Left" : key == Key.RightArrow ? "Right"
@@ -18,24 +28,56 @@ export component ForgeShortcutPicker inherits Rectangle {
             : key == Key.F10 ? "F10" : key == Key.F11 ? "F11" : key == Key.F12 ? "F12" : key.to-uppercase();
     }
     public function start-recording() {
-        if root.enabled { root.previous = root.shortcut; root.recording = true; focus.focus(); }
+        if root.enabled { root.previous = root.shortcut; root.draft = root.shortcut; root.recording = true; popup.show(); }
     }
-    public function clear() { if root.enabled { root.shortcut = ""; root.recording = false; root.shortcut-changed(""); } }
-    min-width: 240px; preferred-height: 36px; forward-focus: focus;
-    HorizontalLayout {
-        spacing: 8px;
-        Button { text: root.recording ? @tr("请按快捷键…") : root.shortcut == "" ? @tr("录制快捷键") : root.shortcut; enabled: root.enabled; clicked => { root.start-recording(); } }
-        Button { text: @tr("清除"); enabled: root.enabled; clicked => { root.clear(); } }
+    public function open() { root.start-recording(); }
+    public function close() { root.recording = false; popup.close(); }
+    public function reset() { root.draft = root.previous; root.focus-token += 1; }
+    public function confirm() {
+        if root.draft != "" && root.enabled { root.shortcut = root.draft; root.close(); root.shortcut-changed(root.shortcut); root.accepted(root.shortcut); field-focus.focus(); }
     }
-    focus := FocusScope {
-        enabled: root.enabled;
-        key-pressed(event) => {
-            if !root.recording { return reject; }
-            if event.text == Key.Escape { root.shortcut = root.previous; root.recording = false; return accept; }
-            if event.text == Key.Control || event.text == Key.Shift || event.text == Key.Alt || event.text == Key.Meta { return accept; }
-            root.shortcut = (event.modifiers.control ? "Ctrl+" : "") + (event.modifiers.alt ? "Alt+" : "") + (event.modifiers.shift ? "Shift+" : "") + (event.modifiers.meta ? "Meta+" : "") + root.key-name(event.text);
-            root.recording = false; root.shortcut-changed(root.shortcut); return accept;
+    public function cancel() { root.close(); root.canceled(); field-focus.focus(); }
+    public function clear() { if root.enabled { root.shortcut = ""; root.close(); root.shortcut-changed(""); } }
+    preferred-width: 150px * ForgeTypography.scale;
+    preferred-height: 32px * ForgeTypography.scale; horizontal-stretch: 0; vertical-stretch: 0; forward-focus: field-focus;
+    width: root.preferred-width; height: root.preferred-height;
+    ForgePickerField { width: root.width; height: root.height; fields: [root.shortcut == "" ? (root.language == "en" ? "Set shortcut" : "设置快捷键") : root.shortcut]; dark: root.dark; enabled: root.enabled; focused: field-focus.has-focus; clicked(index) => { root.start-recording(); } }
+    field-focus := FocusScope { enabled: root.enabled; key-pressed(event) => { if event.text == " " || event.text == Key.Return { root.start-recording(); return accept; } return reject; } }
+    popup := PopupWindow {
+        y: root.height + 4px; width: 400px * ForgeTypography.scale; height: 240px * ForgeTypography.scale;
+        close-policy: no-auto-close; forward-focus: recorder;
+        property<int> focus-token: root.focus-token;
+        changed focus-token => { recorder.focus(); }
+        Rectangle { background: root.dark ? #242424 : #fff; border-radius: 8px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        VerticalLayout {
+            padding: 20px * ForgeTypography.scale; spacing: 14px * ForgeTypography.scale;
+            Text { text: root.language == "en" ? "Activate the Shortcut" : "设置快捷键"; color: root.dark ? #fff : #202020; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            Text { text: root.language == "en" ? "Press the key combination to change the shortcut" : "按下组合键以更改快捷键"; color: root.dark ? #ddd : #555; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+            Rectangle {
+                vertical-stretch: 1;
+                Rectangle {
+                    x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2;
+                    width: key-label.preferred-width + 24px; height: 36px * ForgeTypography.scale;
+                    border-radius: 4px; background: Palette.accent-background;
+                    key-label := Text { text: root.draft == "" ? "…" : root.draft; color: Palette.accent-foreground; horizontal-alignment: center; vertical-alignment: center; font-size: 14px * ForgeTypography.scale; }
+                }
+                TouchArea { clicked => { recorder.focus(); } }
+            }
+            HorizontalLayout {
+                spacing: 6px;
+                ForgePickerAction { dark: root.dark; text: root.language == "en" ? "Cancel" : "取消"; clicked => { root.cancel(); } }
+                ForgePickerAction { dark: root.dark; text: root.language == "en" ? "Reset" : "重置"; clicked => { root.reset(); } }
+                ForgePickerAction { dark: root.dark; primary: true; enabled: root.draft != ""; text: root.language == "en" ? "Save" : "保存"; clicked => { root.confirm(); } }
+            }
+        }
+        recorder := FocusScope {
+            key-pressed(event) => {
+                if event.text == Key.Escape { root.cancel(); return accept; }
+                if event.text == Key.Control || event.text == Key.Shift || event.text == Key.Alt || event.text == Key.Meta { return accept; }
+                root.draft = (event.modifiers.control ? "Ctrl+" : "") + (event.modifiers.alt ? "Alt+" : "") + (event.modifiers.shift ? "Shift+" : "") + (event.modifiers.meta ? "Meta+" : "") + root.key-name(event.text);
+                return accept;
+            }
         }
     }
-    changed enabled => { if !root.enabled { root.recording = false; } }
+    changed enabled => { if !root.enabled { root.close(); } }
 }

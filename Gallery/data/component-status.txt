@@ -17,9 +17,9 @@ inputs-copyable-text|native|TextEdit.read-only / select-all / copy
 inputs-checkbox|native|CheckBox
 inputs-slider|native|Slider
 inputs-toggle-switch|native|Switch
-form-time-picker|native|TimePickerPopup
-form-date-picker|native|DatePickerPopup
-form-calendar-picker|native|DatePickerPopup
+form-time-picker|custom|ForgeTimePicker
+form-date-picker|custom|ForgeDatePicker
+form-calendar-picker|custom|ForgeCalendarPicker
 form-color-picker|custom|ForgeColorPicker
 form-shortcut-picker|custom|ForgeShortcutPicker
 form-textbox|native|LineEdit
@@ -84,6 +84,11 @@ chart-polar|custom|ForgePolarAreaChart
 chart-bubble|custom|ForgeBubbleChart
 chart-scatter|custom|ForgeScatterChart
 chart-radar|custom|ForgeRadarChart
+flow-basic|custom|ForgeFlow
+flow-custom|custom|ForgeFlowCanvas
+flow-flowchart|custom|ForgeFlow
+flow-topology|custom|ForgeFlow
+flow-mindmap|custom|ForgeFlow
 theme-acrylic|custom|ForgeAcrylic
 theme-liquid-glass|custom|ForgeLiquidGlass
 theme-colors|native|Palette

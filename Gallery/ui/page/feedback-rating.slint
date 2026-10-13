@@ -14,6 +14,8 @@ export component GalleryFeedbackRatingPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "feedback-rating";
+        active: root.visible;
         title: "RatingControl";
         subtitle: @tr("点击星级评分，使用键盘继续调整。");
         example-title: @tr("用法与状态");

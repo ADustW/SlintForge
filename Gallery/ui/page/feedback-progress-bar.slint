@@ -14,6 +14,8 @@ export component GalleryFeedbackProgressBarPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "feedback-progress-bar";
+        active: root.visible;
         title: "ProgressBar";
         subtitle: @tr("确定进度与持续加载两种状态。");
         example-title: @tr("用法与状态");

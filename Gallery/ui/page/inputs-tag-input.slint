@@ -14,6 +14,8 @@ export component GalleryInputsTagInputPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "inputs-tag-input";
+        active: root.visible;
         title: "TagInputBox";
         subtitle: @tr("输入标签并按回车添加，点击叉号移除。");
         example-title: @tr("用法与状态");

@@ -4,6 +4,9 @@
 #include <limits>
 #include <sstream>
 #include <vector>
+#ifndef _WIN32
+#include "ForgePngPortable.hpp"
+#endif
 #ifdef _WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -97,6 +100,6 @@ std::string forge_save_capture_png(const slint::SharedPixelBuffer<slint::Rgba8Pi
     if (SUCCEEDED(status)) status = stream->Commit(STGC_DEFAULT);
     return FAILED(status) ? forge_capture_wic_error(status) : std::string{};
 #else
-    return "当前平台尚未接入 PNG 编码器";
+    return forge_png_write_rgba(reinterpret_cast<const uint8_t*>(pixels.cbegin()),pixels.width(),pixels.height(),path);
 #endif
 }

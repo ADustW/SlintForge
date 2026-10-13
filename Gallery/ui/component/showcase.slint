@@ -1,0 +1,68 @@
+import { Button, CheckBox, Slider, Palette, TabWidget, LineEdit } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GalleryShowcaseControl } from "showcase-controls.slint";
+
+// 验收选择与用户操作分开；正常浏览不依赖验收入口。
+export global GalleryShowcaseState {
+    in-out property<string> route;
+    in-out property<int> tab: -1;
+}
+
+export component GalleryEffectCard inherits Rectangle {
+    in property<string> title;
+    in property<string> description;
+    out property<length> body-y: description-label.y + description-label.height + 12px;
+    out property<length> body-width: Math.max(0px, root.width - 32px);
+    out property<length> body-height: Math.max(0px, root.height - root.body-y - 16px);
+    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+    background: Palette.alternate-background;
+    title-label := Text { x: 16px; y: 16px; width: root.body-width; height: self.preferred-height; text: root.title; color: Palette.foreground; font-weight: 600; wrap: word-wrap; }
+    description-label := Text { x: 16px; y: title-label.y + title-label.height + 12px; width: root.body-width; height: self.preferred-height; text: root.description; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; wrap: word-wrap; }
+    @children
+}
+
+export component GalleryShowcase inherits Rectangle {
+    in property<string> route;
+    in property<bool> animation-visible: true;
+    property<int> columns: root.width >= 960px ? 3 : root.width >= 640px ? 2 : 1;
+    property<length> card-height: (root.route == "form-auto-suggest" ? 400px : root.route == "form-color-picker" ? 360px : root.route == "feedback-result" ? 340px
+        : root.route == "form-multiline-textbox" || root.route == "form-scrollable-textbox" || root.route == "inputs-copyable-text" || root.route == "data-selection" || root.route == "data-qrcode" ? 310px
+        : root.route == "feedback-skeleton" || root.route == "data-timeline" ? 290px
+        : root.route == "form-password-box" || root.route == "inputs-tag-input" || root.route == "feedback-progress-ring" ? 240px : 200px) * ForgeTypography.scale;
+    preferred-height: tabs.current-index == 0 ? ceil(3 / root.columns) * (root.card-height + 16px) + 70px : root.card-height + 240px * ForgeTypography.scale;
+    height: root.preferred-height;
+    vertical-stretch: 0;
+    in-out property<int> user-tab: 0;
+    out property<int> current-tab: tabs.current-index;
+    changed current-tab => { if GalleryShowcaseState.route != root.route || GalleryShowcaseState.tab < 0 { root.user-tab = root.current-tab; } }
+    tabs := TabWidget {
+        width: root.width; height: root.height;
+        current-index: GalleryShowcaseState.route == root.route && GalleryShowcaseState.tab >= 0 ? GalleryShowcaseState.tab : root.user-tab;
+        Tab {
+            title: @tr("多种效果");
+            for index in 3 : effect-card := GalleryEffectCard {
+                x: mod(index, root.columns) * (parent.width / root.columns);
+                y: floor(index / root.columns) * (root.card-height + 16px) + 12px;
+                width: parent.width / root.columns - 16px; height: root.card-height;
+                title: root.route == "feedback-result" ? (index == 0 ? @tr("成功") : index == 1 ? @tr("警告") : @tr("错误"))
+                    : root.route == "feedback-info-badge" ? (index == 0 ? @tr("数字徽标") : index == 1 ? @tr("超出上限") : @tr("圆点提示"))
+                    : root.route == "form-auto-suggest" ? (index == 0 ? @tr("关键词匹配") : index == 1 ? @tr("空结果") : @tr("禁用输入"))
+                    : index == 0 ? @tr("默认状态") : index == 1 ? @tr("内容与选中状态") : @tr("禁用与边界状态");
+                description: index == 0 ? @tr("直接操作，观察组件反馈。") : index == 1 ? @tr("对照已填内容或另一种样式。") : @tr("查看限制、只读或异常情况。");
+                GalleryShowcaseControl { x: 16px; y: effect-card.body-y; width: effect-card.body-width; height: effect-card.body-height; route: root.route; variant: index; interactive: index != 2; animation-visible: root.animation-visible && tabs.current-index == 0; }
+            }
+        }
+        Tab {
+            title: @tr("业务组合");
+            VerticalLayout {
+                padding: 20px; spacing: 16px; alignment: start;
+                Text { text: root.route.starts-with("feedback-") ? @tr("任务状态面板") : root.route.starts-with("data-") ? @tr("项目数据看板") : @tr("采集项目配置"); color: Palette.foreground; font-weight: 600; }
+                LineEdit { placeholder-text: @tr("工程名称"); text: "SlintForge Demo"; }
+                CheckBox { text: @tr("允许修改配置"); checked <=> business-control.editable; }
+                business-control := GalleryShowcaseControl { route: root.route; height: root.card-height - 80px; business: true; animation-visible: root.animation-visible && tabs.current-index == 1; in-out property<bool> editable: true; interactive: self.editable; }
+                Text { text: business-control.summary; color: Palette.foreground; wrap: word-wrap; }
+                Button { text: @tr("确认配置"); clicked => { business-control.acted(); } }
+            }
+        }
+    }
+}

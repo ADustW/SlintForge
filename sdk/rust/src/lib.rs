@@ -1,23 +1,28 @@
 //! SlintForge 的 Rust 宿主模型。视觉组件由 ui/slintforge.slint 统一定义。
 
 mod icons;
+pub mod runtime;
+pub mod flow;
+mod flow_bindings;
+mod wire;
 pub use icons::{IconCatalog, IconGlyph};
 mod window_corners;
 pub use window_corners::apply_window_corners;
 mod staggered_layout;
 pub use staggered_layout::{StaggeredInput, StaggeredLayout, StaggeredPlacement};
 mod capture;
+mod color;
 mod widgets;
+pub use color::{color_from_hex, color_to_hex, screen_color, screen_color_input};
 pub mod charts;
+pub mod grids;
 pub mod plot;
 mod plot_bindings;
-pub mod grids;
-pub use widgets::{highlight_syntax, process_backdrop, qr_code_pixels, SyntaxLine};
 pub use capture::{
     capture_region, capture_window, crop_capture, save_capture_png, CaptureError, CaptureRect,
 };
+pub use widgets::{highlight_syntax, process_backdrop, qr_code_pixels, SyntaxLine};
 
-use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -81,82 +86,105 @@ impl RouteState {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Router {
-    registered: HashSet<String>,
+    handle: u64,
     current: RouteState,
-    history: Vec<RouteState>,
+    history_len: usize,
 }
-
 impl Router {
     pub fn new(ids: impl IntoIterator<Item = impl Into<String>>, initial: &str) -> Result<Self> {
-        let mut registered = HashSet::new();
-        for id in ids {
-            let id = id.into();
-            if id.is_empty() {
-                return Err(Error::EmptyId);
-            }
-            if !registered.insert(id.clone()) {
-                return Err(Error::DuplicateId(id));
-            }
-        }
-        if initial.is_empty() {
-            return Err(Error::EmptyId);
-        }
-        if !registered.contains(initial) {
-            return Err(Error::UnknownRoute(initial.into()));
-        }
+        use slintforge_runtime_api::Wire;
+        let ids = ids.into_iter().map(Into::into).collect::<Vec<String>>();
+        let initial = initial.to_owned();
+        let mut arena = slintforge_runtime_api::Arena::default();
+        let args = slintforge_runtime_api::models::ArgsRouterNew {
+            ids: ids.view(&mut arena),
+            initial: initial.view(&mut arena),
+        };
+        let state = runtime::try_value::<RouterSnapshot, _>(
+            slintforge_runtime_api::models::OP_ROUTERNEW,
+            &args,
+        )
+        .map_err(route_runtime_error)?;
         Ok(Self {
-            registered,
-            current: RouteState::new(initial, vec![]),
-            history: vec![],
+            handle: state.handle,
+            current: state.current,
+            history_len: state.history_len,
         })
     }
-
-    fn ensure_route(&self, id: &str) -> Result<()> {
-        if id.is_empty() {
-            return Err(Error::EmptyId);
-        }
-        if !self.registered.contains(id) {
-            return Err(Error::UnknownRoute(id.into()));
-        }
-        Ok(())
+    fn update(&mut self, state: RouterSnapshot) -> bool {
+        self.current = state.current;
+        self.history_len = state.history_len;
+        state.changed
     }
-
     pub fn go(&mut self, id: &str, params: Vec<RouteParam>) -> Result<bool> {
-        self.ensure_route(id)?;
-        let next = RouteState::new(id, params);
-        if next == self.current {
-            return Ok(false);
-        }
-        self.history
-            .push(std::mem::replace(&mut self.current, next));
-        Ok(true)
+        self.navigate(id, params, false)
     }
-
     pub fn replace(&mut self, id: &str, params: Vec<RouteParam>) -> Result<bool> {
-        self.ensure_route(id)?;
-        let next = RouteState::new(id, params);
-        if next == self.current {
-            return Ok(false);
-        }
-        self.current = next;
-        Ok(true)
+        self.navigate(id, params, true)
     }
-
+    fn navigate(&mut self, id: &str, params: Vec<RouteParam>, replace: bool) -> Result<bool> {
+        use slintforge_runtime_api::{models::*, Wire};
+        let id = id.to_owned();
+        let mut arena = slintforge_runtime_api::Arena::default();
+        let args = ArgsRouterGo {
+            handle: self.handle,
+            id: id.view(&mut arena),
+            params: params.view(&mut arena),
+        };
+        let state = runtime::try_value::<RouterSnapshot, _>(
+            if replace {
+                OP_ROUTERREPLACE
+            } else {
+                OP_ROUTERGO
+            },
+            &args,
+        )
+        .map_err(route_runtime_error)?;
+        Ok(self.update(state))
+    }
     pub fn back(&mut self) -> Result<&RouteState> {
-        self.current = self.history.pop().ok_or(Error::NoHistory)?;
+        use slintforge_runtime_api::models::*;
+        let state = runtime::try_value::<RouterSnapshot, _>(
+            OP_ROUTERBACK,
+            &ArgsRouterBack {
+                handle: self.handle,
+            },
+        )
+        .map_err(route_runtime_error)?;
+        self.update(state);
         Ok(&self.current)
     }
-
     pub fn current(&self) -> &RouteState {
         &self.current
     }
     pub fn can_go_back(&self) -> bool {
-        !self.history.is_empty()
+        self.history_len != 0
     }
     pub fn history_len(&self) -> usize {
-        self.history.len()
+        self.history_len
+    }
+}
+impl Clone for Router {
+    fn clone(&self) -> Self {
+        use slintforge_runtime_api::models::*;
+        let state = runtime::value::<RouterSnapshot, _>(
+            OP_ROUTERCLONE,
+            &ArgsRouterClone {
+                handle: self.handle,
+            },
+        );
+        Self {
+            handle: state.handle,
+            current: state.current,
+            history_len: state.history_len,
+        }
+    }
+}
+impl Drop for Router {
+    fn drop(&mut self) {
+        runtime::release_object(slintforge_runtime_api::models::OP_ROUTERFREE, self.handle);
     }
 }
 
@@ -205,133 +233,180 @@ pub struct VisibleNavItem {
     pub has_children: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct NavTree {
-    items: Vec<NavItem>,
-    by_id: HashMap<String, usize>,
-    children: HashMap<String, Vec<usize>>,
-    roots: Vec<usize>,
-    expanded: HashSet<String>,
+    handle: u64,
 }
-
 impl NavTree {
     pub fn new(items: Vec<NavItem>) -> Result<Self> {
-        let mut by_id = HashMap::new();
-        for (index, item) in items.iter().enumerate() {
-            if item.id.is_empty() {
-                return Err(Error::EmptyId);
-            }
-            if by_id.insert(item.id.clone(), index).is_some() {
-                return Err(Error::DuplicateId(item.id.clone()));
-            }
-        }
-        let mut children: HashMap<String, Vec<usize>> = HashMap::new();
-        let mut roots = vec![];
-        let mut parents = vec![None; items.len()];
-        for (index, item) in items.iter().enumerate() {
-            if let Some(parent) = item
-                .parent_id
-                .as_deref()
-                .filter(|parent| !parent.is_empty())
-            {
-                let parent_index = *by_id
-                    .get(parent)
-                    .ok_or_else(|| Error::UnknownParent(parent.into()))?;
-                if items[parent_index].kind != NavItemKind::Group {
-                    return Err(Error::InvalidParent(parent.into()));
-                }
-                parents[index] = Some(parent_index);
-                children.entry(parent.into()).or_default().push(index);
-            } else {
-                roots.push(index);
-            }
-        }
-        // 三色标记使每个父链节点只检查一次，深层树的校验保持 O(n)。
-        let mut colors = vec![0u8; items.len()];
-        let mut path = Vec::new();
-        for index in 0..items.len() {
-            let mut cursor = Some(index);
-            while let Some(current) = cursor {
-                if colors[current] == 2 { break; }
-                if colors[current] == 1 { return Err(Error::Cycle(items[current].id.clone())); }
-                colors[current] = 1;
-                path.push(current);
-                cursor = parents[current];
-            }
-            for current in path.drain(..) { colors[current] = 2; }
-        }
-        Ok(Self {
-            items,
-            by_id,
-            children,
-            roots,
-            expanded: HashSet::new(),
-        })
+        use slintforge_runtime_api::{models::*, Wire};
+        let mut arena = slintforge_runtime_api::Arena::default();
+        let args = ArgsNavNew {
+            items: items.view(&mut arena),
+        };
+        runtime::try_value::<u64, _>(OP_NAVNEW, &args)
+            .map(|handle| Self { handle })
+            .map_err(route_runtime_error)
     }
-
     pub fn toggle(&mut self, id: &str) -> Result<bool> {
-        if id.is_empty() {
-            return Err(Error::EmptyId);
-        }
-        let index = *self
-            .by_id
-            .get(id)
-            .ok_or_else(|| Error::UnknownRoute(id.into()))?;
-        if self.items[index].kind != NavItemKind::Group {
-            return Err(Error::NotGroup(id.into()));
-        }
-        if self.expanded.remove(id) {
-            Ok(false)
-        } else {
-            self.expanded.insert(id.into());
-            Ok(true)
-        }
+        use slintforge_runtime_api::{models::*, Wire};
+        let id = id.to_owned();
+        let mut arena = slintforge_runtime_api::Arena::default();
+        runtime::try_value::<bool, _>(
+            OP_NAVTOGGLE,
+            &ArgsNavToggle {
+                handle: self.handle,
+                id: id.view(&mut arena),
+            },
+        )
+        .map_err(route_runtime_error)
     }
-
     pub fn set_expanded(&mut self, id: &str, expanded: bool) -> Result<()> {
-        if id.is_empty() {
-            return Err(Error::EmptyId);
-        }
-        let index = *self
-            .by_id
-            .get(id)
-            .ok_or_else(|| Error::UnknownRoute(id.into()))?;
-        if self.items[index].kind != NavItemKind::Group {
-            return Err(Error::NotGroup(id.into()));
-        }
-        if expanded {
-            self.expanded.insert(id.into());
-        } else {
-            self.expanded.remove(id);
-        }
-        Ok(())
+        use slintforge_runtime_api::{models::*, Wire};
+        let id = id.to_owned();
+        let mut arena = slintforge_runtime_api::Arena::default();
+        runtime::try_value::<u8, _>(
+            OP_NAVEXPAND,
+            &ArgsNavExpand {
+                handle: self.handle,
+                id: id.view(&mut arena),
+                expanded: u8::from(expanded),
+            },
+        )
+        .map(|_| ())
+        .map_err(route_runtime_error)
     }
-
     pub fn visible_items(&self) -> Vec<VisibleNavItem> {
-        let mut out = vec![];
-        // 显式栈保留先序顺序，展开层级不再占用线程调用栈。
-        let mut stack: Vec<_> = self.roots.iter().rev().map(|&index| (index, 0)).collect();
-        while let Some((index, depth)) = stack.pop() {
-            let item = &self.items[index];
-            let expanded = self.expanded.contains(&item.id);
-            let children = self.children.get(&item.id);
-            out.push(VisibleNavItem {
-                item: item.clone(), depth, expanded,
-                has_children: children.is_some_and(|c| !c.is_empty()),
-            });
-            if expanded {
-                if let Some(children) = children {
-                    stack.extend(children.iter().rev().map(|&child| (child, depth + 1)));
-                }
-            }
+        use slintforge_runtime_api::models::*;
+        runtime::value(
+            OP_NAVVISIBLE,
+            &ArgsNavVisible {
+                handle: self.handle,
+            },
+        )
+    }
+}
+impl Clone for NavTree {
+    fn clone(&self) -> Self {
+        use slintforge_runtime_api::models::*;
+        Self {
+            handle: runtime::value(
+                OP_NAVCLONE,
+                &ArgsNavClone {
+                    handle: self.handle,
+                },
+            ),
         }
-        out
+    }
+}
+impl Drop for NavTree {
+    fn drop(&mut self) {
+        runtime::release_object(slintforge_runtime_api::models::OP_NAVFREE, self.handle);
     }
 }
 
+fn route_runtime_error(error: runtime::RuntimeError) -> Error {
+    let (code, text) = error.operation_error();
+    match code {
+        1 => Error::EmptyId,
+        2 => Error::DuplicateId(text),
+        3 => Error::UnknownRoute(text),
+        4 => Error::UnknownParent(text),
+        5 => Error::Cycle(text),
+        6 => Error::InvalidParent(text),
+        7 => Error::NotGroup(text),
+        8 => Error::NoHistory,
+        _ => panic!("组件运行库调用失败: {error}"),
+    }
+}
+fn wire_color(color: slint::Color) -> u32 {
+    u32::from_be_bytes([color.alpha(), color.red(), color.green(), color.blue()])
+}
+fn wire_color_from(color: u32) -> slint::Color {
+    let [a, r, g, b] = color.to_be_bytes();
+    slint::Color::from_argb_u8(a, r, g, b)
+}
+fn wire_nav_kind(value: u32) -> NavItemKind {
+    match value {
+        0 => NavItemKind::Page,
+        1 => NavItemKind::Group,
+        2 => NavItemKind::Header,
+        3 => NavItemKind::Separator,
+        _ => panic!("导航类型 ABI 无效"),
+    }
+}
+fn pixels_view(
+    pixels: &slint::SharedPixelBuffer<slint::Rgba8Pixel>,
+) -> slintforge_runtime_api::Pixels {
+    slintforge_runtime_api::Pixels {
+        width: pixels.width(),
+        height: pixels.height(),
+        bytes: slintforge_runtime_api::Slice::new(
+            pixels.as_bytes().as_ptr(),
+            pixels.as_bytes().len(),
+        ),
+    }
+}
+fn pixels_from_view(
+    value: slintforge_runtime_api::Pixels,
+) -> slint::SharedPixelBuffer<slint::Rgba8Pixel> {
+    let count = (value.width as usize)
+        .checked_mul(value.height as usize)
+        .and_then(|n| n.checked_mul(4))
+        .expect("像素尺寸溢出");
+    assert_eq!(count, value.bytes.len, "像素返回长度错误");
+    let bytes = unsafe { value.bytes.read() };
+    let mut out = slint::SharedPixelBuffer::new(value.width, value.height);
+    for (p, b) in out.make_mut_slice().iter_mut().zip(bytes.chunks_exact(4)) {
+        *p = slint::Rgba8Pixel {
+            r: b[0],
+            g: b[1],
+            b: b[2],
+            a: b[3],
+        };
+    }
+    out
+}
+fn decode_image_pixels(
+    bytes: &[u8],
+) -> std::result::Result<slint::SharedPixelBuffer<slint::Rgba8Pixel>, String> {
+    use slintforge_runtime_api::{models::*, Pixels, Slice};
+    let args = ArgsDecodeImage {
+        bytes: Slice::new(bytes.as_ptr(), bytes.len()),
+    };
+    runtime::invoke::<Pixels, _, _>(OP_DECODEIMAGE, &args, pixels_from_view)
+        .map_err(|e| e.message())
+}
+fn save_image_pixels(
+    pixels: &slint::SharedPixelBuffer<slint::Rgba8Pixel>,
+    path: &std::path::Path,
+    format: i32,
+) -> std::result::Result<(), String> {
+    #[cfg(windows)]
+    let wide: Vec<u16> = {
+        use std::os::windows::ffi::OsStrExt;
+        path.as_os_str().encode_wide().collect()
+    };
+    #[cfg(not(windows))]
+    let wide: Vec<u16> = path.to_string_lossy().encode_utf16().collect();
+    use slintforge_runtime_api::{models::*, Slice};
+    let args = ArgsSaveImage {
+        pixels: pixels_view(pixels),
+        path: Slice::new(wide.as_ptr(), wide.len()),
+        format,
+    };
+    runtime::invoke::<u8, _, _>(OP_SAVEIMAGE, &args, |_| ()).map_err(|e| e.message())
+}
+#[derive(Clone, Debug)]
+pub(crate) struct RouterSnapshot {
+    pub handle: u64,
+    pub current: RouteState,
+    pub history_len: usize,
+    pub changed: bool,
+}
 /// build.rs 中传给 `CompilerConfiguration::with_library_paths` 的入口。
 pub fn ui_library_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../ui/slintforge.slint")
+    slintforge_build::ui_library_path()
 }
 
 #[cfg(test)]

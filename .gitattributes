@@ -1,0 +1,16 @@
+# 保留现有源码行尾；仅约束 Windows 批处理文件并标记二进制资源。
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 明确标记二进制资源，禁止 Git 尝试转换行尾。
+*.ico binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.webp binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.zip binary
+*.7z binary

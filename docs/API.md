@@ -1,6 +1,8 @@
-# SlintForge v0.1 公共 API
+# SlintForge v0.1.2 公共 API
 
-新增组件、公共模型与双端接入示例见 [新增组件 API](COMPONENTS.md)。DataGrid、TreeDataGrid 见 [表格 API](GRIDS.md) 和 [接手审查](GRID_REVIEW.md)；专业二维图表 ForgePlot 见 [图表 API](PLOT.md) 和 [验证记录](PLOT_VERIFICATION.md)。原生替代及历史范围见 [组件审查](COMPONENT_AUDIT.md)。本文保留既有接口说明。
+新增组件、公共模型与双端接入示例见 [新增组件 API](COMPONENTS.md)。DataGrid、TreeDataGrid 见 [表格 API](GRIDS.md) 和 [接手审查](GRID_REVIEW.md)；专业二维图表 ForgePlot 见 [图表 API](PLOT.md) 和 [验证记录](PLOT_VERIFICATION.md)。服务绑定、模型刷新和线程要求统一见 [接入约定](INTEGRATION.md)。专题验证报告保留原实施阶段记录，当前版本以发布目录的验收报告为准。
+
+节点编辑、流程图、拓扑图和思维导图使用 [ForgeFlow API](FLOW.md)。公共组件为 `ForgeFlow`、`ForgeFlowCanvas`、`ForgeFlowNode`、`ForgeFlowPort`、`ForgeFlowControls`、`ForgeFlowMiniMap`；共享模型与服务从 `@slintforge` 导入，C++ 使用 `ForgeFlowDocument`，Rust 使用 `slintforge::flow::FlowDocument`。该组件要求 Skia 渲染器。
 
 ## `.slint` 契约
 
@@ -70,7 +72,7 @@
 
 圆角裁剪依赖所选 Slint 渲染器；[Slint 官方渲染器说明](https://docs.slint.dev/latest/docs/slint/guide/backends-and-renderers/backends_and_renderers/)指出软件渲染器对 `clip: true` 和圆角同时使用存在限制，验收时以 Windows x64 默认渲染器为准。
 
-`ForgeWindow` 使用 Slint 的无边框窗口和原生窗口拖动能力，内容插槽位于 46px 标题栏下方。标题栏左侧的图标与文字垂直居中；非空 `version-text` 紧跟标题并以括号显示，例如 `SlintForge Gallery (v0.1.0)`。菜单、主题、图钉、设置及窗口控制位于右侧，没有返回按钮。`navigation-glyph` 决定菜单按钮的字体图标；Gallery 根据左、右、顶部导航位置和隐藏状态选择对应的 `ForgeIcons.panel-*` 字形，点击后隐藏或恢复此前的面板状态。主题按钮使用 `ForgeIcons.sun` / `ForgeIcons.moon`：深色时显示太阳供切换到浅色，浅色时显示月亮供切换到深色。`show-brand-icon` 为 `true` 时绘制 `brand-icon`，否则使用 `brand-symbol` 方块。`Window.icon` 是任务栏／系统窗口图标，需由应用另行设置。双击可拖动区域切换最大化。`pinned` 双向绑定 Slint `always-on-top`；标题栏图钉切换此属性并发出 `pin-state-changed`。设置按钮不会自行注册页面，`theme-toggle-requested` 不会自行改变 `dark-mode` 或 `Palette.color-scheme`。边缘缩放由 `resize-border-width: 6px` 提供，Slint 1.18.0 的这一属性只在 winit 后端生效。
+`ForgeWindow` 使用 Slint 的无边框窗口和原生窗口拖动能力，内容插槽位于 46px 标题栏下方。标题栏左侧的图标与文字垂直居中；非空 `version-text` 紧跟标题并以括号显示，例如 `SlintForge Gallery (v0.1.2)`。菜单、主题、图钉、设置及窗口控制位于右侧，没有返回按钮。`navigation-glyph` 决定菜单按钮的字体图标；Gallery 根据左、右、顶部导航位置和隐藏状态选择对应的 `ForgeIcons.panel-*` 字形，点击后隐藏或恢复此前的面板状态。主题按钮使用 `ForgeIcons.sun` / `ForgeIcons.moon`：深色时显示太阳供切换到浅色，浅色时显示月亮供切换到深色。`show-brand-icon` 为 `true` 时绘制 `brand-icon`，否则使用 `brand-symbol` 方块。`Window.icon` 是任务栏／系统窗口图标，需由应用另行设置。双击可拖动区域切换最大化。`pinned` 双向绑定 Slint `always-on-top`；标题栏图钉切换此属性并发出 `pin-state-changed`。设置按钮不会自行注册页面，`theme-toggle-requested` 不会自行改变 `dark-mode` 或 `Palette.color-scheme`。边缘缩放由 `resize-border-width: 6px` 提供，Slint 1.18.0 的这一属性只在 winit 后端生效。
 
 `rounded-corners` 是窗口边角意图。Windows 宿主在窗口句柄创建后调用 `slintforge::apply_window_corners(window, rounded)` 或 `forge_apply_window_corners(window, rounded)`，设置变化时再次调用。两者分别位于 Rust SDK 和 C++ `ForgeWindowCorners.hpp`，返回值表示原生请求是否成功。实现使用 Windows 11 的 DWM 边角偏好；Windows 11 构建 22000 以下和其他平台不支持此原生效果，且 DWM 对无边框窗口保留最终决定权。最大化、贴靠、虚拟机等场景可能由系统保持直角。
 
@@ -82,7 +84,7 @@
 
 侧栏使用 `items` 中按展开状态扁平化的可见行。顶部模式使用 `tree-items` 中的完整导航树，按 `parent-id` 构建单行分类入口和多级下拉菜单；`child-count` 用于确定菜单高度，`active-top-id` 标记当前页所属的一级分类。未提供 `tree-items` 时顶部模式回退到 `items`。顶栏宽度不足时可从右侧“更多”菜单访问全部一级分类。Gallery 的导航条目使用同一份图标目录中的语义图标名称，Rust/C++ 分别解析为字形后交给 `ForgeIcon` 绘制。
 
-Gallery 为 `ForgeWindow`、`ForgeIconButton`、`ForgeCard`、`ForgeInfoBar`、`ForgeTypography`、`ForgeIcon` 及上表 13 个布局／容器组件提供交互预览与 API 提示。组件预览区域占页面主要空间，不显示源码示例；导航组件的公共接口已建立，但其 Gallery 详情页和其他未完成的分类页仍显示待实现说明。
+Gallery 的 全部注册页面均提供实际演示，包括导航、布局／容器、输入、基础图表、专业图表和表格。组件预览区域占页面主要空间，页面不显示源码面板；目录中的全部独立用法示例位于 `examples/component-usage`，由统一验证入口编译。
 
 ## 宿主路由
 
@@ -176,3 +178,8 @@ if (captured.ok()) {
 Rust 的 `capture_region(window, CaptureRect)` 与 C++ 的 `forge_capture_region(window, ForgeLogicalCaptureRect)` 返回 RGBA8 数据；`crop_capture` / `forge_crop_capture` 对已有像素缓冲裁剪。Rust 返回 `Result<SharedPixelBuffer<Rgba8Pixel>, CaptureError>`；C++ 返回 `ForgeCapturedImage { pixels, error }`。宿主绑定仅持有窗口弱引用，不形成引用环。
 
 PNG 编码保留 RGBA、物理尺寸及透明度。保存接口由调用方传入路径并创建父目录；不会吞掉文件或编码错误。Rust 使用 `png 0.18.1`，Windows C++ 使用 WIC，安装包传递 `windowscodecs`、`ole32` 链接依赖。Gallery 及最小消费者导出到运行目录的 `build/captures`，文件采用时间戳命名并显示完整路径。
+
+
+## 延时按钮与 Fluent 选择器
+
+分栏时间、日期、日历、颜色、快捷键与三种延时确认模式详见 [控件 API](PICKERS.md)。

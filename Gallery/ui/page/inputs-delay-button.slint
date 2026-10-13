@@ -1,31 +1,24 @@
-import { Palette, ProgressIndicator } from "std-widgets.slint";
-import { ForgeDelayButton, ForgeTypography } from "@slintforge";
+import { Palette } from "std-widgets.slint";
+import { ForgeDelayButton, ForgeDelayButtonMode, ForgeTypography } from "@slintforge";
 import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
 
-// 共享组件演示：DelayButton。
 export component GalleryInputsDelayButtonPage inherits Rectangle {
     in-out property<int> count: 0;
-    in-out property<bool> flag: true;
-    in-out property<float> number: 30;
-    in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
-    prepare-preview(open) => {  }
-    
+    prepare-preview(open) => { if open { hold.begin(); } else { hold.cancel(); release.cancel(); countdown.cancel(); } }
     sample := GallerySamplePage {
-        title: "DelayButton";
-        subtitle: @tr("按住按钮完成确认，提前松开会取消。");
-        example-title: @tr("用法与状态");
-        preview-height: 180px * ForgeTypography.scale;
+        showcase-route: "inputs-delay-button"; active: root.visible;
+        title: @tr("延时按钮"); subtitle: @tr("按钮内部显示填色进度，支持按住完成、松开确认与点击倒计时。");
+        example-title: @tr("确认模式"); preview-height: 310px * ForgeTypography.scale;
         VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            hold := ForgeDelayButton { text: @tr("按住 1.2 秒确认"); delay: 1200ms; clicked => { root.count += 1; } }
-ProgressIndicator { progress: hold.progress; height: 8px; }
-Text { text: @tr("确认次数：{}", root.count); color: Palette.foreground; }
+            x: 20px; y: 20px; width: max(0px, min(620px, sample.preview-width - 40px));
+            height: max(0px, sample.preview-area-height - 40px); spacing: 14px; alignment: start;
+            hold := ForgeDelayButton { mode: ForgeDelayButtonMode.hold; text: @tr("按住 1.2 秒直接确认"); delay: 1200ms; clicked => { root.count += 1; root.status = @tr("按住确认完成"); } }
+            release := ForgeDelayButton { mode: hold-release; pill: true; text: @tr("按住 1.2 秒，松开确认"); delay: 1200ms; clicked => { root.count += 1; root.status = @tr("松开确认完成"); } }
+            countdown := ForgeDelayButton { mode: click; primary: true; text: @tr("点击启动倒计时，再次点击取消"); delay: 1800ms; clicked => { root.count += 1; root.status = @tr("倒计时完成"); } }
+            ForgeDelayButton { text: @tr("禁用"); enabled: false; }
+            Text { text: @tr("确认次数：{}", root.count) + " · " + root.status; color: Palette.foreground; wrap: word-wrap; }
         }
     }
-    
 }

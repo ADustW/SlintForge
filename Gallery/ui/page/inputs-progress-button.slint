@@ -14,6 +14,8 @@ export component GalleryInputsProgressButtonPage inherits Rectangle {
     prepare-preview(open) => { root.busy = open; }
     in-out property<bool> busy: false;
     sample := GallerySamplePage {
+        showcase-route: "inputs-progress-button";
+        active: root.visible;
         title: "ProgressButton";
         subtitle: @tr("启动任务，按钮显示进度并避免重复提交。");
         example-title: @tr("用法与状态");

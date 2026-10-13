@@ -1,30 +1,21 @@
-import { Button, TimePickerPopup, Time, Palette } from "std-widgets.slint";
+import { ForgeTimePicker } from "@slintforge";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryPickerExample } from "../component/picker-example.slint";
 
-// Slint 原生示例：TimePicker。
 export component GalleryFormTimePickerPage inherits Rectangle {
-    in-out property<int> count: 0;
-    in-out property<bool> flag: true;
-    in-out property<float> number: 30;
-    in-out property<string> draft;
-    in-out property<string> status: @tr("就绪");
+    in property<string> language: "zh";
+    in-out property<bool> use-24-hour-format: false;
+    in-out property<bool> clock-mode: true;
     callback prepare-preview(bool);
-    prepare-preview(open) => { if open { picker.show(); } else { picker.close(); } }
-    in-out property<Time> selected-time: {hour: 9, minute: 30, second: 0};
-    sample := GallerySamplePage {
-        title: "TimePicker";
-        subtitle: @tr("选择时间，并确认或取消修改。");
-        example-title: @tr("用法与状态");
-        preview-height: 160px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Button { text: @tr("选择时间"); clicked => { picker.show(); } }
-Text { text: root.selected-time.hour + ":" + root.selected-time.minute + ":" + root.selected-time.second; color: Palette.foreground; }
-        }
+    callback configure-preview(bool, bool);
+    configure-preview(use-24-hour, clock) => { root.use-24-hour-format = use-24-hour; root.clock-mode = clock; }
+    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); third.close(); } }
+    GalleryPageFrame {
+        width: root.width; height: root.height;
+        title: @tr("时间选择器"); subtitle: @tr("分栏选择时间，支持区域语言、12/24 小时制和分钟步长。");
+        sample1 := GalleryPickerExample { label: @tr("12 小时制"); first := ForgeTimePicker { x: 0px; y: 0px; language: root.language; dark: sample1.dark; enabled: !sample1.disabled; use-24-hour-format: root.use-24-hour-format; clock-mode: root.clock-mode; } }
+        sample2 := GalleryPickerExample { label: @tr("英文区域"); second := ForgeTimePicker { x: 0px; y: 0px; language: "en"; dark: sample2.dark; enabled: !sample2.disabled; } }
+        sample3 := GalleryPickerExample { label: @tr("24 小时制，5 分钟步长"); third := ForgeTimePicker { x: 0px; y: 0px; language: root.language; dark: sample3.dark; enabled: !sample3.disabled; use-24-hour-format: true; minute-increment: 5; } }
     }
-    picker := TimePickerPopup { x: 30px; y: 100px; title: @tr("选择时间"); use-24-hour-format: true; time: root.selected-time; accepted(value) => { root.selected-time = value; picker.close(); } canceled => { picker.close(); } }
 }

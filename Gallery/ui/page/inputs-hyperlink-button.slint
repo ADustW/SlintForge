@@ -14,6 +14,8 @@ export component GalleryInputsHyperlinkButtonPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "inputs-hyperlink-button";
+        active: root.visible;
         title: "HyperlinkButton";
         subtitle: @tr("点击链接在浏览器打开页面。");
         example-title: @tr("用法与状态");

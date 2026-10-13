@@ -14,6 +14,8 @@ export component GalleryFeedbackResultPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "feedback-result";
+        active: root.visible;
         title: "Result";
         subtitle: @tr("展示操作结果，以及继续处理的入口。");
         example-title: @tr("用法与状态");

@@ -3,6 +3,8 @@ import { ForgeDataGrid, ForgeGridColumn, ForgeGridSelectionMode, ForgeTypography
 import { GalleryGridDemoModels } from "grid-demo-models.slint";
 import { GalleryPageFrame } from "page-frame.slint";
 import { GalleryDemoCard } from "demo-card.slint";
+import { GalleryGridShowcase } from "grid-showcase.slint";
+import { GalleryShowcaseState } from "showcase.slint";
 
 export component GalleryGridPage inherits Rectangle {
     in property<bool> tree: false;
@@ -35,6 +37,7 @@ export component GalleryGridPage inherits Rectangle {
         }
     }
     GalleryPageFrame {
+        viewport-y: GalleryShowcaseState.route == (root.tree ? "data-tree-grid" : "data-grid") && GalleryShowcaseState.tab >= 0 ? -comparison.y + 20px : 0px;
         title: root.tree ? "TreeDataGrid" : "DataGrid";
         subtitle: root.tree ? @tr("按层级查看数据，展开分组并对同级节点排序。") : @tr("查看和编辑表格数据，调整列宽并选择多行。");
         Text { text: @tr("交互示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
@@ -85,5 +88,7 @@ export component GalleryGridPage inherits Rectangle {
         }
         Text { text: @tr("Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑，Enter 确认，Esc 取消。");
             height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; wrap: word-wrap; }
+        Text { text: @tr("更多示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        comparison := GalleryGridShowcase { tree: root.tree; }
     }
 }

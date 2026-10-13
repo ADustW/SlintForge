@@ -1,7 +1,13 @@
 slint::include_modules!();
 use slint::ComponentHandle;
 
+#[cfg(test)]
+mod business_tests;
+mod business;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    if std::env::args().any(|arg| arg == "--suggestion-demo" || arg == "--suggestion-smoke") { return business::suggestion(std::env::args().any(|arg| arg == "--suggestion-smoke")); }
+    if std::env::args().any(|arg| arg == "--dialog-demo" || arg == "--dialog-smoke") { return business::dialog(std::env::args().any(|arg| arg == "--dialog-smoke")); }
     if std::env::args().any(|arg| arg == "--grids-smoke") { return grids_smoke(); }
     if std::env::args().any(|arg| arg == "--charts-smoke") { return charts_smoke(); }
     if std::env::args().any(|arg| arg == "--widgets-smoke") {

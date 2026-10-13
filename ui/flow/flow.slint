@@ -1,0 +1,17 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeFlowServices } from "../types/flow.slint";
+import { ForgeFlowCanvas } from "canvas.slint";
+import { ForgeFlowNode } from "node.slint";
+
+export component ForgeFlow inherits ForgeFlowCanvas {
+    show-edit-controls: true;
+    for n in root.state.nodes : ForgeFlowNode {
+        node: n; tree: root.state.mode == "mindmap"; read-only: root.read-only; snap: root.snap; pan-mode: root.pan-mode;
+        visible: root.node-visible(n);
+        action(a) => { root.act(a); }
+        Text {
+            text: n.kind == "text" ? ForgeFlowServices.field(n.data-json, "text") : (root.chinese ? "自定义类型：" : "Custom type: ") + n.kind;
+            color: Palette.foreground; wrap: word-wrap; font-size: 12px;
+        }
+    }
+}

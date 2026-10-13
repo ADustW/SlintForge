@@ -1,30 +1,25 @@
 import { Palette } from "std-widgets.slint";
-import { ForgeShortcutPicker, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { ForgeShortcutPicker } from "@slintforge";
+import { ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryPickerExample } from "../component/picker-example.slint";
 
-// 共享组件演示：ShortcutPicker。
 export component GalleryFormShortcutPickerPage inherits Rectangle {
-    in-out property<int> count: 0;
-    in-out property<bool> flag: true;
-    in-out property<float> number: 30;
-    in-out property<string> draft;
-    in-out property<string> status: @tr("就绪");
+    in property<string> language: "zh";
     callback prepare-preview(bool);
-    prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        title: "ShortcutPicker";
-        subtitle: @tr("点击录制快捷键，按 Escape 取消。");
-        example-title: @tr("用法与状态");
-        preview-height: 160px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeShortcutPicker { shortcut: "Ctrl+K"; shortcut-changed(value) => { root.status = value; } }
-Text { text: root.status; color: Palette.foreground; }
+    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); third.close(); fourth.close(); } }
+    GalleryPageFrame {
+        width: root.width; height: root.height;
+        title: @tr("快捷键选择器"); subtitle: @tr("按下组合键，使用保存、重置或取消提交快捷键。");
+        sample := GalleryPickerExample {
+            label: @tr("快捷键"); preview-height: 210px * ForgeTypography.scale;
+            VerticalLayout {
+                alignment: start; spacing: 14px * ForgeTypography.scale;
+                HorizontalLayout { alignment: start; spacing: 16px; Text { width: 150px * ForgeTypography.scale; text: @tr("截图"); color: sample.dark ? #fff : #202020; vertical-alignment: center; } first := ForgeShortcutPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; shortcut: "Alt+A"; } }
+                HorizontalLayout { alignment: start; spacing: 16px; Text { width: 150px * ForgeTypography.scale; text: @tr("发送消息"); color: sample.dark ? #fff : #202020; vertical-alignment: center; } second := ForgeShortcutPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; shortcut: "Enter"; } }
+                HorizontalLayout { alignment: start; spacing: 16px; Text { width: 150px * ForgeTypography.scale; text: @tr("打开 Gallery"); color: sample.dark ? #fff : #202020; vertical-alignment: center; } third := ForgeShortcutPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; shortcut: "Ctrl+Alt+W"; } }
+                HorizontalLayout { alignment: start; spacing: 16px; Text { width: 150px * ForgeTypography.scale; text: @tr("锁定 Gallery"); color: sample.dark ? #fff : #202020; vertical-alignment: center; } fourth := ForgeShortcutPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; shortcut: "Ctrl+L"; } }
+            }
         }
     }
-    
 }

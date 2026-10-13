@@ -1,24 +1,18 @@
 [package]
 name = "slintforge-plot-example"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 build = "build.rs"
 default-run = "slintforge-plot-example"
-
-[workspace]
 
 [dependencies]
 slint = "=1.18.0"
 slintforge = { path = "../../sdk/rust" }
-
-# 独立示例使用与 Gallery 相同的绘制依赖优化，避免 Debug 栅格化阻塞交互。
-
-[profile.dev.package."*"]
-opt-level = 3
 
 [dev-dependencies]
 i-slint-backend-testing = "=1.18.0"
 
 [build-dependencies]
 slint-build = "=1.18.0"
-slintforge = { path = "../../sdk/rust" }
+slintforge-build = { path = "../../sdk/rust-build" }

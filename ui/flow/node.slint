@@ -1,0 +1,81 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeFlowNodeData, ForgeFlowPortData, ForgeFlowAction } from "../types/flow.slint";
+
+export component ForgeFlowPort inherits Rectangle {
+    in property<ForgeFlowPortData> port;
+    in property<bool> connected: false;
+    in property<bool> read-only: false;
+    callback gesture(string, float, float);
+    width: 20px; height: 20px;
+    Rectangle {
+        x: 4px; y: 4px; width: 12px; height: 12px; border-radius: 6px;
+        background: touch.has-hover || root.connected ? Palette.accent-background : Palette.background;
+        border-width: 2px; border-color: Palette.accent-background;
+    }
+    touch := TouchArea {
+        enabled: !root.read-only;
+        mouse-cursor: crosshair;
+        pointer-event(e) => {
+            if e.button == PointerEventButton.left && e.kind == PointerEventKind.down { root.gesture("connection-begin", self.mouse-x / 1px, self.mouse-y / 1px); }
+            if e.button == PointerEventButton.left && e.kind == PointerEventKind.up { root.gesture("connection-end", self.mouse-x / 1px, self.mouse-y / 1px); }
+            if e.kind == PointerEventKind.cancel { root.gesture("cancel", 0, 0); }
+        }
+        moved => { if self.pressed { root.gesture("connection-move", self.mouse-x / 1px, self.mouse-y / 1px); } }
+    }
+}
+
+export component ForgeFlowNode inherits Rectangle {
+    in property<ForgeFlowNodeData> node;
+    in property<bool> read-only: false;
+    in property<bool> tree: false;
+    in property<bool> snap: false;
+    in property<bool> pan-mode: false;
+    private property<bool> pan-gesture: false;
+    private property<bool> gesture-active: false;
+    callback action(ForgeFlowAction);
+    x: root.node.x * 1px; y: root.node.y * 1px;
+    width: root.node.width * 1px; height: root.node.height * 1px;
+    background: Palette.background;
+    border-color: root.node.selected ? Palette.accent-background : Palette.border;
+    border-width: root.node.selected ? 2px : 1px; border-radius: 8px;
+    // 标题与正文使用独立的事件区域，正文控件不会触发拖动。
+    Rectangle {
+        x: 0px; y: 0px; width: parent.width; height: 36px;
+        background: root.node.selected ? Palette.accent-background.with-alpha(0.15) : Palette.alternate-background;
+        Text { x: 12px; width: parent.width - (root.tree ? 48px : 24px); height: parent.height;
+            text: root.node.title; color: Palette.foreground; font-size: 13px; font-weight: 600;
+            vertical-alignment: center; overflow: elide;
+        }
+        drag := TouchArea {
+            mouse-cursor: grab;
+            pointer-event(e) => {
+                if (e.button == PointerEventButton.left || e.button == PointerEventButton.middle) && e.kind == PointerEventKind.down {
+                    root.pan-gesture = root.pan-mode || e.button == PointerEventButton.middle;
+                    root.gesture-active = true;
+                    if root.pan-gesture || !root.read-only { root.action({ op: root.pan-gesture ? "pan-begin" : "drag-begin", id: root.node.id, x: root.node.x + self.mouse-x / 1px, y: root.node.y + self.mouse-y / 1px, additive: e.modifiers.control || e.modifiers.shift }); }
+                }
+                if (e.button == PointerEventButton.left || e.button == PointerEventButton.middle) && e.kind == PointerEventKind.up { root.gesture-active = false; if root.pan-gesture || !root.read-only { root.action({op: root.pan-gesture ? "pan-end" : "drag-end"}); } }
+                if e.kind == PointerEventKind.cancel { root.gesture-active = false; root.action({op: "cancel"}); }
+            }
+            moved => { if root.gesture-active && (root.pan-gesture || !root.read-only) { root.action({op: root.pan-gesture ? "pan-move" : "drag-move", x: root.node.x + self.mouse-x / 1px, y: root.node.y + self.mouse-y / 1px, flag: root.snap}); } }
+        }
+        if root.tree : Rectangle {
+            x: parent.width - 32px; y: 5px; width: 26px; height: 26px;
+            Text { text: root.node.collapsed ? "+" : "−"; color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; }
+            TouchArea { enabled: !root.read-only; clicked => { root.action({op: "collapse", id: root.node.id}); } }
+        }
+    }
+    Rectangle {
+        x: 12px; y: 46px; width: parent.width - 24px; height: parent.height - 56px;
+        clip: true;
+        @children
+    }
+    for p in root.node.ports : port-item := ForgeFlowPort {
+        port: p; read-only: root.read-only || root.tree;
+        x: (p.side == 0 ? 0px : p.side == 1 ? parent.width : parent.width * p.offset) - 10px;
+        y: (p.side == 2 ? 0px : p.side == 3 ? parent.height : parent.height * p.offset) - 10px;
+        gesture(op, px, py) => {
+            root.action({op: op, id: root.node.id, port: p.id, x: root.node.x + self.x / 1px + px, y: root.node.y + self.y / 1px + py, number: p.direction});
+        }
+    }
+}

@@ -1,6 +1,6 @@
 import { Palette } from "std-widgets.slint";
 import {
-    ForgeWindow, ForgeNavigationView, ForgeNavigationItem, ForgeNavPlacement,
+    ForgeFlowState, ForgeFlowAction, ForgeWindow, ForgeNavigationView, ForgeNavigationItem, ForgeNavPlacement,
     ForgePaneState, ForgeRouteParam, ForgeTypography, ForgeIconEntry, ForgeIcons, ForgeStaggeredItem,
     ForgeCaptureResult, ForgeCaptureRect, ForgePlotScene, ForgePlotPoint,
 } from "@slintforge";
@@ -27,6 +27,7 @@ import { GalleryIconLabelPage } from "../page/surfaces-icon-label.slint";
 import { GalleryExpanderPage } from "../page/surfaces-expander.slint";
 import { GalleryWatermarkPage } from "../page/surfaces-watermark.slint";
 import { GalleryMarqueePage } from "../page/surfaces-marquee.slint";
+import { GalleryFlowPages } from "../component/flow-pages.slint";
 import { GalleryChartPages } from "../component/chart-pages.slint";
 import { GalleryInputsPages } from "../component/inputs-pages.slint";
 import { GalleryDataPages } from "../component/data-pages.slint";
@@ -36,12 +37,25 @@ import { GalleryFeedbackPages } from "../component/feedback-pages.slint";
 import { GalleryPopupsPages } from "../component/popups-pages.slint";
 import { GalleryThemePages } from "../component/theme-pages.slint";
 import { GalleryOtherPages } from "../component/other-pages.slint";
+import { GalleryShowcaseState } from "../component/showcase.slint";
+import { GalleryLocale } from "../component/locale.slint";
 import { GalleryPendingItem, GalleryPendingPage } from "../page/pending.slint";
 
 export component GalleryWindow inherits ForgeWindow {
     callback append-plot-points(int, [ForgePlotPoint]) -> bool;
     append-plot-points(id, points) => {return chart-components.append-plot-points(id, points);}
+    callback qa-flow-state(string) -> ForgeFlowState;
+    qa-flow-state(route) => { return flow-components.state(route); }
+    callback qa-flow-edit(string, ForgeFlowAction);
+    qa-flow-edit(route, a) => { flow-components.edit(route, a); }
     callback qa-prepare-component(bool);
+    callback qa-showcase(string, int);
+    callback qa-time-picker(bool, bool);
+    qa-time-picker(use-24-hour, clock) => { form-components.configure-time-preview(use-24-hour, clock); }
+    callback qa-calendar-picker(bool);
+    qa-calendar-picker(with-time) => { form-components.configure-calendar-preview(with-time); }
+    out property<bool> qa-showcase-ready: chart-components.showcase-ready;
+    qa-showcase(route, tab) => { GalleryShowcaseState.route = route; GalleryShowcaseState.tab = tab; }
     out property<bool> qa-grid-editing: grid-components.qa-editing;
     out property<ForgePlotScene> qa-plot-scene: chart-components.plot-scene;
     qa-prepare-component(open) => { grid-components.prepare-preview(root.active-route-id, open); chart-components.prepare-preview(root.active-route-id, open); inputs-components.prepare-preview(root.active-route-id, open); data-components.prepare-preview(root.active-route-id, open); form-components.prepare-preview(root.active-route-id, open); navigation-components.prepare-preview(root.active-route-id, open); feedback-components.prepare-preview(root.active-route-id, open); popups-components.prepare-preview(root.active-route-id, open); theme-components.prepare-preview(root.active-route-id, open); other-components.prepare-preview(root.active-route-id, open); }
@@ -49,7 +63,7 @@ export component GalleryWindow inherits ForgeWindow {
     icon: @image-url("../assets/brand/slintforge-gallery.png");
     brand-icon: @image-url("../assets/brand/slintforge-gallery.png");
     show-brand-icon: true;
-    version-text: "v0.1.0";
+    version-text: "v0.1.2";
     preferred-width: 1380px;
     preferred-height: 860px;
     min-width: 960px;
@@ -104,7 +118,7 @@ export component GalleryWindow inherits ForgeWindow {
     property<ForgePaneState> last-visible-pane-state: ForgePaneState.expanded;
     in property<int> sample-counter: 0;
     in property<string> route-param-summary: @tr("无");
-    in property<string> language: "zh";
+    in-out property<string> language <=> GalleryLocale.language;
     in-out property font-family-name <=> ForgeTypography.family;
     in-out property font-scale <=> ForgeTypography.scale;
     in-out property window-pinned <=> root.pinned;
@@ -272,16 +286,17 @@ export component GalleryWindow inherits ForgeWindow {
             sample-counter: root.sample-counter;
             route-param-summary: root.route-param-summary;
         }
+        flow-components := GalleryFlowPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         chart-components := GalleryChartPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         grid-components := GalleryGridPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         inputs-components := GalleryInputsPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         data-components := GalleryDataPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
-        form-components := GalleryFormPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        form-components := GalleryFormPages { width: root.page-width; height: root.page-height; language: root.language; active-route-id: root.active-route-id; }
         navigation-components := GalleryNavigationPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         feedback-components := GalleryFeedbackPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         popups-components := GalleryPopupsPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         theme-components := GalleryThemePages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
-        other-components := GalleryOtherPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        other-components := GalleryOtherPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; version-text: root.version-text; }
         for pending in root.pending-items : GalleryPendingPage {
             width: root.page-width; height: root.page-height;
             visible: root.active-route-id == pending.id;

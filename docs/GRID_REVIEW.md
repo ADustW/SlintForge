@@ -1,5 +1,7 @@
 # DataGrid / TreeDataGrid 接手审查与优化
 
+> 阶段记录：本文保留该组件实施时的范围、测试数量和验证结果；v0.1.1 当前能力见接入与交付说明，本次验收以时间戳发布目录中的 ACCEPTANCE.md 和 verification 为准。
+
 日期：2026-10-03。工程：`D:\ai_workspace\SlintForge\SlintForge`。平台：Windows x64、Slint 1.18.0；C++ 使用 `D:\.clion-env\qt-6.8.3-msvc.bat` 加载的 CLion MSVC 环境。
 
 已等待开发任务“实现 Gallery 待补组件”（`01a0fd3a-9486-7cb2-813f-706ce3899134`）完成，再接手当前工程。开发方的固定源码、程序、608 帧截图及 [原验证记录](GRIDS_VERIFICATION.md) 保留。本次检查使用独立的 `build/plot-qa` 和 `build/plot-cpp`，记录当前新增专业图表后的 96 页工程。

@@ -1,0 +1,24 @@
+import { Palette, CheckBox } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+
+export component GalleryPickerExample inherits Rectangle {
+    in property<string> label;
+    in property<length> preview-height: 72px * ForgeTypography.scale;
+    in-out property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in-out property<bool> disabled: false;
+    preferred-height: root.preview-height + 48px * ForgeTypography.scale;
+    height: root.preferred-height; vertical-stretch: 0;
+    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+    background: root.dark ? #202020 : #fff;
+    Rectangle { x: 20px * ForgeTypography.scale; y: 20px * ForgeTypography.scale; width: max(0px, root.width - 40px * ForgeTypography.scale); height: root.preview-height - 24px * ForgeTypography.scale; @children }
+    Rectangle {
+        y: root.preview-height; height: 48px * ForgeTypography.scale;
+        border-radius: 6px; border-width: 1px; border-color: Palette.border; background: Palette.control-background;
+        HorizontalLayout {
+            padding-left: 20px * ForgeTypography.scale; padding-right: 20px * ForgeTypography.scale; spacing: 16px * ForgeTypography.scale; alignment: start;
+            Text { text: root.label; color: Palette.foreground; vertical-alignment: center; font-size: 13px * ForgeTypography.scale; }
+            CheckBox { text: @tr("深色"); checked <=> root.dark; }
+            CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+        }
+    }
+}

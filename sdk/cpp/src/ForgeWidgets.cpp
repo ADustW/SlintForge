@@ -5,6 +5,57 @@
 #include <cctype>
 #include <cmath>
 #include <sstream>
+#include <iomanip>
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
+
+std::string forge_color_to_hex(slint::Color color) {
+    std::ostringstream text;
+    text << '#' << std::uppercase << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(color.red())
+         << std::setw(2) << static_cast<int>(color.green()) << std::setw(2) << static_cast<int>(color.blue());
+    if (color.alpha() != 255) text << std::setw(2) << static_cast<int>(color.alpha());
+    return text.str();
+}
+
+std::optional<slint::Color> forge_color_from_hex(std::string_view text) {
+    if (!text.empty() && text.front() == '#') text.remove_prefix(1);
+    if (text.size() != 6 && text.size() != 8) return std::nullopt;
+    std::uint32_t packed = 0;
+    for (const unsigned char ch : text) {
+        const int digit = ch >= '0' && ch <= '9' ? ch - '0' : ch >= 'a' && ch <= 'f' ? ch - 'a' + 10 : ch >= 'A' && ch <= 'F' ? ch - 'A' + 10 : -1;
+        if (digit < 0) return std::nullopt;
+        packed = packed * 16 + static_cast<unsigned>(digit);
+    }
+    if (text.size() == 6) packed = (packed << 8) | 255;
+    return slint::Color::from_argb_uint8(packed & 255, (packed >> 24) & 255, (packed >> 16) & 255, (packed >> 8) & 255);
+}
+
+slint::Color forge_screen_color() {
+#ifdef _WIN32
+    POINT point{};
+    if (GetCursorPos(&point)) {
+        const HDC screen = GetDC(nullptr);
+        if (screen) {
+            const COLORREF pixel = GetPixel(screen, point.x, point.y); ReleaseDC(nullptr, screen);
+            if (pixel != CLR_INVALID) return slint::Color::from_rgb_uint8(GetRValue(pixel), GetGValue(pixel), GetBValue(pixel));
+        }
+    }
+#endif
+    return {};
+}
+
+int forge_screen_color_input() {
+#ifdef _WIN32
+    if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) return 2;
+    if (GetAsyncKeyState(VK_RETURN) & 0x8000) return 3;
+    if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) return 1;
+#endif
+    return 0;
+}
 
 ForgeQrImage forge_qr_code_image(std::string_view text) {
     if (text.empty() || text.find('\0') != std::string_view::npos) return {false, {}, 0, "二维码内容不能为空或包含空字符"};

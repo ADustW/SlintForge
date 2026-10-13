@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct IconGlyph {
     pub name: String,
@@ -21,7 +19,6 @@ impl IconGlyph {
 #[derive(Clone, Debug)]
 pub struct IconCatalog {
     items: Vec<IconGlyph>,
-    by_name: HashMap<String, usize>,
 }
 
 impl Default for IconCatalog {
@@ -32,49 +29,44 @@ impl Default for IconCatalog {
 
 impl IconCatalog {
     pub fn new() -> Self {
-        let mut items = Vec::new();
-        let mut by_name = HashMap::new();
-        for line in include_str!("../../../ui/icons/catalog.tsv").lines() {
-            let (name, hex) = line.split_once('\t').expect("固定图标目录格式有效");
-            let codepoint = u32::from_str_radix(hex, 16).expect("固定图标码位有效");
-            by_name.insert(name.to_owned(), items.len());
-            items.push(IconGlyph {
-                name: name.to_owned(),
-                codepoint,
-            });
-        }
-        Self { items, by_name }
+        let items = crate::runtime::value::<Vec<IconGlyph>, _>(
+            slintforge_runtime_api::models::OP_ICONSALL,
+            &slintforge_runtime_api::models::ArgsIconsAll { reserved: 0 },
+        );
+        Self { items }
     }
-
     pub fn len(&self) -> usize {
         self.items.len()
     }
-
     pub fn is_empty(&self) -> bool {
         self.items.is_empty()
     }
-
     pub fn find(&self, name: &str) -> Option<&IconGlyph> {
-        self.by_name.get(name).map(|index| &self.items[*index])
+        use slintforge_runtime_api::{models::*, Arena, Wire};
+        let name = name.to_owned();
+        let mut arena = Arena::default();
+        let index = crate::runtime::value::<Option<usize>, _>(
+            OP_ICONSFIND,
+            &ArgsIconsFind {
+                name: name.view(&mut arena),
+            },
+        );
+        index.and_then(|i| self.items.get(i))
     }
-
     pub fn search(&self, query: &str, offset: usize, limit: usize) -> (Vec<IconGlyph>, usize) {
-        let query = query.trim().to_ascii_lowercase();
-        let mut count = 0;
-        let mut page = Vec::with_capacity(limit.min(100));
-        for item in &self.items {
-            if !item.name.contains(&query) {
-                continue;
-            }
-            if count >= offset && page.len() < limit {
-                page.push(item.clone());
-            }
-            count += 1;
-        }
-        (page, count)
+        use slintforge_runtime_api::{models::*, Arena, Wire};
+        let query = query.to_owned();
+        let mut arena = Arena::default();
+        crate::runtime::value(
+            OP_ICONSSEARCH,
+            &ArgsIconsSearch {
+                query: query.view(&mut arena),
+                offset,
+                limit,
+            },
+        )
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;

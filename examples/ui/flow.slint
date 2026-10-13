@@ -1,0 +1,34 @@
+import { Button, Palette } from "std-widgets.slint";
+import { ForgeFlowShowcase } from "flow-showcase.slint";
+import { ForgeFlowAction, ForgeFlowState } from "@slintforge";
+export { ForgeFlowPortData, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport, ForgeFlowRect, ForgeFlowAction, ForgeFlowState, ForgeFlowServices } from "@slintforge";
+export { ForgeFlowTransformWindow } from "flow-transform.slint";
+export component ForgeFlowWindow inherits Window {
+    title: "ForgeFlow · 节点与连线"; preferred-width: 1100px; preferred-height: 760px; min-width: 520px; min-height: 420px;
+    in-out property<bool> chinese: true;
+    in-out property<bool> dark: false;
+    in-out property<int> variant: 1;
+    in-out property<string> blocked-target;
+    in-out property<bool> read-only <=> showcase.read-only;
+    out property<ForgeFlowState> state: showcase.state;
+    out property<int> business-count: showcase.business-count;
+    callback edit(ForgeFlowAction); edit(a) => { showcase.edit(a); }
+    callback fit(); fit => { showcase.fit(); }
+    callback zoom(float); zoom(z) => { showcase.zoom(z); }
+    callback set-view(float,float,float); set-view(x,y,z) => { showcase.set-view(x,y,z); }
+    callback document-json() -> string; document-json => { return showcase.document-json(); }
+    changed dark => { Palette.color-scheme = root.dark ? ColorScheme.dark : ColorScheme.light; }
+    Rectangle {
+        HorizontalLayout {
+            x: 0px; y: 0px; width: parent.width;
+            padding: 8px; spacing: 5px; height: 48px;
+            for label[i] in (root.chinese ? ["基础编辑", "自定义卡片", "流程图", "拓扑图", "思维导图"] : ["Editor", "Custom cards", "Flowchart", "Topology", "Mind map"]) : Button {
+                text: label; checkable: true; checked: root.variant == i; clicked => { root.variant = i; showcase.edit({op: "demo", number: i}); if i == 4 { showcase.fit(); } }
+            }
+            Rectangle { horizontal-stretch: 1; }
+            Button { text: root.chinese ? "EN" : "中文"; clicked => { root.chinese = !root.chinese; } }
+            Button { text: root.dark ? (root.chinese ? "浅" : "Light") : (root.chinese ? "深" : "Dark"); clicked => { root.dark = !root.dark; } }
+        }
+        showcase := ForgeFlowShowcase { y: 48px; width: parent.width; height: parent.height - 48px; variant: root.variant; chinese: root.chinese; blocked-target: root.blocked-target; }
+    }
+}

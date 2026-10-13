@@ -14,6 +14,8 @@ export component GalleryFormScrollableTextboxPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "form-scrollable-textbox";
+        active: root.visible;
         title: "ScrollableTextBox";
         subtitle: @tr("滚动查看长文本，内容仍可编辑。");
         example-title: @tr("用法与状态");

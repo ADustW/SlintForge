@@ -1,0 +1,39 @@
+import { TabWidget } from "std-widgets.slint";
+import { ForgeDataGrid, ForgeGridColumn, ForgeTypography } from "@slintforge";
+import { GalleryGridDemoModels } from "grid-demo-models.slint";
+import { GalleryEffectCard, GalleryShowcaseState } from "showcase.slint";
+
+export component GalleryGridShowcase inherits Rectangle {
+    in property<bool> tree;
+    property<string> route: root.tree ? "data-tree-grid" : "data-grid";
+    private property<int> qa-tab: GalleryShowcaseState.route == root.route ? GalleryShowcaseState.tab : -1;
+    // 原交互表格可能仍持有焦点；验收切换到对照区域时一并转移，避免自动滚动拉回编辑行。
+    changed qa-tab => { if root.qa-tab >= 0 { qa-focus.focus(); } }
+    qa-focus := FocusScope { width: 1px; height: 1px; enabled: root.qa-tab >= 0; }
+    property<int> columns: root.width >= 840px ? 2 : 1;
+    property<[ForgeGridColumn]> grid-columns: [{id:"name",title:@tr("任务"),width:200,frozen:true},{id:"count",title:@tr("数量"),width:80,numeric:true},{id:"owner",title:@tr("负责人"),width:100},{id:"status",title:@tr("状态"),width:100}];
+    preferred-height: (360px * ForgeTypography.scale + 16px) * (2 / root.columns) + 60px;
+    height: root.preferred-height; vertical-stretch: 0;
+    TabWidget {
+        width: root.width; height: root.height;
+        current-index: GalleryShowcaseState.route == root.route && GalleryShowcaseState.tab >= 0 ? GalleryShowcaseState.tab : 0;
+        Tab {
+            title: @tr("紧凑与只读");
+            for index in 2 : compact-card := GalleryEffectCard {
+                x: mod(index, root.columns) * (parent.width / root.columns); y: floor(index / root.columns) * (360px * ForgeTypography.scale + 16px) + 12px;
+                width: parent.width / root.columns - 12px; height: 360px * ForgeTypography.scale;
+                title: index == 0 ? @tr("紧凑只读视图") : @tr("禁用视图"); description: @tr("冻结任务列，横向滚动查看其他列。");
+                ForgeDataGrid { x: 16px; y: compact-card.body-y; width: compact-card.body-width; height: compact-card.body-height; tree: root.tree; columns: root.grid-columns; rows: root.tree ? GalleryGridDemoModels.tree-seed : GalleryGridDemoModels.flat-seed; editable: false; enabled: index == 0; row-height: 28px * ForgeTypography.scale; }
+            }
+        }
+        Tab {
+            title: @tr("数据边界");
+            for index in 2 : boundary-card := GalleryEffectCard {
+                x: mod(index, root.columns) * (parent.width / root.columns); y: floor(index / root.columns) * (360px * ForgeTypography.scale + 16px) + 12px;
+                width: parent.width / root.columns - 12px; height: 360px * ForgeTypography.scale;
+                title: index == 0 ? @tr("单行数据") : @tr("暂无数据"); description: @tr("少量数据与空列表同样保留表头和列布局。");
+                ForgeDataGrid { x: 16px; y: boundary-card.body-y; width: boundary-card.body-width; height: boundary-card.body-height; columns: root.grid-columns; rows: index == 0 ? [GalleryGridDemoModels.flat-seed[0]] : []; editable: false; }
+            }
+        }
+    }
+}

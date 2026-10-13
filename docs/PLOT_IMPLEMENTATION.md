@@ -1,5 +1,7 @@
 # 专业图表实现与验收
 
+> 阶段记录：本文保留该组件实施时的范围、测试数量和验证结果；v0.1.1 当前能力见接入与交付说明，本次验收以时间戳发布目录中的 ACCEPTANCE.md 和 verification 为准。
+
 本任务的目标是提供可直接接入 Slint 的完整专业二维绘图组件，并审查、测试和优化 DataGrid、TreeDataGrid。图表能力对照 [QCustomPlot 2.1.1](https://www.qcustomplot.com/documentation/index.html)，沿用现有共享 Slint 契约以及 Rust/C++ 消费方式。
 
 ## 图表能力和证据

@@ -3,6 +3,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: en\n"
 
+msgid "12 小时制"
+msgstr "12-hour format"
+
+msgid "24 小时制，5 分钟步长"
+msgstr "24-hour format, 5-minute increments"
+
 msgid "Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑，Enter 确认，Esc 取消。"
 msgstr "Ctrl-click toggles selection; Shift-click selects a range. Use arrows to move, F2 to edit, Enter to confirm, and Esc to cancel."
 
@@ -39,6 +45,12 @@ msgstr "SlintForge components and sample application."
 msgid "SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例。"
 msgstr "SlintForge notice: layout and surface components are now available in Gallery."
 
+msgid "SlintForge 项目报告\n可以选择、复制文本；业务场景可编辑。\nRust 与 C++ 使用共享界面。"
+msgstr "SlintForge project report\nSelect and copy text; edit it in the business example.\nRust and C++ share the same UI."
+
+msgid "Tab / Shift+Tab 遍历业务输入，跳过禁用项；关闭后恢复焦点。"
+msgstr "Tab / Shift+Tab navigates inputs, skips disabled fields, and restores focus after closing."
+
 msgid "X π 刻度"
 msgstr "X pi ticks"
 
@@ -72,6 +84,9 @@ msgstr "{} is a table component and remains deferred."
 msgid "{} 星"
 msgstr "{} stars"
 
+msgid "↑ ↓ 导航 · Enter 选择 · Esc 关闭"
+msgstr "Up / Down navigates; Enter selects; Esc closes."
+
 msgid "一套 Slint 组件，同时服务 Rust 与 C++ 应用"
 msgstr "One Slint component set for both Rust and C++ apps"
 
@@ -89,6 +104,9 @@ msgstr "Previous"
 
 msgid "上一页"
 msgstr "Previous"
+
+msgid "上传报告"
+msgstr "Upload report"
 
 msgid "上方内容"
 msgstr "Upper content"
@@ -111,6 +129,9 @@ msgstr "Professional 2D plot"
 msgid "专业绘图、交互与导出"
 msgstr "Professional plots, interaction and export"
 
+msgid "业务组合"
+msgstr "Business example"
+
 msgid "中央"
 msgstr "Center"
 
@@ -129,6 +150,9 @@ msgstr "Primary buttons emphasize the current action."
 msgid "主色胶囊"
 msgstr "Primary pill"
 
+msgid "主要操作"
+msgstr "Primary action"
+
 msgid "主题模式"
 msgstr "Theme mode"
 
@@ -146,6 +170,9 @@ msgstr "Color map"
 
 msgid "五月"
 msgstr "May"
+
+msgid "交互与导出"
+msgstr "Interaction and export"
 
 msgid "交互示例"
 msgstr "Interactive example"
@@ -171,6 +198,15 @@ msgstr "Choose an action from a button menu."
 msgid "价格"
 msgstr "Price"
 
+msgid "任务"
+msgstr "Task"
+
+msgid "任务状态面板"
+msgstr "Task status panel"
+
+msgid "任务通知"
+msgstr "Task notifications"
+
 msgid "位置"
 msgstr "Position"
 
@@ -189,6 +225,9 @@ msgstr "Select and copy text with the mouse and keyboard."
 msgid "保存"
 msgstr "Save"
 
+msgid "保存项目"
+msgstr "Save project"
+
 msgid "保护阈值"
 msgstr "Protection threshold"
 
@@ -197,6 +236,15 @@ msgstr "Information"
 
 msgid "修改输入后获取截图"
 msgstr "Edit the input before capturing"
+
+msgid "倒计时完成"
+msgstr "Countdown completed"
+
+msgid "允许修改配置"
+msgstr "Allow changes"
+
+msgid "允许确认"
+msgstr "Allow confirmation"
 
 msgid "光标复位"
 msgstr "Reset cursors"
@@ -219,8 +267,14 @@ msgstr "Shared Slint contract"
 msgid "共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。"
 msgstr "Shared Slint components - Rust / C++ SDK\nAll 96 navigation pages have working demos.\nNative widgets and component APIs share the same UI contract."
 
+msgid "关键词匹配"
+msgstr "Keyword matching"
+
 msgid "关闭"
 msgstr "Close"
+
+msgid "内容与选中状态"
+msgstr "Content and selection"
 
 msgid "内容仍可交互"
 msgstr "Content remains interactive"
@@ -234,8 +288,20 @@ msgstr "Inline status feedback · ForgeInfoBar"
 msgid "内部验收 · 已注册页面常驻，隐藏时宿主继续采样"
 msgstr "Internal verification · registered pages remain mounted while sampling continues"
 
+msgid "冻结任务列，横向滚动查看其他列。"
+msgstr "The task column stays frozen while scrolling horizontally."
+
 msgid "冻结名称列"
 msgstr "Freeze name column"
+
+msgid "分析"
+msgstr "Analysis"
+
+msgid "分栏选择年、月、日，支持字段显示和日期范围。"
+msgstr "Select year, month and day with configurable fields and date ranges."
+
+msgid "分栏选择时间，支持区域语言、12/24 小时制和分钟步长。"
+msgstr "Segmented time selection with locale, 12/24-hour format and minute increments."
 
 msgid "分组"
 msgstr "Group"
@@ -258,9 +324,6 @@ msgstr "Toggle button"
 msgid "切换日、周、月三个视图。"
 msgstr "Switch between day, week, and month views."
 
-msgid "切换月份，在月历中选择日期。"
-msgstr "Browse months and select a date in the calendar."
-
 msgid "切换标签保留输入"
 msgstr "Switching tabs preserves input"
 
@@ -275,6 +338,9 @@ msgstr "Use square corners"
 
 msgid "切换页码，或跳至第一页和最后一页。"
 msgstr "Change pages or jump to the first and last page."
+
+msgid "创建任务"
+msgstr "Create task"
 
 msgid "创建工程"
 msgstr "Create project"
@@ -299,6 +365,12 @@ msgstr "Matching icons"
 
 msgid "单击表头排序，拖动列边界调整宽度，双击单元格编辑。"
 msgstr "Click a header to sort, drag its edge to resize, and double-click a cell to edit."
+
+msgid "单系列数据"
+msgstr "Single series"
+
+msgid "单行数据"
+msgstr "Single row"
 
 msgid "卡片 {}"
 msgstr "Card {}"
@@ -327,11 +399,20 @@ msgstr "Native tab content"
 msgid "参数曲线"
 msgstr "Parametric curve"
 
+msgid "参数曲线与散点"
+msgstr "Parametric curve and markers"
+
+msgid "参考"
+msgstr "Reference"
+
 msgid "参考下界"
 msgstr "Lower reference"
 
 msgid "双光标测量"
 msgstr "Dual cursor measurement"
+
+msgid "发送消息"
+msgstr "Send Message"
 
 msgid "取消"
 msgstr "Cancel"
@@ -345,8 +426,14 @@ msgstr "Read-only"
 msgid "只读文本"
 msgstr "Read-only text"
 
+msgid "可直接操作此示例"
+msgstr "Interact with this example"
+
 msgid "可移除标签"
 msgstr "Removable tag"
+
+msgid "可继续查看或导出结果。"
+msgstr "View or export the results."
 
 msgid "可返回的页面标题"
 msgstr "Page header with back navigation"
@@ -387,6 +474,12 @@ msgstr "Start a task and display progress while preventing duplicate submissions
 msgid "启用功能"
 msgstr "Enable feature"
 
+msgid "启用端口输入"
+msgstr "Enable port input"
+
+msgid "启用自动归档"
+msgstr "Enable automatic archiving"
+
 msgid "启用通知"
 msgstr "Enable notifications"
 
@@ -401,6 +494,9 @@ msgstr "April"
 
 msgid "回归测试"
 msgstr "Regression testing"
+
+msgid "固定视图"
+msgstr "Pin view"
 
 msgid "图例"
 msgstr "Legend"
@@ -468,8 +564,14 @@ msgstr "Icon font library"
 msgid "图片按区域裁切并显示圆角边框。"
 msgstr "The image is cropped to its bounds and shown with rounded corners."
 
+msgid "圆点提示"
+msgstr "Dot badge"
+
 msgid "圆角"
 msgstr "Rounded"
+
+msgid "在交互示例中打开"
+msgstr "Open in interactive demo"
 
 msgid "在内容对话框中编辑文字，并确认或取消。"
 msgstr "Edit text in a content dialog, then confirm or cancel."
@@ -501,8 +603,17 @@ msgstr "Vertical layout"
 msgid "基本示例"
 msgstr "Basic example"
 
+msgid "基础样式"
+msgstr "Basic style"
+
 msgid "堆叠"
 msgstr "Stacked"
+
+msgid "堆叠柱状图"
+msgstr "Stacked bars"
+
+msgid "增益 {}%"
+msgstr "Gain {}%"
 
 msgid "处理中…"
 msgstr "Processing…"
@@ -518,6 +629,12 @@ msgstr "Copy all"
 
 msgid "外观"
 msgstr "Appearance"
+
+msgid "多个绘图区"
+msgstr "Multiple plot areas"
+
+msgid "多种效果"
+msgstr "State comparison"
 
 msgid "多绘图区"
 msgstr "Multiple panels"
@@ -570,6 +687,9 @@ msgstr "Log axis"
 msgid "对比多个维度上的系列表现。"
 msgstr "Compare series across multiple dimensions."
 
+msgid "对照已填内容或另一种样式。"
+msgstr "Compare populated content or an alternative style."
+
 msgid "对话框关闭后此输入保持"
 msgstr "This input persists after closing the dialog"
 
@@ -588,6 +708,9 @@ msgstr "Export failed. Check the destination path."
 msgid "导出成功"
 msgstr "Export succeeded"
 
+msgid "导出报告"
+msgstr "Export report"
+
 msgid "导航窗格"
 msgstr "Navigation pane"
 
@@ -602,6 +725,9 @@ msgstr "Below 560 px"
 
 msgid "少量卡片"
 msgstr "Fewer cards"
+
+msgid "少量数据与空列表同样保留表头和列布局。"
+msgstr "Small and empty data sets preserve headers and columns."
 
 msgid "少量矩形"
 msgstr "Fewer tiles"
@@ -657,6 +783,9 @@ msgstr "Workspace name"
 msgid "工程"
 msgstr "Project"
 
+msgid "工程名称"
+msgstr "Project name"
+
 msgid "工程详情"
 msgstr "Project details"
 
@@ -666,11 +795,17 @@ msgstr "Left"
 msgid "左侧内容"
 msgstr "Left content"
 
+msgid "左右双轴"
+msgstr "Left and right axes"
+
 msgid "左阶梯"
 msgstr "Left steps"
 
 msgid "已保存"
 msgstr "Saved"
+
+msgid "已保存设备：{}"
+msgstr "Saved device: {}"
 
 msgid "已关闭"
 msgstr "Off"
@@ -681,8 +816,14 @@ msgstr "Canceled"
 msgid "已启用"
 msgstr "Enabled"
 
+msgid "已固定"
+msgstr "Pinned"
+
 msgid "已完成"
 msgstr "Complete"
+
+msgid "已完成 {}%"
+msgstr "{}% complete"
 
 msgid "已完成任务"
 msgstr "Completed tasks"
@@ -714,7 +855,13 @@ msgstr "Updated: {} - {} = {}"
 msgid "已确认"
 msgstr "Confirmed"
 
+msgid "已移除，可重新选择"
+msgstr "Removed; select again to restore"
+
 msgid "已选中"
+msgstr "Selected"
+
+msgid "已选择"
 msgstr "Selected"
 
 msgid "已选择 {}，原始索引 {}，数值 {}"
@@ -744,8 +891,14 @@ msgstr "Persistent page container and visible-area capture"
 msgid "平滑曲线"
 msgstr "Smooth curve"
 
+msgid "平滑面积图"
+msgstr "Smooth area chart"
+
 msgid "底部"
 msgstr "Bottom"
+
+msgid "延时按钮"
+msgstr "DelayButton"
 
 msgid "开启"
 msgstr "On"
@@ -771,6 +924,9 @@ msgstr "Tour skipped"
 msgid "张工"
 msgstr "Zhang"
 
+msgid "归档"
+msgstr "Archive"
+
 msgid "归档记录"
 msgstr "Archive record"
 
@@ -795,11 +951,17 @@ msgstr "Current: expanded"
 msgid "当前：已折叠"
 msgstr "Current: collapsed"
 
-msgid "录制快捷键"
-msgstr "Record shortcut"
+msgid "待处理"
+msgstr "Pending"
 
 msgid "待开始"
 msgstr "Pending"
+
+msgid "快捷键"
+msgstr "Shortcut"
+
+msgid "快捷键选择器"
+msgstr "ShortcutPicker"
 
 msgid "性能测试"
 msgstr "Performance testing"
@@ -822,8 +984,14 @@ msgstr "Hover for a tooltip"
 msgid "悬停查看数值，点击选择数据，点击图例显示或隐藏系列。"
 msgstr "Hover for values, click to select, and use legends to show or hide series."
 
+msgid "悬停读取数值，点击数据或图例进行交互。"
+msgstr "Hover to read values; click data or legends to interact."
+
 msgid "成功"
 msgstr "Success"
+
+msgid "截图"
+msgstr "Screenshots"
 
 msgid "截图将在此处显示"
 msgstr "The captured image will appear here"
@@ -843,8 +1011,8 @@ msgstr "Sectors have equal angles; area changes with each value."
 msgid "打开"
 msgstr "Open"
 
-msgid "打开内容对话框"
-msgstr "Open content dialog"
+msgid "打开 Gallery"
+msgstr "Open Gallery"
 
 msgid "打开原生对话窗口"
 msgstr "Open native dialog"
@@ -873,6 +1041,9 @@ msgstr "Run verification"
 msgid "折叠行"
 msgstr "Collapse row"
 
+msgid "报告已生成"
+msgstr "Report generated"
+
 msgid "抽屉已关闭"
 msgstr "Drawer closed"
 
@@ -891,14 +1062,26 @@ msgstr "Drag the title bar to move; double-click to maximize; drag an edge to re
 msgid "拖动水平或垂直滑块调整数值。"
 msgstr "Adjust values with horizontal or vertical sliders."
 
-msgid "按住 1.2 秒确认"
-msgstr "Hold for 1.2 seconds to confirm"
+msgid "按下组合键，使用保存、重置或取消提交快捷键。"
+msgstr "Press a key combination, then save, reset or cancel."
 
-msgid "按住按钮完成确认，提前松开会取消。"
-msgstr "Hold to confirm; releasing early cancels."
+msgid "按住 1 秒"
+msgstr "Hold for 1 second"
+
+msgid "按住 1.2 秒直接确认"
+msgstr "Hold 1.2 seconds to confirm"
+
+msgid "按住 1.2 秒，松开确认"
+msgstr "Hold 1.2 seconds, release to confirm"
+
+msgid "按住 2 秒"
+msgstr "Hold for 2 seconds"
 
 msgid "按住确认"
 msgstr "Hold to confirm"
+
+msgid "按住确认完成"
+msgstr "Hold confirmed"
 
 msgid "按分类浏览已实现和规划中的页面"
 msgstr "Browse implemented and planned pages by category"
@@ -918,6 +1101,9 @@ msgstr "Switch tabs by stable ID"
 msgid "按稳定 ID 立即切换预编译页面；隐藏页的输入内容保持不变。"
 msgstr "Switch precompiled pages instantly by stable ID; hidden pages retain their input."
 
+msgid "按钮内部显示填色进度，支持按住完成、松开确认与点击倒计时。"
+msgstr "Progress fills the button; hold, release to confirm, or click to start a countdown."
+
 msgid "排序、筛选与单元格编辑"
 msgstr "Sort, filter and edit cells"
 
@@ -930,6 +1116,12 @@ msgstr "Search icon names and inspect glyphs and code points."
 msgid "搜索组件"
 msgstr "Search components"
 
+msgid "搜索设备或组件"
+msgstr "Search devices or components"
+
+msgid "操作已完成"
+msgstr "Action completed"
+
 msgid "操作成功"
 msgstr "Operation successful"
 
@@ -939,8 +1131,20 @@ msgstr "Action menu"
 msgid "数字、提示点和状态徽标。"
 msgstr "Numeric, dot, and status badges."
 
+msgid "数字徽标"
+msgstr "Numeric badge"
+
+msgid "数据与空状态"
+msgstr "Data and empty states"
+
 msgid "数据或坐标范围无效"
 msgstr "Invalid data or coordinate range"
+
+msgid "数据目录"
+msgstr "Data directory"
+
+msgid "数据边界"
+msgstr "Data boundaries"
 
 msgid "数量"
 msgstr "Count"
@@ -987,11 +1191,29 @@ msgstr "No scrolling needed"
 msgid "日"
 msgstr "Day"
 
+msgid "日历选择器"
+msgstr "CalendarPicker"
+
+msgid "日期"
+msgstr "Date"
+
+msgid "日期与时间"
+msgstr "Date and time"
+
+msgid "日期选择器"
+msgstr "DatePicker"
+
 msgid "时间 / s"
 msgstr "Time / s"
 
+msgid "时间选择器"
+msgstr "TimePicker"
+
 msgid "显示加载动画"
 msgstr "Show loading animation"
+
+msgid "显示密码"
+msgstr "Show password"
 
 msgid "显示建议"
 msgstr "Show suggestions"
@@ -1007,6 +1229,9 @@ msgstr "Standard, primary, and disabled pill buttons."
 
 msgid "普通、带图标和禁用按钮，点击查看反馈。"
 msgstr "Standard, icon, and disabled buttons with click feedback."
+
+msgid "普通操作"
+msgstr "Standard action"
 
 msgid "暂停滚动"
 msgstr "Pause scrolling"
@@ -1028,6 +1253,15 @@ msgstr "Graph / errors / fill"
 
 msgid "曲线、统计图、二维色图、极坐标与多绘图区，支持缩放、选择和五种格式导出。"
 msgstr "Graphs, statistics, color maps, polar plots and multiple panels with zoom, selection and five export formats."
+
+msgid "曲线、误差与填充"
+msgstr "Curves, errors and fill"
+
+msgid "曲线与统计"
+msgstr "Curves and statistics"
+
+msgid "更多示例"
+msgstr "More examples"
 
 msgid "更新数据"
 msgstr "Update data"
@@ -1059,11 +1293,20 @@ msgstr "Not selected"
 msgid "末页"
 msgstr "Last"
 
+msgid "本月完成"
+msgstr "Completed this month"
+
 msgid "李工"
 msgstr "Li"
 
+msgid "松开确认完成"
+msgstr "Release confirmed"
+
 msgid "极坐标"
 msgstr "Polar plot"
+
+msgid "极坐标曲线"
+msgstr "Polar curve"
 
 msgid "构建、行为测试与页面截图"
 msgstr "Builds, behavior tests, and page captures"
@@ -1077,6 +1320,15 @@ msgstr "Browse and edit tabular data, resize columns, and select multiple rows."
 msgid "查看基础组件的可交互示例"
 msgstr "Explore interactive examples of basic components"
 
+msgid "查看报告"
+msgstr "View report"
+
+msgid "查看简化后的数据分布。"
+msgstr "Explore a simplified data distribution."
+
+msgid "查看限制、只读或异常情况。"
+msgstr "Explore limits, read-only or error states."
+
 msgid "柱状图"
 msgstr "Bars"
 
@@ -1085,6 +1337,9 @@ msgstr "Tag count: {}"
 
 msgid "树形层级与数据展示"
 msgstr "Hierarchical data and tree navigation"
+
+msgid "样式对照"
+msgstr "Style comparison"
 
 msgid "检查保护触发与恢复。"
 msgstr "Check protection activation and recovery."
@@ -1107,11 +1362,17 @@ msgstr "Module count: {}"
 msgid "正在滚动"
 msgstr "Scrolling"
 
+msgid "正在连接…"
+msgstr "Connecting..."
+
 msgid "正常帧与异常帧"
 msgstr "Valid and invalid frames"
 
 msgid "正文 · Body：你好 SlintForge，Hello World!"
 msgstr "Body: Hello SlintForge, Hello World!"
+
+msgid "正负柱状图"
+msgstr "Positive and negative bars"
 
 msgid "此单元格无法编辑。"
 msgstr "This cell cannot be edited."
@@ -1148,6 +1409,9 @@ msgstr "Light"
 
 msgid "测试计划"
 msgstr "Test plan"
+
+msgid "测量"
+msgstr "Measurement"
 
 msgid "测量 / 不对称误差"
 msgstr "Measurement / asymmetric errors"
@@ -1209,8 +1473,8 @@ msgstr "Clear image"
 msgid "清空数据"
 msgstr "Clear data"
 
-msgid "清除"
-msgstr "Clear"
+msgid "清空数据后保留容器与空状态提示。"
+msgstr "An empty data set retains its container and empty-state message."
 
 msgid "温度"
 msgstr "Temperature"
@@ -1233,8 +1497,8 @@ msgstr "Grey"
 msgid "点击 {} 次"
 msgstr "Clicked {} times"
 
-msgid "点击录制快捷键，按 Escape 取消。"
-msgstr "Record a keyboard shortcut or press Escape to cancel."
+msgid "点击启动倒计时，再次点击取消"
+msgstr "Click to start; click again to cancel"
 
 msgid "点击按钮"
 msgstr "Click button"
@@ -1278,6 +1542,9 @@ msgstr "Environmental testing"
 msgid "环形图"
 msgstr "Doughnut"
 
+msgid "生成报告"
+msgstr "Generate report"
+
 msgid "用于在设置页和窗口标题中区分工作区。"
 msgstr "Distinguishes the workspace in settings and the window title."
 
@@ -1289,6 +1556,9 @@ msgstr "Voltage"
 
 msgid "电压 / V"
 msgstr "Voltage / V"
+
+msgid "电流"
+msgstr "Current"
 
 msgid "电源"
 msgstr "Power"
@@ -1307,6 +1577,9 @@ msgstr "Target 1: input"
 
 msgid "目标二：执行"
 msgstr "Target 2: run"
+
+msgid "直接操作，观察组件反馈。"
+msgstr "Interact and observe the component's response."
 
 msgid "直角"
 msgstr "Square"
@@ -1332,8 +1605,14 @@ msgstr "Determinate progress and continuous loading."
 msgid "确认后执行下一步。"
 msgstr "Confirm to proceed to the next step."
 
+msgid "确认对话框"
+msgstr "Confirmation dialog"
+
 msgid "确认操作"
 msgstr "Confirm action"
+
+msgid "确认模式"
+msgstr "Confirmation modes"
 
 msgid "确认次数：{}"
 msgstr "Confirmation count: {}"
@@ -1341,11 +1620,17 @@ msgstr "Confirmation count: {}"
 msgid "确认版本、资源和参数配置。"
 msgstr "Verify versions, resources, and parameter settings."
 
+msgid "确认配置"
+msgstr "Confirm configuration"
+
 msgid "示例文档"
 msgstr "Example documentation"
 
 msgid "禁用"
 msgstr "Disabled"
+
+msgid "禁用与边界状态"
+msgstr "Disabled and boundary states"
 
 msgid "禁用操作"
 msgstr "Disabled action"
@@ -1359,14 +1644,29 @@ msgstr "Disabled tag"
 msgid "禁用状态"
 msgstr "Disabled"
 
+msgid "禁用示例"
+msgstr "Disabled example"
+
 msgid "禁用行不可选择或编辑。"
 msgstr "Disabled rows cannot be selected or edited."
+
+msgid "禁用视图"
+msgstr "Disabled view"
+
+msgid "禁用输入"
+msgstr "Disabled input"
 
 msgid "禁用选项"
 msgstr "Disabled option"
 
+msgid "科学绘图"
+msgstr "Scientific plots"
+
 msgid "移除标签"
 msgstr "Remove tag"
+
+msgid "空结果"
+msgstr "No matches"
 
 msgid "窄屏预览"
 msgstr "Narrow preview"
@@ -1382,6 +1682,9 @@ msgstr "Window corners"
 
 msgid "竖向滚动条已显示"
 msgstr "Vertical scrollbar visible"
+
+msgid "端口（演示禁用项）"
+msgstr "Port (disabled example)"
 
 msgid "第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行"
 msgstr "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10"
@@ -1416,11 +1719,20 @@ msgstr "Series B"
 msgid "系列二"
 msgstr "Series two"
 
+msgid "系列对照"
+msgstr "Series comparison"
+
 msgid "系列甲"
 msgstr "Series A"
 
 msgid "系统默认"
 msgstr "System default"
+
+msgid "紧凑与只读"
+msgstr "Compact and read-only"
+
+msgid "紧凑只读视图"
+msgstr "Compact read-only view"
 
 msgid "红色"
 msgstr "Red"
@@ -1437,6 +1749,9 @@ msgstr "Combine a title, description, back action, and controls."
 msgid "终点"
 msgstr "Endpoint"
 
+msgid "统计分布"
+msgstr "Statistical distribution"
+
 msgid "统计延迟、吞吐量及峰值负载。"
 msgstr "Measure latency, throughput, and peak load."
 
@@ -1445,6 +1760,9 @@ msgstr "Statistical box"
 
 msgid "统计箱 / 离群值"
 msgstr "Statistical box / outliers"
+
+msgid "统计箱与离群值"
+msgstr "Box plot and outliers"
 
 msgid "继续"
 msgstr "Continue"
@@ -1473,6 +1791,15 @@ msgstr "Pill button"
 msgid "脉冲"
 msgstr "Impulses"
 
+msgid "自动保存"
+msgstr "Auto save"
+
+msgid "英文区域"
+msgstr "English locale"
+
+msgid "英文区域，2000—2100 年"
+msgstr "English locale, years 2000–2100"
+
 msgid "获取截图"
 msgstr "Capture image"
 
@@ -1497,6 +1824,9 @@ msgstr "Explore trends with lines, smooth curves, and area fills."
 msgid "角度 / °"
 msgstr "Angle / degrees"
 
+msgid "触发采集"
+msgstr "Triggered acquisition"
+
 msgid "警告"
 msgstr "Warning"
 
@@ -1509,8 +1839,17 @@ msgstr "Record temperature and operating status."
 msgid "记录温度循环与运行状态。"
 msgstr "Record thermal cycles and operating status."
 
+msgid "设备名称"
+msgstr "Device name"
+
 msgid "设备状态"
 msgstr "Device status"
+
+msgid "设备配置"
+msgstr "Device configuration"
+
+msgid "设备配置对话框"
+msgstr "Device configuration dialog"
 
 msgid "设置"
 msgstr "Settings"
@@ -1533,8 +1872,8 @@ msgstr "Language"
 msgid "说明"
 msgstr "Notes"
 
-msgid "请按快捷键…"
-msgstr "Press a shortcut…"
+msgid "请检查设备后重试。"
+msgstr "Check the device and try again."
 
 msgid "请绑定图表服务"
 msgstr "Bind chart services to display data"
@@ -1554,9 +1893,6 @@ msgstr "Adjust Gallery appearance, language, fonts, and navigation. Changes take
 msgid "调整后台任务的默认运行方式。"
 msgstr "Adjust how background tasks run by default."
 
-msgid "调整四个颜色通道，预览颜色和透明度。"
-msgstr "Adjust four color channels and preview color and opacity."
-
 msgid "负责人"
 msgstr "Owner"
 
@@ -1565,6 +1901,9 @@ msgstr "Zhao"
 
 msgid "起点"
 msgstr "Start"
+
+msgid "超出上限"
+msgstr "Over the limit"
 
 msgid "超时、重连和状态恢复"
 msgstr "Timeouts, reconnection, and state recovery"
@@ -1578,8 +1917,14 @@ msgstr "Route parameters: {}"
 msgid "跳过"
 msgstr "Skip"
 
+msgid "轨迹"
+msgstr "Trajectory"
+
 msgid "辅助文字 · Caption"
 msgstr "Supporting text · Caption"
+
+msgid "输入 3～24 个字符"
+msgstr "Enter 3 to 24 characters"
 
 msgid "输入、只读和禁用的单行文本框。"
 msgstr "Editable, read-only, and disabled text fields."
@@ -1662,8 +2007,14 @@ msgstr "Any application component can be placed here."
 msgid "进行中"
 msgstr "In progress"
 
+msgid "连接失败"
+msgstr "Connection failed"
+
 msgid "连续折线"
 msgstr "Continuous line"
+
+msgid "连续采集"
+msgstr "Continuous acquisition"
 
 msgid "选择、移除和恢复标签。"
 msgstr "Select, remove, and restore chips."
@@ -1683,20 +2034,20 @@ msgstr "Select action"
 msgid "选择日期"
 msgstr "Select date"
 
-msgid "选择日期，并确认或取消修改。"
-msgstr "Select a date, then confirm or cancel."
-
 msgid "选择时间"
 msgstr "Select time"
-
-msgid "选择时间，并确认或取消修改。"
-msgstr "Select a time, then confirm or cancel."
 
 msgid "选择树节点"
 msgstr "Select tree nodes"
 
+msgid "选择此项"
+msgstr "Select this option"
+
 msgid "选择行 {} "
 msgstr "Select row {} "
+
+msgid "选择颜色"
+msgstr "Choose Color"
 
 msgid "逐步浏览功能提示，支持返回、继续和关闭。"
 msgstr "Follow a guided tour with back, next, and close actions."
@@ -1713,6 +2064,27 @@ msgstr "Communication validation"
 msgid "通知级别"
 msgstr "Notification level"
 
+msgid "通过色谱、调色板、十六进制和颜色通道选择颜色，确认后提交。"
+msgstr "Choose with spectrum, palette, hexadecimal or color channels; confirm to commit."
+
+msgid "部分数据缺失"
+msgstr "Some data is missing"
+
+msgid "采集"
+msgstr "Acquisition"
+
+msgid "采集、分析"
+msgstr "Acquisition, analysis"
+
+msgid "采集报告已加载\n电压：12.8 V\n温度：24.5 ℃"
+msgstr "Acquisition report loaded\nVoltage: 12.8 V\nTemperature: 24.5 C"
+
+msgid "采集数据"
+msgstr "Acquire data"
+
+msgid "采集项目配置"
+msgstr "Acquisition project configuration"
+
 msgid "重置"
 msgstr "Reset"
 
@@ -1722,11 +2094,20 @@ msgstr "Reset sizes"
 msgid "重置比例"
 msgstr "Reset ratio"
 
+msgid "重试"
+msgstr "Retry"
+
+msgid "锁定 Gallery"
+msgstr "Lock Gallery"
+
 msgid "错误"
 msgstr "Error"
 
 msgid "错误数量"
 msgstr "Error count"
+
+msgid "错误率"
+msgstr "Error rate"
 
 msgid "长文本在固定区域内连续滚动，可暂停和继续。"
 msgstr "Long text scrolls continuously within a fixed area and can be paused or resumed."
@@ -1782,8 +2163,23 @@ msgstr "Top"
 msgid "项"
 msgstr "items"
 
+msgid "项目名称"
+msgstr "Project name"
+
+msgid "项目数据看板"
+msgstr "Project dashboard"
+
+msgid "项目说明\n通道 1：电压采集\n通道 2：温度监测\n采样频率：100 Hz\n触发模式：连续\n存储格式：CSV\n记录开始\n记录结束\n继续滚动查看完整内容\n备注：支持中文输入"
+msgstr "Project description\nChannel 1: voltage\nChannel 2: temperature\nSampling rate: 100 Hz\nTrigger: continuous\nStorage: CSV\nStart recording\nStop recording\nScroll to read all content\nNote: Chinese input is supported"
+
 msgid "预览：你好，SlintForge！ABC 123"
 msgstr "Preview: Hello, SlintForge! ABC 123"
+
+msgid "颜色与屏幕取色"
+msgstr "Color and screen eyedropper"
+
+msgid "颜色选择器"
+msgstr "ColorPicker"
 
 msgid "饮水"
 msgstr "Drinking"
@@ -1817,4 +2213,10 @@ msgstr "Advanced options"
 
 msgid "黄色"
 msgstr "Yellow"
+
+msgid "默认区域"
+msgstr "Default locale"
+
+msgid "默认状态"
+msgstr "Default state"
 

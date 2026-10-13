@@ -1,0 +1,51 @@
+import { Button, Palette } from "std-widgets.slint";
+import { ForgeFlowNodeData, ForgeFlowViewport, ForgeFlowRect } from "../types/flow.slint";
+
+export component ForgeFlowControls inherits Rectangle {
+    in property<float> zoom: 1;
+    in property<bool> can-undo;
+    in property<bool> can-redo;
+    in property<bool> read-only;
+    in property<bool> chinese: true;
+    callback command(string);
+    background: Palette.background; border-width: 1px; border-color: Palette.border; border-radius: 6px;
+    HorizontalLayout {
+        padding: 5px; spacing: 4px;
+        Button { text: "−"; width: 32px; clicked => { root.command("zoom-out"); } }
+        Text { text: Math.round(root.zoom * 100) + "%"; color: Palette.foreground; min-width: 46px; horizontal-alignment: center; vertical-alignment: center; }
+        Button { text: "+"; width: 32px; clicked => { root.command("zoom-in"); } }
+        Button { text: root.chinese ? "适应" : "Fit"; clicked => { root.command("fit"); } }
+        Button { text: root.chinese ? "撤销" : "Undo"; width: 52px; enabled: root.can-undo && !root.read-only; clicked => { root.command("undo"); } }
+        Button { text: root.chinese ? "重做" : "Redo"; width: 52px; enabled: root.can-redo && !root.read-only; clicked => { root.command("redo"); } }
+    }
+}
+
+export component ForgeFlowMiniMap inherits Rectangle {
+    in property<[ForgeFlowNodeData]> nodes;
+    in property<ForgeFlowRect> bounds;
+    in property<ForgeFlowViewport> viewport;
+    in property<float> canvas-width;
+    in property<float> canvas-height;
+    callback navigate(float, float);
+    private property<float> ratio: Math.min((root.width / 1px - 12) / Math.max(1, root.bounds.width), (root.height / 1px - 12) / Math.max(1, root.bounds.height));
+    width: 160px; height: 100px; clip: true;
+    background: Palette.background.with-alpha(0.96); border-width: 1px; border-color: Palette.border; border-radius: 5px;
+    for n in root.nodes : Rectangle {
+        visible: !n.hidden;
+        x: (6 + (n.x - root.bounds.x) * root.ratio) * 1px;
+        y: (6 + (n.y - root.bounds.y) * root.ratio) * 1px;
+        width: Math.max(2, n.width * root.ratio) * 1px; height: Math.max(2, n.height * root.ratio) * 1px;
+        background: n.selected ? Palette.accent-background : Palette.foreground.with-alpha(0.25);
+    }
+    Rectangle {
+        x: (6 + (-root.viewport.x / root.viewport.zoom - root.bounds.x) * root.ratio) * 1px;
+        y: (6 + (-root.viewport.y / root.viewport.zoom - root.bounds.y) * root.ratio) * 1px;
+        width: root.canvas-width / root.viewport.zoom * root.ratio * 1px;
+        height: root.canvas-height / root.viewport.zoom * root.ratio * 1px;
+        border-width: 1px; border-color: Palette.accent-background; background: Palette.accent-background.with-alpha(0.08);
+    }
+    TouchArea {
+        clicked => { root.navigate((self.mouse-x / 1px - 6) / root.ratio + root.bounds.x, (self.mouse-y / 1px - 6) / root.ratio + root.bounds.y); }
+        moved => { if self.pressed { root.navigate((self.mouse-x / 1px - 6) / root.ratio + root.bounds.x, (self.mouse-y / 1px - 6) / root.ratio + root.bounds.y); } }
+    }
+}

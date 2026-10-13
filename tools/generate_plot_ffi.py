@@ -2,6 +2,7 @@
 import argparse
 import pathlib
 import re
+import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 TYPES = {"int": "i32", "double": "f64", "size_t": "usize", "uint32_t": "u32", "uint64_t": "u64", "char": "std::ffi::c_char", "void": "std::ffi::c_void"}
@@ -14,7 +15,7 @@ def convert(value):
         return ("*const " if const else "*mut ") + convert(value.replace("*", ""))
     return "u8" if value=="uint8_t" else TYPES.get(value, value)
 
-def generate():
+def generate_native():
     text = (ROOT / "sdk/common/ForgePlotCore.h").read_text(encoding="utf-8")
     out = ["// 由 tools/generate_plot_ffi.py 生成；修改共用头文件后重新生成。", "#![allow(non_snake_case)]", ""]
     for name, body in re.findall(r"typedef struct (\w+)\s*\{(.*?)\}\s*\w+;", text, re.S):
@@ -42,6 +43,18 @@ def generate():
         out.append("    pub fn " + name + "(" + ", ".join(parsed) + ")" + suffix + ";")
     out += ["}", ""]
     return "\n".join(out)
+
+def generate():
+    # DLL 接入时保持原公开符号，函数体只转发到已核对的 ABI 函数表。
+    text = generate_native().split('extern "C" {', 1)[1]
+    out = ['//! 专业绘图公开接口的 DLL 转发；数据布局与共用头文件一致。', 'pub use slintforge_runtime_api::plot::*;', '']
+    for name, args, result in re.findall(r'pub fn (\w+)\((.*?)\)([^;]*);', text):
+        names = ', '.join(arg.split(':', 1)[0].strip() for arg in args.split(','))
+        out += [f'pub unsafe extern "C" fn {name}({args}){result} {{', f'    (crate::runtime::api().{name})({names})', '}', '']
+    result = subprocess.run(['rustfmt','--edition','2021','--emit','stdout'],input='\n'.join(out),text=True,capture_output=True,cwd=ROOT,encoding='utf-8')
+    if result.returncode:
+        raise RuntimeError(result.stderr)
+    return result.stdout
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

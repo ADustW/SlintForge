@@ -1,0 +1,56 @@
+import { ForgeFlowState, ForgeFlowAction } from "@slintforge";
+import { Palette } from "std-widgets.slint";
+import { ForgeFlowShowcase } from "../../../examples/ui/flow-showcase.slint";
+import { GalleryLocale } from "locale.slint";
+
+component GalleryFlowPage inherits Rectangle {
+    in property<int> variant;
+    out property<ForgeFlowState> state: demo.state;
+    callback edit(ForgeFlowAction); edit(a) => { demo.edit(a); }
+    callback fit(); fit => { demo.fit(); }
+    in property<string> title;
+    in property<string> subtitle;
+    Text { x: 24px; y: 18px; text: root.title; color: Palette.foreground; font-size: 26px; font-weight: 600; }
+    Text { x: 24px; y: 57px; width: parent.width - 48px; text: root.subtitle; color: Palette.foreground.with-alpha(0.7); font-size: 13px; overflow: elide; }
+    demo := ForgeFlowShowcase { x: 16px; y: 88px; width: parent.width - 32px; height: parent.height - 104px; variant: root.variant; chinese: GalleryLocale.language != "en"; }
+}
+
+// 页面常驻，隐藏页面保留各自独立文档、编辑历史和卡片焦点状态。
+export component GalleryFlowPages inherits Rectangle {
+    in property<string> active-route-id;
+    private property<bool> mindmap-visited: false;
+    changed active-route-id => {
+        if root.active-route-id == "flow-mindmap" && !root.mindmap-visited {
+            mindmap.fit(); root.mindmap-visited = true;
+        }
+    }
+    callback state(string) -> ForgeFlowState;
+    state(route) => {
+        if route == "flow-basic" { return basic.state; }
+        if route == "flow-custom" { return custom.state; }
+        if route == "flow-flowchart" { return flowchart.state; }
+        if route == "flow-topology" { return topology.state; }
+        if route == "flow-mindmap" { return mindmap.state; }
+        return {};
+    }
+    callback edit(string, ForgeFlowAction);
+    edit(route, a) => {
+        if route == "flow-basic" { basic.edit(a); }
+        if route == "flow-custom" { custom.edit(a); }
+        if route == "flow-flowchart" { flowchart.edit(a); }
+        if route == "flow-topology" { topology.edit(a); }
+        if route == "flow-mindmap" { mindmap.edit(a); }
+    }
+
+    private property<bool> zh: GalleryLocale.language != "en";
+    basic := GalleryFlowPage { visible: root.active-route-id == "flow-basic"; variant: 0; title: root.zh ? "基础编辑" : "Node editor";
+        subtitle: root.zh ? "连接卡片、框选移动、撤销重做与文档保存。" : "Connect cards, select and move nodes, undo edits and save documents."; }
+    custom := GalleryFlowPage { visible: root.active-route-id == "flow-custom"; variant: 1; title: root.zh ? "自定义卡片" : "Custom cards";
+        subtitle: root.zh ? "输入表单、设备按钮、图片与状态内容，共享同一画布。" : "Forms, device actions, images and status content on one canvas."; }
+    flowchart := GalleryFlowPage { visible: root.active-route-id == "flow-flowchart"; variant: 2; title: root.zh ? "流程图" : "Flowchart";
+        subtitle: root.zh ? "通过端口组织流程，支持箭头、标签和三种连线样式。" : "Arrange process steps with ports, arrows, labels and three edge styles."; }
+    topology := GalleryFlowPage { visible: root.active-route-id == "flow-topology"; variant: 3; title: root.zh ? "拓扑图" : "Topology";
+        subtitle: root.zh ? "手动布局设备关系，使用小地图导航较大的拓扑。" : "Arrange device relationships and navigate large graphs with the minimap."; }
+    mindmap := GalleryFlowPage { visible: root.active-route-id == "flow-mindmap"; variant: 4; title: root.zh ? "思维导图" : "Mind map";
+        subtitle: root.zh ? "新增子主题与同级主题，修改父级、折叠分支并自动布局。" : "Add topics, reparent branches, collapse subtrees and arrange the tree."; }
+}

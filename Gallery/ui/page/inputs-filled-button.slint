@@ -14,6 +14,8 @@ export component GalleryInputsFilledButtonPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "inputs-filled-button";
+        active: root.visible;
         title: "FilledButton";
         subtitle: @tr("主色按钮用于强调当前操作。");
         example-title: @tr("用法与状态");

@@ -5,6 +5,7 @@ import { GalleryDemoModels } from "../component/demo-models.slint";
 
 // 共享组件演示：About。
 export component GalleryAboutPage inherits Rectangle {
+    in property<string> version-text;
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
@@ -22,7 +23,7 @@ export component GalleryAboutPage inherits Rectangle {
             x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
             height: Math.max(0px, sample.preview-area-height - 40px);
             spacing: 16px; alignment: start;
-            Text { text: "SlintForge Gallery · v0.1.0"; color: Palette.foreground; font-size: 28px; font-weight: 600; }
+            Text { text: "SlintForge Gallery · " + root.version-text; color: Palette.foreground; font-size: 28px; font-weight: 600; }
 Text { text: @tr("共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。"); color: Palette.foreground; wrap: word-wrap; }
         }
     }

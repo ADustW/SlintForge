@@ -14,6 +14,8 @@ export component GalleryFormMultilineTextboxPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "form-multiline-textbox";
+        active: root.visible;
         title: "MultiLineTextBox";
         subtitle: @tr("编辑多行文字，输入框内可滚动。");
         example-title: @tr("用法与状态");

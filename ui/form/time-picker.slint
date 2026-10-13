@@ -1,0 +1,148 @@
+import { Time, Palette, SpinBox } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeDateTime } from "date-time.slint";
+import { ForgePickerField, ForgePickerWheel, ForgePickerAction } from "picker-base.slint";
+
+export component ForgeTimePickerPopup inherits Rectangle {
+    width: 0px; height: 0px;
+    in property<string> language: "zh";
+    in property<string> title: root.language == "en" ? "Select time" : "选择时间";
+    in property<Time> time: { hour: 0, minute: 0, second: 0 };
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<int> minute-increment: 1;
+    in property<bool> show-seconds: false;
+    in-out property<bool> use-24-hour-format: false;
+    // 保留已有数字输入入口；默认使用 Fluent 分栏滚轮。
+    in-out property<bool> clock-mode: true;
+    out property<bool> is-open: popup.is-open;
+    changed is-open => { if !root.is-open && root.pending { root.pending = false; root.canceled(); } }
+    out property<Time> current-time: { hour: root.hour, minute: root.minute, second: root.second };
+    out property<string> time-text: ForgeDateTime.format-time(root.current-time, root.language, root.use-24-hour-format);
+    private property<int> hour: 0;
+    private property<int> numeric-hour: 0;
+    changed hour => { root.numeric-hour = root.use-24-hour-format ? root.hour : mod(root.hour + 11, 12) + 1; }
+    changed use-24-hour-format => { root.numeric-hour = root.use-24-hour-format ? root.hour : mod(root.hour + 11, 12) + 1; }
+    private property<int> minute: 0;
+    private property<int> second: 0;
+    private property<int> minute-step: max(1, min(59, root.minute-increment));
+    private property<bool> pending: false;
+    private property<float> scale: ForgeTypography.scale;
+    callback accepted(Time);
+    callback canceled();
+    public function open() {
+        let time = ForgeDateTime.normalize-time(root.time);
+        root.hour = time.hour; root.set-minute(time.minute); root.second = time.second;
+        root.numeric-hour = root.use-24-hour-format ? root.hour : mod(root.hour + 11, 12) + 1;
+        root.pending = true; popup.show();
+    }
+    public function close() { root.pending = false; popup.close(); }
+    public function set-hour(value: int) {
+        root.hour = root.use-24-hour-format ? max(0, min(23, value)) : mod(max(1, min(12, value)), 12) + (root.hour >= 12 ? 12 : 0);
+    }
+    public function set-minute(value: int) { root.minute = min(floor(59 / root.minute-step), max(0, round(value / root.minute-step))) * root.minute-step; }
+    public function set-second(value: int) { root.second = max(0, min(59, value)); }
+    public function set-period(pm: bool) { root.hour = mod(root.hour, 12) + (pm ? 12 : 0); }
+    public function confirm() { root.close(); root.accepted(root.current-time); }
+    public function cancel() { root.close(); root.canceled(); }
+    popup := PopupWindow {
+        width: (root.use-24-hour-format ? (root.show-seconds ? 280px : 240px) : (root.show-seconds ? 340px : 240px)) * root.scale;
+        height: (root.clock-mode ? 348px : 210px) * root.scale;
+        close-policy: close-on-click-outside;
+        forward-focus: scope;
+        Rectangle { background: root.dark ? #242424 : #ffffff; border-radius: 6px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        scope := FocusScope {
+            width: 100%; height: 100%;
+            key-pressed(event) => {
+                if event.text == Key.Escape { root.cancel(); return accept; }
+                if event.text == Key.Return { root.confirm(); return accept; }
+                return reject;
+            }
+
+        VerticalLayout {
+            padding: 8px * root.scale; spacing: 4px * root.scale;
+            if root.clock-mode: HorizontalLayout {
+                spacing: 1px;
+                ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); }
+                    dark: root.dark; minimum: root.use-24-hour-format ? 0 : 1; maximum: root.use-24-hour-format ? 23 : 12;
+                    value: root.use-24-hour-format ? root.hour : mod(root.hour + 11, 12) + 1;
+                    accessible-name: root.language == "en" ? "Hour" : "时";
+                    edited(value) => { root.set-hour(value); }
+                }
+                ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); } dark: root.dark; value: root.minute; step: root.minute-step; accessible-name: root.language == "en" ? "Minute" : "分"; edited(value) => { root.set-minute(value); } }
+                if root.show-seconds: ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); } dark: root.dark; value: root.second; accessible-name: root.language == "en" ? "Second" : "秒"; edited(value) => { root.set-second(value); } }
+                if !root.use-24-hour-format: ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); }
+                    dark: root.dark; minimum: 0; maximum: 1; wrap: false;
+                    labels: root.language == "en" ? ["AM", "PM"] : ["上午", "下午"];
+                    value: root.hour >= 12 ? 1 : 0; accessible-name: root.language == "en" ? "Period" : "时段";
+                    edited(value) => { root.set-period(value == 1); }
+                }
+            }
+            if !root.clock-mode: VerticalLayout {
+                spacing: 8px;
+                HorizontalLayout {
+                    Text { text: root.language == "en" ? "Hour" : "时"; color: root.dark ? #fff : #202020; vertical-alignment: center; }
+                    SpinBox { minimum: root.use-24-hour-format ? 0 : 1; maximum: root.use-24-hour-format ? 23 : 12; value <=> root.numeric-hour; edited(value) => { root.set-hour(value); } }
+                }
+                HorizontalLayout {
+                    Text { text: root.language == "en" ? "Minute" : "分"; color: root.dark ? #fff : #202020; vertical-alignment: center; }
+                    SpinBox { minimum: 0; maximum: 59; value <=> root.minute; edited(value) => { root.set-minute(value); } }
+                }
+                if !root.use-24-hour-format: ForgePickerAction { dark: root.dark; text: root.hour >= 12 ? (root.language == "en" ? "PM" : "下午") : (root.language == "en" ? "AM" : "上午"); clicked => { root.set-period(root.hour < 12); } }
+            }
+            Rectangle { height: 1px; background: root.dark ? #454545 : #d0d0d0; }
+            HorizontalLayout {
+                spacing: 4px;
+                ForgePickerAction { dark: root.dark; text: "✓"; accessible-label: root.language == "en" ? "Confirm" : "确定"; clicked => { root.confirm(); } }
+                ForgePickerAction { dark: root.dark; text: "✕"; accessible-label: root.language == "en" ? "Cancel" : "取消"; clicked => { root.cancel(); } }
+            }
+        }
+
+        }
+}
+}
+
+export component ForgeTimePicker inherits Rectangle {
+    in property<string> language: "zh";
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> enabled: true;
+    in property<bool> use-24-hour-format: false;
+    in property<bool> clock-mode: true;
+    in property<int> minute-increment: 1;
+    in property<bool> show-seconds: false;
+    in-out property<Time> time: {hour: 12, minute: 0, second: 0};
+    in-out property<bool> has-value: false;
+    out property<bool> is-open: popup.is-open;
+    callback accepted(Time);
+    callback canceled();
+    public function open() { if root.enabled { popup.open(); } }
+    public function close() { popup.close(); }
+    preferred-width: 240px * ForgeTypography.scale;
+    preferred-height: 32px * ForgeTypography.scale; horizontal-stretch: 0; vertical-stretch: 0;
+    width: root.preferred-width; height: root.preferred-height;
+    forward-focus: focus;
+    accessible-role: combobox; accessible-label: root.language == "en" ? "Time" : "时间"; accessible-enabled: root.enabled;
+    accessible-action-default => { root.open(); }
+    private property<string> hour-label: root.has-value ? ForgeDateTime.two-digits(root.use-24-hour-format ? root.time.hour : mod(root.time.hour + 11, 12) + 1) : root.language == "en" ? "hour" : "时";
+    private property<string> minute-label: root.has-value ? ForgeDateTime.two-digits(root.time.minute) : root.language == "en" ? "minute" : "分";
+    private property<string> period-label: root.time.hour < 12 ? (root.language == "en" ? "AM" : "上午") : (root.language == "en" ? "PM" : "下午");
+    ForgePickerField {
+        width: root.width; height: root.height; enabled: root.enabled; dark: root.dark; focused: focus.has-focus;
+        fields: root.use-24-hour-format ? (root.show-seconds ? [root.hour-label, root.minute-label, ForgeDateTime.two-digits(root.time.second)] : [root.hour-label, root.minute-label])
+            : root.show-seconds ? [root.hour-label, root.minute-label, ForgeDateTime.two-digits(root.time.second), root.period-label] : [root.hour-label, root.minute-label, root.period-label];
+        clicked(index) => { focus.focus(); root.open(); }
+    }
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == " " || event.text == Key.Return || event.text == Key.DownArrow { root.open(); return accept; }
+            return reject;
+        }
+    }
+    popup := ForgeTimePickerPopup {
+        x: 0px; y: root.height + 4px; language: root.language; dark: root.dark; time: root.time;
+        use-24-hour-format: root.use-24-hour-format; minute-increment: root.minute-increment; show-seconds: root.show-seconds; clock-mode: root.clock-mode;
+        accepted(value) => { root.time = value; root.has-value = true; root.accepted(value); focus.focus(); }
+        canceled => { root.canceled(); focus.focus(); }
+    }
+    changed enabled => { if !root.enabled { root.close(); } }
+}

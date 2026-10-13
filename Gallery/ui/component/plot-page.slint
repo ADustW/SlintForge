@@ -1,6 +1,9 @@
 import { ForgePlotPoint, ForgePlotScene, ForgeTypography } from "@slintforge";
 import { ProfessionalPlotDemo } from "../../../examples/ui/professional-plot-demo.slint";
 import { GalleryPageFrame } from "page-frame.slint";
+import { Palette, Button } from "std-widgets.slint";
+import { GalleryShowcaseState } from "showcase.slint";
+import { GalleryPlotShowcase } from "plot-showcase.slint";
 
 export global GalleryPlotDemoModels {
     in-out property<[ForgePlotPoint]> live-points;
@@ -9,11 +12,16 @@ export global GalleryPlotDemoModels {
 
 // Gallery 和独立消费者使用同一个专业图表示例。
 export component GalleryProfessionalPlotPage inherits Rectangle {
+    in-out property<int> selected-tab: 0;
+    property<int> current-tab: GalleryShowcaseState.route == "chart-professional" && GalleryShowcaseState.tab >= 0 ? GalleryShowcaseState.tab : root.selected-tab;
+    out property<bool> showcase-ready: root.current-tab == 0 ? overview.scenes-ready : root.current-tab == 1 ? scientific.scenes-ready : demo.scene.status == 0;
+    public function explore(mode: int) { root.selected-tab = 2; demo.mode = mode; demo.reset(); demo.refresh(); }
     callback append-points(int, [ForgePlotPoint]) -> bool;
     append-points(id, points) => {return demo.append-points(id, points);}
     out property<ForgePlotScene> scene: demo.scene;
     callback prepare-preview(bool);
     prepare-preview(open) => {
+        root.selected-tab = 2;
         GalleryPlotDemoModels.sample-running(false);
         demo.live = false; demo.mode = open ? 8 : 0;
         demo.reset(); demo.refresh();
@@ -24,8 +32,17 @@ export component GalleryProfessionalPlotPage inherits Rectangle {
     GalleryPageFrame {
         title: "ForgePlot";
         subtitle: @tr("曲线、统计图、二维色图、极坐标与多绘图区，支持缩放、选择和五种格式导出。");
+        HorizontalLayout {
+            height: 36px; vertical-stretch: 0; spacing: 8px; alignment: start;
+            Button { text: @tr("曲线与统计"); checkable: true; checked: root.current-tab == 0; clicked => { root.selected-tab = 0; demo.live = false; GalleryPlotDemoModels.sample-running(false); } }
+            Button { text: @tr("科学绘图"); checkable: true; checked: root.current-tab == 1; clicked => { root.selected-tab = 1; demo.live = false; GalleryPlotDemoModels.sample-running(false); } }
+            Button { text: @tr("交互与导出"); checkable: true; checked: root.current-tab == 2; clicked => { root.selected-tab = 2; } }
+        }
+        overview := GalleryPlotShowcase { visible: root.current-tab == 0; height: root.current-tab == 0 ? self.preferred-height : 0px; explore(mode) => { root.explore(mode); } }
+        scientific := GalleryPlotShowcase { scientific: true; visible: root.current-tab == 1; height: root.current-tab == 1 ? self.preferred-height : 0px; explore(mode) => { root.explore(mode); } }
         demo := ProfessionalPlotDemo {
-            height: 700px * ForgeTypography.scale; vertical-stretch: 0;
+            visible: root.current-tab == 2;
+            height: root.current-tab == 2 ? 760px * ForgeTypography.scale : 0px; vertical-stretch: 0;
             live-points: GalleryPlotDemoModels.live-points;
             sample-running(running) => {GalleryPlotDemoModels.sample-running(running);}
         }

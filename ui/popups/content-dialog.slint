@@ -12,7 +12,15 @@ export component ForgeContentDialog inherits Rectangle {
     in property<bool> dismiss-on-outside: false;
     callback accepted();
     callback canceled();
+    // 返回 true 表示调用方已经处理焦点，未绑定时继续使用确认框的默认顺序。
+    callback initial-focus-requested() -> bool;
+    callback focus-next-requested(reverse: bool) -> bool;
+    callback focus-return-requested();
+    out property<bool> primary-has-focus: accept-button.has-focus;
+    out property<bool> cancel-has-focus: cancel-button.has-focus;
     private property<int> focus-index: 0;
+    public function focus-primary-button() { if root.open && root.primary-enabled { root.focus-index = 0; accept-button.focus-button(); } }
+    public function focus-cancel-button() { if root.open { root.focus-index = 1; cancel-button.focus-button(); } }
     public function dismiss() { if root.open { root.open = false; root.canceled(); } }
     visible: root.open;
     background: #00000080;
@@ -23,6 +31,7 @@ export component ForgeContentDialog inherits Rectangle {
         key-pressed(event) => {
             if event.text == Key.Escape { root.dismiss(); return accept; }
             if event.text == Key.Tab {
+                if root.focus-next-requested(event.modifiers.shift) { return accept; }
                 root.focus-index = 1 - root.focus-index;
                 if root.focus-index == 0 && root.primary-enabled { accept-button.focus-button(); } else { cancel-button.focus-button(); }
                 return accept;
@@ -52,6 +61,11 @@ export component ForgeContentDialog inherits Rectangle {
     }
     }
     changed open => {
-        if root.open { root.focus-index = root.primary-enabled ? 0 : 1; if root.primary-enabled { accept-button.focus-button(); } else { cancel-button.focus-button(); } }
+        if root.open {
+            root.focus-index = root.primary-enabled ? 0 : 1;
+            if !root.initial-focus-requested() {
+                if root.primary-enabled { accept-button.focus-button(); } else { cancel-button.focus-button(); }
+            }
+        } else { root.focus-return-requested(); }
     }
 }

@@ -14,6 +14,8 @@ export component GalleryFormNumberBoxPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "form-number-box";
+        active: root.visible;
         title: "NumberBox";
         subtitle: @tr("输入浮点数，或按设定步长增减。");
         example-title: @tr("用法与状态");

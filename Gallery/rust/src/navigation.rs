@@ -135,7 +135,7 @@ mod tests {
             .iter()
             .find(|entry| entry.item.id == "chart-professional")
             .unwrap();
-        assert_eq!(title(plot, "zh"), "ForgePlot");
+        assert_eq!(title(plot, "zh"), "专业图表");
         assert_eq!(title(plot, "en"), "ForgePlot");
         assert_eq!(plot.item.parent_id.as_deref(), Some("chart"));
         assert_eq!(
@@ -146,6 +146,36 @@ mod tests {
                 .item
                 .id,
             "chart-professional"
+        );
+    }
+
+    #[test]
+    fn every_navigation_level_has_a_chinese_label_and_english_restores() {
+        let entries = entries();
+        for entry in &entries {
+            if entry.item.kind == NavItemKind::Separator {
+                continue;
+            }
+            assert!(
+                title(entry, "zh")
+                    .chars()
+                    .any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c)),
+                "导航项缺少中文名称: {}",
+                entry.item.id
+            );
+            assert_eq!(title(entry, "en"), entry.item.title);
+        }
+        assert_eq!(
+            category(&entries, "form-date-picker", "zh"),
+            "表单 / 选择器"
+        );
+        assert_eq!(
+            category(&entries, "form-date-picker", "en"),
+            "Form / Picker"
+        );
+        assert_eq!(
+            category(&entries, "inputs-filled-button", "zh"),
+            "输入 / 按钮"
         );
     }
 }

@@ -14,6 +14,8 @@ export component GalleryInputsCopyableTextPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "inputs-copyable-text";
+        active: root.visible;
         title: "CopyableText";
         subtitle: @tr("选择或复制文本，然后在输入框粘贴。");
         example-title: @tr("用法与状态");

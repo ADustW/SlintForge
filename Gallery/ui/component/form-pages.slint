@@ -15,19 +15,24 @@ import { GalleryFormMultiTreeComboPage } from "../page/form-multi-tree-combo.sli
 import { GalleryFormNumberBoxPage } from "../page/form-number-box.slint";
 export component GalleryFormPages inherits Rectangle {
     in property<string> active-route-id;
+    in property<string> language: "zh";
+    callback configure-time-preview(bool, bool);
+    configure-time-preview(use-24-hour, clock) => { page-0.configure-preview(use-24-hour, clock); }
+    callback configure-calendar-preview(bool);
+    configure-calendar-preview(with-time) => { page-2.configure-preview(with-time); }
     callback prepare-preview(string, bool);
     prepare-preview(route, open) => { if route == "form-time-picker" { page-0.prepare-preview(open); } if route == "form-date-picker" { page-1.prepare-preview(open); } if route == "form-calendar-picker" { page-2.prepare-preview(open); } if route == "form-textbox" { page-3.prepare-preview(open); } if route == "form-multiline-textbox" { page-4.prepare-preview(open); } if route == "form-scrollable-textbox" { page-5.prepare-preview(open); } if route == "form-password-box" { page-6.prepare-preview(open); } if route == "form-combo-box" { page-7.prepare-preview(open); } if route == "form-spin-box" { page-8.prepare-preview(open); } if route == "form-color-picker" { page-9.prepare-preview(open); } if route == "form-shortcut-picker" { page-10.prepare-preview(open); } if route == "form-auto-suggest" { page-11.prepare-preview(open); } if route == "form-multi-select-combo" { page-12.prepare-preview(open); } if route == "form-multi-tree-combo" { page-13.prepare-preview(open); } if route == "form-number-box" { page-14.prepare-preview(open); } }
-    page-0 := GalleryFormTimePickerPage { width: root.width; height: root.height; visible: root.active-route-id == "form-time-picker"; }
-    page-1 := GalleryFormDatePickerPage { width: root.width; height: root.height; visible: root.active-route-id == "form-date-picker"; }
-    page-2 := GalleryFormCalendarPickerPage { width: root.width; height: root.height; visible: root.active-route-id == "form-calendar-picker"; }
+    page-0 := GalleryFormTimePickerPage { width: root.width; height: root.height; language: root.language; visible: root.active-route-id == "form-time-picker"; }
+    page-1 := GalleryFormDatePickerPage { width: root.width; height: root.height; language: root.language; visible: root.active-route-id == "form-date-picker"; }
+    page-2 := GalleryFormCalendarPickerPage { width: root.width; height: root.height; language: root.language; visible: root.active-route-id == "form-calendar-picker"; }
     page-3 := GalleryFormTextboxPage { width: root.width; height: root.height; visible: root.active-route-id == "form-textbox"; }
     page-4 := GalleryFormMultilineTextboxPage { width: root.width; height: root.height; visible: root.active-route-id == "form-multiline-textbox"; }
     page-5 := GalleryFormScrollableTextboxPage { width: root.width; height: root.height; visible: root.active-route-id == "form-scrollable-textbox"; }
     page-6 := GalleryFormPasswordBoxPage { width: root.width; height: root.height; visible: root.active-route-id == "form-password-box"; }
     page-7 := GalleryFormComboBoxPage { width: root.width; height: root.height; visible: root.active-route-id == "form-combo-box"; }
     page-8 := GalleryFormSpinBoxPage { width: root.width; height: root.height; visible: root.active-route-id == "form-spin-box"; }
-    page-9 := GalleryFormColorPickerPage { width: root.width; height: root.height; visible: root.active-route-id == "form-color-picker"; }
-    page-10 := GalleryFormShortcutPickerPage { width: root.width; height: root.height; visible: root.active-route-id == "form-shortcut-picker"; }
+    page-9 := GalleryFormColorPickerPage { language: root.language; width: root.width; height: root.height; visible: root.active-route-id == "form-color-picker"; }
+    page-10 := GalleryFormShortcutPickerPage { language: root.language; width: root.width; height: root.height; visible: root.active-route-id == "form-shortcut-picker"; }
     page-11 := GalleryFormAutoSuggestPage { width: root.width; height: root.height; visible: root.active-route-id == "form-auto-suggest"; }
     page-12 := GalleryFormMultiSelectComboPage { width: root.width; height: root.height; visible: root.active-route-id == "form-multi-select-combo"; }
     page-13 := GalleryFormMultiTreeComboPage { width: root.width; height: root.height; visible: root.active-route-id == "form-multi-tree-combo"; }

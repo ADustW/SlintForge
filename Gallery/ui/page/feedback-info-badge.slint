@@ -14,6 +14,8 @@ export component GalleryFeedbackInfoBadgePage inherits Rectangle {
     prepare-preview(open) => {  }
     in-out property<int> badge-value: 120;
     sample := GallerySamplePage {
+        showcase-route: "feedback-info-badge";
+        active: root.visible;
         title: "InfoBadge";
         subtitle: @tr("数字、提示点和状态徽标。");
         example-title: @tr("用法与状态");

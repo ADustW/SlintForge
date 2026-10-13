@@ -3,6 +3,7 @@
 macro_rules! bind_plot_services {
     ($ui:expr, $service:ty, $scene:ty, $axis:ty, $range:ty, $rect:ty, $hit:ty, $selection:ty, $export:ty) => {{
         use slint::{ComponentHandle, Model};
+        $crate::runtime::initialize().expect("绘图运行库初始化失败");
         use $crate::plot::{Plot, PlotServiceState, plot_cstring, plot_color};
         use $crate::plot::raw::*;
         let state = std::rc::Rc::new(std::cell::RefCell::new(PlotServiceState::default()));

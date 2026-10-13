@@ -1,0 +1,17 @@
+import { Button, LineEdit, ComboBox } from "std-widgets.slint";
+export component ForgeFlowTransformWindow inherits Window {
+    width: 800px; height: 600px;
+    in-out property<float> zoom: 1.5;
+    in-out property<string> draft: "";
+    out property<int> clicks: 0;
+    out property<int> choice: picker.current-index;
+    Rectangle {
+        x: 60px; y: 50px; width: 300px; height: 280px;
+        transform-origin: { x: 0px, y: 0px }; transform-scale: root.zoom;
+        background: #edf3fb; border-color: #407bb4; border-width: 2px;
+        Text { x: 16px; y: 12px; text: "自定义节点"; color: #203348; }
+        LineEdit { x: 16px; y: 52px; width: 250px; height: 36px; text <=> root.draft; }
+        Button { x: 16px; y: 104px; width: 120px; height: 36px; text: "操作"; clicked => { root.clicks += 1; } }
+        picker := ComboBox { x: 16px; y: 160px; width: 250px; height: 36px; model: ["设备 A", "设备 B"]; }
+    }
+}

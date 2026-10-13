@@ -1,5 +1,7 @@
 # ForgePlot 功能、性能与交付验证
 
+> 阶段记录：本文保留该组件实施时的范围、测试数量和验证结果；v0.1.1 当前能力见接入与交付说明，本次验收以时间戳发布目录中的 ACCEPTANCE.md 和 verification 为准。
+
 日期：2026-10-03。工程：`D:\ai_workspace\SlintForge\SlintForge`。验证平台：Windows x64、Slint 1.18.0、fluent；实际窗口显式使用 `SLINT_BACKEND=winit-software`。C++ 构建使用 `D:\.clion-env\qt-6.8.3-msvc.bat`、CLion 内置 CMake、Visual Studio 18 2026 x64。
 
 `ForgePlot` 已加入组件库、Rust/C++ SDK、Gallery 和两个独立示例。默认轴、自动范围、图例、提示、平移、缩放和选择可直接使用；应用创建窗口后绑定一次宿主服务。接入及完整字段说明见 [专业图表 API](PLOT.md)，能力边界见 [实施范围](PLOT_IMPLEMENTATION.md)，网格接手结果见 [网格审查](GRID_REVIEW.md)。

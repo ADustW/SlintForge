@@ -1,30 +1,21 @@
-import { Button, DatePickerPopup, Date, Palette } from "std-widgets.slint";
+import { ForgeCalendarPicker } from "@slintforge";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { Palette } from "std-widgets.slint";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryPickerExample } from "../component/picker-example.slint";
 
-// Slint 原生示例：CalendarPicker。
 export component GalleryFormCalendarPickerPage inherits Rectangle {
-    in-out property<int> count: 0;
-    in-out property<bool> flag: true;
-    in-out property<float> number: 30;
-    in-out property<string> draft;
-    in-out property<string> status: @tr("就绪");
+    in property<string> language: "zh";
+    private property<bool> preview-with-time: false;
+    callback configure-preview(bool);
+    configure-preview(with-time) => { root.preview-with-time = with-time; }
     callback prepare-preview(bool);
-    prepare-preview(open) => { if open { picker.show(); } else { picker.close(); } }
-    in-out property<Date> selected-date: {year: 2026, month: 10, day: 3};
-    sample := GallerySamplePage {
-        title: "CalendarPicker";
-        subtitle: @tr("切换月份，在月历中选择日期。");
-        example-title: @tr("用法与状态");
-        preview-height: 160px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Button { text: @tr("选择日期"); clicked => { picker.show(); } }
-Text { text: root.selected-date.year + "-" + root.selected-date.month + "-" + root.selected-date.day; color: Palette.foreground; }
-        }
+    prepare-preview(open) => { if open { if root.preview-with-time { second.open(); } else { first.open(); } } else { first.close(); second.close(); } }
+    GalleryPageFrame {
+        width: root.width; height: root.height;
+        background: Palette.color-scheme == ColorScheme.dark ? #282828 : Palette.background;
+        title: @tr("日历选择器"); content-spacing: 20px * ForgeTypography.scale;
+        sample1 := GalleryPickerExample { label: @tr("日期"); preview-height: 70px * ForgeTypography.scale; first := ForgeCalendarPicker { x: 0px; y: 0px; language: root.language; dark: sample1.dark; enabled: !sample1.disabled; } }
+        sample2 := GalleryPickerExample { label: @tr("日期与时间"); preview-height: 70px * ForgeTypography.scale; second := ForgeCalendarPicker { x: 0px; y: 0px; language: root.language; dark: sample2.dark; enabled: !sample2.disabled; show-time: true; } }
     }
-    picker := DatePickerPopup { x: 30px; y: 100px; title: @tr("选择日期"); date: root.selected-date; accepted(value) => { root.selected-date = value; picker.close(); } canceled => { picker.close(); } }
 }

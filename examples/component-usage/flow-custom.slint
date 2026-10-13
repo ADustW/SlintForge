@@ -1,0 +1,17 @@
+import { ForgeFlowCanvas, ForgeFlowNode, ForgeFlowServices } from "@slintforge";
+import { LineEdit } from "std-widgets.slint";
+export component CustomFlowUsage inherits Window {
+    width: 900px; height: 600px;
+    canvas := ForgeFlowCanvas {
+        demo: 1;
+        for n in canvas.state.nodes : ForgeFlowNode {
+            node: n; pan-mode: canvas.pan-mode; read-only: canvas.read-only;
+            visible: canvas.node-visible(n);
+            action(a) => { canvas.act(a); }
+            LineEdit {
+                text: ForgeFlowServices.field(n.data-json, "text");
+                accepted => { canvas.act({op: "field", id: n.id, target: "text", text: self.text}); }
+            }
+        }
+    }
+}

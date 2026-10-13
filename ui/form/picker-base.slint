@@ -1,0 +1,132 @@
+import { Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeDateTime } from "date-time.slint";
+import { ForgeIcon, ForgeIcons } from "../icons/icon.slint";
+
+// 分栏按钮、滚轮和弹层按钮共用尺寸及主题，实例可独立覆盖深浅色。
+export component ForgePickerField inherits Rectangle {
+    in property<[string]> fields;
+    in property<bool> enabled: true;
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> focused: false;
+    callback clicked(int);
+    min-width: 160px * ForgeTypography.scale;
+    preferred-height: 32px * ForgeTypography.scale;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    border-radius: 4px; border-width: 1px;
+    border-color: root.focused ? Palette.accent-background : root.dark ? #454545 : #d0d0d0;
+    background: root.dark ? #303030 : #ffffff;
+    opacity: root.enabled ? 1 : 0.45;
+    for field[index] in root.fields: Rectangle {
+        x: index * root.width / max(1, root.fields.length);
+        width: root.width / max(1, root.fields.length); height: root.height;
+        background: touch.has-hover ? (root.dark ? #ffffff0a : #00000006) : transparent;
+        if index > 0: Rectangle { width: 1px; height: parent.height; background: root.dark ? #454545 : #d0d0d0; }
+        Text { text: field; color: root.dark ? #ffffff : #202020; font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; overflow: elide; }
+        touch := TouchArea { enabled: root.enabled; clicked => { root.clicked(index); } }
+    }
+}
+
+export component ForgePickerAction inherits Rectangle {
+    in property<string> text;
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> primary: false;
+    in property<bool> enabled: true;
+    callback clicked();
+    min-width: 60px * ForgeTypography.scale;
+    preferred-height: 36px * ForgeTypography.scale;
+    horizontal-stretch: 1; vertical-stretch: 0;
+    border-radius: 4px;
+    background: root.primary ? Palette.accent-background : touch.has-hover ? (root.dark ? #ffffff12 : #0000000a) : transparent;
+    opacity: root.enabled ? 1 : 0.45;
+    forward-focus: focus;
+    accessible-role: button; accessible-label: root.text; accessible-enabled: root.enabled;
+    accessible-action-default => { if root.enabled { root.clicked(); } }
+    Text { visible: root.text != "✓" && root.text != "✕"; text: root.text; color: root.primary ? Palette.accent-foreground : root.dark ? #ffffff : #202020; horizontal-alignment: center; vertical-alignment: center; font-size: 14px * ForgeTypography.scale; }
+    if root.text == "✓" || root.text == "✕": ForgeIcon { width: root.width; height: root.height; glyph: root.text == "✓" ? ForgeIcons.checkmark : ForgeIcons.dismiss; color: root.primary ? Palette.accent-foreground : root.dark ? #fff : #202020; font-size: 18px * ForgeTypography.scale; }
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => { if event.text == Key.Return || event.text == " " { root.clicked(); return accept; } return reject; }
+    }
+    touch := TouchArea { enabled: root.enabled; clicked => { focus.focus(); root.clicked(); } }
+}
+
+// 只绘制有限的可见行，年份范围再大也不创建成千上万个对象。
+export component ForgePickerWheel inherits Rectangle {
+    in property<int> minimum: 0;
+    in property<int> maximum: 59;
+    in property<int> step: 1;
+    in-out property<int> value: 0;
+    in property<[string]> labels;
+    in property<int> label-base: root.minimum;
+    in property<bool> pad: true;
+    in property<bool> wrap: true;
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> enabled: true;
+    in property<int> visible-rows: 7;
+    in property<bool> highlight-selection: true;
+    in property<string> accessible-name;
+    callback edited(int);
+    callback accepted();
+    callback canceled();
+    private property<float> drag-start: 0;
+    private property<int> drag-value: 0;
+    private property<bool> dragged: false;
+    private property<int> safe-step: max(1, root.step);
+    private property<int> count: max(1, floor((root.maximum - root.minimum) / root.safe-step) + 1);
+    private property<length> row-height: 40px * ForgeTypography.scale;
+    private property<int> row-count: max(3, min(9, 2 * floor(root.visible-rows / 2) + 1));
+    private property<int> middle-row: floor(root.row-count / 2);
+    pure function value-at(value: int, offset: int) -> int {
+        let index = round((value - root.minimum) / root.safe-step) + offset;
+        return root.minimum + (root.wrap ? mod(mod(index, root.count) + root.count, root.count) : max(0, min(root.count - 1, index))) * root.safe-step;
+    }
+    pure function relative-value(offset: int) -> int { return root.value-at(root.value, offset); }
+    public function change(offset: int) { root.edited(root.relative-value(offset)); }
+    public function focus-wheel() { focus.focus(); }
+    min-width: 64px * ForgeTypography.scale;
+    preferred-height: 280px * ForgeTypography.scale;
+    forward-focus: focus; clip: true;
+    accessible-role: spinbox; accessible-label: root.accessible-name; accessible-value: root.value;
+    if root.highlight-selection: Rectangle { y: (root.height - root.row-height) / 2; height: root.row-height; background: Palette.accent-background; }
+    for index in root.row-count: Text {
+        private property<int> candidate: root.relative-value(index - root.middle-row);
+        y: root.height / 2 + (index - root.middle-row - 0.5) * root.row-height; width: root.width; height: root.row-height;
+        text: root.labels.length > 0 ? root.labels[self.candidate - root.label-base] : root.pad ? ForgeDateTime.two-digits(self.candidate) : "" + self.candidate;
+        visible: root.wrap || (root.value + (index - root.middle-row) * root.safe-step >= root.minimum && root.value + (index - root.middle-row) * root.safe-step <= root.maximum);
+        color: index == root.middle-row ? Palette.accent-foreground : root.dark ? #ffffff : #202020;
+        opacity: index == root.middle-row ? 1 : abs(index - root.middle-row) == 1 ? 0.85 : 0.5;
+        font-size: 14px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center;
+    }
+    touch := TouchArea {
+        enabled: root.enabled;
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down && event.button == PointerEventButton.left {
+                focus.focus(); root.drag-start = self.mouse-y / root.row-height; root.drag-value = root.value; root.dragged = false;
+            }
+        }
+        moved => {
+            if self.pressed && abs(self.mouse-y / root.row-height - root.drag-start) > 0.4 {
+                root.dragged = true;
+                root.edited(root.value-at(root.drag-value, round(root.drag-start - self.mouse-y / root.row-height)));
+            }
+        }
+        clicked => { if !root.dragged { root.change(round((self.mouse-y - root.height / 2) / root.row-height)); } }
+        scroll-event(event) => {
+            if event.delta-y != 0px { focus.focus(); root.change(event.delta-y > 0px ? -1 : 1); return accept; }
+            return reject;
+        }
+    }
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == Key.Return { root.accepted(); return accept; }
+            if event.text == Key.Escape { root.canceled(); return accept; }
+            if event.text == Key.UpArrow { root.change(-1); return accept; }
+            if event.text == Key.DownArrow { root.change(1); return accept; }
+            if event.text == Key.PageUp { root.change(-5); return accept; }
+            if event.text == Key.PageDown { root.change(5); return accept; }
+            return reject;
+        }
+    }
+}

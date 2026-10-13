@@ -17,7 +17,7 @@ Gallery/
 
 左侧分类、搜索、顶栏、页脚、首页分区和示例卡片采用参考 Gallery 的布局方式。顶部模式只占一行，点击分类打开分层下拉菜单；右侧“更多”菜单可访问顶栏宽度之外的分类。导航条目来自同一份 `navigation.txt`，Rust 与 C++ 分别将其注册到本地 `Router/NavTree`。按页面 ID 导航时，宿主展开祖先分组并清除搜索，使当前条目可见。两端只控制状态，页面结构在 `ui/` 中保持唯一。
 
-当前 96 个导航页面全部提供演示：27 页使用原生能力，41 页使用共享组件，28 页为已有演示及辅助页。原有基础、Layouts、Surfaces、字体、图标和设置演示保留。组件页以交互预览区为主，显示 API 提示，新增页面还提供可复制且独立编译验证过的 Slint 用法。预览内容裁剪到卡片边界。布局页面可验证换列、滚动、停靠拖动与隐藏页状态；窗口页面操作 Gallery 主窗口，验证置顶、边角、最大化和截图。`lifecycle` 仍是不显示在导航中的内部验收页。具体范围见 `../docs/COMPONENTS.md`。
+当前 全部导航页面全部提供演示：27 页使用原生能力，41 页使用共享组件，28 页为已有演示及辅助页。原有基础、Layouts、Surfaces、字体、图标和设置演示保留。组件页以交互预览区为主，显示 API 提示，新增页面还提供可复制且独立编译验证过的 Slint 用法。预览内容裁剪到卡片边界。布局页面可验证换列、滚动、停靠拖动与隐藏页状态；窗口页面操作 Gallery 主窗口，验证置顶、边角、最大化和截图。`lifecycle` 仍是不显示在导航中的内部验收页。具体范围见 `../docs/COMPONENTS.md`。
 
 专业图表入口为“图表 → ForgePlot（该菜单第一项）”，英文界面为“Chart → ForgePlot”。首页“最近添加的示例”有 ForgePlot、DataGrid、TreeDataGrid 入口；也可在导航搜索框输入 `ForgePlot`。直接打开专业图表示例：
 
@@ -39,6 +39,8 @@ Rust/C++ 两端共用 `%APPDATA%\SlintForge\Gallery\settings.ini`，保存语言
 
 容器分类的 `ForgePage` 页面可修改输入并获取页面区域截图，预览放在目标之外；`ForgeWindow` 页面提供整个客户区的截图。两页均显示物理像素尺寸并支持导出 PNG。两端宿主共用同一套页面和 API，服务按窗口绑定。`--capture-smoke` 会生成真实窗口、页面、调整尺寸后和最大化后的 PNG，并自动退出；该模式使用默认设置且不保存用户设置。
 
-`--components-smoke` 输出全部 96 页的深色中文、浅色英文/125% 字号、窄窗口中文和 20 个操作状态，每端共 308 张截图。设置 `SLINTFORGE_COMPONENT_QA_FILTER=chart` 可只检查八个图表页面，每端 32 张截图。共享组件的键盘、指针、禁用、边界值和状态保留测试位于 `rust/tests/`；两端 SDK 另有模型、数值和导出测试。
+`--components-smoke` 输出全部 已注册页面的深色中文、浅色英文/125% 字号、窄窗口中文和 20 个操作状态，截图数量由路由和场景目录统计。设置 `SLINTFORGE_COMPONENT_QA_FILTER=chart` 可只检查八个图表页面，每端 32 张截图。共享组件的键盘、指针、禁用、边界值和状态保留测试位于 `rust/tests/`；两端 SDK 另有模型、数值和导出测试。
 
 本轮最终结果、实际截图与安装后消费者验证见 [组件验证记录](../docs/COMPONENT_VERIFICATION.md)。
+
+节点与连线分类包含五个 ForgeFlow 页面，各自保留独立编辑状态。Gallery 默认在启动前选择 `winit-skia`；CPU 验证使用 `winit-skia-software`，接入与验证说明见 [ForgeFlow](../docs/FLOW.md)。

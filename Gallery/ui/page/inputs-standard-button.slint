@@ -14,6 +14,8 @@ export component GalleryInputsStandardButtonPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "inputs-standard-button";
+        active: root.visible;
         title: "Button";
         subtitle: @tr("普通、带图标和禁用按钮，点击查看反馈。");
         example-title: @tr("用法与状态");

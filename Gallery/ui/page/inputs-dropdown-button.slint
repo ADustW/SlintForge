@@ -14,6 +14,8 @@ export component GalleryInputsDropdownButtonPage inherits Rectangle {
     prepare-preview(open) => { if open { control.show(); } else { control.close(); } }
     
     sample := GallerySamplePage {
+        showcase-route: "inputs-dropdown-button";
+        active: root.visible;
         title: "DropDownButton";
         subtitle: @tr("从按钮下拉菜单中选择操作。");
         example-title: @tr("用法与状态");

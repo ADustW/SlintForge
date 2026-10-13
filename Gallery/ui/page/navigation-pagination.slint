@@ -14,6 +14,8 @@ export component GalleryNavigationPaginationPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "navigation-pagination";
+        active: root.visible;
         title: "Pagination";
         subtitle: @tr("切换页码，或跳至第一页和最后一页。");
         example-title: @tr("用法与状态");

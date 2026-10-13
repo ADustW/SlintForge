@@ -21,42 +21,19 @@ pub struct StaggeredLayout {
 
 impl StaggeredLayout {
     pub fn arrange(items: &[StaggeredInput], columns: usize, gap: f32, padding: f32) -> Self {
-        let columns = columns.max(1).min(items.len().max(1));
-        let nonnegative = |value: f32| {
-            if value.is_finite() {
-                value.max(0.0)
-            } else {
-                0.0
-            }
+        let mut arena = slintforge_runtime_api::Arena::default();
+        use slintforge_runtime_api::Wire;
+        let items = items.to_vec();
+        let args = slintforge_runtime_api::models::ArgsArrange {
+            items: items.view(&mut arena),
+            columns,
+            gap,
+            padding,
         };
-        let gap = nonnegative(gap);
-        let padding = nonnegative(padding);
-        let mut column_heights = vec![padding; columns];
-        let mut placements = Vec::with_capacity(items.len());
-        for item in items {
-            let column = column_heights
-                .iter()
-                .enumerate()
-                .min_by(|a, b| a.1.total_cmp(b.1))
-                .expect("至少存在一列")
-                .0;
-            let top = column_heights[column];
-            placements.push(StaggeredPlacement {
-                id: item.id.clone(),
-                column,
-                top,
-            });
-            column_heights[column] += nonnegative(item.height) + gap;
-        }
-        let content_height = if items.is_empty() {
-            padding * 2.0
-        } else {
-            column_heights.into_iter().fold(0.0, f32::max) - gap + padding
-        };
-        Self {
-            placements,
-            content_height,
-        }
+        crate::runtime::value::<StaggeredLayout, _>(
+            slintforge_runtime_api::models::OP_ARRANGE,
+            &args,
+        )
     }
 }
 

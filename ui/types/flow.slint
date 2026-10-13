@@ -1,0 +1,38 @@
+export struct ForgeFlowPortData { id: string, direction: int, side: int, offset: float }
+export struct ForgeFlowNodeData {
+    id: string, kind: string, title: string, data-json: string,
+    x: float, y: float, width: float, height: float,
+    ports: [ForgeFlowPortData], parent: string, side: int, order: int,
+    collapsed: bool, selected: bool, hidden: bool,
+}
+export struct ForgeFlowEdgeData {
+    id: string, path: string, arrow-path: string, label: string,
+    style: int, arrow: bool, stroke-width: float,
+    label-x: float, label-y: float, source-x: float, source-y: float, target-x: float, target-y: float,
+    min-x: float, min-y: float, max-x: float, max-y: float, selected: bool, hidden: bool,
+}
+export struct ForgeFlowViewport { x: float, y: float, zoom: float }
+export struct ForgeFlowRect { x: float, y: float, width: float, height: float }
+export struct ForgeFlowAction {
+    op: string, id: string, target: string, port: string, target-port: string, text: string,
+    x: float, y: float, width: float, height: float, zoom: float,
+    number: int, count: int, flag: bool, additive: bool,
+}
+export struct ForgeFlowState {
+    token: int, revision: int, ok: bool, error: string, mode: string,
+    nodes: [ForgeFlowNodeData], edges: [ForgeFlowEdgeData], viewport: ForgeFlowViewport,
+    bounds: ForgeFlowRect, can-undo: bool, can-redo: bool, selected-id: string, selected-title: string,
+    selected-edge: ForgeFlowEdgeData, selected-edge-count: int,
+    node-count: int, edge-count: int,
+}
+export global ForgeFlowServices {
+    in-out property<bool> connected: false;
+    callback create(string) -> ForgeFlowState;
+    callback execute(int, ForgeFlowAction) -> ForgeFlowState;
+    callback resolve(int, ForgeFlowAction) -> ForgeFlowAction;
+    callback release(int);
+    callback export-json(int) -> string;
+    pure callback field(string, string) -> string;
+    callback save-file(int, string) -> string;
+    callback load-file(int, string) -> ForgeFlowState;
+}

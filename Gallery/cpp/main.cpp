@@ -1,4 +1,6 @@
 #include "gallery.h"
+#include "ForgeFlowBindings.hpp"
+#include <cstdlib>
 #include "ForgeSdk.hpp"
 #include "ForgeStaggeredLayout.hpp"
 #include "ForgeIconCatalog.hpp"
@@ -234,7 +236,10 @@ static void forge_gallery_apply_staggered_layout(const slint::ComponentHandle<Ga
 }
 
 int main(int argc, char** argv) {
+    if (!std::getenv("SLINT_BACKEND")) _putenv_s("SLINT_BACKEND", "winit-skia");
+    if (!std::getenv("WGPU_BACKEND")) _putenv_s("WGPU_BACKEND", "dx12");
     auto ui = GalleryWindow::create();
+    forge_bind_flow_services<ForgeFlowPortData, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport, ForgeFlowRect, ForgeFlowAction, ForgeFlowState, ForgeFlowServices>(ui);
     const bool smoke = argc > 1 && std::string_view(argv[1]) == "--smoke";
     const bool capture_smoke = std::any_of(argv + 1, argv + argc, [](const char* arg) { return std::string_view(arg) == "--capture-smoke"; });
     const bool capture_preview = std::any_of(argv + 1, argv + argc, [](const char* arg) { return std::string_view(arg) == "--capture-preview"; });
@@ -458,7 +463,37 @@ int main(int argc, char** argv) {
         if (ui->get_window_rounded()) throw std::runtime_error("square corners");
         ui->invoke_corner_style_requested(true);
         if (!ui->get_window_rounded()) throw std::runtime_error("rounded corners");
+        // 检查完整树、已展开的侧栏和页脚，覆盖嵌套子项与搜索结果的动态切换。
+        const auto verify_navigation_language = [&](std::string_view language) {
+            for (const auto& model : {ui->get_navigation_items(), ui->get_all_navigation_items(), ui->get_footer_items()}) {
+                for (std::size_t index = 0; index < model->row_count(); ++index) {
+                    const auto row = model->row_data(index);
+                    if (!row) throw std::runtime_error("导航条目不存在");
+                    if (row->kind == ForgeNavItemKind::Separator) continue;
+                    const auto entry = std::find_if(state.entries.begin(), state.entries.end(), [&](const auto& item) { return item.item.id == std::string_view(row->id); });
+                    if (entry == state.entries.end() || std::string_view(row->title) != forge_gallery_title(*entry, language))
+                        throw std::runtime_error("导航语言未同步: " + std::string(row->id));
+                    if (language == "zh" && (entry->zh_title.empty() || entry->zh_title == entry->item.title))
+                        throw std::runtime_error("导航仍为英文: " + entry->item.id);
+                }
+            }
+        };
+        const auto navigation_structure = [&]() {
+            std::string value;
+            for (std::size_t index = 0; index < ui->get_navigation_items()->row_count(); ++index) {
+                const auto row = ui->get_navigation_items()->row_data(index);
+                if (!row) throw std::runtime_error("导航条目不存在");
+                value += std::string(row->id) + "|" + std::string(row->parent_id) + "|" + std::to_string(row->depth) + "|" + (row->expanded ? "1\n" : "0\n");
+            }
+            return value;
+        };
+        const auto route_before_language_switch = ui->get_active_route_id();
+        const auto structure_before_language_switch = navigation_structure();
+        verify_navigation_language("zh");
         ui->invoke_language_requested("en");
+        verify_navigation_language("en");
+        if (std::string_view(ui->get_active_route_id()) != std::string_view(route_before_language_switch) || navigation_structure() != structure_before_language_switch)
+            throw std::runtime_error("语言切换改变了当前路由或展开状态");
         if (std::string_view(ui->get_language()) != "en" ||
             std::string_view(ui->get_qa_localized_settings_label()) != "Settings") throw std::runtime_error("English translation");
         bool translated_settings = false;
@@ -468,6 +503,22 @@ int main(int argc, char** argv) {
         }
         if (!translated_settings) throw std::runtime_error("English navigation");
         ui->invoke_language_requested("zh");
+        verify_navigation_language("zh");
+        if (navigation_structure() != structure_before_language_switch) throw std::runtime_error("中文切换改变了导航结构");
+        ui->invoke_search_requested("日期选择器");
+        const auto date_search = ui->get_navigation_items()->row_data(0);
+        if (ui->get_navigation_items()->row_count() != 1 || !date_search || std::string_view(date_search->id) != "form-date-picker")
+            throw std::runtime_error("中文导航搜索");
+        ui->invoke_language_requested("en");
+        verify_navigation_language("en");
+        if (std::string_view(ui->get_search_query()) != "日期选择器" || std::string_view(ui->get_navigation_items()->row_data(0)->title) != "DatePicker")
+            throw std::runtime_error("英文搜索结果未同步");
+        ui->invoke_language_requested("zh");
+        verify_navigation_language("zh");
+        ui->invoke_search_requested("");
+        if (std::string_view(ui->get_active_route_id()) != std::string_view(route_before_language_switch) || navigation_structure() != structure_before_language_switch)
+            throw std::runtime_error("语言切换未保留导航状态");
+        std::cout << "NAV_LOCALIZATION_OK host=cpp languages=2 nested_items=localized search=localized route=retained expansion=retained\n";
         if (std::string_view(ui->get_qa_localized_settings_label()) != "设置") throw std::runtime_error("Chinese translation");
         ui->invoke_pinned_requested(false);
         if (ui->get_window_pinned()) throw std::runtime_error("unpin");

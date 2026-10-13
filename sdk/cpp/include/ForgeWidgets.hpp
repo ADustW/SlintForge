@@ -3,6 +3,12 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <optional>
+
+std::string forge_color_to_hex(slint::Color color);
+std::optional<slint::Color> forge_color_from_hex(std::string_view text);
+slint::Color forge_screen_color();
+int forge_screen_color_input();
 
 struct ForgeQrImage {
     bool ok = false;
@@ -20,6 +26,24 @@ slint::SharedPixelBuffer<slint::Rgba8Pixel> forge_process_backdrop(const slint::
 template<class Service, class QrResult, class SyntaxLine, class Handle>
 void forge_bind_widget_services(const Handle& ui) {
     auto& service = ui->template global<Service>();
+    service.on_color_to_hex([](slint::Color color) { return slint::SharedString(forge_color_to_hex(color)); });
+    service.on_color_hex_valid([](slint::SharedString text) { return forge_color_from_hex(std::string_view(text)).has_value(); });
+    service.on_color_from_hex([](slint::SharedString text) { return forge_color_from_hex(std::string_view(text)).value_or(slint::Color{}); });
+    service.on_screen_color([] { return forge_screen_color(); });
+    service.on_screen_color_input([] { return forge_screen_color_input(); });
+#ifdef _WIN32
+    service.set_screen_color_supported(true);
+#endif
+    service.on_suggestion_index([](const std::shared_ptr<slint::Model<slint::SharedString>>& suggestions, slint::SharedString query, int start, int direction) {
+        if (!suggestions || direction == 0) return -1;
+        const auto prefix = query.to_lowercase();
+        const auto step = direction < 0 ? -1 : 1;
+        for (std::int64_t index = start; index >= 0 && static_cast<std::size_t>(index) < suggestions->row_count(); index += step) {
+            const auto value = suggestions->row_data(static_cast<std::size_t>(index));
+            if (value && std::string_view(value->to_lowercase()).starts_with(std::string_view(prefix))) return static_cast<int>(index);
+        }
+        return -1;
+    });
     service.on_qr_code([](slint::SharedString text) {
         const auto source = forge_qr_code_image(std::string_view(text));
         QrResult result{};

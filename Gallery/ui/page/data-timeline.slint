@@ -13,6 +13,8 @@ export component GalleryDataTimelinePage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "data-timeline";
+        active: root.visible;
         title: "Timeline";
         subtitle: @tr("沿时间顺序查看已完成和待完成的步骤。");
         example-title: @tr("用法与状态");

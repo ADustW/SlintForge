@@ -7,6 +7,7 @@
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
+#include "ForgeBusinessSmoke.hpp"
 
 static int forge_example_widgets_smoke() {
     auto window = WidgetsWindow::create();
@@ -91,6 +92,8 @@ static int forge_example_grids_smoke() {
 }
 
 int main(int argc, char** argv) {
+    if (argc > 1 && (std::string_view(argv[1]) == "--suggestion-demo" || std::string_view(argv[1]) == "--suggestion-smoke")) return forge_business_suggestion(std::string_view(argv[1]) == "--suggestion-smoke");
+    if (argc > 1 && (std::string_view(argv[1]) == "--dialog-demo" || std::string_view(argv[1]) == "--dialog-smoke")) return forge_business_dialog(std::string_view(argv[1]) == "--dialog-smoke");
     if (argc > 1 && std::string_view(argv[1]) == "--grids-smoke") return forge_example_grids_smoke();
     if (argc > 1 && std::string_view(argv[1]) == "--charts-smoke") return forge_example_charts_smoke();
     if (argc > 1 && std::string_view(argv[1]) == "--widgets-smoke") return forge_example_widgets_smoke();

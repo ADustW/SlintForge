@@ -1,0 +1,44 @@
+import { Date, Time } from "std-widgets.slint";
+import { ForgePickerWheel } from "../../ui/form/picker-base.slint";
+import { ForgeTimePicker, ForgeDatePicker, ForgeCalendarPicker, ForgeColorPicker, ForgeShortcutPicker, ForgeDelayButton, ForgeDelayButtonMode } from "../../ui/slintforge.slint";
+export { ForgeWidgetServices, ForgeQRCodeResult, ForgeSyntaxLine, ForgeDelayButtonMode } from "../../ui/slintforge.slint";
+
+export component ForgePickerTestWindow inherits Window {
+    width: 800px; height: 700px;
+    in-out property<ForgeDelayButtonMode> mode: hold-release;
+    in-out property<bool> enabled: true;
+    in-out property<int> confirmed: 0;
+    in-out property<int> canceled: 0;
+    out property<float> progress: delay.progress;
+    out property<bool> running: delay.running;
+    out property<Date> date: dates.date;
+    out property<Date> draft-date: dates.current-date;
+    out property<bool> date-open: dates.is-open;
+    out property<color> selected-color: colors.value;
+    out property<color> draft-color: colors.draft-value;
+    out property<string> shortcut: shortcuts.shortcut;
+    out property<string> draft-shortcut: shortcuts.draft-shortcut;
+    out property<Time> calendar-time: calendar.time;
+    in-out property<int> calendar-observed-hour: -1;
+    in-out property<int> wheel-model: 10;
+    out property<int> wheel-value: wheel.value;
+    callback change-wheel(int);
+    change-wheel(offset) => { wheel.change(offset); }
+    callback begin(); callback finish(); callback cancel(); callback focus-delay();
+    callback open-date(); callback set-year(int); callback set-month(int); callback set-day(int); callback confirm-date(); callback cancel-date();
+    callback open-color(); callback edit-hex(string); callback confirm-color(); callback cancel-color();
+    callback open-shortcut(); callback confirm-shortcut(); callback reset-shortcut(); callback cancel-shortcut();
+    callback open-calendar(); callback set-calendar-time(Time); callback confirm-calendar(); callback cancel-calendar();
+    begin => { delay.begin(); } finish => { delay.finish(); } cancel => { delay.cancel(); } focus-delay => { delay.focus-button(); }
+    open-date => { dates.open(); } set-year(value) => { dates.set-year(value); } set-month(value) => { dates.set-month(value); } set-day(value) => { dates.set-day(value); }
+    confirm-date => { dates.confirm(); } cancel-date => { dates.cancel(); }
+    open-color => { colors.open(); } edit-hex(text) => { colors.edit-hex(text); } confirm-color => { colors.confirm(); } cancel-color => { colors.cancel(); }
+    open-shortcut => { shortcuts.open(); } confirm-shortcut => { shortcuts.confirm(); } reset-shortcut => { shortcuts.reset(); } cancel-shortcut => { shortcuts.cancel(); }
+    open-calendar => { calendar.open(); } set-calendar-time(value) => { calendar.set-draft-time(value); } confirm-calendar => { calendar.confirm(); } cancel-calendar => { calendar.cancel(); }
+    delay := ForgeDelayButton { x: 10px; y: 10px; width: 260px; mode: root.mode; delay: 100ms; enabled: root.enabled; clicked => { root.confirmed += 1; } canceled => { root.canceled += 1; } }
+    dates := ForgeDatePicker { x: 10px; y: 80px; enabled: root.enabled; date: {year: 2024, month: 2, day: 28}; minimum-date: {year: 2024, month: 2, day: 10}; maximum-date: {year: 2025, month: 3, day: 20}; }
+    colors := ForgeColorPicker { x: 10px; y: 130px; enabled: root.enabled; red: 0; green: 120; blue: 212; }
+    shortcuts := ForgeShortcutPicker { x: 10px; y: 180px; enabled: root.enabled; shortcut: "Alt+A"; }
+    calendar := ForgeCalendarPicker { x: 360px; y: 80px; show-time: true; minute-increment: 5; time: {hour: 9, minute: 30, second: 0}; accepted(value) => { root.calendar-observed-hour = self.time.hour; } }
+    wheel := ForgePickerWheel { x: 360px; y: 460px; height: 200px; width: 80px; step: 5; value: root.wheel-model; edited(value) => { root.wheel-model = value; } }
+}

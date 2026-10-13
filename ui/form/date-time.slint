@@ -1,0 +1,71 @@
+import { Date, Time } from "std-widgets.slint";
+
+// 日期计算和本地化共用同一份 Slint 实现，不依赖宿主系统的区域设置。
+export global ForgeDateTime {
+    pure public function days-in-month(year: int, month: int) -> int {
+        if month == 2 {
+            return mod(year, 400) == 0 || (mod(year, 4) == 0 && mod(year, 100) != 0) ? 29 : 28;
+        }
+        return month == 4 || month == 6 || month == 9 || month == 11 ? 30 : 31;
+    }
+
+    pure public function normalize-date(value: Date) -> Date {
+        let year = max(1, min(9999, value.year));
+        let month = max(1, min(12, value.month));
+        return { year: year, month: month, day: max(1, min(ForgeDateTime.days-in-month(year, month), value.day)) };
+    }
+
+    pure public function date-number(value: Date) -> int { return value.year * 10000 + value.month * 100 + value.day; }
+    pure public function clamp-date(value: Date, minimum: Date, maximum: Date) -> Date {
+        let date = ForgeDateTime.normalize-date(value);
+        return ForgeDateTime.date-number(date) < ForgeDateTime.date-number(minimum) ? minimum
+            : ForgeDateTime.date-number(date) > ForgeDateTime.date-number(maximum) ? maximum : date;
+    }
+
+    pure public function normalize-time(value: Time) -> Time {
+        return { hour: max(0, min(23, value.hour)), minute: max(0, min(59, value.minute)), second: max(0, min(59, value.second)) };
+    }
+
+    // 公历星期：0 为星期日，覆盖 1 至 9999 年。
+    pure public function weekday(value: Date) -> int {
+        let date = ForgeDateTime.normalize-date(value);
+        let offsets = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+        let year = date.year - (date.month < 3 ? 1 : 0);
+        return mod(year + floor(year / 4) - floor(year / 100) + floor(year / 400) + offsets[date.month - 1] + date.day, 7);
+    }
+
+    pure public function month-names(language: string) -> [string] {
+        return language == "en"
+            ? ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            : ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+    }
+
+    pure public function weekday-names(language: string) -> [string] {
+        return language == "en" ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] : ["日", "一", "二", "三", "四", "五", "六"];
+    }
+
+    pure public function two-digits(value: int) -> string {
+        return (value < 10 ? "0" : "") + value;
+    }
+
+    pure public function format-month(year: int, month: int, language: string) -> string {
+        return language == "en" ? ForgeDateTime.month-names(language)[month - 1] + " " + year : year + "年" + month + "月";
+    }
+
+    pure public function format-date(value: Date, language: string) -> string {
+        let date = ForgeDateTime.normalize-date(value);
+        let names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        let day = ForgeDateTime.weekday-names(language)[ForgeDateTime.weekday(date)];
+        return language == "en"
+            ? day + ", " + names[date.month - 1] + " " + ForgeDateTime.two-digits(date.day) + ", " + date.year
+            : date.year + "年" + date.month + "月" + date.day + "日 星期" + day;
+    }
+
+    pure public function format-time(value: Time, language: string, use-24-hour-format: bool) -> string {
+        let time = ForgeDateTime.normalize-time(value);
+        let hour = use-24-hour-format ? time.hour : mod(time.hour + 11, 12) + 1;
+        let text = ForgeDateTime.two-digits(hour) + ":" + ForgeDateTime.two-digits(time.minute) + ":" + ForgeDateTime.two-digits(time.second);
+        if use-24-hour-format { return text; }
+        return language == "en" ? text + (time.hour < 12 ? " AM" : " PM") : (time.hour < 12 ? "上午 " : "下午 ") + text;
+    }
+}

@@ -7,6 +7,7 @@ X 数值刻度|X numeric ticks
 X 文本刻度|X text ticks
 X 无限历史|X unlimited history
 X 日期时间|X date and time
+24 小时制|24-hour format
 X 自动适配|X auto fit
 中点|Midpoint
 中间阶梯|Centered steps
@@ -756,3 +757,149 @@ Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑
 测量左下|Measurement bottom left
 光标复位|Reset cursors
 图例|Legend
+SlintForge 项目报告\n可以选择、复制文本；业务场景可编辑。\nRust 与 C++ 使用共享界面。|SlintForge project report\nSelect and copy text; edit it in the business example.\nRust and C++ share the same UI.
+Tab / Shift+Tab 遍历业务输入，跳过禁用项；关闭后恢复焦点。|Tab / Shift+Tab navigates inputs, skips disabled fields, and restores focus after closing.
+↑ ↓ 导航 · Enter 选择 · Esc 关闭|Up / Down navigates; Enter selects; Esc closes.
+上传报告|Upload report
+业务组合|Business example
+主要操作|Primary action
+交互与导出|Interaction and export
+任务|Task
+任务状态面板|Task status panel
+任务通知|Task notifications
+保存项目|Save project
+允许修改配置|Allow changes
+允许确认|Allow confirmation
+关键词匹配|Keyword matching
+内容与选中状态|Content and selection
+冻结任务列，横向滚动查看其他列。|The task column stays frozen while scrolling horizontally.
+分析|Analysis
+创建任务|Create task
+单系列数据|Single series
+单行数据|Single row
+参数曲线与散点|Parametric curve and markers
+参考|Reference
+可直接操作此示例|Interact with this example
+可继续查看或导出结果。|View or export the results.
+启用端口输入|Enable port input
+启用自动归档|Enable automatic archiving
+固定视图|Pin view
+圆点提示|Dot badge
+在交互示例中打开|Open in interactive demo
+基础样式|Basic style
+堆叠柱状图|Stacked bars
+增益 {}%|Gain {}%
+多个绘图区|Multiple plot areas
+多种效果|State comparison
+对照已填内容或另一种样式。|Compare populated content or an alternative style.
+导出报告|Export report
+少量数据与空列表同样保留表头和列布局。|Small and empty data sets preserve headers and columns.
+工程名称|Project name
+左右双轴|Left and right axes
+已保存设备：{}|Saved device: {}
+已固定|Pinned
+已完成 {}%|{}% complete
+已移除，可重新选择|Removed; select again to restore
+已选择|Selected
+平滑面积图|Smooth area chart
+归档|Archive
+待处理|Pending
+悬停读取数值，点击数据或图例进行交互。|Hover to read values; click data or legends to interact.
+报告已生成|Report generated
+按住 1 秒|Hold for 1 second
+按住 2 秒|Hold for 2 seconds
+搜索设备或组件|Search devices or components
+操作已完成|Action completed
+数字徽标|Numeric badge
+数据与空状态|Data and empty states
+数据目录|Data directory
+数据边界|Data boundaries
+显示密码|Show password
+普通操作|Standard action
+曲线、误差与填充|Curves, errors and fill
+曲线与统计|Curves and statistics
+更多示例|More examples
+本月完成|Completed this month
+极坐标曲线|Polar curve
+查看报告|View report
+查看简化后的数据分布。|Explore a simplified data distribution.
+查看限制、只读或异常情况。|Explore limits, read-only or error states.
+样式对照|Style comparison
+正在连接…|Connecting...
+正负柱状图|Positive and negative bars
+测量|Measurement
+清空数据后保留容器与空状态提示。|An empty data set retains its container and empty-state message.
+生成报告|Generate report
+电流|Current
+直接操作，观察组件反馈。|Interact and observe the component's response.
+确认对话框|Confirmation dialog
+确认配置|Confirm configuration
+禁用与边界状态|Disabled and boundary states
+禁用示例|Disabled example
+禁用视图|Disabled view
+禁用输入|Disabled input
+科学绘图|Scientific plots
+空结果|No matches
+端口（演示禁用项）|Port (disabled example)
+系列对照|Series comparison
+紧凑与只读|Compact and read-only
+紧凑只读视图|Compact read-only view
+统计分布|Statistical distribution
+统计箱与离群值|Box plot and outliers
+自动保存|Auto save
+触发采集|Triggered acquisition
+设备名称|Device name
+设备配置|Device configuration
+设备配置对话框|Device configuration dialog
+请检查设备后重试。|Check the device and try again.
+超出上限|Over the limit
+轨迹|Trajectory
+输入 3～24 个字符|Enter 3 to 24 characters
+连接失败|Connection failed
+连续采集|Continuous acquisition
+选择此项|Select this option
+部分数据缺失|Some data is missing
+采集|Acquisition
+采集、分析|Acquisition, analysis
+采集报告已加载\n电压：12.8 V\n温度：24.5 ℃|Acquisition report loaded\nVoltage: 12.8 V\nTemperature: 24.5 C
+采集数据|Acquire data
+采集项目配置|Acquisition project configuration
+重试|Retry
+错误率|Error rate
+项目名称|Project name
+项目数据看板|Project dashboard
+项目说明\n通道 1：电压采集\n通道 2：温度监测\n采样频率：100 Hz\n触发模式：连续\n存储格式：CSV\n记录开始\n记录结束\n继续滚动查看完整内容\n备注：支持中文输入|Project description\nChannel 1: voltage\nChannel 2: temperature\nSampling rate: 100 Hz\nTrigger: continuous\nStorage: CSV\nStart recording\nStop recording\nScroll to read all content\nNote: Chinese input is supported
+默认状态|Default state
+12 小时制|12-hour format
+24 小时制，5 分钟步长|24-hour format, 5-minute increments
+倒计时完成|Countdown completed
+分栏选择年、月、日，支持字段显示和日期范围。|Select year, month and day with configurable fields and date ranges.
+分栏选择时间，支持区域语言、12/24 小时制和分钟步长。|Segmented time selection with locale, 12/24-hour format and minute increments.
+切换月、年和年代，在日历中选择日期或日期时间。|Browse months, years and decades and select a date or date and time.
+发送消息|Send Message
+延时按钮|DelayButton
+快捷键|Shortcut
+快捷键选择器|ShortcutPicker
+截图|Screenshots
+打开 Gallery|Open Gallery
+按下组合键，使用保存、重置或取消提交快捷键。|Press a key combination, then save, reset or cancel.
+按住 1.2 秒直接确认|Hold 1.2 seconds to confirm
+按住 1.2 秒，松开确认|Hold 1.2 seconds, release to confirm
+按住确认完成|Hold confirmed
+按钮内部显示填色进度，支持按住完成、松开确认与点击倒计时。|Progress fills the button; hold, release to confirm, or click to start a countdown.
+日历选择器|CalendarPicker
+日期|Date
+日期与时间|Date and time
+日期选择器|DatePicker
+时间选择器|TimePicker
+松开确认完成|Release confirmed
+点击启动倒计时，再次点击取消|Click to start; click again to cancel
+确认模式|Confirmation modes
+英文区域|English locale
+英文区域，2000—2100 年|English locale, years 2000–2100
+选择颜色|Choose Color
+通过色谱、调色板、十六进制和颜色通道选择颜色，确认后提交。|Choose with spectrum, palette, hexadecimal or color channels; confirm to commit.
+锁定 Gallery|Lock Gallery
+颜色与屏幕取色|Color and screen eyedropper
+颜色选择器|ColorPicker
+默认区域|Default locale

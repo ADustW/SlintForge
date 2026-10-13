@@ -1,29 +1,160 @@
-import { Slider, SpinBox, Palette } from "std-widgets.slint";
+import { Slider, SpinBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
+import { ForgePickerAction } from "picker-base.slint";
+import { ForgeWidgetServices } from "../types/widgets.slint";
+import { ForgeIcon, ForgeIcons } from "../icons/icon.slint";
 
 export component ForgeColorPicker inherits Rectangle {
+    in property<string> language: "zh";
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> enabled: true;
     in-out property<int> red: 64;
     in-out property<int> green: 128;
     in-out property<int> blue: 224;
     in-out property<int> alpha: 255;
-    in property<bool> enabled: true;
-    out property<color> value: rgba(Math.max(0, Math.min(255, root.red)), Math.max(0, Math.min(255, root.green)), Math.max(0, Math.min(255, root.blue)), Math.max(0, Math.min(255, root.alpha)) / 255);
+    out property<color> value: rgba(max(0, min(255, root.red)), max(0, min(255, root.green)), max(0, min(255, root.blue)), max(0, min(255, root.alpha)) / 255);
+    out property<color> draft-value: hsv(root.hue, root.saturation, root.brightness, root.opacity-value);
+    out property<bool> is-open: popup.is-open;
+    out property<bool> picking-screen: root.picking;
+    private property<float> hue: 0;
+    private property<float> saturation: 1;
+    private property<float> brightness: 1;
+    private property<float> opacity-value: 1;
+    private property<int> tab: 0;
+    private property<int> draft-red: 0;
+    private property<int> draft-green: 0;
+    private property<int> draft-blue: 0;
+    private property<string> hex-text;
+    private property<bool> hex-invalid: false;
+    private property<bool> pending: false;
+    private property<bool> picking: false;
+    private property<bool> screen-armed: false;
+    private property<float> scale: ForgeTypography.scale;
     callback color-changed(color);
+    callback accepted(color);
+    callback canceled();
+    public function set-draft(value: color) {
+        let hsv = value.to-hsv(); root.hue = hsv.hue; root.saturation = hsv.saturation; root.brightness = hsv.value; root.opacity-value = hsv.alpha;
+        root.hex-text = ForgeWidgetServices.connected ? ForgeWidgetServices.color-to-hex(value) : "";
+        root.hex-invalid = false;
+    }
+    public function open() { if root.enabled { root.set-draft(root.value); root.tab = 0; root.pending = true; popup.show(); } }
+    public function close() { root.pending = false; root.picking = false; popup.close(); }
+    public function confirm() {
+        if root.hex-invalid { return; }
+        let color = root.draft-value; root.close();
+        root.red = color.red; root.green = color.green; root.blue = color.blue; root.alpha = color.alpha;
+        root.accepted(root.value); focus.focus();
+    }
+    public function cancel() { root.close(); root.canceled(); focus.focus(); }
+    public function edit-hex(text: string) {
+        root.hex-text = text;
+        root.hex-invalid = !ForgeWidgetServices.connected || !ForgeWidgetServices.color-hex-valid(text);
+        if !root.hex-invalid { root.set-draft(ForgeWidgetServices.color-from-hex(text)); }
+    }
+    public function start-screen-pick() {
+        if root.enabled && ForgeWidgetServices.screen-color-supported { root.picking = true; root.screen-armed = false; }
+    }
     changed red => { root.color-changed(root.value); }
     changed green => { root.color-changed(root.value); }
     changed blue => { root.color-changed(root.value); }
     changed alpha => { root.color-changed(root.value); }
-    min-width: 260px; preferred-height: layout.preferred-height;
-    layout := VerticalLayout {
-        spacing: 10px;
-        Rectangle {
-            height: 70px; border-radius: 6px; background: root.value;
-            border-width: 1px; border-color: Palette.border;
-            Text { text: "RGBA \{root.red}, \{root.green}, \{root.blue}, \{root.alpha}"; color: root.red + root.green + root.blue > 380 ? #111 : #fff; horizontal-alignment: center; vertical-alignment: center; font-size: 13px * ForgeTypography.scale; }
+    preferred-width: 72px * root.scale;
+    preferred-height: 36px * root.scale; horizontal-stretch: 0; vertical-stretch: 0; forward-focus: focus;
+    width: root.preferred-width; height: root.preferred-height;
+    border-radius: 4px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; background: root.dark ? #303030 : #fff;
+    opacity: root.enabled ? 1 : 0.45;
+    swatch := Rectangle { x: 6px * root.scale; y: 6px * root.scale; width: 24px * root.scale; height: 24px * root.scale; border-radius: 3px; background: root.value; }
+    Rectangle { x: 36px * root.scale; y: 6px * root.scale; width: 1px; height: 24px * root.scale; background: root.dark ? #454545 : #ddd; }
+    ForgeIcon { x: 40px * root.scale; width: 28px * root.scale; height: root.height; glyph: ForgeIcons.eyedropper; color: root.dark ? #fff : #202020; font-size: 16px * root.scale; }
+    TouchArea { x: 0px; width: 36px * root.scale; height: root.height; enabled: root.enabled; clicked => { root.open(); } }
+    TouchArea { x: 38px * root.scale; width: 34px * root.scale; height: root.height; enabled: root.enabled; clicked => { root.open(); root.start-screen-pick(); } }
+    focus := FocusScope { enabled: root.enabled; key-pressed(event) => { if event.text == " " || event.text == Key.Return { root.open(); return accept; } return reject; } }
+    popup := PopupWindow {
+        y: root.height + 4px; width: 370px * root.scale; height: 514px * root.scale;
+        close-policy: no-auto-close; forward-focus: popup-focus;
+        Rectangle { background: root.dark ? #242424 : #fff; border-radius: 8px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        popup-focus := FocusScope {
+            width: 100%; height: 100%; key-pressed(event) => { if event.text == Key.Escape { if root.picking { root.picking = false; } else { root.cancel(); } return accept; } return reject; }
+        screen-focus := FocusScope { key-pressed(event) => { if root.picking && event.text == Key.Escape { root.picking = false; return accept; } return reject; } }
+        VerticalLayout {
+            padding: 16px * root.scale; spacing: 10px * root.scale;
+            Text { text: root.language == "en" ? "Color Picker" : "颜色选择器"; color: root.dark ? #fff : #202020; font-size: 18px * root.scale; font-weight: 600; }
+            HorizontalLayout {
+                ForgePickerAction { dark: root.dark; primary: root.tab == 0; text: root.language == "en" ? "Spectrum" : "色谱"; clicked => { root.tab = 0; } }
+                ForgePickerAction { dark: root.dark; primary: root.tab == 1; text: root.language == "en" ? "Palette" : "调色板"; clicked => { root.tab = 1; } }
+            }
+            if root.tab == 0: spectrum := Rectangle {
+                height: 170px * root.scale; background: hsv(root.hue, 1, 1);
+                Rectangle { background: @linear-gradient(90deg, #fff, #ffffff00); }
+                Rectangle { background: @linear-gradient(0deg, #000, #00000000); }
+                Rectangle { x: root.saturation * parent.width - 6px; y: (1 - root.brightness) * parent.height - 6px; width: 12px; height: 12px; border-radius: 6px; border-width: 2px; border-color: #fff; background: transparent; }
+                TouchArea {
+                    pointer-event(event) => { if event.kind == PointerEventKind.down { root.saturation = max(0, min(1, self.mouse-x / spectrum.width)); root.brightness = max(0, min(1, 1 - self.mouse-y / spectrum.height)); } }
+                    moved => { if self.pressed { root.saturation = max(0, min(1, self.mouse-x / spectrum.width)); root.brightness = max(0, min(1, 1 - self.mouse-y / spectrum.height)); } }
+                }
+            }
+            if root.tab == 1: Rectangle {
+                height: 170px * root.scale;
+                for color[index] in [#ffffff, #000000, #e81123, #ea005e, #c239b3, #881798, #0078d4, #00b7c3, #00cc6a, #10893e, #ffb900, #f7630c, #8e562e, #8764b8, #69797e, #9a0089, #004e8c, #038387, #498205, #da3b01, #c8c8c8, #7a7574, #4a5459, #2d7d9a, #515c6b, #b146c2, #567c73, #a80000]: Rectangle {
+                    x: mod(index, 7) * parent.width / 7; y: floor(index / 7) * 40px * root.scale;
+                    width: parent.width / 7 - 5px; height: 34px * root.scale; border-radius: 4px; background: color;
+                    border-width: 1px; border-color: root.dark ? #666 : #aaa;
+                    TouchArea { clicked => { root.set-draft(color); } }
+                }
+            }
+            hue-bar := Rectangle {
+                height: 16px * root.scale;
+                background: @linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+                Rectangle { x: root.hue / 360 * parent.width - 4px; width: 8px; height: parent.height; border-width: 2px; border-color: #fff; border-radius: 3px; background: transparent; }
+                TouchArea { pointer-event(event) => { if event.kind == PointerEventKind.down { root.hue = max(0, min(359.9, self.mouse-x / hue-bar.width * 360)); } } moved => { if self.pressed { root.hue = max(0, min(359.9, self.mouse-x / hue-bar.width * 360)); } } }
+            }
+            HorizontalLayout {
+                Rectangle { width: 48px * root.scale; height: 34px * root.scale; border-radius: 4px; background: root.draft-value; border-width: 1px; border-color: root.dark ? #555 : #aaa; }
+                LineEdit { text <=> root.hex-text; placeholder-text: "#RRGGBB / #RRGGBBAA"; enabled: ForgeWidgetServices.connected; edited(text) => { root.edit-hex(text); } }
+            }
+            if root.hex-invalid: Text { text: root.language == "en" ? "Invalid hexadecimal color" : "颜色格式不正确"; color: #e81123; font-size: 12px * root.scale; }
+            HorizontalLayout {
+                spacing: 8px;
+                VerticalLayout {
+                    Text { text: root.language == "en" ? "Red" : "红"; color: root.dark ? #fff : #202020; font-size: 12px * root.scale; }
+                    SpinBox { minimum: 0; maximum: 255; value <=> root.draft-red; edited(value) => { root.set-draft(rgba(value, root.draft-value.green, root.draft-value.blue, root.opacity-value)); } }
+                }
+                VerticalLayout {
+                    Text { text: root.language == "en" ? "Green" : "绿"; color: root.dark ? #fff : #202020; font-size: 12px * root.scale; }
+                    SpinBox { minimum: 0; maximum: 255; value <=> root.draft-green; edited(value) => { root.set-draft(rgba(root.draft-value.red, value, root.draft-value.blue, root.opacity-value)); } }
+                }
+                VerticalLayout {
+                    Text { text: root.language == "en" ? "Blue" : "蓝"; color: root.dark ? #fff : #202020; font-size: 12px * root.scale; }
+                    SpinBox { minimum: 0; maximum: 255; value <=> root.draft-blue; edited(value) => { root.set-draft(rgba(root.draft-value.red, root.draft-value.green, value, root.opacity-value)); } }
+                }
+            }
+            HorizontalLayout {
+                Text { text: root.language == "en" ? "Opacity" : "不透明度"; color: root.dark ? #fff : #202020; vertical-alignment: center; }
+                Slider { minimum: 0; maximum: 1; value <=> root.opacity-value; }
+                Text { text: round(root.opacity-value * 100) + "%"; color: root.dark ? #fff : #202020; vertical-alignment: center; }
+            }
+            if root.picking: Text { text: root.language == "en" ? "Click a screen pixel; Esc to cancel" : "点击屏幕取色，Esc 取消"; color: Palette.accent-background; font-size: 12px * root.scale; }
+            HorizontalLayout {
+                ForgePickerAction { dark: root.dark; text: root.language == "en" ? "Cancel" : "取消"; clicked => { root.cancel(); } }
+                ForgePickerAction { dark: root.dark; primary: true; enabled: !root.hex-invalid && !root.picking; text: root.language == "en" ? "OK" : "确定"; clicked => { root.confirm(); } }
+            }
         }
-        HorizontalLayout { spacing: 8px; Text { text: "R"; width: 20px; color: Palette.foreground; vertical-alignment: center; } Slider { minimum: 0; maximum: 255; value: root.red; enabled: root.enabled; changed(value) => { root.red = round(value); } } SpinBox { minimum: 0; maximum: 255; value <=> root.red; enabled: root.enabled; } }
-        HorizontalLayout { spacing: 8px; Text { text: "G"; width: 20px; color: Palette.foreground; vertical-alignment: center; } Slider { minimum: 0; maximum: 255; value: root.green; enabled: root.enabled; changed(value) => { root.green = round(value); } } SpinBox { minimum: 0; maximum: 255; value <=> root.green; enabled: root.enabled; } }
-        HorizontalLayout { spacing: 8px; Text { text: "B"; width: 20px; color: Palette.foreground; vertical-alignment: center; } Slider { minimum: 0; maximum: 255; value: root.blue; enabled: root.enabled; changed(value) => { root.blue = round(value); } } SpinBox { minimum: 0; maximum: 255; value <=> root.blue; enabled: root.enabled; } }
-        HorizontalLayout { spacing: 8px; Text { text: "A"; width: 20px; color: Palette.foreground; vertical-alignment: center; } Slider { minimum: 0; maximum: 255; value: root.alpha; enabled: root.enabled; changed(value) => { root.alpha = round(value); } } SpinBox { minimum: 0; maximum: 255; value <=> root.alpha; enabled: root.enabled; } }
+
+        }
+}
+    changed draft-value => { root.draft-red = root.draft-value.red; root.draft-green = root.draft-value.green; root.draft-blue = root.draft-value.blue; if !root.hex-invalid && ForgeWidgetServices.connected { root.hex-text = ForgeWidgetServices.color-to-hex(root.draft-value); } }
+    Timer {
+        interval: 33ms; running: root.picking;
+        triggered => {
+            let input = ForgeWidgetServices.screen-color-input();
+            if input == 2 { root.picking = false; }
+            else {
+                if input == 0 { root.screen-armed = true; }
+                root.set-draft(ForgeWidgetServices.screen-color());
+                if root.screen-armed && (input == 1 || input == 3) { root.picking = false; }
+            }
+        }
     }
+    changed enabled => { if !root.enabled { root.close(); } }
 }

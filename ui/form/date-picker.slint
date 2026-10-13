@@ -1,0 +1,365 @@
+import { Date, Time, Palette } from "std-widgets.slint";
+import { ForgeTypography } from "../typography/typography.slint";
+import { ForgeDateTime } from "date-time.slint";
+import { ForgePickerField, ForgePickerWheel, ForgePickerAction } from "picker-base.slint";
+import { ForgeIcon, ForgeIcons } from "../icons/icon.slint";
+
+// 保留已有日历弹层 API；分栏日期选择器独立使用滚轮弹层。
+export component ForgeDatePickerPopup inherits Rectangle {
+    width: 0px; height: 0px;
+    in property<string> language: "zh";
+    in property<string> title: root.language == "en" ? "Select date" : "选择日期";
+    in property<Date> date: {year: 2026, month: 10, day: 12};
+    in property<Date> minimum-date: {year: 1, month: 1, day: 1};
+    in property<Date> maximum-date: {year: 9999, month: 12, day: 31};
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> show-time: false;
+    in property<bool> confirm-on-selection: false;
+    in property<Time> time: {hour: 9, minute: 0, second: 0};
+    in property<int> minute-increment: 1;
+    out property<bool> is-open: popup.is-open;
+    changed is-open => { if !root.is-open && root.pending { root.pending = false; root.canceled(); } }
+    out property<Date> current-date: root.draft;
+    out property<Time> current-time: root.draft-time;
+    out property<string> date-text: ForgeDateTime.format-date(root.draft, root.language);
+    out property<string> month-text: ForgeDateTime.format-month(root.display-year, root.display-month, root.language);
+    private property<Date> draft: ForgeDateTime.normalize-date(root.date);
+    private property<Time> draft-time: root.time;
+    private property<int> display-year: root.draft.year;
+    private property<int> display-month: root.draft.month;
+    private property<int> view: 0;
+    private property<bool> pending: false;
+    private property<int> offset: mod(ForgeDateTime.weekday({year: root.display-year, month: root.display-month, day: 1}) + (root.language == "en" ? 0 : 6), 7);
+    private property<float> scale: ForgeTypography.scale;
+    private property<Date> lower: ForgeDateTime.normalize-date(root.minimum-date);
+    private property<Date> upper: ForgeDateTime.date-number(root.maximum-date) < ForgeDateTime.date-number(root.lower) ? root.lower : ForgeDateTime.normalize-date(root.maximum-date);
+    callback accepted(Date);
+    callback time-accepted(Time);
+    callback canceled();
+    public function open() {
+        root.draft = ForgeDateTime.clamp-date(root.date, root.lower, root.upper);
+        root.set-time(root.time);
+        root.display-year = root.draft.year; root.display-month = root.draft.month;
+        root.view = 0; root.pending = true; popup.show();
+    }
+    public function close() { root.pending = false; popup.close(); }
+    public function set-time(value: Time) {
+        let time = ForgeDateTime.normalize-time(value);
+        let step = max(1, min(59, root.minute-increment));
+        root.draft-time = {hour: time.hour, minute: min(floor(59 / step), round(time.minute / step)) * step, second: time.second};
+    }
+    public function choose-day(day: int) {
+        let candidate = {year: root.display-year, month: root.display-month, day: day};
+        if day >= 1 && day <= ForgeDateTime.days-in-month(root.display-year, root.display-month)
+            && ForgeDateTime.date-number(candidate) >= ForgeDateTime.date-number(root.lower)
+            && ForgeDateTime.date-number(candidate) <= ForgeDateTime.date-number(root.upper) { root.draft = candidate; }
+    }
+    public function browse-month(delta: int) {
+        let index = max(0, min(119987, (root.display-year - 1) * 12 + root.display-month - 1 + delta));
+        root.display-year = floor(index / 12) + 1; root.display-month = mod(index, 12) + 1;
+    }
+    // 六行月历同时呈现相邻月份，点击时仍严格检查日期范围。
+    pure function cell-date(index: int) -> Date {
+        let day = index - root.offset + 1;
+        let previous-year = root.display-month == 1 ? root.display-year - 1 : root.display-year;
+        let previous-month = root.display-month == 1 ? 12 : root.display-month - 1;
+        let days = ForgeDateTime.days-in-month(root.display-year, root.display-month);
+        return day < 1 ? {year: previous-year, month: previous-month, day: ForgeDateTime.days-in-month(previous-year, previous-month) + day}
+            : day > days ? {year: root.display-month == 12 ? root.display-year + 1 : root.display-year, month: root.display-month == 12 ? 1 : root.display-month + 1, day: day - days}
+            : {year: root.display-year, month: root.display-month, day: day};
+    }
+    function choose-cell(index: int) {
+        let candidate = root.cell-date(index);
+        if candidate.year >= 1 && candidate.year <= 9999 && ForgeDateTime.date-number(candidate) >= ForgeDateTime.date-number(root.lower)
+            && ForgeDateTime.date-number(candidate) <= ForgeDateTime.date-number(root.upper) {
+            root.display-year = candidate.year; root.display-month = candidate.month; root.draft = candidate;
+            if root.confirm-on-selection && !root.show-time { root.confirm(); }
+        }
+    }
+    public function confirm() { root.close(); root.accepted(root.draft); if root.show-time { root.time-accepted(root.draft-time); } }
+    public function cancel() { root.close(); root.canceled(); }
+    popup := PopupWindow {
+        width: (root.show-time ? 500px : 300px) * root.scale; height: 350px * root.scale;
+        close-policy: close-on-click-outside; forward-focus: scope;
+        Rectangle { background: root.dark ? #2b2b2b : #fff; border-radius: 4px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        scope := FocusScope {
+            width: 100%; height: 100%;
+            key-pressed(event) => {
+                if event.text == Key.Escape { root.cancel(); return accept; }
+                if event.text == Key.Return { root.confirm(); return accept; }
+                if event.text == Key.PageUp { root.browse-month(-1); return accept; }
+                if event.text == Key.PageDown { root.browse-month(1); return accept; }
+                return reject;
+            }
+
+        Rectangle {
+            x: 0px; y: 0px; width: 300px * root.scale; height: parent.height;
+            VerticalLayout {
+                padding: 0px; spacing: 0px;
+                Rectangle {
+                    height: 50px * root.scale;
+                    HorizontalLayout {
+                        padding-left: 10px * root.scale; padding-right: 10px * root.scale; spacing: 10px * root.scale;
+                        ForgePickerAction {
+                            dark: root.dark; text: "";
+                            accessible-label: heading.text;
+                            heading := Text {
+                                x: 10px * root.scale; width: max(0px, parent.width - 20px * root.scale); height: parent.height;
+                                text: root.view == 0 ? root.month-text : root.view == 1 ? "" + root.display-year : floor(root.display-year / 10) * 10 + " - " + (floor(root.display-year / 10) * 10 + 9);
+                                color: root.dark ? #fff : #202020; font-size: 13px * root.scale; vertical-alignment: center;
+                            }
+                            clicked => { if root.view < 2 { root.view += 1; } }
+                        }
+                        ForgePickerAction {
+                            dark: root.dark; min-width: 30px * root.scale; horizontal-stretch: 0; text: "";
+                            accessible-label: root.language == "en" ? "Previous" : "上一页";
+                            ForgeIcon { width: parent.width; height: parent.height; glyph: "\u{f2b5}"; font-size: 12px * root.scale; color: root.dark ? #fff : #202020; }
+                            clicked => { root.browse-month(root.view == 0 ? -1 : root.view == 1 ? -12 : -120); }
+                        }
+                        ForgePickerAction {
+                            dark: root.dark; min-width: 30px * root.scale; horizontal-stretch: 0; text: "";
+                            accessible-label: root.language == "en" ? "Next" : "下一页";
+                            ForgeIcon { width: parent.width; height: parent.height; glyph: "\u{f2a2}"; font-size: 12px * root.scale; color: root.dark ? #fff : #202020; }
+                            clicked => { root.browse-month(root.view == 0 ? 1 : root.view == 1 ? 12 : 120); }
+                        }
+                    }
+                    Rectangle { y: parent.height - 1px; height: 1px; background: root.dark ? #454545 : #ddd; }
+                }
+                if root.view == 0: Rectangle {
+                    height: 24px * root.scale;
+                    for label[index] in (root.language == "en" ? ForgeDateTime.weekday-names("en") : ["一", "二", "三", "四", "五", "六", "日"]): Text {
+                        x: 10px * root.scale + index * (parent.width - 20px * root.scale) / 7;
+                        width: (parent.width - 20px * root.scale) / 7; height: parent.height;
+                        text: label; color: root.dark ? #fff : #202020; horizontal-alignment: center; vertical-alignment: center; font-size: 13px * root.scale;
+                    }
+                }
+                grid := Rectangle {
+                    vertical-stretch: 1;
+                    for index in (root.view == 0 ? 42 : 12): Rectangle {
+                        private property<int> year: floor(root.display-year / 10) * 10 + index - 1;
+                        private property<Date> candidate: root.cell-date(index);
+                        private property<bool> available: root.view == 0 ? self.candidate.year >= 1 && self.candidate.year <= 9999
+                            && ForgeDateTime.date-number(self.candidate) >= ForgeDateTime.date-number(root.lower) && ForgeDateTime.date-number(self.candidate) <= ForgeDateTime.date-number(root.upper)
+                            : root.view == 1 ? root.display-year >= root.lower.year && root.display-year <= root.upper.year && (root.display-year != root.lower.year || index + 1 >= root.lower.month) && (root.display-year != root.upper.year || index + 1 <= root.upper.month)
+                            : self.year >= root.lower.year && self.year <= root.upper.year;
+                        private property<bool> selected: root.view == 0 ? ForgeDateTime.date-number(self.candidate) == ForgeDateTime.date-number(root.draft)
+                            : root.view == 1 ? index + 1 == root.draft.month && root.display-year == root.draft.year : self.year == root.draft.year;
+                        private property<bool> adjacent: root.view == 0 && self.candidate.month != root.display-month;
+                        private property<length> cell-width: (parent.width - 20px * root.scale) / (root.view == 0 ? 7 : 4);
+                        private property<length> cell-height: parent.height / (root.view == 0 ? 6 : 3);
+                        width: root.view == 0 ? 40px * root.scale : self.cell-width - 6px * root.scale;
+                        height: root.view == 0 ? min(40px * root.scale, self.cell-height) : self.cell-height - 6px * root.scale;
+                        x: 10px * root.scale + mod(index, root.view == 0 ? 7 : 4) * self.cell-width + (self.cell-width - self.width) / 2;
+                        y: floor(index / (root.view == 0 ? 7 : 4)) * self.cell-height + (self.cell-height - self.height) / 2;
+                        border-radius: root.view == 0 ? self.width / 2 : 4px;
+                        border-width: self.selected ? 1px : 0px; border-color: Palette.accent-background;
+                        background: touch.has-hover && self.available ? (root.dark ? #ffffff12 : #00000008) : transparent;
+                        opacity: self.available ? 1 : 0.3;
+                        accessible-role: button; accessible-enabled: self.available;
+                        accessible-label: root.view == 0 ? ForgeDateTime.format-date(self.candidate, root.language) : label.text;
+                        label := Text {
+                            text: root.view == 0 ? "" + parent.candidate.day : root.view == 1 ? ForgeDateTime.month-names(root.language)[index] : "" + parent.year;
+                            color: root.dark ? #fff : #202020; opacity: parent.adjacent && !touch.has-hover ? 0.3 : 1;
+                            horizontal-alignment: center; vertical-alignment: center; font-size: 13px * root.scale; overflow: elide;
+                        }
+                        touch := TouchArea {
+                            enabled: parent.available;
+                            clicked => {
+                                if root.view == 0 { root.choose-cell(index); }
+                                else if root.view == 1 { root.display-month = index + 1; root.view = 0; }
+                                else { root.display-year = parent.year; root.view = 1; }
+                            }
+                        }
+                    }
+                }
+                if !root.confirm-on-selection && !root.show-time: Rectangle {
+                    height: 40px * root.scale;
+                    Rectangle { x: 0px; y: 0px; width: parent.width; height: 1px; background: root.dark ? #454545 : #ddd; }
+                    HorizontalLayout {
+                        padding: 4px * root.scale; spacing: 0px;
+                        ForgePickerAction { dark: root.dark; text: "✓"; accessible-label: root.language == "en" ? "Confirm" : "确定"; clicked => { root.confirm(); } }
+                        ForgePickerAction { dark: root.dark; text: "✕"; accessible-label: root.language == "en" ? "Cancel" : "取消"; clicked => { root.cancel(); } }
+                    }
+                }
+            }
+        }
+        if root.show-time: Rectangle {
+            x: 300px * root.scale; y: 0px; width: 200px * root.scale; height: parent.height;
+            Rectangle { x: 0px; width: 1px; height: parent.height; background: root.dark ? #454545 : #ddd; }
+            Rectangle { x: 4px * root.scale; y: (parent.height - 80px * root.scale) / 2; width: parent.width - 8px * root.scale; height: 40px * root.scale; border-radius: 4px; background: Palette.accent-background; }
+            HorizontalLayout {
+                x: 1px; y: 0px; width: parent.width - 2px; height: parent.height - 40px * root.scale; spacing: 1px; padding: 0px;
+                ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); } dark: root.dark; visible-rows: 9; highlight-selection: false; maximum: 23; value: root.draft-time.hour; accessible-name: root.language == "en" ? "Hour" : "时"; edited(value) => { root.draft-time.hour = value; } }
+                ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); } dark: root.dark; visible-rows: 9; highlight-selection: false; value: root.draft-time.minute; step: max(1, min(59, root.minute-increment)); accessible-name: root.language == "en" ? "Minute" : "分"; edited(value) => { root.draft-time.minute = value; } }
+                ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); } dark: root.dark; visible-rows: 9; highlight-selection: false; value: root.draft-time.second; accessible-name: root.language == "en" ? "Second" : "秒"; edited(value) => { root.draft-time.second = value; } }
+            }
+            Rectangle {
+                y: parent.height - self.height; height: 40px * root.scale;
+                // 分隔线固定在按钮栏顶部，避免默认居中后穿过确认和取消图标。
+                Rectangle { x: 0px; y: 0px; width: parent.width; height: 1px; background: root.dark ? #454545 : #ddd; }
+                HorizontalLayout {
+                    padding: 4px * root.scale; spacing: 0px;
+                    ForgePickerAction { dark: root.dark; text: "✓"; accessible-label: root.language == "en" ? "Confirm" : "确定"; clicked => { root.confirm(); } }
+                    ForgePickerAction { dark: root.dark; text: "✕"; accessible-label: root.language == "en" ? "Cancel" : "取消"; clicked => { root.cancel(); } }
+                }
+                Rectangle { x: parent.width / 2; y: 1px; width: 1px; height: parent.height - 1px; background: root.dark ? #454545 : #ddd; }
+            }
+        }
+
+        }
+}
+}
+
+export component ForgeDatePicker inherits Rectangle {
+    in property<string> language: "zh";
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> enabled: true;
+    in property<bool> show-year: true;
+    in property<bool> show-month: true;
+    in property<bool> show-day: true;
+    in property<Date> minimum-date: {year: 1924, month: 1, day: 1};
+    in property<Date> maximum-date: {year: 2124, month: 12, day: 31};
+    in-out property<Date> date: {year: 2026, month: 10, day: 12};
+    in-out property<bool> has-value: false;
+    out property<bool> is-open: popup.is-open;
+    changed is-open => { if !root.is-open && root.pending { root.pending = false; root.canceled(); } }
+    out property<Date> current-date: root.draft;
+    private property<Date> lower: ForgeDateTime.normalize-date(root.minimum-date);
+    private property<Date> upper: ForgeDateTime.date-number(root.maximum-date) < ForgeDateTime.date-number(root.lower) ? root.lower : ForgeDateTime.normalize-date(root.maximum-date);
+    private property<Date> draft: root.date;
+    private property<int> fields-count: (root.show-year ? 1 : 0) + (root.show-month ? 1 : 0) + (root.show-day ? 1 : 0);
+    private property<bool> pending: false;
+    private property<float> scale: ForgeTypography.scale;
+    callback accepted(Date);
+    callback canceled();
+    public function open() { if root.enabled { root.draft = ForgeDateTime.clamp-date(root.date, root.lower, root.upper); root.pending = true; popup.show(); } }
+    public function close() { root.pending = false; popup.close(); }
+    public function set-year(value: int) { root.draft = ForgeDateTime.clamp-date({year: value, month: root.draft.month, day: root.draft.day}, root.lower, root.upper); }
+    public function set-month(value: int) { root.draft = ForgeDateTime.clamp-date({year: root.draft.year, month: value, day: root.draft.day}, root.lower, root.upper); }
+    public function set-day(value: int) { root.draft = ForgeDateTime.clamp-date({year: root.draft.year, month: root.draft.month, day: value}, root.lower, root.upper); }
+    public function confirm() { root.close(); root.date = root.draft; root.has-value = true; root.accepted(root.date); focus.focus(); }
+    public function cancel() { root.close(); root.canceled(); focus.focus(); }
+    preferred-width: 326px * root.scale; preferred-height: 32px * root.scale;
+    width: root.preferred-width; height: root.preferred-height;
+    horizontal-stretch: 0; vertical-stretch: 0; forward-focus: focus;
+    private property<string> year-label: root.has-value ? "" + root.date.year : root.language == "en" ? "year" : "年";
+    private property<string> month-label: root.has-value ? (root.language == "en" ? ForgeDateTime.month-names("en")[root.date.month - 1] : "" + root.date.month) : root.language == "en" ? "month" : "月";
+    private property<string> day-label: root.has-value ? "" + root.date.day : root.language == "en" ? "day" : "日";
+    ForgePickerField {
+        width: root.width; height: root.height; dark: root.dark; enabled: root.enabled; focused: focus.has-focus;
+        fields: root.fields-count == 3 ? (root.language == "en" ? [root.month-label, root.day-label, root.year-label] : [root.year-label, root.month-label, root.day-label])
+            : root.fields-count == 2 ? (!root.show-year ? [root.month-label, root.day-label] : !root.show-month ? [root.year-label, root.day-label] : [root.year-label, root.month-label])
+            : root.fields-count == 1 ? [root.show-year ? root.year-label : root.show-month ? root.month-label : root.day-label] : [];
+        clicked(index) => { focus.focus(); root.open(); }
+    }
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => { if event.text == " " || event.text == Key.Return || event.text == Key.DownArrow { root.open(); return accept; } return reject; }
+    }
+    popup := PopupWindow {
+        y: root.height + 4px; width: root.width; height: 348px * root.scale;
+        close-policy: close-on-click-outside; forward-focus: popup-scope;
+        Rectangle { background: root.dark ? #242424 : #fff; border-radius: 6px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        popup-scope := FocusScope {
+            width: 100%; height: 100%;
+            key-pressed(event) => { if event.text == Key.Escape { root.cancel(); return accept; } if event.text == Key.Return { root.confirm(); return accept; } return reject; }
+
+        VerticalLayout {
+            padding: 8px * root.scale; spacing: 4px;
+            Rectangle {
+                vertical-stretch: 1;
+                year := ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); }
+                    x: root.language == "en" ? (root.fields-count - 1) * parent.width / max(1, root.fields-count) : 0px;
+                    width: parent.width / max(1, root.fields-count); height: parent.height; visible: root.show-year;
+                    dark: root.dark; minimum: root.lower.year; maximum: root.upper.year; wrap: false; pad: false;
+                    value: root.draft.year; accessible-name: root.language == "en" ? "Year" : "年"; edited(value) => { root.set-year(value); }
+                }
+                ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); }
+                    x: (root.language == "en" ? 0 : root.show-year ? 1 : 0) * parent.width / max(1, root.fields-count);
+                    width: parent.width / max(1, root.fields-count); height: parent.height; visible: root.show-month;
+                    dark: root.dark; minimum: root.draft.year == root.lower.year ? root.lower.month : 1; maximum: root.draft.year == root.upper.year ? root.upper.month : 12;
+                    labels: root.language == "en" ? ForgeDateTime.month-names("en") : []; label-base: 1; pad: false;
+                    value: root.draft.month; accessible-name: root.language == "en" ? "Month" : "月"; edited(value) => { root.set-month(value); }
+                }
+                ForgePickerWheel { accepted => { root.confirm(); } canceled => { root.cancel(); }
+                    x: (root.language == "en" ? (root.show-month ? 1 : 0) : root.fields-count - 1) * parent.width / max(1, root.fields-count);
+                    width: parent.width / max(1, root.fields-count); height: parent.height; visible: root.show-day;
+                    dark: root.dark; minimum: root.draft.year == root.lower.year && root.draft.month == root.lower.month ? root.lower.day : 1;
+                    maximum: root.draft.year == root.upper.year && root.draft.month == root.upper.month ? root.upper.day : ForgeDateTime.days-in-month(root.draft.year, root.draft.month);
+                    pad: false; value: root.draft.day; accessible-name: root.language == "en" ? "Day" : "日"; edited(value) => { root.set-day(value); }
+                }
+            }
+            Rectangle { height: 1px; background: root.dark ? #454545 : #ddd; }
+            HorizontalLayout {
+                ForgePickerAction { dark: root.dark; text: "✓"; accessible-label: root.language == "en" ? "Confirm" : "确定"; clicked => { root.confirm(); } }
+                ForgePickerAction { dark: root.dark; text: "✕"; accessible-label: root.language == "en" ? "Cancel" : "取消"; clicked => { root.cancel(); } }
+            }
+        }
+
+        }
+}
+    changed enabled => { if !root.enabled { root.close(); } }
+}
+
+export component ForgeCalendarPicker inherits Rectangle {
+    in property<string> language: "zh";
+    in property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in property<bool> enabled: true;
+    in property<bool> show-time: false;
+    in property<Date> minimum-date: {year: 1924, month: 1, day: 1};
+    in property<Date> maximum-date: {year: 2124, month: 12, day: 31};
+    in property<int> minute-increment: 1;
+    in-out property<Date> date: {year: 2026, month: 10, day: 12};
+    in-out property<Time> time: {hour: 9, minute: 30, second: 0};
+    in-out property<bool> has-value: false;
+    out property<bool> is-open: popup.is-open;
+    callback accepted(Date);
+    callback time-accepted(Time);
+    callback canceled();
+    public function open() { if root.enabled { popup.open(); } }
+    public function close() { popup.close(); }
+    public function set-draft-time(value: Time) { popup.set-time(value); }
+    public function confirm() { popup.confirm(); }
+    public function cancel() { popup.cancel(); }
+    private property<string> display-text: root.has-value
+        ? (root.language == "en" ? root.date.month + "/" + root.date.day + "/" + root.date.year : root.date.year + "/" + root.date.month + "/" + root.date.day)
+            + (root.show-time ? " " + ForgeDateTime.format-time(root.time, root.language, true) : "")
+        : root.language == "en" ? "Pick a date" : "选择日期";
+    // 按文字、图标和内边距计算宽度，日期时间模式在未选择时也保持紧凑。
+    preferred-width: label.preferred-width + 44px * ForgeTypography.scale;
+    preferred-height: max(30px * ForgeTypography.scale, label.preferred-height + 12px * ForgeTypography.scale);
+    width: root.preferred-width; height: root.preferred-height;
+    horizontal-stretch: 0; vertical-stretch: 0; forward-focus: focus;
+    border-radius: 4px; border-width: 1px;
+    border-color: focus.has-focus ? Palette.accent-background : root.dark ? #ffffff12 : #00000022;
+    background: touch.pressed ? (root.dark ? #292929 : #f4f4f4) : touch.has-hover ? (root.dark ? #353535 : #fafafa) : root.dark ? #2d2d2d : #ffffff;
+    opacity: root.enabled ? 1 : 0.45;
+    accessible-role: button; accessible-label: root.display-text; accessible-enabled: root.enabled;
+    accessible-action-default => { root.open(); }
+    Rectangle {
+        width: min(max(0px, root.width - 24px * ForgeTypography.scale), label.preferred-width + 20px * ForgeTypography.scale);
+        x: (root.width - self.width) / 2; height: root.height;
+        label := Text {
+            x: 0px; width: max(0px, parent.width - 20px * ForgeTypography.scale); height: parent.height;
+            text: root.display-text; color: root.dark ? #fff : #202020;
+            font-size: 13px * ForgeTypography.scale; vertical-alignment: center; overflow: elide;
+        }
+        ForgeIcon {
+            x: parent.width - self.width; width: 14px * ForgeTypography.scale; height: parent.height;
+            font-size: 14px * ForgeTypography.scale; glyph: ForgeIcons.calendar; color: root.dark ? #fff : #202020;
+        }
+    }
+    touch := TouchArea { enabled: root.enabled; clicked => { focus.focus(); root.open(); } }
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => { if event.text == " " || event.text == Key.Return || event.text == Key.DownArrow { root.open(); return accept; } return reject; }
+    }
+    popup := ForgeDatePickerPopup {
+        x: 0px; y: root.height + 4px; language: root.language; dark: root.dark; date: root.date; time: root.time; show-time: root.show-time;
+        minimum-date: root.minimum-date; maximum-date: root.maximum-date; minute-increment: root.minute-increment; confirm-on-selection: true;
+        accepted(value) => { root.date = value; if root.show-time { root.time = popup.current-time; } root.has-value = true; root.accepted(value); focus.focus(); }
+        time-accepted(value) => { root.time = value; root.time-accepted(value); }
+        canceled => { root.canceled(); focus.focus(); }
+    }
+    changed enabled => { if !root.enabled { root.close(); } }
+}

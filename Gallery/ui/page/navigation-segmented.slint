@@ -14,6 +14,8 @@ export component GalleryNavigationSegmentedPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "navigation-segmented";
+        active: root.visible;
         title: "SegmentedControl";
         subtitle: @tr("切换日、周、月三个视图。");
         example-title: @tr("用法与状态");

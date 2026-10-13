@@ -9,8 +9,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 
-def snippets(compiler):
-    output = ROOT / 'build/component-qa/snippets'
+def snippets(compiler, output):
+    output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     count, failures = 0, []
     for page in sorted((ROOT / 'examples/component-usage').glob('*.slint')):
@@ -24,7 +24,7 @@ def snippets(compiler):
     (output / 'results.txt').write_text('\n'.join(failures) or f'SNIPPETS_OK count={count}\n', encoding='utf-8')
     if failures:
         raise SystemExit('\n'.join(failures))
-    assert count == 66, count
+    assert count == len(list((ROOT / 'examples/component-usage').glob('*.slint'))) and count > 0, count
     print(f'SNIPPETS_OK count={count}')
 
 def qr_codes():
@@ -44,7 +44,7 @@ def qr_codes():
 def namespace_policy():
     violations = []
     pattern = re.compile(r'\b(?:using\s+namespace\s+\w|namespace\s+(?:\w+\s*)?\{)')
-    for directory in ['sdk/cpp', 'sdk/common', 'Gallery/cpp', 'examples/cpp', 'examples/plot-cpp', 'tests/cpp']:
+    for directory in ['sdk/cpp', 'sdk/common', 'Gallery/cpp', 'examples/cpp', 'examples/plot-cpp', 'examples/flow-cpp', 'tests/cpp']:
         for path in (ROOT / directory).rglob('*'):
             if path.suffix not in ['.cpp', '.hpp', '.h']:
                 continue
@@ -58,11 +58,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--compiler')
     parser.add_argument('--qr', action='store_true')
+    parser.add_argument('--output-dir', default=str(ROOT / 'build/component-qa/snippets'))
     args = parser.parse_args()
     subprocess.run([sys.executable, str(ROOT / 'tools/component_catalog.py'), '--check'], check=True)
     subprocess.run([sys.executable, str(ROOT / 'Gallery/i18n/sync.py'), '--check'], check=True)
     namespace_policy()
-    if args.compiler: snippets(args.compiler)
+    if args.compiler: snippets(args.compiler, args.output_dir)
     if args.qr: qr_codes()
 
 if __name__ == '__main__': main()

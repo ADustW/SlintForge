@@ -2,7 +2,19 @@
 
 参考本地 FluentUI-Pro Gallery 源码。统一 24px 页边距、24px 分区间距、8px 圆角与 1px 边框，卡片内留白 20px。示例按内容指定高度，并保留导航、输入、弹层和窗口状态。用法代码位于独立示例目录，页面不显示代码面板。
 
+日历选择器按参考页采用标题与两张紧凑示例卡片，省略副标题，分区间距为 20px；未选择日期时两种模式按钮同宽，选中后宽度随文本自适应。月历弹层为 300×350px，日期时间弹层为 500×350px，均随字号缩放。
+
 逐项记录覆盖全部 96 个路由；DataGrid、TreeDataGrid 和专业图表 ForgePlot 均提供交互演示。没有对应 FluentUI 页面的扩展布局使用同一 ScrollablePage / CardHighlight 展示约定。
+
+## 2026-10-05 示例扩充
+
+55 个页面增加可直接浏览的组合示例。44 个输入、表单、反馈、数据和导航页面保留基础示例，并增加“多种效果”和“业务组合”标签；状态卡片各自保存输入和选择，标签与树使用宿主模型。当前页面的扩展示例按需创建，减少初始栈占用；原有基础页继续常驻。宽窗口并排展示，窄窗口自动换行，通过页面滚动查看全部示例；切换标签保留已输入内容。动画只在相关页面可见时运行。
+
+ForgePlot 默认显示“曲线与统计”总览，另有“科学绘图”和“交互与导出”：总览展示曲线误差填充、参数曲线、正负柱形、统计箱、蜡烛、OHLC、二维色图、双轴、极坐标和多绘图区。点击卡片的“在交互示例中打开”即可进入相应模式，继续缩放、测量和导出。
+
+七类基础图表提供样式、单系列和空数据对照；两个表格页面提供紧凑只读、禁用、单行与空列表。ContentDialog 页面可直接打开确认框或包含设备名、禁用端口和数据目录的业务对话框，并切换提交条件，验证焦点遍历和恢复。
+
+双宿主自动验收保留原有 308 个状态，新增 111 个标签状态，并为 12 个复杂页面增加 50 个英文放大字号及窄窗口状态，共每端 469 帧。实际执行结果记录在本次发布目录的验收报告中。以下表格描述原有基础示例布局；新增标签与状态清单由 `Gallery/data/showcase-routes.inc` 统一定义。
 
 | 路由 | 标题 | 参考页面 | 参考示例区数量 | 本轮展示内容 |
 |---|---|---|---:|---|
@@ -26,14 +38,14 @@
 | `inputs-toggle-switch` | ToggleSwitch | `page/T_ToggleSwitch.qml` | 1 | 用法与状态；卡片高度 190px，随字体缩放 |
 | `form-time-picker` | TimePicker | `page/T_TimePicker.qml` | 3 | 用法与状态；卡片高度 160px，随字体缩放 |
 | `form-date-picker` | DatePicker | `page/T_DatePicker.qml` | 2 | 用法与状态；卡片高度 160px，随字体缩放 |
-| `form-calendar-picker` | CalendarPicker | `page/T_CalendarPicker.qml` | 2 | 用法与状态；卡片高度 160px，随字体缩放 |
+| `form-calendar-picker` | CalendarPicker | `page/T_CalendarPicker.qml` | 2 | 日期、日期时间两种紧凑按钮；卡片高度 118px，随字体缩放 |
 | `form-color-picker` | ColorPicker | `page/T_ColorPicker.qml` | 1 | 用法与状态；卡片高度 350px，随字体缩放 |
 | `form-shortcut-picker` | ShortcutPicker | `page/T_ShortcutPicker.qml` | 0 | 用法与状态；卡片高度 160px，随字体缩放 |
 | `form-textbox` | TextBox | `page/T_TextBox.qml` | 1 | 用法与状态；卡片高度 240px，随字体缩放 |
 | `form-multiline-textbox` | MultiLineTextBox | `page/T_MultiLineTextBox.qml` | 1 | 用法与状态；卡片高度 250px，随字体缩放 |
 | `form-scrollable-textbox` | ScrollableTextBox | `page/T_ScrollableTextBox.qml` | 1 | 用法与状态；卡片高度 250px，随字体缩放 |
 | `form-password-box` | PasswordBox | `page/T_PasswordBox.qml` | 1 | 用法与状态；卡片高度 170px，随字体缩放 |
-| `form-auto-suggest` | AutoSuggestBox | `page/T_AutoSuggestBox.qml` | 1 | 用法与状态；卡片高度 190px，随字体缩放 |
+| `form-auto-suggest` | AutoSuggestBox | `page/T_AutoSuggestBox.qml` | 1 | 用法与状态；收起时 190px，展开候选时 360px，随字体缩放 |
 | `form-combo-box` | ComboBox | `page/T_ComboBox.qml` | 2 | 用法与状态；卡片高度 180px，随字体缩放 |
 | `form-multi-select-combo` | MultiSelectComboBox | `page/T_MultiSelectComboBox.qml` | 7 | 用法与状态；卡片高度 120px，随字体缩放 |
 | `form-multi-tree-combo` | MultiTreeSelectComboBox | `component/CardHighlight.qml + ScrollablePage` | 0 | 用法与状态；卡片高度 160px，随字体缩放 |

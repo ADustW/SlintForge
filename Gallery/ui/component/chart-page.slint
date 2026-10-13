@@ -2,11 +2,14 @@ import { Palette, Button, CheckBox } from "std-widgets.slint";
 import { ForgeChart, ForgeChartKind, ForgeChartSeries, ForgeChartSlice } from "@slintforge";
 import { GalleryPageFrame } from "page-frame.slint";
 import { GalleryDemoCard } from "demo-card.slint";
+import { GalleryChartShowcase } from "chart-showcase.slint";
+import { GalleryShowcaseState } from "showcase.slint";
 
 // 七类图表共享演示框架；切换数据、图例和选项均操作实际组件。
 export component GalleryChartPage inherits Rectangle {
     in property<string> title;
     in property<ForgeChartKind> kind;
+    property<string> showcase-route: root.kind == bar ? "chart-bar" : root.kind == line ? "chart-line" : root.kind == pie ? "chart-pie" : root.kind == polar ? "chart-polar" : root.kind == bubble ? "chart-bubble" : root.kind == scatter ? "chart-scatter" : "chart-radar";
     in-out property<bool> updated: false;
     in-out property<bool> empty: false;
     in-out property<bool> stacked: false;
@@ -45,6 +48,7 @@ export component GalleryChartPage inherits Rectangle {
         if open { chart.select-point(0); } else { chart.clear-selection(); }
     }
     GalleryPageFrame {
+        viewport-y: GalleryShowcaseState.route == root.showcase-route && GalleryShowcaseState.tab >= 0 ? -comparison.y + 20px : 0px;
         title: root.title;
         subtitle: root.kind == bar ? @tr("比较各月份的数据，切换分组或堆叠。")
             : root.kind == line ? @tr("观察趋势，切换折线、平滑曲线和面积填充。")
@@ -86,5 +90,7 @@ export component GalleryChartPage inherits Rectangle {
             if root.kind == line || root.kind == radar : CheckBox { text: @tr("面积填充"); checked <=> root.filled; }
             if root.kind == pie : CheckBox { text: @tr("环形图"); checked <=> root.doughnut; }
         }
+        Text { text: @tr("更多示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        comparison := GalleryChartShowcase { route: root.showcase-route; kind: root.kind; categories: root.categories; series: root.series; slices: root.slices; }
     }
 }

@@ -1,11 +1,14 @@
 import { Palette } from "std-widgets.slint";
 import { GalleryPageFrame } from "page-frame.slint";
 import { GalleryDemoCard } from "demo-card.slint";
+import { GalleryShowcase, GalleryShowcaseState } from "showcase.slint";
 
 // 与 FluentUI Gallery 一致：说明、示例标题、内容卡片；高度由示例指定。
 export component GallerySamplePage inherits Rectangle {
     in property<string> title;
     in property<string> subtitle;
+    in property<string> showcase-route;
+    in property<bool> active: true;
     in property<string> example-title: @tr("基本示例");
     in property<length> preview-height: 240px;
     out property<length> preview-width: Math.max(0px, sample-card.width - 2px);
@@ -15,10 +18,16 @@ export component GallerySamplePage inherits Rectangle {
         width: parent.width; height: parent.height;
         title: root.title;
         subtitle: root.subtitle;
+        viewport-y: GalleryShowcaseState.route == root.showcase-route && GalleryShowcaseState.tab >= 0 ? -showcase-slot.y + 20px : 0px;
         Text { text: root.example-title; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
         sample-card := GalleryDemoCard {
             preview-height: root.preview-height;
             @children
+        }
+        if root.showcase-route != "" : Text { text: @tr("更多示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
+        showcase-slot := VerticalLayout {
+            vertical-stretch: 0;
+            if root.showcase-route != "" && root.active : GalleryShowcase { route: root.showcase-route; animation-visible: root.active; }
         }
     }
 }

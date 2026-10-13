@@ -1,0 +1,540 @@
+[
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "initial"
+  },
+  {
+    "kind": "click",
+    "x": 150,
+    "y": 298
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "Flow中文"
+  },
+  {
+    "kind": "press",
+    "x": 160,
+    "y": 250
+  },
+  {
+    "kind": "move",
+    "x": 200,
+    "y": 280
+  },
+  {
+    "kind": "release",
+    "x": 200,
+    "y": 280
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 100
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/y",
+    "value": 90
+  },
+  {
+    "kind": "click",
+    "x": 174,
+    "y": 368
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/data/text",
+    "value": "Flow中文"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/data/text",
+    "value": "可编辑内容"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 60
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "click",
+    "x": 450,
+    "y": 250
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "press",
+    "x": 160,
+    "y": 250
+  },
+  {
+    "kind": "move",
+    "x": 180,
+    "y": 260
+  },
+  {
+    "kind": "release",
+    "x": 180,
+    "y": 260
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 80
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/1/x",
+    "value": 370
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "press",
+    "x": 50,
+    "y": 210
+  },
+  {
+    "kind": "move",
+    "x": 650,
+    "y": 390
+  },
+  {
+    "kind": "release",
+    "x": 650,
+    "y": 390
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "d"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 8,
+    "edges": 6
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "count",
+    "nodes": 6,
+    "edges": 5
+  },
+  {
+    "kind": "block",
+    "target": "node-5"
+  },
+  {
+    "kind": "press",
+    "x": 610,
+    "y": 300
+  },
+  {
+    "kind": "move",
+    "x": 390,
+    "y": 510
+  },
+  {
+    "kind": "release",
+    "x": 390,
+    "y": 510
+  },
+  {
+    "kind": "count",
+    "nodes": 6,
+    "edges": 5
+  },
+  {
+    "kind": "block",
+    "target": ""
+  },
+  {
+    "kind": "press",
+    "x": 320,
+    "y": 300
+  },
+  {
+    "kind": "move",
+    "x": 390,
+    "y": 510
+  },
+  {
+    "kind": "release",
+    "x": 390,
+    "y": 510
+  },
+  {
+    "kind": "count",
+    "nodes": 6,
+    "edges": 6
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/5/target_node",
+    "value": "node-5"
+  },
+  {
+    "kind": "click",
+    "x": 357,
+    "y": 345
+  },
+  {
+    "kind": "snapshot",
+    "name": "edge-selected"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "count",
+    "nodes": 6,
+    "edges": 5
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "click",
+    "x": 357,
+    "y": 345
+  },
+  {
+    "kind": "press",
+    "x": 390,
+    "y": 510
+  },
+  {
+    "kind": "move",
+    "x": 680,
+    "y": 510
+  },
+  {
+    "kind": "release",
+    "x": 680,
+    "y": 510
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/5/target_node",
+    "value": "node-6"
+  },
+  {
+    "kind": "press",
+    "x": 30,
+    "y": 174,
+    "button": "middle"
+  },
+  {
+    "kind": "move",
+    "x": 70,
+    "y": 214
+  },
+  {
+    "kind": "release",
+    "x": 70,
+    "y": 214,
+    "button": "middle"
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": 80
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/y",
+    "value": 80
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "click",
+    "x": 30,
+    "y": 180
+  },
+  {
+    "kind": "key-down",
+    "text": " "
+  },
+  {
+    "kind": "press",
+    "x": 160,
+    "y": 250
+  },
+  {
+    "kind": "move",
+    "x": 190,
+    "y": 270
+  },
+  {
+    "kind": "release",
+    "x": 190,
+    "y": 270
+  },
+  {
+    "kind": "key-up",
+    "text": " "
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": 70
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/y",
+    "value": 60
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 60
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "wheel",
+    "x": 920,
+    "y": 600,
+    "delta": 120
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 1.12
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": -65.6
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/y",
+    "value": -11.12
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1.5
+  },
+  {
+    "kind": "click",
+    "x": 725,
+    "y": 420
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/1/data/status",
+    "value": "stopped"
+  },
+  {
+    "kind": "click",
+    "x": 320,
+    "y": 429
+  },
+  {
+    "kind": "snapshot",
+    "name": "popup-150"
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "snapshot",
+    "name": "zoom-150"
+  },
+  {
+    "kind": "readonly",
+    "value": true
+  },
+  {
+    "kind": "press",
+    "x": 170,
+    "y": 284
+  },
+  {
+    "kind": "move",
+    "x": 190,
+    "y": 300
+  },
+  {
+    "kind": "release",
+    "x": 190,
+    "y": 300
+  },
+  {
+    "kind": "click",
+    "x": 725,
+    "y": 420
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 60
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/1/data/status",
+    "value": "stopped"
+  },
+  {
+    "kind": "readonly",
+    "value": false
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "size",
+    "width": 640,
+    "height": 500
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "narrow-dark"
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 4
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "edit",
+    "op": "collapse",
+    "id": "node-2"
+  },
+  {
+    "kind": "count",
+    "nodes": 9,
+    "edges": 8
+  },
+  {
+    "kind": "snapshot",
+    "name": "mindmap-folded"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "number": 1,
+    "kind": "edit",
+    "op": "demo"
+  },
+  {
+    "text": "{\"id\":\"api-card\",\"kind\":\"unregistered-card\",\"title\":\"未知卡片保留\",\"data\":{\"value\":42}}",
+    "kind": "edit",
+    "op": "insert"
+  },
+  {
+    "edges": 5,
+    "kind": "count",
+    "nodes": 7
+  },
+  {
+    "path": "/nodes/6/kind",
+    "value": "unregistered-card",
+    "kind": "expect"
+  },
+  {
+    "text": "{\"id\":\"api-card\",\"kind\":\"form\",\"title\":\"业务卡片\",\"width\":300,\"height\":220,\"x\":100,\"y\":100,\"data\":{\"text\":\"业务参数\"}}",
+    "kind": "edit",
+    "op": "node",
+    "id": "api-card"
+  },
+  {
+    "path": "/nodes/6/width",
+    "value": 300,
+    "kind": "expect"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "path": "/nodes/6/kind",
+    "value": "unregistered-card",
+    "kind": "expect"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "edges": 5,
+    "kind": "count",
+    "nodes": 6
+  },
+  {
+    "kind": "finish"
+  }
+]

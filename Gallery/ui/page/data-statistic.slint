@@ -13,6 +13,8 @@ export component GalleryDataStatisticPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "data-statistic";
+        active: root.visible;
         title: "Statistic";
         subtitle: @tr("展示数值、单位、精度和趋势。");
         example-title: @tr("用法与状态");

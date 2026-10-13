@@ -1,5 +1,7 @@
 # ForgePlot 菜单与测量可用性验证
 
+> 阶段记录：本文保留该组件实施时的范围、测试数量和验证结果；v0.1.1 当前能力见接入与交付说明，本次验收以时间戳发布目录中的 ACCEPTANCE.md 和 verification 为准。
+
 验证日期：2026-10-03。环境：Windows x64、Slint 1.18.0、软件渲染器；Rust Debug（依赖启用优化），C++ Release 消费者及 Debug Gallery。C++ 构建加载 `D:\.clion-env\qt-6.8.3-msvc.bat`。
 
 ## 修复及原因

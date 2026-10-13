@@ -14,6 +14,8 @@ export component GalleryInputsValidationPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "inputs-validation";
+        active: root.visible;
         title: "InputValidation";
         subtitle: @tr("输入文字后验证长度与必填规则。");
         example-title: @tr("用法与状态");

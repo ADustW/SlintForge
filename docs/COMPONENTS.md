@@ -1,6 +1,6 @@
 # Gallery 新增组件 API
 
-基线为 Slint 1.18.0、fluent 样式，所有视觉实现位于 `ui/`，Rust/C++ 使用同一个 `@slintforge` 入口。96 个导航页面均已有演示，无暂缓页面。DataGrid 和 TreeDataGrid 的模型、编辑、选择及服务绑定见 [表格组件](GRIDS.md)。7 类基础图表见 [基础图表组件](CHARTS.md)，专业二维图表 ForgePlot 见 [专业图表组件](PLOT.md)。原生替代清单见 [组件审查](COMPONENT_AUDIT.md)，逐项机器可读状态见 `Gallery/data/component-status.txt`。
+基线为 Slint 1.18.0、fluent 样式，所有视觉实现位于 `ui/`，Rust/C++ 使用同一个 `@slintforge` 入口。导航页面均已有演示，数量由 `Gallery/data/navigation.txt` 统计。DataGrid 和 TreeDataGrid 的模型、编辑、选择及服务绑定见 [表格组件](GRIDS.md)。7 类基础图表见 [基础图表组件](CHARTS.md)，专业二维图表 ForgePlot 见 [专业图表组件](PLOT.md)，卡片节点编辑与思维导图见 [ForgeFlow](FLOW.md)。原生替代清单见 [组件审查](COMPONENT_AUDIT.md)，逐项机器可读状态见 `Gallery/data/component-status.txt`。
 
 ## 输入与表单
 
@@ -8,19 +8,24 @@
 |---|---|
 | `ForgeInputValidation` | `text`、`required`、`minimum-length`、`maximum-length`、`error-message`、`touched`；输出 `valid`、`validation-message`；`edited(text)`、`accepted(text)`。长度按 Unicode 字符计数；外部错误也会阻止提交。 |
 | `ForgePillButton` | `text`、`primary`、`enabled`；输出 `pressed`；`focus-button()`、`clicked()`；鼠标、Enter、Space 和可访问性激活。 |
-| `ForgeDelayButton` | `text`、`delay`、`enabled`；输出 `progress`；`clicked()`。持续按住达到时长后松开确认；提前松开、移出或禁用不提交。 |
+| `ForgeDelayButton` | `mode` 支持按住完成、松开确认与点击倒计时；`progress` 在按钮内部填色，`primary`、`pill` 控制外观；详见 [按钮与选择器](PICKERS.md)。 |
 | `ForgeDropDownButton` | `text`、`items: [ForgeChoiceItem]`、`enabled`；输出 `open`；`show()`、`close()`、`selected(id)`；原生 PopupWindow 提供外部点击和 Escape 关闭。 |
 | `ForgeProgressButton` | `text`、`busy`、`progress`、`enabled`；`clicked()`。busy 阻止重复提交，progress<0 为不确定状态。 |
 | `ForgeChip` | `text`、`selected`、`removable`、`enabled`；`toggled(bool)`、`removed()`。 |
 | `ForgeTagInputBox` | 外部 `tags: [string]`、`draft`、`maximum-tags`、`enabled`；`submit()`、`add-requested(text)`、`remove-requested(index)`。应用更新模型；Gallery 示例执行去空白、去重和数量限制。 |
-| `ForgeColorPicker` | `red`、`green`、`blue`、`alpha`；输出 `value: color`；`color-changed(color)`。输出通道限制到 0～255，滑块和整数框联动。 |
-| `ForgeShortcutPicker` | `shortcut`、`recording`、`enabled`；`start-recording()`、`clear()`、`shortcut-changed(text)`。支持 Ctrl/Alt/Shift/Meta、方向键和 F1～F12；Escape 保留原值，单独修饰键不提交。 |
-| `ForgeAutoSuggestBox` | `text`、`suggestions: [string]`、`open`、`enabled`；`choose(text)`、`edited(text)`、`selected(text)`。不区分大小写的前缀匹配；Down 展开，Escape 收起，Enter 提交当前文字；建议列表使用原生可聚焦按钮。禁用时自动收起且不能展开。 |
+| `ForgeColorPicker` | 已提交 RGBA 通道与 `value`；HSV 色谱、调色板、Hex、RGB、透明度及 Windows 取色；确认才提交草稿，需绑定 widget 服务以支持 Hex/取色。 |
+| `ForgeDatePicker` / `ForgeCalendarPicker` / `ForgeDatePickerPopup` | 分栏滚轮、日历/年份视图与可选时间；字段显示、范围、草稿、确认取消；详见 [选择器 API](PICKERS.md)。原日历弹层入口保留。 |
+| `ForgeTimePicker` / `ForgeTimePickerPopup` | 分栏时间、12/24 小时、分钟步长、可选秒、中英文时段和确认取消；原弹层与兼容数字输入入口保留。 |
+| `ForgeDateTime` | 共享日期计算及显示函数：`days-in-month`、`weekday`、`normalize-date`、`normalize-time`、`format-date`、`format-time`、`month-names`、`weekday-names`。不需要 Rust/C++ 服务回调。 |
+| `ForgeShortcutPicker` | `shortcut` 为已提交组合；录制弹层支持保存、重置、取消，键盘输入仅修改 `draft-shortcut`；保留 `clear()` 和 `shortcut-changed()`。 |
+| `ForgeAutoSuggestBox` | `text`、`suggestions: [string]`、`open`、`enabled`、`current-suggestion`；`choose(text)`、`edited(text)`、`selected(text)`。大小写不敏感的前缀匹配，Up/Down 按源模型索引遍历匹配项，Enter 选择当前/首个匹配项，无匹配时提交输入文本，Escape 收起；禁用时自动收起。键盘查找需绑定 widget 服务；只读 `keyboard-navigation-ready` 表示是否连接。 |
 | `ForgeMultiSelectComboBox` | `items: [ForgeChoiceItem]`、`selection-text`、`placeholder-text`、`enabled`；输出 `open`；`show()`、`close()`、`selection-changed(id,bool)`。直接更新 items 的 selected 字段，保留关闭前的选中状态。 |
 | `ForgeMultiTreeSelectComboBox` | `items: [ForgeTreeItem]`、`selection-text`、`enabled`；`show()`、`close()`、`expansion-changed(id,bool)`、`selection-changed(id,bool)`。父子选择和可见模型由应用回传。 |
 | `ForgeNumberBox` | 浮点 `value`、`minimum`、`maximum`、`step`、`enabled`；输出 `input-valid`；`set-value(float)`、`commit()`、`value-changed(float)`。初始值、外部赋值及范围变化限制到 `[minimum, max(minimum, maximum)]`；这些归一化操作不触发用户操作回调。支持小数步进与上下键，非法输入恢复当前值。整数场景使用原生 SpinBox。 |
 
 ## 导航、数据与反馈
+
+Gallery 设置中的语言即时传入日期、日历和时间选择器。独立应用将自己的语言状态绑定到 `language`；省略时使用简体中文，`en` 使用英文。切换语言只影响显示，不会重置未确认的选择。数字输入支持任意分、秒；时钟分钟刻度为 5 分钟。调用 `open()` 打开并恢复已提交值，调用 `close()` 仅隐藏，确认与取消使用 `confirm()` 和 `cancel()`。
 
 | 组件 | 主要属性、函数与回调 |
 |---|---|
@@ -42,7 +47,7 @@
 
 | 组件 | 主要属性、函数与回调 |
 |---|---|
-| `ForgeContentDialog` | `open`、`title`、`message`、`primary-text`、`cancel-text`、`primary-enabled`、`dismiss-on-outside`、`@children`；`dismiss()`、`accepted()`、`canceled()`。遮罩阻止背景鼠标输入，Escape 取消，Tab 在操作按钮之间循环。 |
+| `ForgeContentDialog` | `open`、`title`、`message`、`primary-text`、`cancel-text`、`primary-enabled`、`dismiss-on-outside`、常驻 `@children`；`dismiss()`、`accepted()`、`canceled()`。默认 Tab 在操作按钮间循环；业务内容可通过 `initial-focus-requested()->bool`、`focus-next-requested(reverse)->bool`、`focus-return-requested()` 委托焦点。提供按钮聚焦函数及只读 `primary-has-focus`/`cancel-has-focus`。Escape 取消。 |
 | `ForgeDrawer` | `open`、`title`、`panel-width`、`edge: ForgeDrawerEdge`、`dismiss-on-outside`、`@children`；`dismiss()`、`dismissed()`。左右两侧、外部点击和 Escape 关闭，内容常驻。 |
 | `ForgeAcrylic` | `source`、`blur-radius`、`refraction`、`tint`、`content-padding`、`@children`；输出 `processed`；`refresh()`。SDK 对应用提供的图片作透明度加权模糊，Slint 合成圆角、染色与内容。 |
 | `ForgeLiquidGlass` | 继承 ForgeAcrylic，默认较低模糊半径、边缘折射与内高光。 |
@@ -64,7 +69,7 @@
 
 ## 两端服务接入
 
-纯 Slint 控件直接导入即可；二维码、高亮和材质需要为对应窗口绑定 `ForgeWidgetServices`。宿主必须在 UI 线程绑定和调用；source 更新或输入变化时同步执行处理。较大图片或高频采样可在应用中预处理后回传图片。
+纯 Slint 控件直接导入即可；二维码、高亮、材质和建议输入键盘导航需要为对应窗口绑定 `ForgeWidgetServices`。宿主必须在 UI 线程绑定和调用；source 更新或输入变化时同步执行处理。较大图片或高频采样可在应用中预处理后回传图片。模型刷新、线程要求和对话框焦点委托统一见 [接入约定](INTEGRATION.md)。
 
 ```slint
 import { ForgeQRCode } from "@slintforge";

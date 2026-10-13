@@ -2,10 +2,12 @@
 target/
 build/
 build-*/
+cpp-build/
 cmake-build-*/
 out/
 dist/
 CMakeFiles/
+_deps/
 Testing/
 CMakeCache.txt
 CMakeUserPresets.json
@@ -24,10 +26,14 @@ rules.ninja
 *.lib
 *.obj
 *.o
+*.d
 *.a
 *.so
 *.so.*
 *.dylib
+*.rlib
+*.rmeta
+*.crate
 *.pdb
 *.ilk
 *.exp
@@ -37,6 +43,10 @@ rules.ninja
 *.iobj
 *.res
 *.tlog
+*.gcda
+*.gcno
+*.profraw
+*.profdata
 *.sln
 *.vcxproj
 *.vcxproj.filters
@@ -54,6 +64,7 @@ htmlcov/
 # IDE 个人设置和操作系统文件
 .vs/
 .idea/
+.vscode/
 *.user
 *.user.*
 *.suo
@@ -67,6 +78,10 @@ Desktop.ini
 *.temp
 *.bak
 *.old
+*.orig
+*.rej
 *.swp
 *.swo
 *~
+tmp/
+temp/

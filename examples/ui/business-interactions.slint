@@ -1,0 +1,80 @@
+import { LineEdit, Palette } from "std-widgets.slint";
+import { ForgeAutoSuggestBox, ForgeContentDialog, ForgePillButton } from "@slintforge";
+
+// 两个窗口独立运行；Rust/C++ 消费者使用同一份业务示例。
+export component SuggestionWindow inherits Window {
+    title: "SlintForge · 建议输入";
+    width: 460px; height: 360px;
+    in-out property<string> query <=> suggest.text;
+    in-out property<[string]> candidates: ["Slint", "Slider", "Rust", "SlintForge"];
+    in-out property<bool> suggestions-open <=> suggest.open;
+    in-out property<bool> input-enabled: true;
+    out property<int> candidate-index: suggest.current-suggestion;
+    in-out property<string> picked;
+    in-out property<int> selections: 0;
+    public function focus-input() { suggest.focus(); }
+    public function move-candidate(direction: int) { suggest.move-candidate(direction); }
+    public function submit() { suggest.accept-current(); }
+    VerticalLayout {
+        padding: 24px; spacing: 12px;
+        Text { text: "输入前缀，然后用 ↑ / ↓ 与 Enter 选择"; color: Palette.foreground; }
+        suggest := ForgeAutoSuggestBox {
+            suggestions: root.candidates; enabled: root.input-enabled;
+            selected(value) => { root.picked = value; root.selections += 1; }
+        }
+        Text { text: "已选择：" + root.picked; color: Palette.foreground; }
+        Rectangle { vertical-stretch: 1; }
+    }
+}
+
+export component BusinessDialogWindow inherits Window {
+    title: "SlintForge · 业务对话框";
+    width: 580px; height: 440px;
+    in-out property<bool> dialog-open <=> dialog.open;
+    in-out property<bool> port-enabled: false;
+    in-out property<bool> primary-enabled: true;
+    in-out property<string> device-name <=> name.text;
+    in-out property<string> directory <=> path.text;
+    in-out property<int> accepted-count: 0;
+    in-out property<int> canceled-count: 0;
+    out property<bool> launch-focused: launch.has-focus;
+    out property<int> focus-position: name.has-focus ? 0 : port.has-focus ? 1 : path.has-focus ? 2 :
+        dialog.primary-has-focus ? 3 : dialog.cancel-has-focus ? 4 : -1;
+    public function open-dialog() { launch.focus-button(); root.dialog-open = true; }
+    public function focus-target(index: int) {
+        if index == 0 { name.focus(); }
+        else if index == 1 && root.port-enabled { port.focus(); }
+        else if index == 2 { path.focus(); }
+        else if index == 3 { dialog.focus-primary-button(); }
+        else { dialog.focus-cancel-button(); }
+    }
+    VerticalLayout {
+        padding: 24px; spacing: 12px;
+        launch := ForgePillButton { text: "配置设备"; clicked => { root.open-dialog(); } }
+        Text { text: "关闭再打开保留输入；Tab / Shift+Tab 跳过禁用项"; color: Palette.foreground; wrap: word-wrap; }
+        Text { text: "设备：" + root.device-name; color: Palette.foreground; }
+        Rectangle { vertical-stretch: 1; }
+    }
+    dialog := ForgeContentDialog {
+        width: root.width; height: root.height;
+        title: "设备配置"; message: "在内容区和操作按钮之间按顺序移动焦点";
+        primary-enabled: root.primary-enabled;
+        initial-focus-requested => { root.focus-target(0); return true; }
+        focus-next-requested(reverse) => {
+            let step = reverse ? -1 : 1;
+            let target = root.focus-position < 0 ? (reverse ? 4 : 0) : mod(root.focus-position + step + 5, 5);
+            let skip = (target == 1 && !root.port-enabled) || (target == 3 && !root.primary-enabled);
+            root.focus-target(skip ? target + step : target);
+            return true;
+        }
+        focus-return-requested => { launch.focus-button(); }
+        accepted => { root.accepted-count += 1; }
+        canceled => { root.canceled-count += 1; }
+        VerticalLayout {
+            spacing: 8px;
+            name := LineEdit { placeholder-text: "设备名称"; }
+            port := LineEdit { placeholder-text: "端口（演示禁用项）"; enabled: root.port-enabled; }
+            path := LineEdit { placeholder-text: "数据目录"; }
+        }
+    }
+}

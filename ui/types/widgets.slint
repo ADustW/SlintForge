@@ -11,7 +11,14 @@ export struct ForgeQRCodeResult { ok: bool, image: image, modules: int, error: s
 // 图像和词法处理由所属应用绑定，UI 不访问文件系统。
 export global ForgeWidgetServices {
     in-out property<bool> connected: false;
+    in-out property<bool> screen-color-supported: false;
+    callback color-to-hex(color) -> string;
+    callback color-hex-valid(string) -> bool;
+    callback color-from-hex(string) -> color;
+    callback screen-color() -> color;
+    callback screen-color-input() -> int;
     callback qr-code(string) -> ForgeQRCodeResult;
     callback syntax-lines(string, string) -> [ForgeSyntaxLine];
     callback backdrop(image, int, bool) -> image;
+    callback suggestion-index([string], string, int, int) -> int;
 }

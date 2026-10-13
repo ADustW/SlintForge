@@ -1,7 +1,12 @@
 [workspace]
-members = ["sdk/rust", "Gallery/rust", "examples/rust"]
+members = ["sdk/runtime", "sdk/runtime-api", "sdk/rust-build", "sdk/rust", "Gallery/rust", "examples/rust", "examples/plot-rust", "examples/flow-rust"]
 exclude = ["third_party/qrcodegen/rust"]
 resolver = "2"
+
+[workspace.package]
+version = "0.1.2"
+edition = "2021"
+publish = false
 
 # Debug 保留本项目的调试信息，栅格化与渲染依赖启用优化以满足桌面交互帧预算。
 [profile.dev.package."*"]

@@ -31,7 +31,7 @@ popups-tooltip|100|将鼠标停在按钮上查看提示。|Hover over a button t
 theme-colors|190|在明暗主题中比较前景、背景和主色。|Compare foreground, background, and accent colors in both themes.
 inputs-validation|210|输入文字后验证长度与必填规则。|Validate required text and length limits.
 inputs-pill-button|250|普通、主色和禁用的胶囊按钮。|Standard, primary, and disabled pill buttons.
-inputs-delay-button|180|按住按钮完成确认，提前松开会取消。|Hold to confirm; releasing early cancels.
+inputs-delay-button|310|按钮内部显示填色进度，支持按住完成、松开确认与点击倒计时。|Progress fills the button; hold, release to confirm, or click to start a countdown.
 inputs-dropdown-button|160|从按钮下拉菜单中选择操作。|Choose an action from a button menu.
 inputs-progress-button|170|启动任务，按钮显示进度并避免重复提交。|Start a task and display progress while preventing duplicate submissions.
 inputs-chip|190|选择、移除和恢复标签。|Select, remove, and restore chips.
@@ -66,6 +66,13 @@ tabbar|150|切换标签，关闭可移除的标签。|Switch tabs and close remo
 pageheader|180|组合标题、说明、返回入口和操作按钮。|Combine a title, description, back action, and controls.
 about|160|SlintForge 组件与示例应用。|SlintForge components and sample application."""
 
+def preview_height_expression(key, height):
+    # 建议列表展开时增加预览空间，生成页面与展示检查共用这一布局约定。
+    if key == "form-auto-suggest":
+        return "(suggest.open ? 360px : 190px)"
+    return f"{height}px"
+
+
 def prepare_presentations(demos):
     metadata = {}
     for row in PRESENTATIONS.splitlines():
@@ -74,7 +81,7 @@ def prepare_presentations(demos):
     assert set(demos) == set(metadata), (set(demos) - set(metadata), set(metadata) - set(demos))
     for key, demo in demos.items():
         height, description, _ = metadata[key]
-        demo.update(height=height, description=description, section="用法与状态")
+        demo.update(height=height, height_expression=preview_height_expression(key, height), description=description, section="用法与状态")
     # 原生行为直接复用，参考页的常用状态在同一卡片中并列展示。
     for key, primary in [("inputs-standard-button", False), ("inputs-filled-button", True)]:
         demos[key]["body"] = f'''HorizontalLayout {{ spacing: 12px; alignment: start;

@@ -49,42 +49,19 @@ pub fn crop_capture(
     rect: CaptureRect,
     scale: f32,
 ) -> Result<SharedPixelBuffer<Rgba8Pixel>, CaptureError> {
-    if ![rect.x, rect.y, rect.width, rect.height, scale]
-        .iter()
-        .all(|v| v.is_finite())
-        || rect.width <= 0.0
-        || rect.height <= 0.0
-        || scale <= 0.0
-    {
-        return Err(CaptureError("截图区域或缩放系数无效".into()));
-    }
-    let scale = f64::from(scale);
-    let left = (f64::from(rect.x) * scale)
-        .floor()
-        .clamp(0.0, f64::from(pixels.width())) as u32;
-    let top = (f64::from(rect.y) * scale)
-        .floor()
-        .clamp(0.0, f64::from(pixels.height())) as u32;
-    let right = ((f64::from(rect.x) + f64::from(rect.width)) * scale)
-        .ceil()
-        .clamp(0.0, f64::from(pixels.width())) as u32;
-    let bottom = ((f64::from(rect.y) + f64::from(rect.height)) * scale)
-        .ceil()
-        .clamp(0.0, f64::from(pixels.height())) as u32;
-    if right <= left || bottom <= top {
-        return Err(CaptureError("截图区域与窗口没有交集".into()));
-    }
-    let mut cropped = SharedPixelBuffer::new(right - left, bottom - top);
-    let source = pixels.as_slice();
-    for (row, target) in cropped
-        .make_mut_slice()
-        .chunks_mut((right - left) as usize)
-        .enumerate()
-    {
-        let start = (top as usize + row) * pixels.width() as usize + left as usize;
-        target.copy_from_slice(&source[start..start + target.len()]);
-    }
-    Ok(cropped)
+    use slintforge_runtime_api::Wire;
+    let mut arena = slintforge_runtime_api::Arena::default();
+    let args = slintforge_runtime_api::models::ArgsCrop {
+        pixels: crate::pixels_view(pixels),
+        rect: rect.view(&mut arena),
+        scale,
+    };
+    crate::runtime::invoke::<slintforge_runtime_api::Pixels, _, _>(
+        slintforge_runtime_api::models::OP_CROP,
+        &args,
+        crate::pixels_from_view,
+    )
+    .map_err(|e| CaptureError(e.message()))
 }
 
 /// 调用方决定输出路径；不自动创建父目录，保留明确的保存错误。
@@ -92,27 +69,19 @@ pub fn save_capture_png(
     pixels: &SharedPixelBuffer<Rgba8Pixel>,
     path: impl AsRef<Path>,
 ) -> Result<(), CaptureError> {
-    if pixels.width() == 0 || pixels.height() == 0 {
-        return Err(CaptureError("不能保存空截图".into()));
-    }
-    let file = std::fs::File::create(path.as_ref())
-        .map_err(|e| CaptureError(format!("PNG 保存失败: {e}")))?;
-    let mut encoder = png::Encoder::new(
-        std::io::BufWriter::new(file),
-        pixels.width(),
-        pixels.height(),
-    );
-    encoder.set_color(png::ColorType::Rgba);
-    encoder.set_depth(png::BitDepth::Eight);
-    let mut writer = encoder
-        .write_header()
-        .map_err(|e| CaptureError(format!("PNG 编码失败: {e}")))?;
-    writer
-        .write_image_data(pixels.as_bytes())
-        .map_err(|e| CaptureError(format!("PNG 编码失败: {e}")))?;
-    writer
-        .finish()
-        .map_err(|e| CaptureError(format!("PNG 保存失败: {e}")))
+    #[cfg(windows)]
+    let path: Vec<u16> = {
+        use std::os::windows::ffi::OsStrExt;
+        path.as_ref().as_os_str().encode_wide().collect()
+    };
+    #[cfg(not(windows))]
+    let path: Vec<u16> = path.as_ref().to_string_lossy().encode_utf16().collect();
+    let args = slintforge_runtime_api::models::ArgsSavePng {
+        pixels: crate::pixels_view(pixels),
+        path: slintforge_runtime_api::Slice::new(path.as_ptr(), path.len()),
+    };
+    crate::runtime::invoke::<u8, _, _>(slintforge_runtime_api::models::OP_SAVEPNG, &args, |_| ())
+        .map_err(|e| CaptureError(e.message()))
 }
 
 /// 将消费工程生成的 Slint 服务与结果类型接到当前窗口，不形成引用环。
@@ -120,6 +89,7 @@ pub fn save_capture_png(
 macro_rules! bind_capture_service {
     ($ui:expr, $service:ty, $result:ty) => {{
         use slint::ComponentHandle as _;
+        $crate::runtime::initialize().expect("截图运行库初始化失败");
         let weak = $ui.as_weak();
         $ui.global::<$service>().on_capture_window(move || {
             let mut result = <$result>::default();
@@ -138,6 +108,7 @@ macro_rules! bind_capture_service {
             }
             result
         });
+        $crate::runtime::initialize().expect("截图运行库初始化失败");
         let weak = $ui.as_weak();
         $ui.global::<$service>().on_capture_region(move |rect| {
             let mut result = <$result>::default();

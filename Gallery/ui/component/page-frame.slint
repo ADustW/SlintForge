@@ -5,6 +5,8 @@ import { Palette, ScrollView } from "std-widgets.slint";
 export component GalleryPageFrame inherits Rectangle {
     in property<string> title;
     in property<string> subtitle;
+    in property<length> content-spacing: 24px;
+    in-out property<length> viewport-y <=> scroll.content-y;
     background: Palette.background;
 
     scroll := ScrollView {
@@ -19,9 +21,9 @@ export component GalleryPageFrame inherits Rectangle {
             padding-right: 24px;
             padding-top: 24px;
             padding-bottom: 24px;
-            spacing: 24px;
+            spacing: root.content-spacing;
             Text { text: root.title; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 26px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
-            Text { text: root.subtitle; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+            if root.subtitle != "": Text { text: root.subtitle; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
             @children
         }
     }

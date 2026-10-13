@@ -1,5 +1,7 @@
 # DataGrid / TreeDataGrid 验证记录
 
+> 阶段记录：本文保留该组件实施时的范围、测试数量和验证结果；v0.1.1 当前能力见接入与交付说明，本次验收以时间戳发布目录中的 ACCEPTANCE.md 和 verification 为准。
+
 日期：2026-10-03。工程：`D:\ai_workspace\SlintForge\SlintForge`。基线：Windows x64、Slint 1.18.0、fluent；C++ 使用 `D:\.clion-env\qt-6.8.3-msvc.bat` 加载的 CLion MSVC 环境。
 
 两个组件已实现，共用 Slint UI 与模型契约，提供 Rust/C++ 服务绑定及独立消费者。Gallery 当前 95 个导航页面均有演示：27 页使用原生能力、40 页使用新增共享组件、28 页为已有演示及辅助页，无暂缓页面。API 见 [表格文档](GRIDS.md)，此前图表阶段的记录保留在 [组件验证记录](COMPONENT_VERIFICATION.md)。

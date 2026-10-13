@@ -214,7 +214,7 @@ void forge_bind_plot_services(const Handle& ui) {
         for(size_t i=0;i<result.domains->row_count();++i){const auto r=result.domains->row_data(i);if(r&&r->id==v.x_window_axis)result.history_range=*r;}
         std::vector<Rect> rects;for(const auto& v:plot->rects()){Rect r{};r.id=v.id;r.x=static_cast<float>(v.x);r.y=static_cast<float>(v.y);r.width=static_cast<float>(v.width);r.height=static_cast<float>(v.height);rects.push_back(r);}result.rects=std::make_shared<slint::VectorModel<Rect>>(std::move(rects));
         for(int kind=0;kind<2;++kind){const auto v=plot->annotation_rect(kind);Rect r{};r.id=v.id;r.x=static_cast<float>(v.x);r.y=static_cast<float>(v.y);r.width=static_cast<float>(v.width);r.height=static_cast<float>(v.height);if(kind==0)result.legend_rect=r;else result.measurement_rect=r;}
-        result.measurement_axis=v.x_window_axis;for(size_t i=0;i<series->row_count();++i)if(const auto s=series->row_data(i);s&&s->id==v.measurement_series){result.measurement_axis=s->x_axis;break;}
+        result.measurement_axis=v.x_window_axis;for(size_t i=0;series&&i<series->row_count();++i)if(const auto s=series->row_data(i);s&&s->id==v.measurement_series){result.measurement_axis=s->x_axis;break;}
         for(size_t i=0;i<result.ranges->row_count();++i)if(const auto r=result.ranges->row_data(i);r&&r->id==result.measurement_axis){result.measurement_range=*r;break;}
         state->plots[token]=std::move(plot);state->inputs[token]=input;state->point_inputs[token]=point_inputs;return result;
     });

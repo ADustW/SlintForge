@@ -1,5 +1,7 @@
 # Gallery 组件与图表阶段验证记录
 
+> 阶段记录：本文保留该组件实施时的范围、测试数量和验证结果；v0.1.1 当前能力见接入与交付说明，本次验收以时间戳发布目录中的 ACCEPTANCE.md 和 verification 为准。
+
 日期：2026-10-03。工程根目录：`D:\ai_workspace\SlintForge\SlintForge`。
 
 此记录保留表格实现前的阶段结果；当前完整结果见 [表格验证记录](GRIDS_VERIFICATION.md)。

@@ -5,8 +5,8 @@ import re
 from component_catalog import ROOT, CUSTOM, NATIVE, EXISTING_DEMOS
 from gallery_presentation import prepare_presentations
 
-STD = 'Button, CheckBox, Slider, Switch, RadioGroup, LineEdit, TextEdit, ComboBox, SpinBox, TabWidget, DatePickerPopup, TimePickerPopup, Date, Time, Palette, ProgressIndicator, Spinner, StandardButton'
-FORGE = ', '.join(sorted(set(CUSTOM.values()) | {'ForgeChoiceItem', 'ForgeTreeItem', 'ForgeTourStep', 'ForgeTimelineItem', 'ForgeInfoLevel', 'ForgeDrawerEdge', 'ForgeTypography', 'ForgeNavigationView', 'ForgeNavigationItem', 'ForgeNavItemKind', 'ForgeBreadcrumb', 'ForgeTabBar', 'ForgePageHeader'}))
+STD = 'Button, CheckBox, Slider, Switch, RadioGroup, LineEdit, TextEdit, ComboBox, SpinBox, TabWidget, Date, Time, Palette, ProgressIndicator, Spinner, StandardButton'
+FORGE = ', '.join(sorted(set(CUSTOM.values()) | {'ForgeDateTime', 'ForgeChoiceItem', 'ForgeTreeItem', 'ForgeTourStep', 'ForgeTimelineItem', 'ForgeInfoLevel', 'ForgeDrawerEdge', 'ForgeTypography', 'ForgeNavigationView', 'ForgeNavigationItem', 'ForgeNavItemKind', 'ForgeBreadcrumb', 'ForgeTabBar', 'ForgePageHeader'}))
 DEMOS = {}
 
 def add(key, body, note, extra='', overlay='', snippet=''):
@@ -22,9 +22,9 @@ for key in ['inputs-copyable-text', 'data-selection']:
 add('inputs-checkbox', 'CheckBox { text: @tr("启用通知"); checked <=> root.flag; }\nCheckBox { text: @tr("禁用选项"); enabled: false; }\nText { text: root.flag ? @tr("已启用") : @tr("已关闭"); color: Palette.foreground; }', '原生 CheckBox.checked 双向绑定。', snippet='CheckBox { text: "Enable"; checked: true; }')
 add('inputs-slider', 'Slider { minimum: 0; maximum: 100; value <=> root.number; }\nText { text: @tr("当前值：{}", round(root.number)); color: Palette.foreground; }', '原生 Slider.minimum、maximum、value、changed。', snippet='Slider { minimum: 0; maximum: 100; value: 40; }')
 add('inputs-toggle-switch', 'Switch { text: @tr("启用功能"); checked <=> root.flag; }\nText { text: root.flag ? @tr("开启") : @tr("关闭"); color: Palette.foreground; }', '直接使用 Switch 的原生开关行为。', snippet='Switch { text: "Enable"; checked: true; }')
-add('form-time-picker', 'Button { text: @tr("选择时间"); clicked => { picker.show(); } }\nText { text: root.selected-time.hour + ":" + root.selected-time.minute + ":" + root.selected-time.second; color: Palette.foreground; }', 'TimePickerPopup 提供时钟、输入和 24 小时格式。', extra='in-out property<Time> selected-time: {hour: 9, minute: 30, second: 0};', overlay='picker := TimePickerPopup { x: 30px; y: 100px; title: @tr("选择时间"); use-24-hour-format: true; time: root.selected-time; accepted(value) => { root.selected-time = value; picker.close(); } canceled => { picker.close(); } }', snippet='Button { text: "Time"; clicked => { picker.show(); } }\npicker := TimePickerPopup { accepted(value) => { picker.close(); } canceled => { picker.close(); } }')
+add('form-time-picker', 'Button { text: @tr("选择时间"); clicked => { picker.open(); } }\nCheckBox { text: @tr("24 小时制"); checked <=> root.use-24-hour-format; }\nText { text: ForgeDateTime.format-time(root.selected-time, root.language, root.use-24-hour-format); color: Palette.foreground; }', 'ForgeTimePickerPopup 支持中英文、时钟与数字输入及 12/24 小时格式。', extra='in property<string> language: "zh";\nin-out property<bool> use-24-hour-format: true;\nin-out property<Time> selected-time: {hour: 9, minute: 30, second: 0};', overlay='picker := ForgeTimePickerPopup { x: 30px; y: 100px; language: root.language; title: @tr("选择时间"); use-24-hour-format <=> root.use-24-hour-format; time: root.selected-time; accepted(value) => { root.selected-time = value; } }', snippet='in-out property<string> language: "zh";\nButton { text: root.language == "en" ? "Time" : "时间"; clicked => { picker.open(); } }\npicker := ForgeTimePickerPopup { language: root.language; time: {hour: 9, minute: 30, second: 0}; accepted(value) => { debug(value); } }')
 for key in ['form-date-picker', 'form-calendar-picker']:
-    add(key, 'Button { text: @tr("选择日期"); clicked => { picker.show(); } }\nText { text: root.selected-date.year + "-" + root.selected-date.month + "-" + root.selected-date.day; color: Palette.foreground; }', 'DatePickerPopup 已包含月历、年月切换和确认取消。', extra='in-out property<Date> selected-date: {year: 2026, month: 10, day: 3};', overlay='picker := DatePickerPopup { x: 30px; y: 100px; title: @tr("选择日期"); date: root.selected-date; accepted(value) => { root.selected-date = value; picker.close(); } canceled => { picker.close(); } }', snippet='Button { text: "Date"; clicked => { picker.show(); } }\npicker := DatePickerPopup { accepted(value) => { picker.close(); } canceled => { picker.close(); } }')
+    add(key, 'Button { text: @tr("选择日期"); clicked => { picker.open(); } }\nText { text: ForgeDateTime.format-date(root.selected-date, root.language); color: Palette.foreground; }', 'ForgeDatePickerPopup 支持中英文月份、星期、日期格式以及年月切换和确认取消。', extra='in property<string> language: "zh";\nin-out property<Date> selected-date: {year: 2026, month: 10, day: 3};', overlay='picker := ForgeDatePickerPopup { x: 30px; y: 100px; language: root.language; title: @tr("选择日期"); date: root.selected-date; accepted(value) => { root.selected-date = value; } }', snippet='in-out property<string> language: "zh";\nButton { text: root.language == "en" ? "Date" : "日期"; clicked => { picker.open(); } }\npicker := ForgeDatePickerPopup { language: root.language; date: {year: 2026, month: 10, day: 8}; accepted(value) => { debug(value); } }')
 add('form-textbox', 'LineEdit { text <=> root.draft; placeholder-text: @tr("请输入文本"); }\nText { text: root.draft; color: Palette.foreground; wrap: word-wrap; }', '直接使用 LineEdit，沿用原生选区、输入法和撤销行为。', snippet='LineEdit { placeholder-text: "Input"; }')
 for key in ['form-multiline-textbox', 'form-scrollable-textbox']:
     add(key, 'TextEdit { text: @tr("第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行"); height: 170px; }', 'TextEdit 自带多行编辑及滚动视口，无需包装。', snippet='TextEdit { text: "Line 1\\nLine 2"; }')
@@ -76,7 +76,7 @@ add('navigation', 'ForgeNavigationView { height: 280px; show-app-bar: false; act
 add('breadcrumb', 'ForgeBreadcrumb { items: [{id: "home", title: @tr("首页")}, {id: "project", title: @tr("工程")}, {id: "page", title: @tr("页面")}]; selected(id) => { root.status = id; } }\nText { text: root.status; color: Palette.foreground; }', '复用现有 ForgeBreadcrumb.items 和 selected(id)。', snippet='ForgeBreadcrumb { items: [{id: "home", title: "Home"}, {id: "page", title: "Page"}]; }')
 add('tabbar', 'ForgeTabBar { items: [{id: "a", title: @tr("概览")}, {id: "b", title: @tr("详情")}, {id: "c", title: @tr("设置")}]; active-id: root.draft == "" ? "a" : root.draft; selected(id) => { root.draft = id; root.status = id; } }\nText { text: root.status; color: Palette.foreground; }', '复用现有 ForgeTabBar.items / active-id / selected(id)。', snippet='ForgeTabBar { items: [{id: "a", title: "A"}, {id: "b", title: "B"}]; active-id: "a"; }')
 add('pageheader', 'ForgePageHeader { title: @tr("工程详情"); subtitle: @tr("可返回的页面标题"); can-go-back: true; back-requested => { root.count += 1; } }\nText { text: @tr("返回次数：{}", root.count); color: Palette.foreground; }', '复用现有 ForgePageHeader.title / subtitle / can-go-back / back-requested。', snippet='ForgePageHeader { title: "Project"; subtitle: "Details"; can-go-back: true; }')
-add('about', 'Text { text: "SlintForge Gallery · v0.1.0"; color: Palette.foreground; font-size: 28px; font-weight: 600; }\nText { text: @tr("共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。"); color: Palette.foreground; wrap: word-wrap; }', 'Slint 1.18.0 / fluent / Windows x64；接口与实现记录见 docs/COMPONENT_AUDIT.md。', snippet='// SlintForge 共享 UI\nimport { ForgeWindow } from "@slintforge";\nexport component App inherits ForgeWindow { title: "SlintForge"; }')
+add('about', 'Text { text: "SlintForge Gallery · v0.1.2"; color: Palette.foreground; font-size: 28px; font-weight: 600; }\nText { text: @tr("共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。"); color: Palette.foreground; wrap: word-wrap; }', 'Slint 1.18.0 / fluent / Windows x64；接口与实现记录见 docs/COMPONENT_AUDIT.md。', snippet='// SlintForge 共享 UI\nimport { ForgeWindow } from "@slintforge";\nexport component App inherits ForgeWindow { title: "SlintForge"; }')
 
 def component_name(key):
     return 'Gallery' + ''.join(part.title() for part in key.split('-')) + 'Page'
@@ -91,9 +91,9 @@ for key in ['theme-acrylic', 'theme-liquid-glass']:
 DEMOS['other-tour']['body'] = DEMOS['other-tour']['body'].replace('guide.active = true;', 'guide.start();')
 DEMOS['form-number-box']['body'] = DEMOS['form-number-box']['body'].replace('ForgeNumberBox {', 'field := ForgeNumberBox {', 1).replace('@tr("当前值：{}", root.number)', '@tr("当前值：{}", field.value)')
 PREVIEW_ACTIONS = {
-    'form-date-picker': 'if open { picker.show(); } else { picker.close(); }',
-    'form-calendar-picker': 'if open { picker.show(); } else { picker.close(); }',
-    'form-time-picker': 'if open { picker.show(); } else { picker.close(); }',
+    'form-date-picker': 'if open { picker.open(); } else { picker.close(); }',
+    'form-calendar-picker': 'if open { picker.open(); } else { picker.close(); }',
+    'form-time-picker': 'if open { picker.open(); } else { picker.close(); }',
     'form-auto-suggest': 'suggest.open = open;',
     'inputs-progress-button': 'root.busy = open;',
     'inputs-dropdown-button': 'if open { control.show(); } else { control.close(); }',
@@ -137,14 +137,17 @@ def generate():
         content = demo['body'] + demo['extra'] + demo['overlay']
         header = widget_imports(content, STD, 'std-widgets.slint') + widget_imports(content + ' ForgeTypography', FORGE, '@slintforge') + 'import { GallerySamplePage } from "../component/sample-page.slint";\nimport { GalleryDemoModels } from "../component/demo-models.slint";\n'
         snippet = demo['snippet'] or (api.split(' / ')[0] + ' { }')
+        if key in {'form-time-picker', 'form-date-picker', 'form-calendar-picker'}:
+            snippet = CUSTOM[key] + ' { x: 20px; y: 20px; language: "zh"; ' + ('minute-increment: 5;' if key == 'form-time-picker' else 'show-time: true;' if key == 'form-calendar-picker' else '') + ' }'
+        example_height = 720 if key in ['form-date-picker', 'form-calendar-picker', 'form-time-picker', 'form-color-picker', 'form-shortcut-picker'] else 320
         if snippet.startswith('export '):
             snippet = widget_imports(snippet, STD, 'std-widgets.slint') + snippet
         if not snippet.startswith(('export ', '//', 'import ')):
             imported = api.split('.')[0].split(' / ')[0]
             if imported in CUSTOM.values() or imported.startswith('Forge'):
-                snippet = widget_imports(snippet, STD, 'std-widgets.slint') + f'import {{ {imported} }} from "@slintforge";\nexport component Example inherits Window {{\n    width: 520px; height: 320px;\n    {snippet}\n}}'
+                snippet = widget_imports(snippet, STD, 'std-widgets.slint') + f'import {{ {imported} }} from "@slintforge";\nexport component Example inherits Window {{\n    width: 520px; height: {example_height}px;\n    {snippet}\n}}'
             else:
-                snippet = widget_imports(snippet, STD, 'std-widgets.slint') + f'export component Example inherits Window {{\n    width: 520px; height: 320px;\n    {snippet}\n}}'
+                snippet = widget_imports(snippet, STD, 'std-widgets.slint') + f'export component Example inherits Window {{\n    width: 520px; height: {example_height}px;\n    {snippet}\n}}'
         (examples / f'{key}.slint').write_text(snippet, encoding='utf-8')
         source = header + f'''\n// {'Slint 原生示例' if native else '共享组件演示'}：{titles[key]}。
 export component {component_name(key)} inherits Rectangle {{
@@ -155,12 +158,13 @@ export component {component_name(key)} inherits Rectangle {{
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {{ {PREVIEW_ACTIONS.get(key, '')} }}
+    {('callback configure-preview(bool, bool); configure-preview(use-24-hour, clock) => { root.use-24-hour-format = use-24-hour; picker.clock-mode = clock; }' if key == 'form-time-picker' else '')}
     {demo['extra']}
     sample := GallerySamplePage {{
         title: {json.dumps(titles[key], ensure_ascii=False)};
         subtitle: @tr({json.dumps(demo['description'], ensure_ascii=False)});
         example-title: @tr({json.dumps(demo['section'], ensure_ascii=False)});
-        preview-height: {demo['height']}px * ForgeTypography.scale;
+        preview-height: {demo['height_expression']} * ForgeTypography.scale;
         VerticalLayout {{
             x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
             height: Math.max(0px, sample.preview-area-height - 40px);
@@ -171,7 +175,9 @@ export component {component_name(key)} inherits Rectangle {{
     {demo['overlay']}
 }}
 '''
-        (ROOT/f'Gallery/ui/page/{key}.slint').write_text(escape_literal_newlines(source),encoding='utf-8')
+        # 选择器与延时按钮使用人工维护的参考布局，生成器只维护路由封装。
+        if key not in {'form-time-picker','form-date-picker','form-calendar-picker','form-color-picker','form-shortcut-picker','inputs-delay-button'}:
+            (ROOT/f'Gallery/ui/page/{key}.slint').write_text(escape_literal_newlines(source),encoding='utf-8')
     screen = ROOT/'Gallery/ui/screen/main-screen.slint'
     source = screen.read_text(encoding='utf-8')
     for key in DEMOS:
@@ -188,11 +194,12 @@ export component {component_name(key)} inherits Rectangle {{
         source = re.sub(r'^import \{ ' + name + r' \}[^\n]*\n', '', source, flags=re.M)
         source = re.sub(r'^        (?:[\w-]+ := )?' + name + r' \{[^\n]*\n', '', source, flags=re.M)
         header = '\n'.join(f'import {{ {component_name(key)} }} from "../page/{key}.slint";' for key in keys)
-        body = '\n'.join(f'    page-{index} := {component_name(key)} {{ width: root.width; height: root.height; visible: root.active-route-id == "{key}"; }}' for index, key in enumerate(keys))
+        body = '\n'.join(f'    page-{index} := {component_name(key)} {{ width: root.width; height: root.height; ' + ('language: root.language; ' if key in ['form-date-picker', 'form-calendar-picker', 'form-time-picker', 'form-color-picker', 'form-shortcut-picker'] else '') + f'visible: root.active-route-id == "{key}"; }}' for index, key in enumerate(keys))
         actions = ' '.join(f'if route == "{key}" {{ page-{index}.prepare-preview(open); }}' for index, key in enumerate(keys))
-        (ROOT/f'Gallery/ui/component/{category}-pages.slint').write_text(header + f'\nexport component {name} inherits Rectangle {{\n    in property<string> active-route-id;\n    callback prepare-preview(string, bool);\n    prepare-preview(route, open) => {{ {actions} }}\n{body}\n}}\n', encoding='utf-8')
+        language_property = '    in property<string> language: "zh";\n    callback configure-time-preview(bool, bool);\n    configure-time-preview(use-24-hour, clock) => { page-0.configure-preview(use-24-hour, clock); }\n    callback configure-calendar-preview(bool);\n    configure-calendar-preview(with-time) => { page-2.configure-preview(with-time); }\n' if category == 'form' else ''
+        (ROOT/f'Gallery/ui/component/{category}-pages.slint').write_text(header + f'\nexport component {name} inherits Rectangle {{\n    in property<string> active-route-id;\n{language_property}    callback prepare-preview(string, bool);\n    prepare-preview(route, open) => {{ {actions} }}\n{body}\n}}\n', encoding='utf-8')
     imports = '\n'.join(f'import {{ Gallery{category.title()}Pages }} from "../component/{category}-pages.slint";' for category in groups)
-    instances = '\n'.join(f'        {category}-components := Gallery{category.title()}Pages {{ width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }}' for category in groups)
+    instances = '\n'.join(f'        {category}-components := Gallery{category.title()}Pages {{ width: root.page-width; height: root.page-height; ' + ('language: root.language; ' if category == 'form' else '') + 'active-route-id: root.active-route-id; }' for category in groups)
     source = source.replace('import { GalleryPendingItem, GalleryPendingPage }', imports+'\nimport { GalleryPendingItem, GalleryPendingPage }')
     source = source.replace('        for pending in root.pending-items', instances+'\n        for pending in root.pending-items')
     source = source.replace('visible: root.active-route-id == "layouts-page-stack";', 'visible: root.active-route-id == "layouts-page-stack" || root.active-route-id == "navigation-stack-page";')

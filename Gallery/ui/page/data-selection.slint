@@ -14,6 +14,8 @@ export component GalleryDataSelectionPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "data-selection";
+        active: root.visible;
         title: "SelectionArea";
         subtitle: @tr("使用鼠标和键盘选择、复制文本。");
         example-title: @tr("用法与状态");

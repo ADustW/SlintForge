@@ -4,6 +4,7 @@ import { GalleryProfessionalPlotPage } from "plot-page.slint";
 export component GalleryChartPages inherits Rectangle {
     in property<string> active-route-id;
     out property<ForgePlotScene> plot-scene: professional.scene;
+    out property<bool> showcase-ready: professional.showcase-ready;
     callback append-plot-points(int, [ForgePlotPoint]) -> bool;
     append-plot-points(id, points) => {return professional.append-points(id, points);}
     callback prepare-preview(string, bool);

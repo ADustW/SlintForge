@@ -14,6 +14,8 @@ export component GalleryDataQrcodePage inherits Rectangle {
     prepare-preview(open) => {  }
     in-out property<string> payload: "SlintForge|Rust|C++";
     sample := GallerySamplePage {
+        showcase-route: "data-qrcode";
+        active: root.visible;
         title: "QRCode";
         subtitle: @tr("输入内容生成二维码，空内容显示提示。");
         example-title: @tr("用法与状态");

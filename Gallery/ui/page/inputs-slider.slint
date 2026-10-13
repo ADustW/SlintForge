@@ -14,6 +14,8 @@ export component GalleryInputsSliderPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "inputs-slider";
+        active: root.visible;
         title: "Slider";
         subtitle: @tr("拖动水平或垂直滑块调整数值。");
         example-title: @tr("用法与状态");

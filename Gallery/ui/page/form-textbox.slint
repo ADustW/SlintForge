@@ -14,6 +14,8 @@ export component GalleryFormTextboxPage inherits Rectangle {
     prepare-preview(open) => {  }
     
     sample := GallerySamplePage {
+        showcase-route: "form-textbox";
+        active: root.visible;
         title: "TextBox";
         subtitle: @tr("输入、只读和禁用的单行文本框。");
         example-title: @tr("用法与状态");

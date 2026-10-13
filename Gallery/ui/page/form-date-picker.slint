@@ -1,30 +1,16 @@
-import { Button, DatePickerPopup, Date, Palette } from "std-widgets.slint";
+import { ForgeDatePicker } from "@slintforge";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryPickerExample } from "../component/picker-example.slint";
 
-// Slint 原生示例：DatePicker。
 export component GalleryFormDatePickerPage inherits Rectangle {
-    in-out property<int> count: 0;
-    in-out property<bool> flag: true;
-    in-out property<float> number: 30;
-    in-out property<string> draft;
-    in-out property<string> status: @tr("就绪");
+    in property<string> language: "zh";
     callback prepare-preview(bool);
-    prepare-preview(open) => { if open { picker.show(); } else { picker.close(); } }
-    in-out property<Date> selected-date: {year: 2026, month: 10, day: 3};
-    sample := GallerySamplePage {
-        title: "DatePicker";
-        subtitle: @tr("选择日期，并确认或取消修改。");
-        example-title: @tr("用法与状态");
-        preview-height: 160px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Button { text: @tr("选择日期"); clicked => { picker.show(); } }
-Text { text: root.selected-date.year + "-" + root.selected-date.month + "-" + root.selected-date.day; color: Palette.foreground; }
-        }
+    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); } }
+    GalleryPageFrame {
+        width: root.width; height: root.height;
+        title: @tr("日期选择器"); subtitle: @tr("分栏选择年、月、日，支持字段显示和日期范围。");
+        sample1 := GalleryPickerExample { label: @tr("默认区域"); first := ForgeDatePicker { x: 0px; y: 0px; language: root.language; dark: sample1.dark; enabled: !sample1.disabled; } }
+        sample2 := GalleryPickerExample { label: @tr("英文区域，2000—2100 年"); second := ForgeDatePicker { x: 0px; y: 0px; language: "en"; dark: sample2.dark; enabled: !sample2.disabled; minimum-date: {year: 2000, month: 1, day: 1}; maximum-date: {year: 2100, month: 1, day: 1}; } }
     }
-    picker := DatePickerPopup { x: 30px; y: 100px; title: @tr("选择日期"); date: root.selected-date; accepted(value) => { root.selected-date = value; picker.close(); } canceled => { picker.close(); } }
 }

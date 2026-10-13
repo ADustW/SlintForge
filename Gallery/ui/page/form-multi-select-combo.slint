@@ -13,6 +13,8 @@ export component GalleryFormMultiSelectComboPage inherits Rectangle {
     prepare-preview(open) => { if open { control.show(); } else { control.close(); } }
     
     sample := GallerySamplePage {
+        showcase-route: "form-multi-select-combo";
+        active: root.visible;
         title: "MultiSelectComboBox";
         subtitle: @tr("展开列表，选中多个选项。");
         example-title: @tr("用法与状态");

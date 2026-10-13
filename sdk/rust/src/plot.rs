@@ -78,6 +78,7 @@ impl Plot {
     /// # Safety
     /// 契约中的字符串须有效且以零字节结束；引擎在调用期间复制。
     pub unsafe fn from_core(options: &raw::ForgePlotOptionsCore) -> Result<Self, String> {
+        crate::runtime::initialize().map_err(|e| e.message())?;
         NonNull::new(raw::forge_plot_core_new(options))
             .map(|handle| Self {
                 handle,
@@ -113,25 +114,41 @@ impl Plot {
     /// # Safety
     /// 点的标签和离群数组须在本次调用期间有效；历史由引擎保留。
     pub unsafe fn append_core(&mut self, series: i32, points: &[raw::ForgePlotPointCore]) -> bool {
-        raw::forge_plot_core_append(self.handle.as_ptr(), series, points.as_ptr(), points.len()) != 0
+        raw::forge_plot_core_append(self.handle.as_ptr(), series, points.as_ptr(), points.len())
+            != 0
     }
     /// 追加一批双精度 XY 数据，不复制既有历史；同一曲线的 X 建议保持递增。
     pub fn append_xy(&mut self, series: i32, points: &[(f64, f64)]) -> bool {
-        let points=points.iter().map(|&(x,y)|raw::ForgePlotPointCore{x,y,..Default::default()}).collect::<Vec<_>>();
-        unsafe {self.append_core(series,&points)}
+        let points = points
+            .iter()
+            .map(|&(x, y)| raw::ForgePlotPointCore {
+                x,
+                y,
+                ..Default::default()
+            })
+            .collect::<Vec<_>>();
+        unsafe { self.append_core(series, &points) }
     }
     /// # Safety
     /// 系列名称须在调用期间有效；改变外观时保留追加数据。
     pub unsafe fn update_series_core(&mut self, series: &raw::ForgePlotSeriesCore) -> bool {
-        raw::forge_plot_core_update_series(self.handle.as_ptr(),series)!=0
+        raw::forge_plot_core_update_series(self.handle.as_ptr(), series) != 0
     }
     pub fn domains(&self) -> Vec<raw::ForgePlotRangeCore> {
-        let mut out=vec![raw::ForgePlotRangeCore::default();unsafe{raw::forge_plot_core_domains(self.handle.as_ptr(),std::ptr::null_mut(),0)}];
-        unsafe{raw::forge_plot_core_domains(self.handle.as_ptr(),out.as_mut_ptr(),out.len());}out
+        let mut out = vec![
+            raw::ForgePlotRangeCore::default();
+            unsafe {
+                raw::forge_plot_core_domains(self.handle.as_ptr(), std::ptr::null_mut(), 0)
+            }
+        ];
+        unsafe {
+            raw::forge_plot_core_domains(self.handle.as_ptr(), out.as_mut_ptr(), out.len());
+        }
+        out
     }
     /// 光标读取最邻近的原始采样点；返回索引不受显示抽样影响。
     pub fn measure(&self, series: i32, x: f64) -> PlotHit {
-        unsafe {raw::forge_plot_core_measure(self.handle.as_ptr(),series,x).into()}
+        unsafe { raw::forge_plot_core_measure(self.handle.as_ptr(), series, x).into() }
     }
     /// # Safety
     /// 名称字符串须在本次调用期间有效。
@@ -147,13 +164,12 @@ impl Plot {
             let mut bytes = vec![0u8; count];
             if count > 0 {
                 raw::forge_plot_core_image_data(item.image, bytes.as_mut_ptr(), count);
-                if let Ok(decoded) = image::load_from_memory(&bytes) {
-                    let pixels = decoded.to_rgba8();
+                if let Ok(pixels) = crate::decode_image_pixels(&bytes) {
                     let mut core = *item;
                     core.image_width = pixels.width() as i32;
                     core.image_height = pixels.height() as i32;
-                    core.image_byte_count = pixels.as_raw().len();
-                    core.image_pixels = pixels.as_raw().as_ptr();
+                    core.image_byte_count = pixels.as_bytes().len();
+                    core.image_pixels = pixels.as_bytes().as_ptr();
                     raw::forge_plot_core_item(self.handle.as_ptr(), &core);
                     return;
                 }
@@ -373,29 +389,15 @@ impl Plot {
             "jpg" | "jpeg" | "bmp" => {
                 let image = self.image()?;
                 let pixels = image.to_rgba8().ok_or("SVG 无法读取像素")?;
-                let rgb = pixels
-                    .as_slice()
-                    .iter()
-                    .flat_map(|p| {
-                        let blend = |c: u8| {
-                            ((c as u32 * p.a as u32 + 255 * (255 - p.a as u32) + 127) / 255) as u8
-                        };
-                        [blend(p.r), blend(p.g), blend(p.b)]
-                    })
-                    .collect::<Vec<_>>();
-                image::save_buffer_with_format(
+                crate::save_image_pixels(
+                    &pixels,
                     path,
-                    &rgb,
-                    pixels.width(),
-                    pixels.height(),
-                    image::ColorType::Rgb8,
                     if format.eq_ignore_ascii_case("bmp") {
-                        image::ImageFormat::Bmp
+                        2
                     } else {
-                        image::ImageFormat::Jpeg
+                        1
                     },
                 )
-                .map_err(|e| e.to_string())
             }
             _ => Err("支持 PNG、JPEG、BMP、SVG、PDF".into()),
         }
@@ -421,7 +423,9 @@ impl PlotServiceState {
     pub fn get(&self, id: i32) -> Option<&Plot> {
         self.plots.get(&id)
     }
-    pub fn get_mut(&mut self, id: i32) -> Option<&mut Plot> { self.plots.get_mut(&id) }
+    pub fn get_mut(&mut self, id: i32) -> Option<&mut Plot> {
+        self.plots.get_mut(&id)
+    }
     pub fn take(&mut self, id: i32) -> Option<Plot> {
         self.plots.remove(&id)
     }
@@ -432,47 +436,16 @@ pub fn merge_plot_selection(
     next: &[(i32, i32, i32)],
     mode: i32,
 ) -> Vec<(i32, i32, i32)> {
-    if mode == 0 {
-        return merge_plot_selection(&[], next, 1);
-    }
-    let mut events = std::collections::BTreeMap::<(i32, i64), [i32; 2]>::new();
-    for (source, list) in [current, next].iter().enumerate() {
-        for &(id, first, last) in *list {
-            if first < 0 || last < first {
-                continue;
-            }
-            events.entry((id, first as i64)).or_default()[source] += 1;
-            events.entry((id, last as i64 + 1)).or_default()[source] -= 1;
-        }
-    }
-    let mut result = Vec::new();
-    let mut active = [0, 0];
-    let mut start = 0;
-    let mut old_id = i32::MIN;
-    let selected = |active: [i32; 2]| {
-        if mode == 2 {
-            (active[0] > 0) ^ (active[1] > 0)
-        } else {
-            active[0] > 0 || active[1] > 0
-        }
+    use slintforge_runtime_api::{models::*, Arena, Wire};
+    let mut arena = Arena::default();
+    let current = current.to_vec();
+    let incoming = next.to_vec();
+    let args = ArgsMergeSelection {
+        current: current.view(&mut arena),
+        incoming: incoming.view(&mut arena),
+        mode,
     };
-    for ((id, index), delta) in events {
-        if id != old_id {
-            active = [0, 0];
-            old_id = id;
-        }
-        let previous = selected(active);
-        active[0] += delta[0];
-        active[1] += delta[1];
-        let after = selected(active);
-        if !previous && after {
-            start = index;
-        }
-        if previous && !after {
-            result.push((id, start as i32, (index - 1) as i32));
-        }
-    }
-    result
+    crate::runtime::value::<Vec<(i32, i32, i32)>, _>(OP_MERGESELECTION, &args)
 }
 
 // 有界实时缓冲：追加 O(1)，旧点按容量淘汰；批量同步到 UI 由应用节流。

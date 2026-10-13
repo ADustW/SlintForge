@@ -1,28 +1,23 @@
-import { ForgeColorPicker, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { Palette } from "std-widgets.slint";
+import { ForgeColorPicker } from "@slintforge";
+import { ForgeTypography } from "@slintforge";
+import { GalleryPageFrame } from "../component/page-frame.slint";
+import { GalleryPickerExample } from "../component/picker-example.slint";
 
-// 共享组件演示：ColorPicker。
 export component GalleryFormColorPickerPage inherits Rectangle {
-    in-out property<int> count: 0;
-    in-out property<bool> flag: true;
-    in-out property<float> number: 30;
-    in-out property<string> draft;
-    in-out property<string> status: @tr("就绪");
+    in property<string> language: "zh";
     callback prepare-preview(bool);
-    prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        title: "ColorPicker";
-        subtitle: @tr("调整四个颜色通道，预览颜色和透明度。");
-        example-title: @tr("用法与状态");
-        preview-height: 350px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeColorPicker { height: 300px; }
+    prepare-preview(open) => { if open { picker.open(); } else { picker.close(); } }
+    GalleryPageFrame {
+        width: root.width; height: root.height;
+        title: @tr("颜色选择器"); subtitle: @tr("通过色谱、调色板、十六进制和颜色通道选择颜色，确认后提交。");
+        sample := GalleryPickerExample {
+            label: @tr("颜色与屏幕取色");
+            HorizontalLayout {
+                alignment: start; spacing: 12px;
+                Text { text: @tr("选择颜色"); color: sample.dark ? #fff : #202020; vertical-alignment: center; }
+                picker := ForgeColorPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; }
+            }
         }
     }
-    
 }
