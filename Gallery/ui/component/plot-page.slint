@@ -34,9 +34,9 @@ export component GalleryProfessionalPlotPage inherits Rectangle {
         subtitle: @tr("曲线、统计图、二维色图、极坐标与多绘图区，支持缩放、选择和五种格式导出。");
         HorizontalLayout {
             height: 36px; vertical-stretch: 0; spacing: 8px; alignment: start;
-            Button { text: @tr("曲线与统计"); checkable: true; checked: root.current-tab == 0; clicked => { root.selected-tab = 0; demo.live = false; GalleryPlotDemoModels.sample-running(false); } }
-            Button { text: @tr("科学绘图"); checkable: true; checked: root.current-tab == 1; clicked => { root.selected-tab = 1; demo.live = false; GalleryPlotDemoModels.sample-running(false); } }
-            Button { text: @tr("交互与导出"); checkable: true; checked: root.current-tab == 2; clicked => { root.selected-tab = 2; } }
+            Button { text: @tr("曲线与统计"); primary: root.current-tab == 0; clicked => { root.selected-tab = 0; demo.live = false; GalleryPlotDemoModels.sample-running(false); } }
+            Button { text: @tr("科学绘图"); primary: root.current-tab == 1; clicked => { root.selected-tab = 1; demo.live = false; GalleryPlotDemoModels.sample-running(false); } }
+            Button { text: @tr("交互与导出"); primary: root.current-tab == 2; clicked => { root.selected-tab = 2; } }
         }
         overview := GalleryPlotShowcase { visible: root.current-tab == 0; height: root.current-tab == 0 ? self.preferred-height : 0px; explore(mode) => { root.explore(mode); } }
         scientific := GalleryPlotShowcase { scientific: true; visible: root.current-tab == 1; height: root.current-tab == 1 ? self.preferred-height : 0px; explore(mode) => { root.explore(mode); } }

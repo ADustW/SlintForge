@@ -445,7 +445,7 @@ pub fn merge_plot_selection(
         incoming: incoming.view(&mut arena),
         mode,
     };
-    crate::runtime::value::<Vec<(i32, i32, i32)>, _>(OP_MERGESELECTION, &args)
+    crate::runtime::value_or::<Vec<(i32, i32, i32)>, _>(OP_MERGESELECTION, &args, || current.clone())
 }
 
 // 有界实时缓冲：追加 O(1)，旧点按容量淘汰；批量同步到 UI 由应用节流。

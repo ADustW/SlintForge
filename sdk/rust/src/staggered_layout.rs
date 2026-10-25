@@ -30,9 +30,13 @@ impl StaggeredLayout {
             gap,
             padding,
         };
-        crate::runtime::value::<StaggeredLayout, _>(
+        crate::runtime::value_or::<StaggeredLayout, _>(
             slintforge_runtime_api::models::OP_ARRANGE,
             &args,
+            || StaggeredLayout {
+                placements: Vec::new(),
+                content_height: 0.,
+            },
         )
     }
 }

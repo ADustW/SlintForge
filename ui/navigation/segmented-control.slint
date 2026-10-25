@@ -12,7 +12,7 @@ export component ForgeSegmentedControl inherits Rectangle {
     layout := HorizontalLayout {
         spacing: 2px;
         for item in root.items : Button {
-            text: item.label; checkable: true; checked: item.id == root.selected-id;
+            text: item.label; primary: item.id == root.selected-id; accessible-checkable: true; accessible-checked: self.primary;
             enabled: item.enabled && root.enabled;
             clicked => { root.selected-id = item.id; root.selected(item.id); }
         }

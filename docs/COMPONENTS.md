@@ -21,7 +21,7 @@
 | `ForgeAutoSuggestBox` | `text`、`suggestions: [string]`、`open`、`enabled`、`current-suggestion`；`choose(text)`、`edited(text)`、`selected(text)`。大小写不敏感的前缀匹配，Up/Down 按源模型索引遍历匹配项，Enter 选择当前/首个匹配项，无匹配时提交输入文本，Escape 收起；禁用时自动收起。键盘查找需绑定 widget 服务；只读 `keyboard-navigation-ready` 表示是否连接。 |
 | `ForgeMultiSelectComboBox` | `items: [ForgeChoiceItem]`、`selection-text`、`placeholder-text`、`enabled`；输出 `open`；`show()`、`close()`、`selection-changed(id,bool)`。直接更新 items 的 selected 字段，保留关闭前的选中状态。 |
 | `ForgeMultiTreeSelectComboBox` | `items: [ForgeTreeItem]`、`selection-text`、`enabled`；`show()`、`close()`、`expansion-changed(id,bool)`、`selection-changed(id,bool)`。父子选择和可见模型由应用回传。 |
-| `ForgeNumberBox` | 浮点 `value`、`minimum`、`maximum`、`step`、`enabled`；输出 `input-valid`；`set-value(float)`、`commit()`、`value-changed(float)`。初始值、外部赋值及范围变化限制到 `[minimum, max(minimum, maximum)]`；这些归一化操作不触发用户操作回调。支持小数步进与上下键，非法输入恢复当前值。整数场景使用原生 SpinBox。 |
+| `ForgeNumberBox` | 浮点 `value`、`minimum`、`maximum`、`step`、`enabled`；输出 `input-valid`；`set-value(float)`、`commit()`、`value-changed(float)`。初始值、外部赋值及范围变化限制到 `[minimum, max(minimum, maximum)]`；这些归一化操作不触发用户操作回调。支持小数步进与上下键；回车或失焦时提交输入，非法输入恢复当前值，文本未变化时失焦不触发回调。整数场景使用原生 SpinBox。 |
 
 ## 导航、数据与反馈
 
@@ -47,7 +47,7 @@ Gallery 设置中的语言即时传入日期、日历和时间选择器。独立
 
 | 组件 | 主要属性、函数与回调 |
 |---|---|
-| `ForgeContentDialog` | `open`、`title`、`message`、`primary-text`、`cancel-text`、`primary-enabled`、`dismiss-on-outside`、常驻 `@children`；`dismiss()`、`accepted()`、`canceled()`。默认 Tab 在操作按钮间循环；业务内容可通过 `initial-focus-requested()->bool`、`focus-next-requested(reverse)->bool`、`focus-return-requested()` 委托焦点。提供按钮聚焦函数及只读 `primary-has-focus`/`cancel-has-focus`。Escape 取消。 |
+| `ForgeContentDialog` | `open`、`title`、`message`、`primary-text`、`cancel-text`、`primary-enabled`、`dismiss-on-outside`、常驻 `@children`；`dismiss()`、`accepted()`、`canceled()`。默认 Tab 在操作按钮间循环；业务内容可通过 `initial-focus-requested()->bool`、`focus-next-requested(reverse)->bool`、`focus-return-requested()` 委托焦点。提供按钮聚焦函数及只读 `primary-has-focus`/`cancel-has-focus`。Escape 取消。消息与 `@children` 超出可用高度时在内容区滚动，标题和操作按钮保持可见。 |
 | `ForgeDrawer` | `open`、`title`、`panel-width`、`edge: ForgeDrawerEdge`、`dismiss-on-outside`、`@children`；`dismiss()`、`dismissed()`。左右两侧、外部点击和 Escape 关闭，内容常驻。 |
 | `ForgeAcrylic` | `source`、`blur-radius`、`refraction`、`tint`、`content-padding`、`@children`；输出 `processed`；`refresh()`。SDK 对应用提供的图片作透明度加权模糊，Slint 合成圆角、染色与内容。 |
 | `ForgeLiquidGlass` | 继承 ForgeAcrylic，默认较低模糊半径、边缘折射与内高光。 |

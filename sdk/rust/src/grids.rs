@@ -77,7 +77,7 @@ pub fn prepare_grid(
         descending: u8::from(descending),
         filter: filter.view(&mut arena),
     };
-    crate::runtime::value::<GridSceneData, _>(OP_GRIDPREPARE, &args)
+    crate::runtime::value_or::<GridSceneData, _>(OP_GRIDPREPARE, &args, GridSceneData::default)
 }
 pub fn update_grid(
     rows: &[GridRowData],
@@ -95,7 +95,7 @@ pub fn update_grid(
         target,
         anchor,
     };
-    crate::runtime::value::<Vec<GridRowData>, _>(OP_GRIDUPDATE, &args)
+    crate::runtime::value_or::<Vec<GridRowData>, _>(OP_GRIDUPDATE, &args, || rows.clone())
 }
 pub fn commit_grid(
     rows: &[GridRowData],
@@ -115,7 +115,8 @@ pub fn commit_grid(
         column,
         text: text.view(&mut arena),
     };
-    crate::runtime::value::<(i32, Vec<GridRowData>), _>(OP_GRIDCOMMIT, &args)
+    // 失败时按“不可编辑”（1）拒绝提交，保留原行。
+    crate::runtime::value_or::<(i32, Vec<GridRowData>), _>(OP_GRIDCOMMIT, &args, || (1, rows.clone()))
 }
 pub fn step_grid(disabled: &[bool], current: i32, delta: i32) -> i32 {
     let mut arena = Arena::default();
@@ -125,7 +126,7 @@ pub fn step_grid(disabled: &[bool], current: i32, delta: i32) -> i32 {
         current,
         delta,
     };
-    crate::runtime::value::<i32, _>(OP_GRIDSTEP, &args)
+    crate::runtime::value_or::<i32, _>(OP_GRIDSTEP, &args, || current)
 }
 #[macro_export]
 macro_rules! bind_grid_services {

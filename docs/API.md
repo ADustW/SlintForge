@@ -96,7 +96,7 @@ Gallery 的 全部注册页面均提供实际演示，包括导航、布局／�
 | 返回 | `back()` | `back()` | 无历史时返回错误且状态不变 |
 | 读取 | `current()` | `current()` | 返回当前 ID 与参数 |
 
-Rust 参数类型为 `slintforge::RouteParam`。C++ 宿主参数类型为 `ForgeRouteArgument`，用于避免与 Slint 生成的全局 `ForgeRouteParam` 重名；两个类型都含 `key` 和 `value`，Gallery 在回调边界转换。Rust 用 `Result<T, Error>`，C++ 用 `ForgeStatus { code, message, changed }` 报告结果。失败操作保持当前页及历史不变。
+Rust 参数类型为 `slintforge::RouteParam`。C++ 宿主参数类型为 `ForgeRouteArgument`，用于避免与 Slint 生成的全局 `ForgeRouteParam` 重名；两个类型都含 `key` 和 `value`，Gallery 在回调边界转换。Rust 用 `Result<T, Error>`（运行库缺失、ABI 不符等加载或调用失败返回 `Error::Runtime { code, message }`，不会 panic），C++ 用 `ForgeStatus { code, message, changed }` 报告结果。失败操作保持当前页及历史不变。
 
 ## 宿主导航树
 

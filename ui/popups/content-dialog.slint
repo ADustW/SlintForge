@@ -1,4 +1,4 @@
-import { Palette } from "std-widgets.slint";
+import { Palette, ScrollView } from "std-widgets.slint";
 import { ForgePillButton } from "../inputs/action-buttons.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 
@@ -43,12 +43,22 @@ export component ForgeContentDialog inherits Rectangle {
         height: Math.min(Math.max(0px, root.height - 32px), layout.preferred-height);
         x: (root.width - self.width) / 2; y: (root.height - self.height) / 2;
         background: Palette.background; border-width: 1px; border-color: Palette.border; border-radius: 10px;
+        clip: true;
         TouchArea { }
         layout := VerticalLayout {
             padding: 24px; spacing: 18px;
             Text { text: root.title; color: Palette.foreground; font-weight: 600; font-size: 22px * ForgeTypography.scale; wrap: word-wrap; }
-            Text { text: root.message; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
-            Rectangle { @children }
+            // 消息与自定义内容超出可用高度时在此滚动，标题和按钮始终可见。
+            body-scroll := ScrollView {
+                preferred-height: body.preferred-height;
+                vertical-stretch: 1;
+                body := VerticalLayout {
+                    width: body-scroll.visible-width;
+                    spacing: 18px;
+                    Text { text: root.message; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                    Rectangle { @children }
+                }
+            }
             HorizontalLayout {
                 spacing: 10px; alignment: end;
                 cancel-button := ForgePillButton { text: root.cancel-text; clicked => { root.dismiss(); } }

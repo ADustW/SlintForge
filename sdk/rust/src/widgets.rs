@@ -25,7 +25,7 @@ pub fn highlight_syntax(code: &str, language: &str) -> Vec<SyntaxLine> {
         code: code.view(&mut arena),
         language: language.view(&mut arena),
     };
-    crate::runtime::value::<Vec<SyntaxLine>, _>(OP_HIGHLIGHT, &args)
+    crate::runtime::value_or::<Vec<SyntaxLine>, _>(OP_HIGHLIGHT, &args, Vec::new)
 }
 pub fn process_backdrop(
     source: &SharedPixelBuffer<Rgba8Pixel>,

@@ -278,8 +278,16 @@ pub(crate) fn invoke<V: Copy, A, R>(
 pub(crate) fn try_value<T: Wire, A>(operation: u32, args: &A) -> Result<T, RuntimeError> {
     invoke::<T::View, _, _>(operation, args, |value| unsafe { T::read(value) })
 }
+// 仅用于已持有有效句柄、无法返回错误的路径（如 Clone）；运行库此时必然已加载。
 pub(crate) fn value<T: Wire, A>(operation: u32, args: &A) -> T {
     try_value(operation, args).unwrap_or_else(|error| panic!("SlintForge 调用失败：{error}"))
+}
+// 服务调用失败时记录错误并返回兜底值，避免在 Slint 回调中 panic 终止 UI 线程。
+pub(crate) fn value_or<T: Wire, A>(operation: u32, args: &A, fallback: impl FnOnce() -> T) -> T {
+    try_value(operation, args).unwrap_or_else(|error| {
+        eprintln!("SlintForge 调用失败（操作 {operation}）：{error}");
+        fallback()
+    })
 }
 pub(crate) fn release_object(operation: u32, handle: u64) {
     if let Err(error) = try_value::<u8, _>(operation, &handle) {

@@ -29,9 +29,10 @@ impl Default for IconCatalog {
 
 impl IconCatalog {
     pub fn new() -> Self {
-        let items = crate::runtime::value::<Vec<IconGlyph>, _>(
+        let items = crate::runtime::value_or::<Vec<IconGlyph>, _>(
             slintforge_runtime_api::models::OP_ICONSALL,
             &slintforge_runtime_api::models::ArgsIconsAll { reserved: 0 },
+            Vec::new,
         );
         Self { items }
     }
@@ -45,11 +46,12 @@ impl IconCatalog {
         use slintforge_runtime_api::{models::*, Arena, Wire};
         let name = name.to_owned();
         let mut arena = Arena::default();
-        let index = crate::runtime::value::<Option<usize>, _>(
+        let index = crate::runtime::value_or::<Option<usize>, _>(
             OP_ICONSFIND,
             &ArgsIconsFind {
                 name: name.view(&mut arena),
             },
+            || None,
         );
         index.and_then(|i| self.items.get(i))
     }
@@ -57,13 +59,14 @@ impl IconCatalog {
         use slintforge_runtime_api::{models::*, Arena, Wire};
         let query = query.to_owned();
         let mut arena = Arena::default();
-        crate::runtime::value(
+        crate::runtime::value_or(
             OP_ICONSSEARCH,
             &ArgsIconsSearch {
                 query: query.view(&mut arena),
                 offset,
                 limit,
             },
+            || (Vec::new(), 0),
         )
     }
 }

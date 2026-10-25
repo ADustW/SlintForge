@@ -23,7 +23,7 @@ export component ForgeFlowWindow inherits Window {
             x: 0px; y: 0px; width: parent.width;
             padding: 8px; spacing: 5px; height: 48px;
             for label[i] in (root.chinese ? ["基础编辑", "自定义卡片", "流程图", "拓扑图", "思维导图"] : ["Editor", "Custom cards", "Flowchart", "Topology", "Mind map"]) : Button {
-                text: label; checkable: true; checked: root.variant == i; clicked => { root.variant = i; showcase.edit({op: "demo", number: i}); if i == 4 { showcase.fit(); } }
+                text: label; primary: root.variant == i; clicked => { root.variant = i; showcase.edit({op: "demo", number: i}); if i == 4 { showcase.fit(); } }
             }
             Rectangle { horizontal-stretch: 1; }
             Button { text: root.chinese ? "EN" : "中文"; clicked => { root.chinese = !root.chinese; } }

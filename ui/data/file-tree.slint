@@ -28,7 +28,7 @@ export component ForgeFileTree inherits Rectangle {
                     }
                     if !root.multi-select : Button {
                         text: (item.folder ? "▸ " : "   ") + item.label;
-                        checkable: true; checked: item.selected; enabled: root.enabled && item.enabled;
+                        primary: item.selected; accessible-checkable: true; accessible-checked: self.primary; enabled: root.enabled && item.enabled;
                         clicked => { root.selection-changed(item.id, true); }
                     }
                 }

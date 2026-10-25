@@ -35,6 +35,8 @@ pub enum Error {
     InvalidParent(String),
     NotGroup(String),
     NoHistory,
+    /// 运行库加载、ABI 校验或调用本身失败（不属于路由/导航规则错误）。
+    Runtime { code: i32, message: String },
 }
 
 impl std::fmt::Display for Error {
@@ -48,6 +50,7 @@ impl std::fmt::Display for Error {
             Self::InvalidParent(id) => write!(f, "父节点不是分组: {id}"),
             Self::NotGroup(id) => write!(f, "节点不是分组: {id}"),
             Self::NoHistory => write!(f, "没有可返回的历史页面"),
+            Self::Runtime { code, message } => write!(f, "组件运行库调用失败（{code}）：{message}"),
         }
     }
 }
@@ -278,11 +281,12 @@ impl NavTree {
     }
     pub fn visible_items(&self) -> Vec<VisibleNavItem> {
         use slintforge_runtime_api::models::*;
-        runtime::value(
+        runtime::value_or(
             OP_NAVVISIBLE,
             &ArgsNavVisible {
                 handle: self.handle,
             },
+            Vec::new,
         )
     }
 }
@@ -316,7 +320,10 @@ fn route_runtime_error(error: runtime::RuntimeError) -> Error {
         6 => Error::InvalidParent(text),
         7 => Error::NotGroup(text),
         8 => Error::NoHistory,
-        _ => panic!("组件运行库调用失败: {error}"),
+        _ => Error::Runtime {
+            code,
+            message: text,
+        },
     }
 }
 fn wire_color(color: slint::Color) -> u32 {
@@ -412,6 +419,30 @@ pub fn ui_library_path() -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn runtime_failures_become_errors_instead_of_panics() {
+        let missing = route_runtime_error(runtime::RuntimeError::Missing { paths: vec![] });
+        assert!(matches!(missing, Error::Runtime { code: 1000, .. }), "{missing:?}");
+        let invalid = route_runtime_error(runtime::RuntimeError::Call {
+            code: 1003,
+            message: "参数无效".into(),
+        });
+        assert_eq!(
+            invalid,
+            Error::Runtime {
+                code: 1003,
+                message: "参数无效".into()
+            }
+        );
+        assert_eq!(
+            route_runtime_error(runtime::RuntimeError::Call {
+                code: 8,
+                message: String::new()
+            }),
+            Error::NoHistory
+        );
+    }
 
     #[test]
     fn router_keeps_state_on_error_and_deduplicates() {

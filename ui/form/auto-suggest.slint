@@ -68,10 +68,11 @@ export component ForgeAutoSuggestBox inherits Rectangle {
                     visible: root.text == "" || suggestion.to-lowercase().starts-with(root.text.to-lowercase());
                     height: self.visible ? 32px : 0px;
                     enabled: root.enabled;
-                    checkable: true;
-                    checked: root.current-suggestion == index;
-                    changed checked => {
-                        if self.checked {
+                    primary: root.current-suggestion == index;
+                    accessible-checkable: true;
+                    accessible-checked: self.primary;
+                    changed primary => {
+                        if self.primary {
                             if self.y < -suggestion-view.content-y { suggestion-view.content-y = -self.y; }
                             else if self.y + self.height > -suggestion-view.content-y + suggestion-view.height {
                                 suggestion-view.content-y = Math.min(0px, suggestion-view.height - self.y - self.height);

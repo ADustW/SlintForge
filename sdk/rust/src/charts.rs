@@ -146,7 +146,7 @@ use slintforge_runtime_api::models::*;
 use slintforge_runtime_api::{Arena, Wire};
 pub fn chart_color(index: usize) -> Color {
     let args = ArgsChartColor { index };
-    crate::wire_color_from(crate::runtime::value::<u32, _>(OP_CHARTCOLOR, &args))
+    crate::wire_color_from(crate::runtime::value_or::<u32, _>(OP_CHARTCOLOR, &args, || 0xff80_8080))
 }
 pub fn prepare_chart(
     kind: i32,
@@ -163,7 +163,7 @@ pub fn prepare_chart(
         categories: slintforge_runtime_api::slice_view(categories, &mut arena),
         options: options.view(&mut arena),
     };
-    crate::runtime::value::<ChartSceneData, _>(OP_CHARTPREPARE, &args)
+    crate::runtime::value_or::<ChartSceneData, _>(OP_CHARTPREPARE, &args, ChartSceneData::default)
 }
 pub fn chart_hit_test(
     marks: &[ChartMarkData],
@@ -182,7 +182,7 @@ pub fn chart_hit_test(
         height,
         inner_radius,
     };
-    crate::runtime::value::<i32, _>(OP_CHARTHIT, &args)
+    crate::runtime::value_or::<i32, _>(OP_CHARTHIT, &args, || -1)
 }
 #[macro_export]
 macro_rules! bind_chart_services {

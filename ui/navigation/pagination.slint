@@ -25,7 +25,7 @@ export component ForgePagination inherits Rectangle {
         Button { text: "«"; accessible-label: @tr("首页"); enabled: root.enabled && root.current-page > 1; clicked => { root.go-to(1); } }
         Button { text: "‹"; accessible-label: @tr("上一页"); enabled: root.enabled && root.current-page > 1; clicked => { root.go-to(root.current-page - 1); } }
         for index in Math.min(7, root.page-count) : Button {
-            text: "\{root.first-visible + index}"; checkable: true; checked: root.current-page == root.first-visible + index;
+            text: "\{root.first-visible + index}"; primary: root.current-page == root.first-visible + index; accessible-checkable: true; accessible-checked: self.primary;
             enabled: root.enabled;
             clicked => { root.go-to(root.first-visible + index); }
         }
