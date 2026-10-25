@@ -1,8 +1,10 @@
-import { Palette, LineEdit } from "std-widgets.slint";
-import { ForgePage, ForgeCaptureRect, ForgeCaptureResult, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
+import { CheckBox, LineEdit, Palette, TextEdit } from "std-widgets.slint";
+import { ForgePage, ForgeCaptureRect, ForgeCaptureResult, ForgeIconButton, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 import { GalleryCapturePreview } from "../component/capture-preview.slint";
 
+// 共享组件演示：ForgePage。
+// 宿主截图验收依赖 sample 的结构：高 180px、内边距 16px、背景 #204060、底部三块 36px 高的色块。
 export component GalleryPageContainerPage inherits Rectangle {
     in property<bool> active: true;
     in-out property<bool> sample-active: true;
@@ -23,37 +25,100 @@ export component GalleryPageContainerPage inherits Rectangle {
     }
     qa-capture => { return root.take-capture(); }
     qa-export => { return root.save-capture(); }
-    GalleryPageFrame {
+    private property<int> document: 0;
+
+    GalleryComponentPage {
         width: parent.width; height: parent.height;
+        category: @tr("容器");
         title: "ForgePage";
-        subtitle: @tr("常驻页面容器与当前可视区域截图");
-        sample := ForgePage {
-            active: root.active && root.sample-active;
-            height: 180px; vertical-stretch: 0;
-            content-padding: 16px;
-            background: #204060;
-            VerticalLayout {
-                spacing: 12px;
-                Text { text: @tr("页面截图目标"); height: self.preferred-height; color: white; font-size: 20px * ForgeTypography.scale; }
-                LineEdit { text: @tr("修改输入后获取截图"); }
-                HorizontalLayout {
-                    spacing: 12px;
-                    Rectangle { background: #e05040; height: 36px; }
-                    Rectangle { background: #40b080; height: 36px; }
-                    Rectangle { background: #4080d0; height: 36px; }
+        subtitle: @tr("常驻页面容器：active 同时控制可见性与截图许可，隐藏后内部控件状态保留。capture() 截取页面当前可视区域。");
+        api: [
+            { name: "active", kind: @tr("属性"), type: "bool", description: @tr("页面是否激活；未激活时隐藏且不允许截图。") },
+            { name: "content-padding", kind: @tr("属性"), type: "length", description: @tr("内容与页面边缘的距离。") },
+            { name: "capture-rect", kind: @tr("输出"), type: "ForgeCaptureRect", description: @tr("页面在窗口中的位置与尺寸。") },
+            { name: "capture()", kind: @tr("函数"), type: "ForgeCaptureResult", description: @tr("截取页面区域；未激活或截图服务未接入时返回错误。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改输入框后取消勾选 active，再重新勾选，输入内容仍然保留。");
+            output: @tr("active = {}", sample.active ? "true" : "false");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                min-preview-height: 212px;
+                sample := ForgePage {
+                    active: root.active && root.sample-active;
+                    height: 180px; vertical-stretch: 0;
+                    horizontal-stretch: 1;
+                    content-padding: 16px;
+                    background: #204060;
+                    VerticalLayout {
+                        spacing: 12px;
+                        Text { text: @tr("页面截图目标"); height: self.preferred-height; color: white; font-size: 20px * ForgeTypography.scale; }
+                        LineEdit { text: @tr("修改输入后获取截图"); }
+                        HorizontalLayout {
+                            spacing: 12px;
+                            Rectangle { background: #e05040; height: 36px; }
+                            Rectangle { background: #40b080; height: 36px; }
+                            Rectangle { background: #4080d0; height: 36px; }
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "active"; checked <=> root.sample-active; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("页面截图");
+            description: @tr("获取上方页面的当前画面并导出为 PNG。预览区放在截图目标之外，避免把上一次截图拍进去。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                GalleryCapturePreview {
+                    horizontal-stretch: 1;
+                    result: root.capture-result;
+                    export-message: root.export-message;
+                    capture-requested => { root.take-capture(); }
+                    export-requested => { root.save-capture(); }
                 }
             }
         }
-        GalleryCapturePreview {
-            result: root.capture-result;
-            export-message: root.export-message;
-            capture-requested => { root.take-capture(); }
-            export-requested => { root.save-capture(); }
-        }
-        Text {
-            text: @tr("页面隐藏后保留输入；截图包含当前区域的背景、内容和覆盖层。");
-            height: self.preferred-height;
-            color: Palette.foreground; wrap: word-wrap; vertical-stretch: 0;
+
+        GalleryExample {
+            title: @tr("多文档编辑");
+            description: @tr("每个文档放在一个 ForgePage 中，切换标签只改变 active；未保存的草稿在切回时仍在。");
+            output: @tr("当前文档：{}", root.document == 0 ? @tr("会议纪要") : @tr("周报"));
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 8px;
+                    HorizontalLayout {
+                        spacing: 8px; alignment: start;
+                        ForgeIconButton { label: @tr("会议纪要"); selected: root.document == 0; clicked => { root.document = 0; } }
+                        ForgeIconButton { label: @tr("周报"); selected: root.document == 1; clicked => { root.document = 1; } }
+                    }
+                    Rectangle {
+                        height: 150px * ForgeTypography.scale;
+                        border-radius: 6px; border-width: 1px; border-color: Palette.border;
+                        clip: true;
+                        ForgePage {
+                            active: root.document == 0;
+                            content-padding: 1px;
+                            TextEdit { width: parent.width; height: parent.height; text: @tr("1. 确认下周发布范围\n2. 整理用户反馈"); }
+                        }
+                        ForgePage {
+                            active: root.document == 1;
+                            content-padding: 1px;
+                            TextEdit { width: parent.width; height: parent.height; text: @tr("本周完成：\n- 组件页迁移到新模板"); }
+                        }
+                    }
+                }
+            }
         }
     }
 }

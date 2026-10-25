@@ -1,24 +1,102 @@
-import { Palette, LineEdit } from "std-widgets.slint";
+import { LineEdit, Palette, Slider } from "std-widgets.slint";
 import { ForgeTypography, ForgeWatermark } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+// 共享组件演示：Watermark。
 export component GalleryWatermarkPage inherits Rectangle {
     in-out property<string> mark: "SlintForge";
-    sample-page := GallerySamplePage {
-        width: parent.width; height: parent.height;
-        title: "Watermark";
-        subtitle: @tr("在容器内容上叠加低对比度的重复水印。");
-        preview-height: 300px;
+    private property<float> opacity-value: 0.12;
+    private property<float> tile: 180;
 
-        LineEdit { x: 18px; y: 15px; width: 260px; text: root.mark; placeholder-text: @tr("输入水印文字"); edited(value) => { root.mark = value; } }
-        ForgeWatermark {
-            x: 18px; y: 64px; width: sample-page.preview-width - 36px; height: sample-page.preview-area-height - 82px;
-            mark: root.mark;
-            Rectangle {
-                x: 28px; y: 30px; width: parent.width - 56px; height: parent.height - 60px;
-                border-radius: 8px; background: Palette.background;
-                Text { x: 20px; y: 18px; text: @tr("示例文档"); color: Palette.foreground; font-size: 17px * ForgeTypography.scale; font-weight: 600; }
-                Text { x: 20px; y: 54px; text: @tr("水印覆盖在内容上方。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("容器");
+        title: "Watermark";
+        subtitle: @tr("在容器内容上方平铺低对比度的重复文字，用于标注机密文档、草稿或截图来源。水印不拦截鼠标，内容仍可正常操作。");
+        api: [
+            { name: "mark", kind: @tr("属性"), type: "string", description: @tr("水印文字；为空时不绘制。") },
+            { name: "mark-opacity", kind: @tr("属性"), type: "float", description: @tr("水印不透明度，默认 0.12。") },
+            { name: "tile-width / tile-height", kind: @tr("属性"), type: "length", description: @tr("每个水印单元的尺寸，决定平铺密度。") },
+            { name: "columns / rows", kind: @tr("输出"), type: "int", description: @tr("当前平铺的列数与行数。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改水印文字、不透明度和单元宽度。");
+            output: @tr("columns = {} · rows = {}", basic.columns, basic.rows);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                basic := ForgeWatermark {
+                    height: 220px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    mark: root.mark;
+                    mark-opacity: root.opacity-value;
+                    tile-width: root.tile * 1px;
+                    Rectangle {
+                        x: 24px; y: 24px; width: parent.width - 48px; height: parent.height - 48px;
+                        border-radius: 8px; background: Palette.background;
+                        VerticalLayout {
+                            padding: 20px; spacing: 10px; alignment: start;
+                            Text { text: @tr("示例文档"); color: Palette.foreground; font-size: 17px * ForgeTypography.scale; font-weight: 600; }
+                            Text { text: @tr("水印绘制在内容上方，不影响内容本身的布局。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: "mark"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.mark; placeholder-text: @tr("输入水印文字"); }
+                Text { text: @tr("mark-opacity = {}", Math.round(root.opacity-value * 100) / 100); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 0.04; maximum: 0.5; value <=> root.opacity-value; }
+                Text { text: @tr("tile-width = {}px", Math.round(root.tile)); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 100; maximum: 320; value <=> root.tile; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("默认密度、加深与无水印。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                // 变体组件较宽，纵向排列以适应窄窗口。
+                VerticalLayout {
+                    spacing: 10px; horizontal-stretch: 1;
+                    GalleryVariant { caption: "mark-opacity: 0.12"; ForgeWatermark { width: 170px; height: 100px; tile-width: 85px; tile-height: 50px; mark: @tr("草稿"); } }
+                    GalleryVariant { caption: "mark-opacity: 0.35"; ForgeWatermark { width: 170px; height: 100px; tile-width: 85px; tile-height: 50px; mark: @tr("草稿"); mark-opacity: 0.35; } }
+                    GalleryVariant { caption: "mark: \"\""; ForgeWatermark { width: 170px; height: 100px; mark: ""; } }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("机密合同预览");
+            description: @tr("在线预览敏感文件时叠加查看者信息，截图外传后也能追溯来源。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                ForgeWatermark {
+                    height: 260px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    mark: @tr("内部资料 · 仅限查看");
+                    tile-width: 220px; tile-height: 90px;
+                    mark-opacity: 0.16;
+                    Rectangle {
+                        x: 20px; y: 16px; width: parent.width - 40px; height: parent.height - 32px;
+                        border-radius: 6px; border-width: 1px; border-color: Palette.border;
+                        background: Palette.background;
+                        VerticalLayout {
+                            padding: 20px; spacing: 8px; alignment: start;
+                            Text { text: @tr("技术服务合同"); color: Palette.foreground; font-size: 16px * ForgeTypography.scale; font-weight: 600; horizontal-alignment: center; }
+                            Text { text: @tr("合同编号：HT-2026-0412"); color: Palette.foreground.transparentize(0.4); font-size: 12px * ForgeTypography.scale; horizontal-alignment: center; }
+                            Rectangle { height: 6px; }
+                            Text { text: @tr("第一条　服务内容：乙方为甲方提供界面组件的定制开发与维护服务。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                            Text { text: @tr("第二条　服务期限：自签订之日起十二个月。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                            Text { text: @tr("第三条　保密条款：双方对合作中获知的技术资料负有保密义务。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                        }
+                    }
+                }
             }
         }
     }

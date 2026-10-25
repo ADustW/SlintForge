@@ -1,5 +1,13 @@
 # Gallery 展示页调整清单
 
+## 2026-10-25 组件页模板改版
+
+组件页改为统一模板（`Gallery/ui/component/component-page.slint`）：页头显示分类路径、组件名、来源标签（共享组件 / 原生控件、Rust · C++）和一句说明；正文由若干示例区组成，每个示例区包括标题、说明、内容居中的预览框、可选的右侧属性面板和底部输出栏；页尾列出主要属性、回调和函数的 API 摘要。原来所有组件通用的“多种效果 / 业务组合”标签页，改为按组件编写的“状态对照”和实际场景示例（如对话框操作栏、订单评价、打印设置、运营看板、编辑器布局）。
+
+先以 PillButton、RatingControl、NumberBox、Statistic、SplitLayout、CalendarPicker、DataGrid、TreeDataGrid 和七类基础图表试点，确认后迁移了全部 81 个组件页；首页同步改版（Fluent 图标替换字母占位、按宽度 4/2 列排布、移除调试用布局按钮）。仅首页、关于、设置、生命周期、占位页及 ForgePlot、ForgeFlow 演示保留各自布局。截图验收沿用 `showcase-routes.inc` 的状态数：`tab = N` 时滚动到第 N 个附加示例区，Rust 端每轮 498 帧。旧的 `GallerySamplePage`、`GalleryShowcase`、`GalleryDemoCard`、`GalleryPickerExample` 已删除，下文的逐页高度表仅作历史记录。
+
+迁移中顺带修复的库问题：导航分组箭头与 NavigationView 应用栏改用图标字体（原字符缺字形显示为方框，`ForgeIcons` 新增 `navigation`）；Timeline 行高固定，避免空间不足时重叠；SkeletonView 行宽改用伸缩比例，消除可拉伸布局中的绑定环，并修正行数超过 30 时末行缩短的判断；FileTree 去掉缺字形的“▸”前缀；Statistic 无单位时不再追加空格。
+
 参考本地 FluentUI-Pro Gallery 源码。统一 24px 页边距、24px 分区间距、8px 圆角与 1px 边框，卡片内留白 20px。示例按内容指定高度，并保留导航、输入、弹层和窗口状态。用法代码位于独立示例目录，页面不显示代码面板。
 
 日历选择器按参考页采用标题与两张紧凑示例卡片，省略副标题，分区间距为 20px；未选择日期时两种模式按钮同宽，选中后宽度随文本自适应。月历弹层为 300×350px，日期时间弹层为 500×350px，均随字号缩放。

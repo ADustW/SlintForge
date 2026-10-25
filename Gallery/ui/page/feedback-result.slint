@@ -1,7 +1,6 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeResult, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { CheckBox, ComboBox, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeInfoLevel, ForgeResult, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：Result。
 export component GalleryFeedbackResultPage inherits Rectangle {
@@ -12,21 +11,87 @@ export component GalleryFeedbackResultPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "feedback-result";
-        active: root.visible;
+    private property<int> level-index: 0;
+    private property<string> result-title: @tr("操作成功");
+    private property<string> result-action: @tr("继续");
+    // 场景：0 待导出，1 导出完成，2 导出失败。
+    private property<int> export-state: 0;
+    private property<bool> simulate-error: false;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("反馈");
         title: "Result";
-        subtitle: @tr("展示操作结果，以及继续处理的入口。");
-        example-title: @tr("用法与状态");
-        preview-height: 230px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeResult { title: @tr("操作成功"); description: @tr("所有任务已完成，可继续下一步。"); action-requested => { root.count += 1; } }
-Text { text: @tr("点击次数：{}", root.count); color: Palette.foreground; }
+        subtitle: @tr("以图标、标题和说明呈现一次操作的结果，并提供继续处理的按钮。适合提交、导出、注册等流程的结束页。");
+        showcase-route: "feedback-result";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "level", kind: @tr("属性"), type: "ForgeInfoLevel", description: @tr("结果类型，决定图标与颜色，默认 success。") },
+            { name: "title", kind: @tr("属性"), type: "string", description: @tr("结果标题。") },
+            { name: "description", kind: @tr("属性"), type: "string", description: @tr("补充说明，居中换行显示。") },
+            { name: "action-text", kind: @tr("属性"), type: "string", description: @tr("按钮文字；为空时不显示按钮。") },
+            { name: "action-requested()", kind: @tr("回调"), type: "", description: @tr("点击按钮时触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("切换结果类型，修改标题与按钮文字。");
+            output: @tr("action-requested · 已点击 {} 次", root.count);
+            GalleryPreview {
+                stretch: true;
+                ForgeResult {
+                    level: root.level-index == 1 ? ForgeInfoLevel.info : root.level-index == 2 ? ForgeInfoLevel.warning : root.level-index == 3 ? ForgeInfoLevel.error : ForgeInfoLevel.success;
+                    title: root.result-title;
+                    description: @tr("所有任务已完成，可继续下一步。");
+                    action-text: root.result-action;
+                    action-requested => { root.count += 1; }
+                }
+            }
+            GalleryOptions {
+                Text { text: "level"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["success", "info", "warning", "error"]; current-index <=> root.level-index; }
+                Text { text: "title"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.result-title; }
+                Text { text: "action-text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.result-action; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("成功、警告与错误三种结果，未设置按钮文字。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "level: success"; ForgeResult { level: ForgeInfoLevel.success; title: @tr("已提交"); description: @tr("审核结果将通过邮件通知。"); action-text: ""; } }
+                GalleryVariant { caption: "level: warning"; ForgeResult { level: ForgeInfoLevel.warning; title: @tr("待确认"); description: @tr("部分数据需要人工复核。"); action-text: ""; } }
+                GalleryVariant { caption: "level: error"; ForgeResult { level: ForgeInfoLevel.error; title: @tr("提交失败"); description: @tr("网络连接已断开。"); action-text: ""; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("导出报表");
+            description: @tr("同一区域依次显示待导出、完成与失败三种结果，按钮文字随之变化。");
+            output: root.export-state == 0 ? @tr("待导出") : root.export-state == 1 ? @tr("导出完成") : @tr("导出失败");
+            GalleryPreview {
+                stretch: true;
+                VerticalLayout {
+                    spacing: 16px;
+                    ForgeResult {
+                        level: root.export-state == 1 ? ForgeInfoLevel.success : root.export-state == 2 ? ForgeInfoLevel.error : ForgeInfoLevel.info;
+                        title: root.export-state == 0 ? @tr("导出 10 月销售报表") : root.export-state == 1 ? @tr("导出完成") : @tr("导出失败");
+                        description: root.export-state == 0 ? @tr("共 1,284 条记录，导出为 Excel 文件。") : root.export-state == 1 ? @tr("文件已保存到“下载”文件夹。") : @tr("服务器暂时不可用，稍后重试。");
+                        action-text: root.export-state == 0 ? @tr("开始导出") : root.export-state == 1 ? @tr("返回") : @tr("重试");
+                        action-requested => {
+                            if root.export-state == 1 { root.export-state = 0; }
+                            else { root.export-state = root.simulate-error && root.export-state == 0 ? 2 : 1; }
+                        }
+                    }
+                    HorizontalLayout {
+                        alignment: center;
+                        CheckBox { text: @tr("模拟服务器错误"); checked <=> root.simulate-error; }
+                    }
+                }
+            }
         }
     }
-    
 }

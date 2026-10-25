@@ -1,7 +1,6 @@
-import { ComboBox, Palette } from "std-widgets.slint";
+import { Button, CheckBox, ComboBox, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // Slint 原生示例：ComboBox。
 export component GalleryFormComboBoxPage inherits Rectangle {
@@ -10,24 +9,110 @@ export component GalleryFormComboBoxPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<bool> disabled1: false;
+    private property<int> language-index: 0;
+    private property<string> export-status: @tr("尚未导出");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-combo-box";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
         title: "ComboBox";
-        subtitle: @tr("展开列表，选择一个选项。");
-        example-title: @tr("用法与状态");
-        preview-height: 180px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ComboBox { model: ["Slint", "Rust", "C++"]; selected(value) => { root.status = value; } }
-Text { text: root.status; color: Palette.foreground; }
-ComboBox { model: ["Slint", "Rust", "C++"]; enabled: false; }
+        subtitle: @tr("下拉选择框，对应 Slint 原生 ComboBox。从固定的选项列表中选择一项，选项较少时可改用 RadioGroup。");
+        native: true;
+        showcase-route: "form-combo-box";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "model", kind: @tr("属性"), type: "[string]", description: @tr("选项文字列表。") },
+            { name: "current-index", kind: @tr("属性"), type: "int", description: @tr("当前选中项的索引，可双向绑定。") },
+            { name: "current-value", kind: @tr("属性"), type: "string", description: @tr("当前选中项的文字。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后不能展开列表。") },
+            { name: "selected(string)", kind: @tr("回调"), type: "", description: @tr("用户选择新的一项后触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("展开列表选择一项；也可聚焦后用上下方向键切换。");
+            output: root.status;
+            GalleryPreview {
+                ComboBox {
+                    width: 220px * ForgeTypography.scale;
+                    model: ["Slint", "Rust", "C++", "JavaScript", "Python"];
+                    current-index <=> root.language-index;
+                    enabled: !root.disabled1;
+                    selected(value) => { root.status = @tr("selected · {}", value); }
+                }
+            }
+            GalleryOptions {
+                Text { text: "current-index"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Text { text: root.language-index; color: Palette.foreground; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("默认选中第一项；current-index 可预设初始选项。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: @tr("默认"); color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ComboBox { width: 200px * ForgeTypography.scale; model: ["Slint", "Rust", "C++"]; }
+                    }
+                    Row {
+                        Text { text: "current-index: 2"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ComboBox { width: 200px * ForgeTypography.scale; model: ["Slint", "Rust", "C++"]; current-index: 2; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ComboBox { width: 200px * ForgeTypography.scale; model: ["Slint", "Rust", "C++"]; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("导出图片");
+            description: @tr("格式、分辨率和背景各用一个下拉框；选择 JPEG 时透明背景不可用。");
+            output: root.export-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 400px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 12px;
+                        GridLayout {
+                            spacing-horizontal: 16px; spacing-vertical: 12px;
+                            Row {
+                                Text { text: @tr("格式"); color: Palette.foreground; vertical-alignment: center; }
+                                format-select := ComboBox { model: ["PNG", "JPEG", "SVG"]; selected(value) => { background-select.current-index = 0; } }
+                            }
+                            Row {
+                                Text { text: @tr("分辨率"); color: Palette.foreground; vertical-alignment: center; }
+                                scale-select := ComboBox { model: ["1x", "2x", "3x"]; current-index: 1; }
+                            }
+                            Row {
+                                Text { text: @tr("背景"); color: Palette.foreground; vertical-alignment: center; }
+                                background-select := ComboBox {
+                                    model: format-select.current-index == 1 ? [@tr("白色"), @tr("黑色")] : [@tr("透明"), @tr("白色"), @tr("黑色")];
+                                }
+                            }
+                        }
+                        HorizontalLayout {
+                            alignment: end;
+                            Button {
+                                text: @tr("导出");
+                                primary: true;
+                                clicked => { root.export-status = @tr("已导出 chart@{}.{} · {}", scale-select.current-value, format-select.current-value.to-lowercase(), background-select.current-value); }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,34 +1,106 @@
-import { Switch, Palette } from "std-widgets.slint";
+import { CheckBox, LineEdit, Palette, Switch } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
-// Slint 原生示例：ToggleSwitch。
+// Slint 原生示例：ToggleSwitch（Switch）。
 export component GalleryInputsToggleSwitchPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
-    in-out property<string> draft;
+    in-out property<string> draft: @tr("自动保存");
     in-out property<string> status: @tr("就绪");
+    private property<bool> disabled: false;
+    private property<bool> location: false;
+    private property<bool> analytics: true;
+    private property<bool> personalized: true;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-toggle-switch";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入");
         title: "ToggleSwitch";
-        subtitle: @tr("切换开关，查看开启、关闭和禁用状态。");
-        example-title: @tr("用法与状态");
-        preview-height: 190px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Switch { text: @tr("启用功能"); checked <=> root.flag; }
-Text { text: root.flag ? @tr("开启") : @tr("关闭"); color: Palette.foreground; }
-    Switch { text: @tr("关闭"); checked: false; }
-    Switch { text: @tr("禁用"); checked: true; enabled: false; }
+        subtitle: @tr("原生开关，切换后立即生效，适合设置项。需要点击“保存”才生效的选项改用 Checkbox。");
+        native: true;
+        showcase-route: "inputs-toggle-switch";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("开关旁的说明文字。") },
+            { name: "checked", kind: @tr("属性"), type: "bool", description: @tr("是否开启，可双向绑定。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后保持当前状态，不能切换。") },
+            { name: "has-focus", kind: @tr("输出"), type: "bool", description: @tr("是否拥有键盘焦点，聚焦时按 Space 切换。") },
+            { name: "toggled()", kind: @tr("回调"), type: "", description: @tr("用户切换开关后触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("预览中的开关与右侧 checked 选项双向绑定。");
+            output: @tr("toggled · checked: {}", root.flag ? "true" : "false");
+            GalleryPreview {
+                Switch { text: root.draft; checked <=> root.flag; enabled: !root.disabled; toggled => { root.count += 1; } }
+            }
+            GalleryOptions {
+                CheckBox { text: "checked"; checked <=> root.flag; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Text { text: "text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.draft; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("关闭、开启，以及开启后禁用。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "checked: false"; Switch { text: @tr("蓝牙"); checked: false; } }
+                GalleryVariant { caption: "checked: true"; Switch { text: @tr("蓝牙"); checked: true; } }
+                GalleryVariant { caption: "enabled: false"; Switch { text: @tr("蓝牙"); checked: true; enabled: false; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("隐私设置");
+            description: @tr("关闭“使用统计”后，依赖它的“个性化推荐”自动关闭并禁用。");
+            output: @tr("位置信息 {} · 使用统计 {} · 个性化推荐 {}",
+                root.location ? @tr("开") : @tr("关"), root.analytics ? @tr("开") : @tr("关"), root.personalized ? @tr("开") : @tr("关"));
+            GalleryPreview {
+                Rectangle {
+                    width: 400px * ForgeTypography.scale;
+                    height: settings.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    settings := VerticalLayout {
+                        padding: 20px; spacing: 14px;
+                        HorizontalLayout {
+                            spacing: 12px;
+                            VerticalLayout {
+                                horizontal-stretch: 1; spacing: 2px;
+                                Text { text: @tr("位置信息"); color: Palette.foreground; }
+                                Text { text: @tr("允许应用获取大致位置"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                            }
+                            Switch { checked <=> root.location; }
+                        }
+                        HorizontalLayout {
+                            spacing: 12px;
+                            VerticalLayout {
+                                horizontal-stretch: 1; spacing: 2px;
+                                Text { text: @tr("使用统计"); color: Palette.foreground; }
+                                Text { text: @tr("匿名发送功能使用情况"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                            }
+                            Switch { checked <=> root.analytics; toggled => { if !self.checked { root.personalized = false; } } }
+                        }
+                        HorizontalLayout {
+                            spacing: 12px;
+                            VerticalLayout {
+                                horizontal-stretch: 1; spacing: 2px;
+                                Text { text: @tr("个性化推荐"); color: Palette.foreground; }
+                                Text { text: @tr("根据使用统计推荐内容"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                            }
+                            Switch { checked <=> root.personalized; enabled: root.analytics; }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

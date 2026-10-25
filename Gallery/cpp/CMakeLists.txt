@@ -10,8 +10,8 @@ add_executable(slintforge_gallery_cpp main.cpp ForgeGalleryNavigation.cpp ForgeG
 if(MSVC)
     # 发布包中的 smoke 验证也保留断言。
     target_compile_options(slintforge_gallery_cpp PRIVATE /bigobj /UNDEBUG)
-    # 与 Rust Gallery 保持相同栈预算，容纳固定页面和扩展示例的属性刷新与焦点恢复。
-    target_link_options(slintforge_gallery_cpp PRIVATE /STACK:8388608)
+    # 与 Rust Gallery 保持相同栈预算（32MB），容纳统一模板下的固定页面、示例区与 API 表的初始化。
+    target_link_options(slintforge_gallery_cpp PRIVATE /STACK:33554432)
 endif()
 if(WIN32)
     set(FORGE_GALLERY_ICON_RC "${CMAKE_CURRENT_SOURCE_DIR}/../ui/assets/brand/slintforge-gallery.ico")

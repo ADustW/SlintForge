@@ -35,6 +35,8 @@ Rust/C++ 两端共用 `%APPDATA%\SlintForge\Gallery\settings.ini`，保存语言
 
 新页面在 `ui/page/` 中单独定义，按类别由 `ui/component/*-pages.slint` 创建固定实例，再接入主窗口。分类分组限制 MSVC 生成代码的嵌套深度，同时保留页面状态。`tools/component_catalog.py` 维护逐项状态，`tools/generate_component_pages.py` 用于重新生成本次新增页面；重新生成会覆盖这些页面的手工修改，运行前应保留需要的变更。构建两端后页面进入目录，不支持运行时加载外部 `.slint`。
 
+组件页统一使用 `ui/component/component-page.slint` 中的模板：`GalleryComponentPage` 提供分类、名称、来源标签、说明和 API 摘要；每个示例用 `GalleryExample` 包住 `GalleryPreview`（内容居中，宽内容设 `stretch`），可选 `GalleryOptions` 属性面板与 `output` 输出栏，状态并排比较用 `GalleryVariant`。截图验收的 `GalleryShowcaseState.tab = N` 滚动到页面 `qa-anchors` 中第 N 个示例区。除首页、关于、设置、生命周期、占位页以及 ForgePlot、ForgeFlow 演示外，全部组件页（含 DataGrid / TreeDataGrid 与七类基础图表）均已迁移并手工维护，`tools/generate_component_pages.py` 不再适用；`tools/verify_gallery_presentation.py` 检查模板、API 摘要与验收锚点数。Gallery 两端的主线程栈预留为 32MB，以容纳全部固定页面的初始化。
+
 ## 截图示例
 
 容器分类的 `ForgePage` 页面可修改输入并获取页面区域截图，预览放在目标之外；`ForgeWindow` 页面提供整个客户区的截图。两页均显示物理像素尺寸并支持导出 PNG。两端宿主共用同一套页面和 API，服务按窗口绑定。`--capture-smoke` 会生成真实窗口、页面、调整尺寸后和最大化后的 PNG，并自动退出；该模式使用默认设置且不保存用户设置。

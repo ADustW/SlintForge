@@ -1,7 +1,6 @@
-import { Switch, LineEdit } from "std-widgets.slint";
-import { ForgeSkeletonView, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { CheckBox, LineEdit, Palette, SpinBox } from "std-widgets.slint";
+import { ForgePillButton, ForgeSkeletonView, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：SkeletonView。
 export component GalleryFeedbackSkeletonPage inherits Rectangle {
@@ -12,21 +11,129 @@ export component GalleryFeedbackSkeletonPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "feedback-skeleton";
-        active: root.visible;
+    private property<int> rows: 3;
+    private property<bool> animate: true;
+    // 场景：刷新资料时短暂显示骨架。
+    private property<bool> profile-loading: false;
+    private property<int> profile-ticks: 0;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("反馈");
         title: "SkeletonView";
-        subtitle: @tr("切换加载占位和实际内容，输入会保留。");
-        example-title: @tr("用法与状态");
-        preview-height: 330px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Switch { text: @tr("加载中"); checked <=> root.flag; }
-ForgeSkeletonView { height: 230px; loading: root.flag; animate: root.visible; rows: 3; LineEdit { text: @tr("加载完成，输入状态保留"); } }
+        subtitle: @tr("加载期间用头像和若干行占位块代替实际内容，加载完成后显示子元素。子元素始终存在，切换时输入状态会保留。");
+        showcase-route: "feedback-skeleton";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "loading", kind: @tr("属性"), type: "bool", description: @tr("为 true 时显示骨架，为 false 时显示子元素。") },
+            { name: "rows", kind: @tr("属性"), type: "int", description: @tr("占位行数，最后一行较短，默认 3。") },
+            { name: "animate", kind: @tr("属性"), type: "bool", description: @tr("骨架是否播放扫光动画。") },
+            { name: "@children", kind: @tr("属性"), type: "element", description: @tr("加载完成后显示的实际内容。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("切换加载状态；在输入框中输入文字后再切换，内容会保留。");
+            output: "loading: " + (root.flag ? "true" : "false");
+            GalleryPreview {
+                stretch: true;
+                Rectangle {
+                    min-width: 120px; horizontal-stretch: 1;
+                    height: Math.max(0, root.rows) * 36px + 72px;
+                    ForgeSkeletonView {
+                        width: parent.width; height: parent.height;
+                        loading: root.flag; animate: root.animate && root.visible; rows: root.rows;
+                        VerticalLayout {
+                            spacing: 10px; alignment: start;
+                            Text { text: @tr("加载完成"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                            LineEdit { text: @tr("加载完成，输入状态保留"); }
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "loading"; checked <=> root.flag; }
+                CheckBox { text: "animate"; checked <=> root.animate; }
+                Text { text: "rows"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 0; maximum: 8; value <=> root.rows; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("加载中、单行骨架与加载完成。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "loading: true";
+                    ForgeSkeletonView { width: 140px; loading: true; animate: false; rows: 2; }
+                }
+                GalleryVariant {
+                    caption: "rows: 1";
+                    ForgeSkeletonView { width: 140px; loading: true; animate: false; rows: 1; }
+                }
+                GalleryVariant {
+                    caption: "loading: false";
+                    ForgeSkeletonView {
+                        width: 140px; loading: false; rows: 2;
+                        VerticalLayout {
+                            spacing: 6px; alignment: start;
+                            Rectangle { width: 64px; height: 64px; border-radius: 32px; background: Palette.accent-background; }
+                            Text { text: @tr("内容已加载"); color: Palette.foreground; }
+                        }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("个人资料卡");
+            description: @tr("点击刷新后显示骨架，数据返回后恢复资料内容。");
+            output: root.profile-loading ? @tr("正在获取资料…") : @tr("资料已更新 {} 次", root.count);
+            GalleryPreview {
+                Rectangle {
+                    width: 340px * ForgeTypography.scale;
+                    height: card.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    card := VerticalLayout {
+                        padding: 20px; spacing: 14px;
+                        ForgeSkeletonView {
+                            loading: root.profile-loading; animate: root.visible; rows: 2;
+                            VerticalLayout {
+                                spacing: 10px; alignment: start;
+                                HorizontalLayout {
+                                    spacing: 14px;
+                                    Rectangle {
+                                        width: 64px; height: 64px; border-radius: 32px;
+                                        background: Palette.accent-background;
+                                        Text { text: @tr("林"); color: Palette.accent-foreground; font-size: 24px * ForgeTypography.scale; font-weight: 600; }
+                                    }
+                                    VerticalLayout {
+                                        alignment: center; spacing: 4px;
+                                        Text { text: @tr("林晓"); color: Palette.foreground; font-size: 16px * ForgeTypography.scale; font-weight: 600; }
+                                        Text { text: @tr("前端工程师 · 上海"); color: Palette.foreground.transparentize(0.4); font-size: 12px * ForgeTypography.scale; }
+                                    }
+                                }
+                                Text { text: @tr("负责桌面客户端界面与组件库维护。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                            }
+                        }
+                        HorizontalLayout {
+                            alignment: end;
+                            ForgePillButton { text: @tr("刷新"); enabled: !root.profile-loading; clicked => { root.profile-ticks = 0; root.profile-loading = true; } }
+                        }
+                    }
+                }
+            }
         }
     }
-    
+
+    Timer {
+        interval: 100ms;
+        running: root.profile-loading && root.visible;
+        triggered => {
+            root.profile-ticks += 1;
+            if root.profile-ticks >= 15 { root.profile-loading = false; root.count += 1; }
+        }
+    }
 }

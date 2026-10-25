@@ -1,9 +1,6 @@
 import { Palette, Button, CheckBox } from "std-widgets.slint";
-import { ForgeChart, ForgeChartKind, ForgeChartSeries, ForgeChartSlice } from "@slintforge";
-import { GalleryPageFrame } from "page-frame.slint";
-import { GalleryDemoCard } from "demo-card.slint";
-import { GalleryChartShowcase } from "chart-showcase.slint";
-import { GalleryShowcaseState } from "showcase.slint";
+import { ForgeChart, ForgeChartKind, ForgeChartSeries, ForgeChartSlice, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "component-page.slint";
 
 // 七类图表共享演示框架；切换数据、图例和选项均操作实际组件。
 export component GalleryChartPage inherits Rectangle {
@@ -17,7 +14,6 @@ export component GalleryChartPage inherits Rectangle {
     in-out property<bool> filled: true;
     in-out property<bool> doughnut: false;
     in-out property<string> selection: @tr("悬停查看数值，点击选择数据，点击图例显示或隐藏系列。");
-    property<bool> radial: root.kind == pie || root.kind == polar || root.kind == radar;
     property<[string]> categories: root.kind == radar
         ? [@tr("饮食"), @tr("饮水"), @tr("睡眠"), @tr("设计"), @tr("编程"), @tr("骑行"), @tr("跑步")]
         : [@tr("一月"), @tr("二月"), @tr("三月"), @tr("四月"), @tr("五月"), @tr("六月"), @tr("七月")];
@@ -40,6 +36,7 @@ export component GalleryChartPage inherits Rectangle {
         {label: @tr("灰色"), value: root.updated ? 12 : 3, color: #788694},
         {label: @tr("蓝色"), value: 14, color: #36a2eb}
     ];
+    property<string> style-caption: root.kind == bar ? "stacked: true" : root.kind == line ? "smooth · fill-area" : root.kind == pie ? "doughnut: true" : root.kind == polar ? @tr("三个扇区") : @tr("单系列");
     callback prepare-preview(bool);
     prepare-preview(open) => {
         root.stacked = open && root.kind == bar;
@@ -47,8 +44,9 @@ export component GalleryChartPage inherits Rectangle {
         root.doughnut = open && root.kind == pie;
         if open { chart.select-point(0); } else { chart.clear-selection(); }
     }
-    GalleryPageFrame {
-        viewport-y: GalleryShowcaseState.route == root.showcase-route && GalleryShowcaseState.tab >= 0 ? -comparison.y + 20px : 0px;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("图表");
         title: root.title;
         subtitle: root.kind == bar ? @tr("比较各月份的数据，切换分组或堆叠。")
             : root.kind == line ? @tr("观察趋势，切换折线、平滑曲线和面积填充。")
@@ -57,15 +55,28 @@ export component GalleryChartPage inherits Rectangle {
             : root.kind == bubble ? @tr("位置表示两个数值，圆的大小表示第三个数值。")
             : root.kind == scatter ? @tr("查看两个系列的分布和相关性。")
             : @tr("对比多个维度上的系列表现。");
-        Text { text: @tr("交互示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        card := GalleryDemoCard {
-            preview-height: 480px;
-            VerticalLayout {
-                x: 20px; y: 20px; width: parent.width - 40px; height: parent.height - 40px;
-                spacing: 16px;
+        showcase-route: root.showcase-route;
+        qa-anchors: [styles.y, boundary.y];
+        api: [
+            { name: "kind", kind: @tr("属性"), type: "ForgeChartKind", description: @tr("bar、line、pie、polar、bubble、scatter 或 radar。") },
+            { name: "series / slices", kind: @tr("属性"), type: "[ForgeChartSeries] / [ForgeChartSlice]", description: @tr("坐标类图表用 series，饼图与极坐标图用 slices。") },
+            { name: "categories", kind: @tr("属性"), type: "[string]", description: @tr("类别轴或雷达图维度的标签。") },
+            { name: "stacked / smooth / fill-area / doughnut", kind: @tr("属性"), type: "bool", description: @tr("堆叠、平滑、面积填充与环形样式。") },
+            { name: "show-legend / show-grid", kind: @tr("属性"), type: "bool", description: @tr("显示图例与网格线。") },
+            { name: "point-selected(int, int, float)", kind: @tr("回调"), type: "", description: @tr("点击数据点，参数为系列、索引与数值。") },
+            { name: "select-point / clear-selection", kind: @tr("函数"), type: "", description: @tr("以编程方式选择或清除数据点。") },
+        ];
+
+        GalleryExample {
+            title: @tr("交互示例");
+            description: @tr("悬停读取数值，点击数据点或图例进行交互；在右侧更新数据或切换样式。");
+            output: root.selection;
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
                 chart := ForgeChart {
-                    width: Math.min(parent.width, 620px); height: 370px;
-                    horizontal-stretch: 0;
+                    height: 370px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
                     kind: root.kind;
                     series: root.empty ? [] : root.series;
                     slices: root.empty ? [] : root.slices;
@@ -77,20 +88,54 @@ export component GalleryChartPage inherits Rectangle {
                         root.selection = @tr("已选择：系列 {}，数据 {}，值 {}", series + 1, point + 1, value);
                     }
                 }
-                Text { text: root.selection; color: Palette.foreground; wrap: word-wrap; vertical-stretch: 0; }
+            }
+            GalleryOptions {
+                Button { text: root.updated ? @tr("恢复数据") : @tr("更新数据"); clicked => { root.updated = !root.updated; root.empty = false; } }
+                Button { text: root.empty ? @tr("显示数据") : @tr("清空数据"); clicked => { root.empty = !root.empty; } }
+                if root.kind == bar : CheckBox { text: "stacked"; checked <=> root.stacked; }
+                if root.kind == line : CheckBox { text: "smooth"; checked <=> root.smooth; }
+                if root.kind == line || root.kind == radar : CheckBox { text: "fill-area"; checked <=> root.filled; }
+                if root.kind == pie : CheckBox { text: "doughnut"; checked <=> root.doughnut; }
             }
         }
-        HorizontalLayout {
-            height: 34px; vertical-stretch: 0;
-            spacing: 12px; alignment: start;
-            Button { text: root.updated ? @tr("恢复数据") : @tr("更新数据"); clicked => { root.updated = !root.updated; root.empty = false; } }
-            Button { text: root.empty ? @tr("显示数据") : @tr("清空数据"); clicked => { root.empty = !root.empty; } }
-            if root.kind == bar : CheckBox { text: @tr("堆叠"); checked <=> root.stacked; }
-            if root.kind == line : CheckBox { text: @tr("平滑曲线"); checked <=> root.smooth; }
-            if root.kind == line || root.kind == radar : CheckBox { text: @tr("面积填充"); checked <=> root.filled; }
-            if root.kind == pie : CheckBox { text: @tr("环形图"); checked <=> root.doughnut; }
+
+        styles := GalleryExample {
+            title: @tr("样式对照");
+            description: @tr("同一组数据的基础样式与变体样式。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: @tr("基础样式");
+                    ForgeChart { height: 300px * ForgeTypography.scale; horizontal-stretch: 1; kind: root.kind; series: root.series; slices: root.slices; categories: root.categories; }
+                }
+                GalleryVariant {
+                    caption: root.style-caption;
+                    ForgeChart {
+                        height: 300px * ForgeTypography.scale; horizontal-stretch: 1; kind: root.kind;
+                        series: root.kind == bubble || root.kind == scatter || root.kind == radar ? [root.series[1]] : root.series;
+                        slices: root.kind == polar ? [root.slices[0], root.slices[1], root.slices[2]] : root.slices;
+                        categories: root.categories; stacked: true; smooth: true; fill-area: true; doughnut: true;
+                    }
+                }
+            }
         }
-        Text { text: @tr("更多示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        comparison := GalleryChartShowcase { route: root.showcase-route; kind: root.kind; categories: root.categories; series: root.series; slices: root.slices; }
+
+        boundary := GalleryExample {
+            title: @tr("数据与空状态");
+            description: @tr("少量数据，以及清空数据后保留容器与空状态提示。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: @tr("单系列数据");
+                    ForgeChart { height: 300px * ForgeTypography.scale; horizontal-stretch: 1; kind: root.kind; series: [root.series[0]]; slices: [root.slices[0], root.slices[1]]; categories: root.categories; }
+                }
+                GalleryVariant {
+                    caption: @tr("暂无数据");
+                    ForgeChart { height: 300px * ForgeTypography.scale; horizontal-stretch: 1; kind: root.kind; series: []; slices: []; categories: root.categories; }
+                }
+            }
+        }
     }
 }

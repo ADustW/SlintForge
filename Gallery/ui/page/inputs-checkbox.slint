@@ -1,34 +1,98 @@
-import { CheckBox, Palette } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // Slint 原生示例：Checkbox。
 export component GalleryInputsCheckboxPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
-    in-out property<string> draft;
+    in-out property<string> draft: @tr("启用通知");
     in-out property<string> status: @tr("就绪");
+    private property<bool> disabled: false;
+    private property<bool> export-orders: true;
+    private property<bool> export-customers: false;
+    private property<bool> export-invoices: true;
+    private property<int> selected-count: (root.export-orders ? 1 : 0) + (root.export-customers ? 1 : 0) + (root.export-invoices ? 1 : 0);
+    private property<string> export-status: @tr("尚未导出");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-checkbox";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入");
         title: "Checkbox";
-        subtitle: @tr("展示已选、未选与禁用状态。");
-        example-title: @tr("用法与状态");
-        preview-height: 190px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            CheckBox { text: @tr("启用通知"); checked <=> root.flag; }
-    CheckBox { text: @tr("未选中"); checked: false; }
-    CheckBox { text: @tr("禁用选项"); enabled: false; checked: true; }
-    Text { text: root.flag ? @tr("已启用") : @tr("已关闭"); color: Palette.foreground; }
+        subtitle: @tr("原生复选框，用于开启或关闭一个独立选项，也可在列表中多选。");
+        native: true;
+        showcase-route: "inputs-checkbox";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("选项文字，点击文字同样会切换。") },
+            { name: "checked", kind: @tr("属性"), type: "bool", description: @tr("是否勾选，可双向绑定。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后保持当前状态，不能切换。") },
+            { name: "has-focus", kind: @tr("输出"), type: "bool", description: @tr("是否拥有键盘焦点，聚焦时按 Space 切换。") },
+            { name: "toggled()", kind: @tr("回调"), type: "", description: @tr("用户切换勾选状态后触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("预览中的复选框与右侧 checked 选项双向绑定。");
+            output: @tr("toggled · checked: {}", root.flag ? "true" : "false");
+            GalleryPreview {
+                CheckBox { text: root.draft; checked <=> root.flag; enabled: !root.disabled; toggled => { root.count += 1; } }
+            }
+            GalleryOptions {
+                CheckBox { text: "checked"; checked <=> root.flag; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Text { text: "text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.draft; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("未勾选、已勾选，以及勾选后禁用。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "checked: false"; CheckBox { text: @tr("记住我"); checked: false; } }
+                GalleryVariant { caption: "checked: true"; CheckBox { text: @tr("记住我"); checked: true; } }
+                GalleryVariant { caption: "enabled: false"; CheckBox { text: @tr("记住我"); checked: true; enabled: false; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("批量导出");
+            description: @tr("“全选”在所有项都勾选时自动勾上；没有选中任何项时导出按钮不可用。");
+            output: root.export-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 360px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 6px;
+                        select-all := CheckBox {
+                            text: @tr("全选");
+                            checked: root.selected-count == 3;
+                            toggled => {
+                                root.export-orders = self.checked; root.export-customers = self.checked; root.export-invoices = self.checked;
+                            }
+                        }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        CheckBox { text: @tr("订单记录"); checked <=> root.export-orders; toggled => { select-all.checked = root.selected-count == 3; } }
+                        CheckBox { text: @tr("客户资料"); checked <=> root.export-customers; toggled => { select-all.checked = root.selected-count == 3; } }
+                        CheckBox { text: @tr("发票明细"); checked <=> root.export-invoices; toggled => { select-all.checked = root.selected-count == 3; } }
+                        HorizontalLayout {
+                            alignment: end; padding-top: 8px;
+                            Button {
+                                text: @tr("导出 {} 项", root.selected-count); primary: true; enabled: root.selected-count > 0;
+                                clicked => { root.export-status = @tr("已导出 {} 项数据", root.selected-count); }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,75 +1,101 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeFlowLayout, ForgeIconButton, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { Palette, Slider, SpinBox } from "std-widgets.slint";
+import { ForgeFlowLayout, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：FlowLayout。
 export component GalleryFlowLayoutPage inherits Rectangle {
     in-out property<int> tile-count: 32;
+    private property<float> gap: 12;
+    private property<string> picked-tag: "";
+    private property<[string]> tags: [
+        "Rust", "C++", "Slint", @tr("跨平台"), @tr("嵌入式"), "GPU", @tr("性能优化"), @tr("界面设计"),
+        @tr("开源"), "Windows", "Linux", "macOS", @tr("无障碍"), @tr("国际化"), @tr("数据可视化"), "WebAssembly",
+    ];
 
-    GalleryPageFrame {
-        width: parent.width;
-        height: parent.height;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("布局");
         title: "FlowLayout";
-        subtitle: @tr("矩形按可用宽度自动换行，内容超出时出现竖向滚动条。");
+        subtitle: @tr("子元素按各自尺寸从左到右排列，一行放不下时自动换行；内容超出高度时出现竖向滚动条。适合标签、缩略图等数量不定的内容。");
+        api: [
+            { name: "spacing", kind: @tr("属性"), type: "length", description: @tr("相邻元素的水平与垂直间距，默认 12px。") },
+            { name: "content-padding", kind: @tr("属性"), type: "length", description: @tr("内容与边框之间的内边距。") },
+            { name: "content-height", kind: @tr("输出"), type: "length", description: @tr("换行后内容的总高度。") },
+            { name: "vertical-scrollbar-visible", kind: @tr("输出"), type: "bool", description: @tr("内容是否超出可视高度。") },
+        ];
 
-        HorizontalLayout {
-            height: 34px;
-            vertical-stretch: 0;
-            spacing: 10px;
-            ForgeIconButton {
-                label: @tr("少量矩形");
-                selected: root.tile-count == 12;
-                clicked => { root.tile-count = 12; }
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改元素数量和间距，或缩放窗口，观察换行与滚动条。");
+            output: @tr("vertical-scrollbar-visible = {}", flow.vertical-scrollbar-visible ? "true" : "false");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                flow := ForgeFlowLayout {
+                    height: 320px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    spacing: root.gap * 1px;
+                    for index in root.tile-count : Rectangle {
+                        width: Math.mod(index, 4) == 0 ? 132px : Math.mod(index, 4) == 1 ? 96px : Math.mod(index, 4) == 2 ? 156px : 112px;
+                        height: Math.mod(index, 3) == 0 ? 84px : Math.mod(index, 3) == 1 ? 60px : 72px;
+                        border-radius: 6px;
+                        background: Math.mod(index, 6) == 0 ? #3762a8
+                            : Math.mod(index, 6) == 1 ? #8756aa
+                            : Math.mod(index, 6) == 2 ? #247b6f
+                            : Math.mod(index, 6) == 3 ? #a05332
+                            : Math.mod(index, 6) == 4 ? #2c7994 : #a24d70;
+                        Text {
+                            text: index + 1;
+                            color: white;
+                            font-size: 15px * ForgeTypography.scale;
+                            font-weight: 600;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
             }
-            ForgeIconButton {
-                label: @tr("大量矩形");
-                selected: root.tile-count == 32;
-                clicked => { root.tile-count = 32; }
-            }
-            Rectangle { horizontal-stretch: 1; }
-            Text {
-                text: flow.vertical-scrollbar-visible ? @tr("竖向滚动条已显示") : @tr("当前无需滚动");
-                color: Palette.foreground;
-                font-size: 13px * ForgeTypography.scale;
-                vertical-alignment: center;
-                horizontal-stretch: 0;
+            GalleryOptions {
+                Text { text: @tr("元素数量"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 1; maximum: 60; value <=> root.tile-count; }
+                Text { text: @tr("spacing = {}px", Math.round(root.gap)); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 0; maximum: 32; value <=> root.gap; }
             }
         }
 
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        preview := GalleryDemoCard {
-            preview-height: 520px;
-            flow := ForgeFlowLayout {
-                x: 18px;
-                y: 16px;
-                width: Math.max(0px, preview.width - 38px);
-                height: Math.max(0px, preview.height - 32px);
-                spacing: 12px;
-                content-padding: 12px;
-
-                for index in root.tile-count : Rectangle {
-                    width: Math.mod(index, 4) == 0 ? 176px : Math.mod(index, 4) == 1 ? 132px : Math.mod(index, 4) == 2 ? 206px : 150px;
-                    height: Math.mod(index, 3) == 0 ? 120px : Math.mod(index, 3) == 1 ? 82px : 102px;
-                    border-radius: 6px;
-                    background: Math.mod(index, 6) == 0 ? #3762a8
-                        : Math.mod(index, 6) == 1 ? #8756aa
-                        : Math.mod(index, 6) == 2 ? #247b6f
-                        : Math.mod(index, 6) == 3 ? #a05332
-                        : Math.mod(index, 6) == 4 ? #2c7994 : #a24d70;
-                    Text {
-                        x: 12px;
-                        width: Math.max(0px, parent.width - 24px);
-                        height: parent.height;
-                        text: @tr("矩形 {}", index + 1);
-                        color: white;
-                        font-size: 16px * ForgeTypography.scale;
-                        font-weight: 600;
-                        horizontal-alignment: center;
-                        vertical-alignment: center;
+        GalleryExample {
+            title: @tr("文章标签");
+            description: @tr("标签宽度随文字变化，FlowLayout 负责换行。单击标签用于筛选文章。");
+            output: root.picked-tag == "" ? @tr("尚未选择标签") : @tr("筛选 · {}", root.picked-tag);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                ForgeFlowLayout {
+                    height: 140px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    spacing: 8px;
+                    content-padding: 4px;
+                    for tag in root.tags : Rectangle {
+                        property<bool> picked: root.picked-tag == tag;
+                        width: label.preferred-width + 24px;
+                        height: 30px * ForgeTypography.scale;
+                        border-radius: self.height / 2;
+                        border-width: 1px;
+                        border-color: self.picked ? Palette.accent-background : Palette.border;
+                        background: self.picked ? Palette.accent-background : touch.has-hover ? Palette.control-background : Palette.background;
+                        label := Text {
+                            text: tag;
+                            color: parent.picked ? Palette.accent-foreground : Palette.foreground;
+                            font-size: 13px * ForgeTypography.scale;
+                            horizontal-alignment: center; vertical-alignment: center;
+                        }
+                        touch := TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => { root.picked-tag = parent.picked ? "" : tag; }
+                        }
                     }
                 }
             }
         }
-
     }
 }

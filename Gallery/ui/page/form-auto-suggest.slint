@@ -1,7 +1,6 @@
-import { Button, Palette } from "std-widgets.slint";
+import { Button, CheckBox, Palette } from "std-widgets.slint";
 import { ForgeAutoSuggestBox, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // 共享组件演示：AutoSuggestBox。
 export component GalleryFormAutoSuggestPage inherits Rectangle {
@@ -10,24 +9,107 @@ export component GalleryFormAutoSuggestPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<bool> disabled1: false;
+    private property<string> dependencies: "serde, slint";
+    private property<string> dependency-status: @tr("已有 2 个依赖");
     callback prepare-preview(bool);
     prepare-preview(open) => { suggest.open = open; }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-auto-suggest";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
         title: "AutoSuggestBox";
-        subtitle: @tr("输入前缀，展开并选择匹配的建议。");
-        example-title: @tr("用法与状态");
-        preview-height: (suggest.open ? 360px : 190px) * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            suggest := ForgeAutoSuggestBox { suggestions: ["Slint", "Slider", "SpinBox", "Switch", "Settings", "Rust", "C++"]; selected(value) => { root.status = value; } }
-Button { text: @tr("显示建议"); clicked => { suggest.open = true; } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("带建议列表的文本框。输入时按前缀筛选候选项，可用上下方向键移动、Enter 选中，适合搜索和快速填写。");
+        showcase-route: "form-auto-suggest";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("输入框中的文本。") },
+            { name: "suggestions", kind: @tr("属性"), type: "[string]", description: @tr("候选项；按不区分大小写的前缀匹配显示。") },
+            { name: "open", kind: @tr("属性"), type: "bool", description: @tr("建议列表是否展开；输入时自动展开。") },
+            { name: "placeholder-text / enabled", kind: @tr("属性"), type: "string / bool", description: @tr("占位提示与是否可用。") },
+            { name: "current-suggestion", kind: @tr("属性"), type: "int", description: @tr("键盘激活的候选项索引，-1 表示无。") },
+            { name: "edited(string) / selected(string)", kind: @tr("回调"), type: "", description: @tr("修改文本，或选中候选项及按 Enter 时触发。") },
+            { name: "choose(string) / accept-current()", kind: @tr("函数"), type: "", description: @tr("选中指定值，或提交当前激活的候选项。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("输入 S 或 R 查看匹配的建议，也可勾选 open 直接展开列表。");
+            output: root.status;
+            GalleryPreview {
+                suggest := ForgeAutoSuggestBox {
+                    width: 260px * ForgeTypography.scale;
+                    suggestions: ["Slint", "Slider", "SpinBox", "Switch", "Settings", "Rust", "C++"];
+                    enabled: !root.disabled1;
+                    selected(value) => { root.status = @tr("selected · {}", value); }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "open"; checked <=> suggest.open; enabled: !root.disabled1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("未输入时显示占位提示；已有文本时展开会只列出匹配项。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: @tr("默认"); color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeAutoSuggestBox { width: 240px * ForgeTypography.scale; suggestions: ["Slint", "Rust", "C++"]; }
+                    }
+                    Row {
+                        Text { text: "text: \"Sl\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeAutoSuggestBox { width: 240px * ForgeTypography.scale; text: "Sl"; suggestions: ["Slint", "Slider", "Rust"]; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeAutoSuggestBox { width: 240px * ForgeTypography.scale; text: "Rust"; suggestions: ["Rust"]; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("添加依赖项");
+            description: @tr("输入包名前缀，从建议中选择后加入依赖列表。");
+            output: root.dependency-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 12px;
+                        Text { text: "Cargo.toml · [dependencies]"; color: Palette.foreground; font-weight: 600; }
+                        HorizontalLayout {
+                            spacing: 8px;
+                            alignment: stretch;
+                            crate := ForgeAutoSuggestBox {
+                                placeholder-text: @tr("搜索 crate");
+                                suggestions: ["anyhow", "chrono", "clap", "image", "rand", "serde", "serde_json", "slint", "slint-build", "thiserror", "tokio", "tracing"];
+                            }
+                            VerticalLayout {
+                                alignment: start;
+                                Button {
+                                    text: @tr("添加");
+                                    enabled: crate.text != "";
+                                    clicked => {
+                                        root.dependencies = root.dependencies == "" ? crate.text : root.dependencies + ", " + crate.text;
+                                        root.dependency-status = @tr("已添加 {}", crate.text);
+                                        crate.text = "";
+                                        crate.open = false;
+                                    }
+                                }
+                            }
+                        }
+                        Text { text: root.dependencies; color: Palette.foreground.transparentize(0.3); font-family: "Consolas"; wrap: word-wrap; }
+                    }
+                }
+            }
         }
     }
-    
 }

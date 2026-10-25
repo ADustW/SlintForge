@@ -1,84 +1,135 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeDockLayout, ForgeIconButton, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { Button, CheckBox, Palette } from "std-widgets.slint";
+import { ForgeDockEdge, ForgeDockLayout, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+component GalleryDockPane inherits Rectangle {
+    in property<string> text;
+    in property<color> tint;
+    clip: true;
+    background: root.tint;
+    Text { text: root.text; color: white; font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; wrap: word-wrap; }
+}
+
+component GalleryDockPanel inherits Rectangle {
+    in property<string> heading;
+    in property<[string]> lines;
+    clip: true;
+    background: Palette.background;
+    VerticalLayout {
+        padding: 10px; spacing: 6px; alignment: start;
+        Text { text: root.heading; color: Palette.foreground.transparentize(0.45); font-size: 11px * ForgeTypography.scale; overflow: elide; }
+        for line in root.lines : Text { text: line; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; overflow: elide; }
+    }
+}
+
+// 共享组件演示：DockLayout。
 export component GalleryDockLayoutPage inherits Rectangle {
     in-out property<bool> top-visible: true;
     in-out property<bool> bottom-visible: true;
     in-out property<bool> left-visible: true;
     in-out property<bool> right-visible: true;
-    GalleryPageFrame {
+    private property<string> last-resize: @tr("尚未拖动分隔线");
+
+    GalleryComponentPage {
         width: parent.width; height: parent.height;
+        category: @tr("布局");
         title: "DockLayout";
-        subtitle: @tr("拖动四条分隔线调整尺寸；独立隐藏边区后，中央区自动填充。");
-        HorizontalLayout {
-            height: 34px; vertical-stretch: 0; spacing: 8px;
-            ForgeIconButton { label: @tr("顶部"); selected: root.top-visible; clicked => { root.top-visible = !root.top-visible; } }
-            ForgeIconButton { label: @tr("底部"); selected: root.bottom-visible; clicked => { root.bottom-visible = !root.bottom-visible; } }
-            ForgeIconButton { label: @tr("左侧"); selected: root.left-visible; clicked => { root.left-visible = !root.left-visible; } }
-            ForgeIconButton { label: @tr("右侧"); selected: root.right-visible; clicked => { root.right-visible = !root.right-visible; } }
-            Rectangle { horizontal-stretch: 1; }
-            ForgeIconButton {
-                label: @tr("重置尺寸");
-                clicked => {
-                    dock.top-height = 92px; dock.bottom-height = 92px;
-                    dock.left-width = 175px; dock.right-width = 175px;
+        subtitle: @tr("四周停靠、中央填充的布局。拖动分隔线调整边区尺寸，隐藏任一边区后中央区自动扩展。适合编辑器、管理后台等多面板界面。");
+        api: [
+            { name: "top-height / bottom-height", kind: @tr("属性"), type: "length", description: @tr("上下边区的保存高度；空间不足时只压缩实际几何。") },
+            { name: "left-width / right-width", kind: @tr("属性"), type: "length", description: @tr("左右边区的保存宽度。") },
+            { name: "show-top / show-bottom / show-left / show-right", kind: @tr("属性"), type: "bool", description: @tr("分别控制四个边区是否显示。") },
+            { name: "divider-size", kind: @tr("属性"), type: "length", description: @tr("分隔线粗细，默认 8px。") },
+            { name: "min-center-width / min-center-height", kind: @tr("属性"), type: "length", description: @tr("中央区保留的最小尺寸。") },
+            { name: "top-rect … center-rect", kind: @tr("输出"), type: "ForgeDockRect", description: @tr("五个区域的位置与尺寸，子元素据此放置。") },
+            { name: "pane-size-changed(ForgeDockEdge, length)", kind: @tr("回调"), type: "", description: @tr("拖动分隔线后触发，参数为边区与新尺寸。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("拖动四条分隔线调整尺寸，或在右侧单独隐藏某个边区。");
+            output: root.last-resize;
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                dock := ForgeDockLayout {
+                    height: 360px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    top-height: 72px; bottom-height: 72px;
+                    left-width: 140px; right-width: 140px;
+                    show-top: root.top-visible; show-bottom: root.bottom-visible;
+                    show-left: root.left-visible; show-right: root.right-visible;
+                    pane-size-changed(edge, size) => {
+                        root.last-resize = @tr("pane-size-changed · {} = {}px",
+                            edge == ForgeDockEdge.top ? "top" : edge == ForgeDockEdge.bottom ? "bottom" : edge == ForgeDockEdge.left ? "left" : "right",
+                            Math.round(size / 1px));
+                    }
+                    GalleryDockPane { visible: root.top-visible; x: dock.top-rect.x; y: dock.top-rect.y; width: dock.top-rect.width; height: dock.top-rect.height; tint: #3762a8; text: @tr("顶部"); }
+                    GalleryDockPane { visible: root.bottom-visible; x: dock.bottom-rect.x; y: dock.bottom-rect.y; width: dock.bottom-rect.width; height: dock.bottom-rect.height; tint: #8756aa; text: @tr("底部"); }
+                    GalleryDockPane { visible: root.left-visible; x: dock.left-rect.x; y: dock.left-rect.y; width: dock.left-rect.width; height: dock.left-rect.height; tint: #247b6f; text: @tr("左侧"); }
+                    GalleryDockPane { visible: root.right-visible; x: dock.right-rect.x; y: dock.right-rect.y; width: dock.right-rect.width; height: dock.right-rect.height; tint: #a05332; text: @tr("右侧"); }
+                    GalleryDockPane { x: dock.center-rect.x; y: dock.center-rect.y; width: dock.center-rect.width; height: dock.center-rect.height; tint: #39305b; text: @tr("中央"); }
                 }
             }
-        }
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        preview := GalleryDemoCard {
-            preview-height: 390px;
-            dock := ForgeDockLayout {
-                x: 18px; y: 16px;
-                width: Math.max(0px, preview.width - 36px);
-                height: Math.max(0px, preview.height - 32px);
-                top-height: 92px; bottom-height: 92px;
-                left-width: 175px; right-width: 175px;
-                show-top: root.top-visible; show-bottom: root.bottom-visible;
-                show-left: root.left-visible; show-right: root.right-visible;
-                Rectangle {
-                    visible: root.top-visible;
-                    x: dock.top-rect.x; y: dock.top-rect.y;
-                    width: dock.top-rect.width; height: dock.top-rect.height;
-                    background: #3762a8;
-                    clip: true;
-                    Text { text: @tr("顶部"); color: white; horizontal-alignment: center; vertical-alignment: center; }
-                }
-                Rectangle {
-                    visible: root.bottom-visible;
-                    x: dock.bottom-rect.x; y: dock.bottom-rect.y;
-                    width: dock.bottom-rect.width; height: dock.bottom-rect.height;
-                    background: #8756aa;
-                    clip: true;
-                    Text { text: @tr("底部"); color: white; horizontal-alignment: center; vertical-alignment: center; }
-                }
-                Rectangle {
-                    visible: root.left-visible;
-                    x: dock.left-rect.x; y: dock.left-rect.y;
-                    width: dock.left-rect.width; height: dock.left-rect.height;
-                    background: #247b6f;
-                    clip: true;
-                    Text { text: @tr("左侧"); color: white; horizontal-alignment: center; vertical-alignment: center; }
-                }
-                Rectangle {
-                    visible: root.right-visible;
-                    x: dock.right-rect.x; y: dock.right-rect.y;
-                    width: dock.right-rect.width; height: dock.right-rect.height;
-                    background: #a05332;
-                    clip: true;
-                    Text { text: @tr("右侧"); color: white; horizontal-alignment: center; vertical-alignment: center; }
-                }
-                Rectangle {
-                    x: dock.center-rect.x; y: dock.center-rect.y;
-                    width: dock.center-rect.width; height: dock.center-rect.height;
-                    background: #39305b;
-                    clip: true;
-                    Text { text: @tr("中央"); color: white; horizontal-alignment: center; vertical-alignment: center; }
+            GalleryOptions {
+                CheckBox { text: "show-top"; checked <=> root.top-visible; }
+                CheckBox { text: "show-bottom"; checked <=> root.bottom-visible; }
+                CheckBox { text: "show-left"; checked <=> root.left-visible; }
+                CheckBox { text: "show-right"; checked <=> root.right-visible; }
+                Button {
+                    text: @tr("重置尺寸");
+                    clicked => {
+                        dock.top-height = 72px; dock.bottom-height = 72px;
+                        dock.left-width = 140px; dock.right-width = 140px;
+                        root.last-resize = @tr("已重置尺寸");
+                    }
                 }
             }
         }
 
+        GalleryExample {
+            title: @tr("代码编辑器工作区");
+            description: @tr("工具栏停靠在顶部，资源管理器和大纲分列两侧，终端在底部；编辑区占据剩余空间。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                Rectangle {
+                    height: 340px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    border-radius: 6px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.border;
+                    clip: true;
+                    ide := ForgeDockLayout {
+                        x: 1px; y: 1px; width: parent.width - 2px; height: parent.height - 2px;
+                        divider-size: 4px;
+                        top-height: 36px; bottom-height: 84px;
+                        left-width: 150px; right-width: 130px;
+                        min-center-width: 120px;
+                        Rectangle {
+                            x: ide.top-rect.x; y: ide.top-rect.y; width: ide.top-rect.width; height: ide.top-rect.height;
+                            background: Palette.control-background;
+                            clip: true;
+                            HorizontalLayout {
+                                padding-left: 12px; spacing: 16px;
+                                for item in [@tr("文件"), @tr("编辑"), @tr("视图"), @tr("运行")] : Text { text: item; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                                Rectangle { }
+                            }
+                        }
+                        GalleryDockPanel { x: ide.left-rect.x; y: ide.left-rect.y; width: ide.left-rect.width; height: ide.left-rect.height; heading: @tr("资源管理器"); lines: ["src/", "  main.rs", "  app.slint", "Cargo.toml"]; }
+                        GalleryDockPanel { x: ide.right-rect.x; y: ide.right-rect.y; width: ide.right-rect.width; height: ide.right-rect.height; heading: @tr("大纲"); lines: ["fn main()", "struct App", "impl App"]; }
+                        GalleryDockPanel { x: ide.bottom-rect.x; y: ide.bottom-rect.y; width: ide.bottom-rect.width; height: ide.bottom-rect.height; heading: @tr("终端"); lines: ["$ cargo run", "   Compiling app v0.1.0", "    Finished dev profile"]; }
+                        Rectangle {
+                            x: ide.center-rect.x; y: ide.center-rect.y; width: ide.center-rect.width; height: ide.center-rect.height;
+                            background: Palette.alternate-background;
+                            clip: true;
+                            VerticalLayout {
+                                padding: 12px; spacing: 4px; alignment: start;
+                                for line in ["fn main() {", "    let app = App::new()?;", "    app.run()", "}"] : Text { text: line; color: Palette.foreground; font-family: "Consolas"; font-size: 12px * ForgeTypography.scale; overflow: elide; }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

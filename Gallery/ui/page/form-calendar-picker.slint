@@ -1,21 +1,60 @@
-import { ForgeCalendarPicker } from "@slintforge";
-import { ForgeTypography } from "@slintforge";
-import { Palette } from "std-widgets.slint";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryPickerExample } from "../component/picker-example.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
+import { ForgeCalendarPicker, ForgeDateTime, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 export component GalleryFormCalendarPickerPage inherits Rectangle {
     in property<string> language: "zh";
     private property<bool> preview-with-time: false;
+    private property<bool> dark1: Palette.color-scheme == ColorScheme.dark;
+    private property<bool> disabled1: false;
+    private property<bool> dark2: Palette.color-scheme == ColorScheme.dark;
+    private property<bool> disabled2: false;
     callback configure-preview(bool);
     configure-preview(with-time) => { root.preview-with-time = with-time; }
     callback prepare-preview(bool);
     prepare-preview(open) => { if open { if root.preview-with-time { second.open(); } else { first.open(); } } else { first.close(); second.close(); } }
-    GalleryPageFrame {
-        width: root.width; height: root.height;
-        background: Palette.color-scheme == ColorScheme.dark ? #282828 : Palette.background;
-        title: @tr("日历选择器"); content-spacing: 20px * ForgeTypography.scale;
-        sample1 := GalleryPickerExample { label: @tr("日期"); preview-height: 70px * ForgeTypography.scale; first := ForgeCalendarPicker { x: 0px; y: 0px; language: root.language; dark: sample1.dark; enabled: !sample1.disabled; } }
-        sample2 := GalleryPickerExample { label: @tr("日期与时间"); preview-height: 70px * ForgeTypography.scale; second := ForgeCalendarPicker { x: 0px; y: 0px; language: root.language; dark: sample2.dark; enabled: !sample2.disabled; show-time: true; } }
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单 / 选择器");
+        title: "CalendarPicker";
+        subtitle: @tr("紧凑的日期按钮，点击后弹出月历；可附带时间选择，并支持年月快速切换与日期范围限制。");
+        api: [
+            { name: "date / time", kind: @tr("属性"), type: "Date / Time", description: @tr("已选日期与时间。") },
+            { name: "has-value", kind: @tr("属性"), type: "bool", description: @tr("是否已选择；未选择时显示占位文字。") },
+            { name: "show-time", kind: @tr("属性"), type: "bool", description: @tr("在弹层中附带时间选择。") },
+            { name: "minimum-date / maximum-date", kind: @tr("属性"), type: "Date", description: @tr("可选日期范围。") },
+            { name: "language / dark", kind: @tr("属性"), type: "string / bool", description: @tr("显示语言与深浅配色。") },
+            { name: "accepted(Date) / time-accepted(Time)", kind: @tr("回调"), type: "", description: @tr("确认选择后触发。") },
+            { name: "open() / close()", kind: @tr("函数"), type: "", description: @tr("以编程方式打开或关闭弹层。") },
+        ];
+
+        GalleryExample {
+            title: @tr("选择日期");
+            description: @tr("点击按钮打开月历，选中日期后确认。");
+            output: first.has-value ? @tr("accepted · {}", ForgeDateTime.format-date(first.date, root.language)) : @tr("尚未选择");
+            GalleryPreview {
+                min-preview-height: 120px * ForgeTypography.scale;
+                first := ForgeCalendarPicker { language: root.language; dark: root.dark1; enabled: !root.disabled1; }
+            }
+            GalleryOptions {
+                CheckBox { text: "dark"; checked <=> root.dark1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("日期与时间");
+            description: @tr("设置 show-time 后，弹层右侧增加时间选择。");
+            output: second.has-value ? @tr("accepted · {} {}", ForgeDateTime.format-date(second.date, root.language), ForgeDateTime.format-time(second.time, root.language, true)) : @tr("尚未选择");
+            GalleryPreview {
+                min-preview-height: 120px * ForgeTypography.scale;
+                second := ForgeCalendarPicker { language: root.language; dark: root.dark2; enabled: !root.disabled2; show-time: true; }
+            }
+            GalleryOptions {
+                CheckBox { text: "dark"; checked <=> root.dark2; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled2; }
+            }
+        }
     }
 }

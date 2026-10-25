@@ -1,16 +1,104 @@
-import { ForgeDatePicker } from "@slintforge";
-import { ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryPickerExample } from "../component/picker-example.slint";
+import { CheckBox, Date, Palette } from "std-widgets.slint";
+import { ForgeDatePicker, ForgeDateTime, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：DatePicker。
 export component GalleryFormDatePickerPage inherits Rectangle {
     in property<string> language: "zh";
+    private property<bool> dark1: Palette.color-scheme == ColorScheme.dark;
+    private property<bool> disabled1: false;
+    private property<bool> show-day1: true;
+    private property<Date> birthday: { year: 1990, month: 6, day: 18 };
+    private property<Date> expiry: { year: 2030, month: 4, day: 1 };
     callback prepare-preview(bool);
-    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); } }
-    GalleryPageFrame {
-        width: root.width; height: root.height;
-        title: @tr("日期选择器"); subtitle: @tr("分栏选择年、月、日，支持字段显示和日期范围。");
-        sample1 := GalleryPickerExample { label: @tr("默认区域"); first := ForgeDatePicker { x: 0px; y: 0px; language: root.language; dark: sample1.dark; enabled: !sample1.disabled; } }
-        sample2 := GalleryPickerExample { label: @tr("英文区域，2000—2100 年"); second := ForgeDatePicker { x: 0px; y: 0px; language: "en"; dark: sample2.dark; enabled: !sample2.disabled; minimum-date: {year: 2000, month: 1, day: 1}; maximum-date: {year: 2100, month: 1, day: 1}; } }
+    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); third.close(); birth.close(); valid.close(); } }
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单 / 选择器");
+        title: "DatePicker";
+        subtitle: @tr("分栏滚轮选择年、月、日的日期按钮，可隐藏部分字段并限制日期范围；需要月历视图时改用 CalendarPicker。");
+        api: [
+            { name: "date / has-value", kind: @tr("属性"), type: "Date / bool", description: @tr("已提交的日期，以及是否已选择。") },
+            { name: "show-year / show-month / show-day", kind: @tr("属性"), type: "bool", description: @tr("分别控制年、月、日字段是否显示。") },
+            { name: "minimum-date / maximum-date", kind: @tr("属性"), type: "Date", description: @tr("可选日期范围。") },
+            { name: "language / dark", kind: @tr("属性"), type: "string / bool", description: @tr("显示语言与深浅配色。") },
+            { name: "current-date", kind: @tr("输出"), type: "Date", description: @tr("弹层中尚未确认的日期。") },
+            { name: "accepted(Date) / canceled()", kind: @tr("回调"), type: "", description: @tr("确认或取消弹层时触发。") },
+            { name: "open() / close()", kind: @tr("函数"), type: "", description: @tr("以编程方式打开或关闭弹层。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击按钮打开分栏弹层，滚动选择年、月、日后确认。");
+            output: first.has-value ? @tr("accepted · {}", ForgeDateTime.format-date(first.date, root.language)) : @tr("尚未选择");
+            GalleryPreview {
+                min-preview-height: 120px * ForgeTypography.scale;
+                first := ForgeDatePicker { language: root.language; dark: root.dark1; enabled: !root.disabled1; show-day: root.show-day1; }
+            }
+            GalleryOptions {
+                CheckBox { text: "show-day"; checked <=> root.show-day1; }
+                CheckBox { text: "dark"; checked <=> root.dark1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("英文区域按月、日、年排列；超出范围的日期在弹层中会被限制。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: "language: \"en\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        second := ForgeDatePicker {
+                            language: "en"; date: { year: 2026, month: 3, day: 8 }; has-value: true;
+                            minimum-date: { year: 2000, month: 1, day: 1 }; maximum-date: { year: 2100, month: 1, day: 1 };
+                        }
+                    }
+                    Row {
+                        Text { text: "show-day: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        third := ForgeDatePicker { language: root.language; show-day: false; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeDatePicker { language: root.language; enabled: false; date: { year: 2026, month: 10, day: 1 }; has-value: true; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("证件信息");
+            description: @tr("出生日期不晚于今天；有效期只需年和月。");
+            output: @tr("出生日期 {} · 有效期至 {} 年 {} 月", ForgeDateTime.format-date(root.birthday, root.language), root.expiry.year, root.expiry.month);
+            GalleryPreview {
+                Rectangle {
+                    width: 480px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := GridLayout {
+                        padding: 20px; spacing-horizontal: 16px; spacing-vertical: 12px;
+                        Row {
+                            Text { text: @tr("出生日期"); color: Palette.foreground; vertical-alignment: center; }
+                            birth := ForgeDatePicker {
+                                language: root.language; date: root.birthday; has-value: true;
+                                minimum-date: { year: 1920, month: 1, day: 1 }; maximum-date: { year: 2026, month: 10, day: 25 };
+                                accepted(value) => { root.birthday = value; }
+                            }
+                        }
+                        Row {
+                            Text { text: @tr("有效期至"); color: Palette.foreground; vertical-alignment: center; }
+                            valid := ForgeDatePicker {
+                                language: root.language; show-day: false; date: root.expiry; has-value: true;
+                                minimum-date: { year: 2026, month: 1, day: 1 }; maximum-date: { year: 2046, month: 12, day: 31 };
+                                accepted(value) => { root.expiry = value; }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

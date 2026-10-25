@@ -1,79 +1,80 @@
-import { Palette, Switch } from "std-widgets.slint";
-import { ForgeIconButton, ForgeSplitLayout, ForgeSplitOrientation, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { Button, Palette, Switch } from "std-widgets.slint";
+import { ForgeSplitLayout, ForgeSplitOrientation, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
+
+component GallerySplitPane inherits Rectangle {
+    in property<string> text;
+    in property<color> tint;
+    border-radius: 6px;
+    background: root.tint.transparentize(0.8);
+    border-width: 1px; border-color: root.tint.transparentize(0.5);
+    Text {
+        text: root.text; color: Palette.foreground;
+        font-size: 13px * ForgeTypography.scale;
+        horizontal-alignment: center; vertical-alignment: center; wrap: word-wrap;
+    }
+}
 
 export component GallerySplitLayoutPage inherits Rectangle {
     in-out property<bool> vertical: false;
 
-    GalleryPageFrame {
-        width: parent.width;
-        height: parent.height;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("布局");
         title: "SplitLayout";
-        subtitle: @tr("拖动分隔条调整两个内容区域的比例，可切换水平或垂直布局。");
+        subtitle: @tr("把区域分成两块，拖动中间的分隔条调整比例。两块内容由应用按输出的几何属性放置。");
+        api: [
+            { name: "ratio", kind: @tr("属性"), type: "float", description: @tr("首区所占比例；拖动时限制在 0.15 到 0.85。") },
+            { name: "orientation", kind: @tr("属性"), type: "ForgeSplitOrientation", description: @tr("horizontal 左右排列，vertical 上下排列。") },
+            { name: "divider-size", kind: @tr("属性"), type: "length", description: @tr("分隔条宽度，默认 8px。") },
+            { name: "first-width / first-height", kind: @tr("输出"), type: "length", description: @tr("首区尺寸。") },
+            { name: "second-x / second-y / second-width / second-height", kind: @tr("输出"), type: "length", description: @tr("第二块的位置与尺寸。") },
+            { name: "ratio-changed(float)", kind: @tr("回调"), type: "", description: @tr("用户拖动分隔条后触发。") },
+        ];
 
-        HorizontalLayout {
-            height: 34px;
-            vertical-stretch: 0;
-            spacing: 12px;
-            Switch {
-                text: root.vertical ? @tr("垂直排列") : @tr("水平排列");
-                checked <=> root.vertical;
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("拖动分隔条，或在右侧切换排列方向。");
+            output: @tr("ratio = {}%", Math.round(split.ratio * 100));
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                split := ForgeSplitLayout {
+                    height: 240px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    ratio: 0.5;
+                    orientation: root.vertical ? ForgeSplitOrientation.vertical : ForgeSplitOrientation.horizontal;
+                    GallerySplitPane { x: 0px; y: 0px; width: split.first-width; height: split.first-height; tint: #6b5bd2; text: root.vertical ? @tr("上方内容") : @tr("左侧内容"); }
+                    GallerySplitPane { x: split.second-x; y: split.second-y; width: split.second-width; height: split.second-height; tint: #2d8bb5; text: root.vertical ? @tr("下方内容") : @tr("右侧内容"); }
+                }
             }
-            Rectangle { horizontal-stretch: 1; }
-            ForgeIconButton {
-                label: @tr("重置比例");
-                clicked => { split.ratio = 0.5; }
-            }
-            Text {
-                text: @tr("首区 {}%", Math.round(split.ratio * 100));
-                color: Palette.foreground;
-                font-size: 13px * ForgeTypography.scale;
-                vertical-alignment: center;
-                horizontal-stretch: 0;
+            GalleryOptions {
+                Switch { text: @tr("垂直排列"); checked <=> root.vertical; }
+                Button { text: @tr("重置比例"); clicked => { split.ratio = 0.5; } }
             }
         }
 
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        preview := GalleryDemoCard {
-            preview-height: 240px;
-            split := ForgeSplitLayout {
-                x: 18px;
-                y: 16px;
-                width: Math.max(0px, preview.width - 38px);
-                height: Math.max(0px, preview.height - 34px);
-                ratio: 0.5;
-                orientation: root.vertical ? ForgeSplitOrientation.vertical : ForgeSplitOrientation.horizontal;
-                Rectangle {
-                    x: 0px;
-                    y: 0px;
-                    width: split.first-width;
-                    height: split.first-height;
-                    background: #39305b;
-                    Text {
-                        text: root.vertical ? @tr("上方内容") : @tr("左侧内容");
-                        color: white;
-                        font-size: 16px * ForgeTypography.scale;
-                        horizontal-alignment: center;
-                        vertical-alignment: center;
-                    }
-                }
-                Rectangle {
-                    x: split.second-x;
-                    y: split.second-y;
-                    width: split.second-width;
-                    height: split.second-height;
-                    background: #285872;
-                    Text {
-                        text: root.vertical ? @tr("下方内容") : @tr("右侧内容");
-                        color: white;
-                        font-size: 16px * ForgeTypography.scale;
-                        horizontal-alignment: center;
-                        vertical-alignment: center;
+        GalleryExample {
+            title: @tr("嵌套分割：编辑器布局");
+            description: @tr("外层左右分割放置文件列表，右侧再上下分割出编辑区与终端。");
+            output: @tr("侧栏 {}% · 编辑区 {}%", Math.round(outer.ratio * 100), Math.round(inner.ratio * 100));
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                outer := ForgeSplitLayout {
+                    height: 300px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    ratio: 0.28;
+                    GallerySplitPane { x: 0px; y: 0px; width: outer.first-width; height: outer.first-height; tint: #6b5bd2; text: @tr("资源管理器"); }
+                    inner := ForgeSplitLayout {
+                        x: outer.second-x; y: outer.second-y; width: outer.second-width; height: outer.second-height;
+                        ratio: 0.68;
+                        orientation: ForgeSplitOrientation.vertical;
+                        GallerySplitPane { x: 0px; y: 0px; width: inner.first-width; height: inner.first-height; tint: #2d8bb5; text: @tr("编辑区"); }
+                        GallerySplitPane { x: inner.second-x; y: inner.second-y; width: inner.second-width; height: inner.second-height; tint: #3f9b6e; text: @tr("终端"); }
                     }
                 }
             }
         }
-
     }
 }

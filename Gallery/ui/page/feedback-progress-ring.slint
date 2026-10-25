@@ -1,7 +1,6 @@
-import { Slider, Switch, Spinner } from "std-widgets.slint";
-import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { CheckBox, Palette, Slider, Spinner } from "std-widgets.slint";
+import { ForgePillButton, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // Slint 原生示例：ProgressRing。
 export component GalleryFeedbackProgressRingPage inherits Rectangle {
@@ -12,25 +11,98 @@ export component GalleryFeedbackProgressRingPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "feedback-progress-ring";
-        active: root.visible;
+    private property<bool> ring-indeterminate: false;
+    private property<length> ring-size: 64px;
+    // 场景：刷新时显示加载环，计时结束后更新时间。
+    private property<bool> refreshing: false;
+    private property<int> refresh-ticks: 0;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("反馈");
         title: "ProgressRing";
-        subtitle: @tr("确定进度与持续加载两种状态。");
-        example-title: @tr("用法与状态");
-        preview-height: 220px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            HorizontalLayout { height: 64px; spacing: 24px; alignment: start;
-        Spinner { width: 64px; height: 64px; indeterminate: true; visible: root.flag; }
-        Spinner { width: 64px; height: 64px; progress: root.number / 100; }
-    }
-    Slider { minimum: 0; maximum: 100; value <=> root.number; }
-    Switch { text: @tr("显示加载动画"); checked <=> root.flag; }
+        subtitle: @tr("Slint 原生 Spinner，以圆环显示进度。占用空间小，适合卡片、按钮旁或局部区域的加载状态。");
+        native: true;
+        showcase-route: "feedback-progress-ring";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "progress", kind: @tr("属性"), type: "float", description: @tr("进度，取值 0 到 1，圆环按比例填充。") },
+            { name: "indeterminate", kind: @tr("属性"), type: "bool", description: @tr("进度未知时持续旋转。") },
+            { name: "width / height", kind: @tr("属性"), type: "length", description: @tr("圆环尺寸，宽高相同。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("拖动滑块修改进度，调整尺寸或切换为持续旋转。");
+            output: root.ring-indeterminate ? "indeterminate" : @tr("progress · {}%", Math.round(root.number));
+            GalleryPreview {
+                min-preview-height: 160px * ForgeTypography.scale;
+                Spinner { width: root.ring-size; height: root.ring-size; progress: root.number / 100; indeterminate: root.ring-indeterminate; }
+            }
+            GalleryOptions {
+                Text { text: "progress"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 0; maximum: 100; value <=> root.number; enabled: !root.ring-indeterminate; }
+                Text { text: "width / height"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 24; maximum: 96; value: root.ring-size / 1px; changed(value) => { root.ring-size = Math.round(value) * 1px; } }
+                CheckBox { text: "indeterminate"; checked <=> root.ring-indeterminate; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("少量进度、接近完成与持续旋转。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "progress: 0.25"; Spinner { width: 48px; height: 48px; progress: 0.25; } }
+                GalleryVariant { caption: "progress: 0.75"; Spinner { width: 48px; height: 48px; progress: 0.75; } }
+                GalleryVariant { caption: "indeterminate: true"; Spinner { width: 48px; height: 48px; indeterminate: true; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("存储概览");
+            description: @tr("圆环显示空间占用；刷新时在标题旁显示小号加载环。");
+            output: root.refreshing ? @tr("正在刷新…") : @tr("已刷新 {} 次", root.count);
+            GalleryPreview {
+                Rectangle {
+                    width: 340px * ForgeTypography.scale;
+                    height: storage.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    storage := VerticalLayout {
+                        padding: 20px; spacing: 16px;
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Text { text: @tr("云盘空间"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; vertical-alignment: center; }
+                            if root.refreshing : VerticalLayout { alignment: center; Spinner { width: 16px; height: 16px; indeterminate: true; } }
+                            Rectangle { horizontal-stretch: 1; }
+                            ForgePillButton { text: @tr("刷新"); enabled: !root.refreshing; clicked => { root.refresh-ticks = 0; root.refreshing = true; } }
+                        }
+                        HorizontalLayout {
+                            spacing: 20px;
+                            Rectangle {
+                                width: 72px; height: 72px;
+                                Spinner { width: 72px; height: 72px; progress: 0.72; }
+                                Text { text: "72%"; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; font-weight: 600; }
+                            }
+                            VerticalLayout {
+                                alignment: center; spacing: 4px;
+                                Text { text: @tr("已用 72 GB，共 100 GB"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                                Text { text: @tr("照片 41 GB · 文档 23 GB · 其他 8 GB"); color: Palette.foreground.transparentize(0.4); font-size: 12px * ForgeTypography.scale; wrap: word-wrap; }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
+
+    Timer {
+        interval: 100ms;
+        running: root.refreshing && root.visible;
+        triggered => {
+            root.refresh-ticks += 1;
+            if root.refresh-ticks >= 15 { root.refreshing = false; root.count += 1; }
+        }
+    }
 }

@@ -1,43 +1,127 @@
-import { ForgeTypography } from "@slintforge";
-import { Palette } from "std-widgets.slint";
-import { ForgeIconButton, ForgeInfoBar, ForgeInfoLevel } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { CheckBox, ComboBox, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeInfoBar, ForgeInfoLevel, ForgePillButton, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：InfoBar。
 export component GalleryInfoBarPage inherits Rectangle {
     in-out property<bool> bar-visible: true;
     in-out property<ForgeInfoLevel> level: ForgeInfoLevel.info;
+    private property<int> level-index: 0;
+    private property<bool> dismissible: true;
+    private property<string> message: @tr("新版本已下载，重启后生效。");
+    private property<int> dismiss-count: 0;
+    // 场景：0 待同步，1 同步中，2 已完成，3 失败。
+    private property<int> sync-state: 0;
+    private property<bool> sync-bar-visible: true;
     background: transparent;
 
-    GalleryPageFrame {
-        width: parent.width;
-        height: parent.height;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("反馈");
         title: "InfoBar";
-        subtitle: @tr("内联状态反馈 · ForgeInfoBar");
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        GalleryDemoCard {
-            preview-height: 180px;
-            VerticalLayout {
-                x: 20px; y: 18px; width: parent.width - 40px; height: parent.height - 36px;
-                spacing: 14px;
-                HorizontalLayout {
-                    height: 34px;
-                    vertical-stretch: 0;
-                    spacing: 8px;
-                    ForgeIconButton { label: @tr("信息"); clicked => { root.level = ForgeInfoLevel.info; root.bar-visible = true; } }
-                    ForgeIconButton { label: @tr("成功"); clicked => { root.level = ForgeInfoLevel.success; root.bar-visible = true; } }
-                    ForgeIconButton { label: @tr("警告"); clicked => { root.level = ForgeInfoLevel.warning; root.bar-visible = true; } }
-                    ForgeIconButton { label: @tr("错误"); clicked => { root.level = ForgeInfoLevel.error; root.bar-visible = true; } }
+        subtitle: @tr("嵌在页面中的状态提示条，用颜色区分信息、成功、警告与错误，可由用户关闭。适合不打断操作的持续性反馈。");
+        api: [
+            { name: "level", kind: @tr("属性"), type: "ForgeInfoLevel", description: @tr("提示级别：info、success、warning、error，决定左侧色条与图标。") },
+            { name: "message", kind: @tr("属性"), type: "string", description: @tr("提示文字，过长时自动换行。") },
+            { name: "dismissible", kind: @tr("属性"), type: "bool", description: @tr("是否显示关闭按钮，默认 true。") },
+            { name: "dismissed()", kind: @tr("回调"), type: "", description: @tr("点击关闭按钮时触发；是否隐藏由宿主决定。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("切换级别、修改文字，关闭后可重新显示。");
+            output: @tr("dismissed · 已关闭 {} 次", root.dismiss-count);
+            GalleryPreview {
+                stretch: true;
+                VerticalLayout {
+                    spacing: 12px; alignment: center;
+                    if root.bar-visible : ForgeInfoBar {
+                        level: root.level; message: root.message; dismissible: root.dismissible;
+                        dismissed => { root.bar-visible = false; root.dismiss-count += 1; }
+                    }
+                    if !root.bar-visible : HorizontalLayout {
+                        alignment: center;
+                        ForgePillButton { text: @tr("重新显示"); clicked => { root.bar-visible = true; } }
+                    }
                 }
-                ForgeInfoBar {
-                    height: 52px;
-                    vertical-stretch: 0;
-                    visible: root.bar-visible;
-                    level: root.level;
-                    message: @tr("这是一条可关闭的反馈信息。");
-                    dismissed => { root.bar-visible = false; }
+            }
+            GalleryOptions {
+                Text { text: "level"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox {
+                    model: ["info", "success", "warning", "error"];
+                    current-index <=> root.level-index;
+                    selected => {
+                        root.level = root.level-index == 1 ? ForgeInfoLevel.success : root.level-index == 2 ? ForgeInfoLevel.warning : root.level-index == 3 ? ForgeInfoLevel.error : ForgeInfoLevel.info;
+                        root.bar-visible = true;
+                    }
+                }
+                CheckBox { text: "dismissible"; checked <=> root.dismissible; }
+                Text { text: "message"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.message; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("四种级别，以及不可关闭的提示。");
+            GalleryPreview {
+                stretch: true; content-padding: 16px;
+                GridLayout {
+                    spacing: 10px;
+                    Row {
+                        Text { text: "level: info"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ForgeInfoBar { level: ForgeInfoLevel.info; message: @tr("系统将在今晚 23:00 维护。"); }
+                    }
+                    Row {
+                        Text { text: "level: success"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ForgeInfoBar { level: ForgeInfoLevel.success; message: @tr("设置已保存。"); }
+                    }
+                    Row {
+                        Text { text: "level: warning"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ForgeInfoBar { level: ForgeInfoLevel.warning; message: @tr("磁盘剩余空间不足 10%。"); }
+                    }
+                    Row {
+                        Text { text: "level: error"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ForgeInfoBar { level: ForgeInfoLevel.error; message: @tr("无法连接服务器。"); }
+                    }
+                    Row {
+                        Text { text: "dismissible: false"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ForgeInfoBar { level: ForgeInfoLevel.warning; dismissible: false; message: @tr("试用版剩余 3 天。"); }
+                    }
                 }
             }
         }
-}
+
+        GalleryExample {
+            title: @tr("云端同步");
+            description: @tr("同一位置的提示条随同步进度切换级别与文字。");
+            output: root.sync-state == 0 ? @tr("待同步") : root.sync-state == 1 ? @tr("同步中") : root.sync-state == 2 ? @tr("同步完成") : @tr("同步失败");
+            GalleryPreview {
+                stretch: true;
+                Rectangle {
+                    height: sync-layout.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    sync-layout := VerticalLayout {
+                        padding: 20px; spacing: 14px;
+                        Text { text: @tr("项目文件"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                        if root.sync-bar-visible : ForgeInfoBar {
+                            level: root.sync-state == 2 ? ForgeInfoLevel.success : root.sync-state == 3 ? ForgeInfoLevel.error : root.sync-state == 1 ? ForgeInfoLevel.info : ForgeInfoLevel.warning;
+                            message: root.sync-state == 0 ? @tr("有 3 个文件尚未同步到云端。") : root.sync-state == 1 ? @tr("正在上传 3 个文件…") : root.sync-state == 2 ? @tr("全部文件已同步。") : @tr("网络中断，同步未完成。");
+                            dismissible: root.sync-state != 1;
+                            dismissed => { root.sync-bar-visible = false; }
+                        }
+                        HorizontalLayout {
+                            spacing: 8px; alignment: end;
+                            ForgePillButton { text: @tr("模拟失败"); clicked => { root.sync-state = 3; root.sync-bar-visible = true; } }
+                            ForgePillButton {
+                                text: root.sync-state == 1 ? @tr("完成同步") : @tr("开始同步"); primary: true;
+                                clicked => { root.sync-state = root.sync-state == 1 ? 2 : 1; root.sync-bar-visible = true; }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

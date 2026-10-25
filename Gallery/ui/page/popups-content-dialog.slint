@@ -1,8 +1,7 @@
-import { Button, LineEdit, Palette, CheckBox } from "std-widgets.slint";
-import { ForgeContentDialog, ForgeTypography, ForgePillButton } from "@slintforge";
+import { CheckBox, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeContentDialog, ForgePillButton, ForgeTypography } from "@slintforge";
 import { GalleryShowcaseState } from "../component/showcase.slint";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：ContentDialog。
 export component GalleryPopupsContentDialogPage inherits Rectangle {
@@ -17,38 +16,103 @@ export component GalleryPopupsContentDialogPage inherits Rectangle {
     in-out property<int> dialog-mode: 0;
     in-out property<bool> port-enabled: false;
     in-out property<bool> primary-enabled: true;
+    private property<bool> dismiss-outside: false;
     property<int> current-mode: GalleryShowcaseState.route == "popups-content-dialog" && GalleryShowcaseState.tab >= 0 ? GalleryShowcaseState.tab : root.dialog-mode;
     property<int> focus-position: name.has-focus ? 0 : port.has-focus ? 1 : path.has-focus ? 2 : dialog.primary-has-focus ? 3 : dialog.cancel-has-focus ? 4 : -1;
     public function focus-target(index: int) {
         if index == 0 { name.focus(); } else if index == 1 && root.port-enabled { port.focus(); }
         else if index == 2 { path.focus(); } else if index == 3 && root.primary-enabled { dialog.focus-primary-button(); } else { dialog.focus-cancel-button(); }
     }
-    sample := GallerySamplePage {
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("弹出层");
         title: "ContentDialog";
-        subtitle: @tr("在内容对话框中编辑文字，并确认或取消。");
-        example-title: @tr("用法与状态");
-        preview-height: 200px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            HorizontalLayout { spacing: 8px; alignment: start;
+        subtitle: @tr("覆盖在页面上的模态对话框，包含标题、说明、自定义内容和确认/取消按钮。打开期间页面状态保持不变，关闭后焦点回到触发按钮。");
+        showcase-route: "popups-content-dialog";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "open", kind: @tr("属性"), type: "bool", description: @tr("是否显示，可双向绑定。") },
+            { name: "title / message", kind: @tr("属性"), type: "string", description: @tr("标题与说明文字；子元素显示在说明下方。") },
+            { name: "primary-text / cancel-text", kind: @tr("属性"), type: "string", description: @tr("确认与取消按钮文字。") },
+            { name: "primary-enabled / dismiss-on-outside", kind: @tr("属性"), type: "bool", description: @tr("确认按钮是否可用；点击遮罩是否关闭。") },
+            { name: "accepted() / canceled()", kind: @tr("回调"), type: "", description: @tr("确认，或通过取消、Esc、遮罩关闭时触发。") },
+            { name: "initial-focus-requested() / focus-next-requested(bool)", kind: @tr("回调"), type: "bool", description: @tr("接管初始焦点与 Tab 顺序；返回 true 表示已处理。") },
+            { name: "focus-return-requested()", kind: @tr("回调"), type: "", description: @tr("关闭后触发，用于把焦点还给触发按钮。") },
+            { name: "focus-primary-button() / dismiss()", kind: @tr("函数"), type: "", description: @tr("聚焦确认按钮；以取消方式关闭。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("打开确认对话框，用确认、取消或 Esc 关闭。");
+            output: root.status;
+            GalleryPreview {
                 confirmation := ForgePillButton { text: @tr("确认对话框"); clicked => { root.dialog-mode = 0; root.dialog-open = true; } }
-                launch := ForgePillButton { text: @tr("设备配置对话框"); primary: true; clicked => { root.dialog-mode = 1; root.dialog-open = true; } }
             }
-            HorizontalLayout { spacing: 12px; alignment: start;
-                CheckBox { text: @tr("启用端口输入"); checked <=> root.port-enabled; }
-                CheckBox { text: @tr("允许确认"); checked <=> root.primary-enabled; }
+            GalleryOptions {
+                CheckBox { text: "primary-enabled"; checked <=> root.primary-enabled; }
+                CheckBox { text: "dismiss-on-outside"; checked <=> root.dismiss-outside; }
             }
-LineEdit { placeholder-text: @tr("对话框关闭后此输入保持"); }
-Text { text: root.status; color: Palette.foreground; }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("确认按钮可用与不可用时的对话框外观。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "primary-enabled: true";
+                    Rectangle {
+                        min-width: 200px; preferred-width: 320px * ForgeTypography.scale; height: 210px * ForgeTypography.scale;
+                        ForgeContentDialog {
+                            open: true; title: @tr("删除文件"); message: @tr("删除后无法恢复。");
+                            accepted => { self.open = true; } canceled => { self.open = true; }
+                        }
+                    }
+                }
+                GalleryVariant {
+                    caption: "primary-enabled: false";
+                    Rectangle {
+                        min-width: 200px; preferred-width: 320px * ForgeTypography.scale; height: 210px * ForgeTypography.scale;
+                        ForgeContentDialog {
+                            open: true; title: @tr("删除文件"); message: @tr("勾选确认后才能删除。"); primary-enabled: false;
+                            accepted => { self.open = true; } canceled => { self.open = true; }
+                        }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("设备配置");
+            description: @tr("对话框内放置表单；Tab / Shift+Tab 在输入框与按钮间循环，跳过禁用项。");
+            output: root.status;
+            GalleryPreview {
+                stretch: true;
+                VerticalLayout {
+                    spacing: 12px;
+                    HorizontalLayout {
+                        alignment: start;
+                        launch := ForgePillButton { text: @tr("设备配置对话框"); primary: true; clicked => { root.dialog-mode = 1; root.dialog-open = true; } }
+                    }
+                    HorizontalLayout {
+                        spacing: 12px; alignment: start;
+                        CheckBox { text: @tr("启用端口输入"); checked <=> root.port-enabled; }
+                        CheckBox { text: @tr("允许确认"); checked <=> root.primary-enabled; }
+                    }
+                    LineEdit { placeholder-text: @tr("对话框关闭后此输入保持"); }
+                }
+            }
         }
     }
+
+    // 对话框覆盖整个页面区域，不随示例内容滚动。
     dialog := ForgeContentDialog {
         open <=> root.dialog-open;
         title: root.current-mode == 0 ? @tr("确认操作") : @tr("设备配置");
         message: root.current-mode == 0 ? @tr("这是保留页面状态的内容对话框。") : @tr("Tab / Shift+Tab 遍历业务输入，跳过禁用项；关闭后恢复焦点。");
         primary-enabled: root.primary-enabled;
+        dismiss-on-outside: root.dismiss-outside;
         initial-focus-requested => { if root.current-mode == 1 { root.focus-target(0); return true; } return false; }
         focus-next-requested(reverse) => {
             if root.current-mode != 1 { return false; }

@@ -1,36 +1,91 @@
-import { Button, Palette } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
-// Slint 原生示例：ToggleButton。
+// Slint 原生示例：ToggleButton（Button.checkable）。
 export component GalleryInputsToggleButtonPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
-    in-out property<string> draft;
+    in-out property<string> draft: @tr("固定视图");
     in-out property<string> status: @tr("就绪");
+    private property<bool> disabled: false;
+    private property<bool> traffic: true;
+    private property<bool> satellite: false;
+    private property<bool> labels: true;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-toggle-button";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
         title: "ToggleButton";
-        subtitle: @tr("点击按钮切换选中状态。");
-        example-title: @tr("用法与状态");
-        preview-height: 150px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            HorizontalLayout { spacing: 12px; alignment: start;
-        Button { text: @tr("切换按钮"); checkable: true; checked <=> root.flag; }
-        Button { text: @tr("已选中"); checkable: true; checked: true; }
-        Button { text: @tr("禁用"); checkable: true; enabled: false; }
-    }
-    Text { text: root.flag ? @tr("已选中") : @tr("未选中"); color: Palette.foreground; }
+        subtitle: @tr("设置 checkable: true 的原生 Button，每次点击在选中与未选中之间切换，适合表示可开关的视图选项。");
+        native: true;
+        showcase-route: "inputs-toggle-button";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "checkable", kind: @tr("属性"), type: "bool", description: @tr("设为 true 后点击会切换 checked。") },
+            { name: "checked", kind: @tr("属性"), type: "bool", description: @tr("当前是否选中，可双向绑定。") },
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("按钮文字。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后保持当前状态，不能切换。") },
+            { name: "clicked()", kind: @tr("回调"), type: "", description: @tr("每次点击触发，此时 checked 已更新。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("checked 与右侧复选框双向绑定，两边任意一处修改都会同步。");
+            output: @tr("clicked · checked: {}", root.flag ? "true" : "false");
+            GalleryPreview {
+                Button { text: root.draft; checkable: true; checked <=> root.flag; enabled: !root.disabled; clicked => { root.count += 1; } }
+            }
+            GalleryOptions {
+                CheckBox { text: "checked"; checked <=> root.flag; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Text { text: "text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.draft; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("未选中、选中，以及选中后被禁用。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "checked: false"; Button { text: @tr("网格"); checkable: true; checked: false; } }
+                GalleryVariant { caption: "checked: true"; Button { text: @tr("网格"); checkable: true; checked: true; } }
+                GalleryVariant { caption: "enabled: false"; Button { text: @tr("网格"); checkable: true; checked: true; enabled: false; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("地图图层");
+            description: @tr("每个按钮独立控制一个图层，可同时打开多个。");
+            output: !root.traffic && !root.satellite && !root.labels ? @tr("未显示任何图层") : @tr("已显示图层：{}", (root.traffic ? @tr("路况") + " " : "") + (root.satellite ? @tr("卫星") + " " : "") + (root.labels ? @tr("地名") : ""));
+            GalleryPreview {
+                Rectangle {
+                    width: 400px * ForgeTypography.scale;
+                    height: map.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    map := VerticalLayout {
+                        padding: 16px; spacing: 12px;
+                        Rectangle {
+                            height: 96px * ForgeTypography.scale; border-radius: 6px;
+                            background: root.satellite ? #3b5a3a : Palette.alternate-background;
+                            Rectangle { x: 0px; y: parent.height * 0.55; width: parent.width; height: 6px; background: root.traffic ? #e8a33d : Palette.border; }
+                            Rectangle { x: parent.width * 0.4; y: 0px; width: 6px; height: parent.height; background: root.traffic ? #d13438 : Palette.border; }
+                            if root.labels : Text { x: 12px; y: 10px; text: @tr("中央公园"); color: root.satellite ? #ffffff : Palette.foreground; font-size: 12px * ForgeTypography.scale; }
+                        }
+                        HorizontalLayout {
+                            spacing: 8px; alignment: start;
+                            Button { text: @tr("路况"); checkable: true; checked <=> root.traffic; }
+                            Button { text: @tr("卫星"); checkable: true; checked <=> root.satellite; }
+                            Button { text: @tr("地名"); checkable: true; checked <=> root.labels; }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

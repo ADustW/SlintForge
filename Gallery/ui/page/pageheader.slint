@@ -1,7 +1,6 @@
-import { Palette } from "std-widgets.slint";
+import { CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgePageHeader, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：PageHeader。
 export component GalleryPageheaderPage inherits Rectangle {
@@ -12,19 +11,90 @@ export component GalleryPageheaderPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    private property<string> header-title: @tr("工程详情");
+    private property<string> header-subtitle: @tr("最后更新于 10 月 25 日");
+    private property<int> member-index: -1;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("导航");
         title: "PageHeader";
-        subtitle: @tr("组合标题、说明、返回入口和操作按钮。");
-        example-title: @tr("用法与状态");
-        preview-height: 180px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgePageHeader { title: @tr("工程详情"); subtitle: @tr("可返回的页面标题"); can-go-back: true; back-requested => { root.count += 1; } }
-Text { text: @tr("返回次数：{}", root.count); color: Palette.foreground; }
+        subtitle: @tr("页面顶部的标题区，组合大标题、说明文字和可选的返回按钮，用于二级页面或详情页。");
+        api: [
+            { name: "title", kind: @tr("属性"), type: "string", description: @tr("页面标题。") },
+            { name: "subtitle", kind: @tr("属性"), type: "string", description: @tr("标题下方的说明文字。") },
+            { name: "can-go-back", kind: @tr("属性"), type: "bool", description: @tr("为 true 时在左侧显示返回按钮。") },
+            { name: "back-requested()", kind: @tr("回调"), type: "", description: @tr("点击返回按钮时触发，由应用执行返回。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改标题与说明，或切换返回按钮。");
+            output: @tr("back-requested · {} 次", root.count);
+            GalleryPreview {
+                ForgePageHeader {
+                    title: root.header-title;
+                    subtitle: root.header-subtitle;
+                    can-go-back: root.flag;
+                    back-requested => { root.count += 1; }
+                }
+            }
+            GalleryOptions {
+                Text { text: "title"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.header-title; }
+                Text { text: "subtitle"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.header-subtitle; }
+                CheckBox { text: "can-go-back"; checked <=> root.flag; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("一级页面不显示返回按钮；详情页显示返回按钮。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "can-go-back: false"; ForgePageHeader { title: @tr("消息"); subtitle: @tr("3 条未读"); } }
+                GalleryVariant { caption: "can-go-back: true"; ForgePageHeader { title: @tr("订单详情"); subtitle: @tr("已发货"); can-go-back: true; } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("成员详情");
+            description: @tr("在成员列表中选择一人进入详情页，页头显示返回按钮；返回后回到列表。");
+            output: root.member-index < 0 ? @tr("当前页面 · 列表") : @tr("当前页面 · 详情");
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: 240px * ForgeTypography.scale;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    VerticalLayout {
+                        padding: 16px; spacing: 8px; alignment: start;
+                        ForgePageHeader {
+                            title: root.member-index < 0 ? @tr("团队成员") : root.member-index == 0 ? @tr("林晓") : root.member-index == 1 ? @tr("周航") : @tr("陈雨");
+                            subtitle: root.member-index < 0 ? @tr("共 3 人") : root.member-index == 0 ? @tr("产品经理") : root.member-index == 1 ? @tr("前端工程师") : @tr("测试工程师");
+                            can-go-back: root.member-index >= 0;
+                            back-requested => { root.member-index = -1; }
+                        }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        if root.member-index < 0 : VerticalLayout {
+                            for name[index] in [@tr("林晓"), @tr("周航"), @tr("陈雨")] : Rectangle {
+                                height: 32px * ForgeTypography.scale;
+                                border-radius: 4px;
+                                background: member-touch.has-hover ? Palette.control-background : transparent;
+                                Text { x: 8px; text: name + "  ›"; color: Palette.foreground; vertical-alignment: center; }
+                                member-touch := TouchArea { clicked => { root.member-index = index; } }
+                            }
+                        }
+                        if root.member-index >= 0 : VerticalLayout {
+                            spacing: 6px;
+                            Text { text: @tr("邮箱　member@example.com"); color: Palette.foreground; }
+                            Text { text: @tr("加入时间　2025 年 3 月"); color: Palette.foreground.transparentize(0.35); }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

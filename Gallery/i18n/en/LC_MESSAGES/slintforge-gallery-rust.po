@@ -3,26 +3,119 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: en\n"
 
-msgid "12 小时制"
-msgstr "12-hour format"
+msgid "09:30　产品例会"
+msgstr "09:30　Product meeting"
 
-msgid "24 小时制，5 分钟步长"
-msgstr "24-hour format, 5-minute increments"
+msgid "0～1 的进度，显示为百分比；小于 0 时显示“处理中…”。"
+msgstr "Progress from 0 to 1, shown as a percentage. Values below 0 show \"Processing…\"."
+
+msgid "1. 本软件按“现状”提供，不附带任何明示或暗示的担保。\n2. 你可以在遵守本协议的前提下使用、复制和修改本软件。\n3. 再分发时须保留原有的版权声明和本协议全文。\n4. 不得使用作者姓名为衍生产品背书或推广。\n5. 因使用本软件造成的任何损失，作者不承担责任。\n6. 本协议的最新版本以项目主页公布为准。\n7. 如对条款有疑问，可在使用前联系作者。"
+msgstr "1. The software is provided \"as is\", without warranty of any kind, express or implied.\n2. You may use, copy, and modify the software in accordance with this agreement.\n3. Redistributions must retain the original copyright notice and the full text of this agreement.\n4. The author's name may not be used to endorse or promote derived products.\n5. The author is not liable for any loss caused by using the software.\n6. The latest version of this agreement is the one published on the project homepage.\n7. If you have questions about these terms, contact the author before use."
+
+msgid "1. 确认下周发布范围\n2. 整理用户反馈"
+msgstr "1. Confirm next week's release scope\n2. Sort user feedback"
+
+msgid "10 月 18 日　运营复盘"
+msgstr "Oct 18　Operations review"
+
+msgid "10 月 20 日 – 26 日"
+msgstr "Oct 20 – 26"
+
+msgid "10 月 25 日"
+msgstr "Oct 25"
+
+msgid "10 月 25 日　客户回访"
+msgstr "Oct 25　Customer follow-up"
+
+msgid "10 月 30 日　版本发布"
+msgstr "Oct 30　Release"
+
+msgid "10 月 8 日　季度规划"
+msgstr "Oct 8　Quarterly planning"
+
+msgid "10月25日 星期日"
+msgstr "Sunday, October 25"
+
+msgid "12 页 · 最后修改于 10:24"
+msgstr "12 pages · Last modified at 10:24"
+
+msgid "14:00　客户回访"
+msgstr "14:00　Customer follow-up"
+
+msgid "2 分钟前"
+msgstr "2 minutes ago"
+
+msgid "2026 年 10 月"
+msgstr "October 2026"
+
+msgid "2026 年 9 月 · 1,284 条记录"
+msgstr "September 2026 · 1,284 records"
+
+msgid "2026 年度"
+msgstr "Year 2026"
+
+msgid "3 个文件已上传"
+msgstr "3 files uploaded"
+
+msgid "3 个文件待上传，共 4.2 MB"
+msgstr "3 files to upload, 4.2 MB in total"
+
+msgid "3 到 16 个字符"
+msgstr "3 to 16 characters"
+
+msgid "3 条未读"
+msgstr "3 unread"
+
+msgid "3 项"
+msgstr "3 items"
+
+msgid "4～16 个字符"
+msgstr "4–16 characters"
 
 msgid "Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑，Enter 确认，Esc 取消。"
 msgstr "Ctrl-click toggles selection; Shift-click selects a range. Use arrows to move, F2 to edit, Enter to confirm, and Esc to cancel."
 
-msgid "Gallery 布局预览"
-msgstr "Gallery layout preview"
+msgid "ForgeIcon 显示 ForgeIcons 中的常用图标。调整尺寸与颜色，点击图标查看引用名称。"
+msgstr "ForgeIcon shows common icons from ForgeIcons. Adjust size and color, and click an icon to see its reference name."
 
-msgid "Gallery 软件图标"
-msgstr "Gallery app icon"
+msgid "ForgeTypography 全局对象统一控制文字字体和字号比例。组件的字号都乘以 scale，修改后整个界面同步缩放。"
+msgstr "The ForgeTypography global controls the font family and font size scale. Component font sizes are multiplied by scale, so the whole interface scales together."
+
+msgid "H {}° · S {}% · V {}%"
+msgstr "H {}° · S {}% · V {}%"
 
 msgid "Microsoft Fluent System Icons · Regular，支持直接传入字形码位。"
 msgstr "Microsoft Fluent System Icons · Regular; glyph code points can be passed directly."
 
+msgid "PNG 图像 · 24 KB"
+msgstr "PNG image · 24 KB"
+
 msgid "Rust 与 C++ 使用同一套界面"
 msgstr "Rust and C++ share the same UI"
+
+msgid "Rust 与 C++ 混合构建实践"
+msgstr "Mixed Rust and C++ builds in practice"
+
+msgid "Slint 1.18 发布说明"
+msgstr "Slint 1.18 release notes"
+
+msgid "Slint 原生 ContextMenuArea 与 Menu，在右击或按菜单键时弹出操作列表。支持分隔线、禁用项、勾选项与子菜单。"
+msgstr "Slint's native ContextMenuArea and Menu show a list of actions on right-click or the Menu key. Supports separators, disabled items, checkable items, and submenus."
+
+msgid "Slint 原生 Dialog，作为独立的系统窗口弹出，并按平台习惯自动排列 StandardButton。窗口由 Rust/C++ 宿主创建和显示。"
+msgstr "Slint's native Dialog opens as a separate system window and arranges StandardButtons according to platform conventions. The window is created and shown by the Rust/C++ host."
+
+msgid "Slint 原生 ProgressIndicator，以横条显示任务进度。已知进度时显示百分比，未知时切换为持续滚动的加载动画。"
+msgstr "Slint's native ProgressIndicator shows task progress as a horizontal bar. It shows a percentage when progress is known and switches to a continuous loading animation when it isn't."
+
+msgid "Slint 原生 Spinner，以圆环显示进度。占用空间小，适合卡片、按钮旁或局部区域的加载状态。"
+msgstr "Slint's native Spinner shows progress as a ring. It takes little space and suits loading states on cards, next to buttons, or in local areas."
+
+msgid "Slint 原生 TabWidget：标签栏与内容区一体，每个 Tab 承载一页内容。切换标签时各页的控件状态会保留。"
+msgstr "The native Slint TabWidget combines a tab bar and a content area, with one Tab per page. Control state on each page is kept when switching tabs."
+
+msgid "Slint 原生 Tooltip，指针在元素上停留片刻后在附近显示说明，移开即隐藏。可以是纯文字，也可以是自定义布局。"
+msgstr "Slint's native Tooltip shows a description near an element after the pointer rests on it briefly, and hides when the pointer leaves. It can be plain text or a custom layout."
 
 msgid "Slint 原生 Tooltip，支持自定义内容。"
 msgstr "Native Slint Tooltip with custom content."
@@ -33,6 +126,15 @@ msgstr "Native Slint windows"
 msgid "Slint 原生对话窗口"
 msgstr "Native Slint dialog window"
 
+msgid "Slint 原生按钮，用于触发一次性操作。默认样式适合大多数次要操作，主要操作见 FilledButton。"
+msgstr "Native Slint button for one-off actions. The default style suits most secondary actions; see FilledButton for primary actions."
+
+msgid "Slint 官网"
+msgstr "Slint website"
+
+msgid "Slint 文档"
+msgstr "Slint documentation"
+
 msgid "SlintForge Gallery"
 msgstr "SlintForge Gallery"
 
@@ -42,14 +144,23 @@ msgstr "SlintForge Gallery · shared Slint UI for Rust and C++"
 msgid "SlintForge 组件与示例应用。"
 msgstr "SlintForge components and sample application."
 
-msgid "SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例。"
-msgstr "SlintForge notice: layout and surface components are now available in Gallery."
+msgid "SlintForge 软件许可协议"
+msgstr "SlintForge software license agreement"
 
-msgid "SlintForge 项目报告\n可以选择、复制文本；业务场景可编辑。\nRust 与 C++ 使用共享界面。"
-msgstr "SlintForge project report\nSelect and copy text; edit it in the business example.\nRust and C++ share the same UI."
+msgid "SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例，每个组件页都提供基本用法、状态对照与场景演示。"
+msgstr "SlintForge notice: layout and surface components are now in the Gallery, and every component page offers basic usage, state comparison and scenario demos."
+
+msgid "StandardButton 的文字和排列顺序由平台决定，也可以单独放在普通界面中使用。"
+msgstr "The text and order of StandardButtons are set by the platform; they can also be used on their own in regular UI."
+
+msgid "TOML 配置 · 1 KB"
+msgstr "TOML config · 1 KB"
 
 msgid "Tab / Shift+Tab 遍历业务输入，跳过禁用项；关闭后恢复焦点。"
 msgstr "Tab / Shift+Tab navigates inputs, skips disabled fields, and restores focus after closing."
+
+msgid "Wi-Fi 分享卡片"
+msgstr "Wi-Fi sharing card"
 
 msgid "X π 刻度"
 msgstr "X pi ticks"
@@ -75,8 +186,278 @@ msgstr "X date and time"
 msgid "X 自动适配"
 msgstr "X auto fit"
 
-msgid "{} 列 · {}"
-msgstr "{} columns · {}"
+msgid "accepted · rgba({}, {}, {}, {})"
+msgstr "accepted · rgba({}, {}, {}, {})"
+
+msgid "accepted · {}"
+msgstr "accepted · {}"
+
+msgid "accepted · {} {}"
+msgstr "accepted · {} {}"
+
+msgid "accepted · {} 个字符"
+msgstr "accepted · {} characters"
+
+msgid "action-requested · 已点击 {} 次"
+msgstr "action-requested · Clicked {} times"
+
+msgid "activated · {}"
+msgstr "activated · {}"
+
+msgid "active = {}"
+msgstr "active = {}"
+
+msgid "active-id = {}"
+msgstr "active-id = {}"
+
+msgid "active-id = {} · draft = {}"
+msgstr "active-id = {} · draft = {}"
+
+msgid "back-requested · {} 次"
+msgstr "back-requested · {} times"
+
+msgid "bar、line、pie、polar、bubble、scatter 或 radar。"
+msgstr "bar, line, pie, polar, bubble, scatter, or radar."
+
+msgid "blur-radius · {} · 点击 {} 次"
+msgstr "blur-radius · {} · {} clicks"
+
+msgid "breakpoint = {}px"
+msgstr "breakpoint = {}px"
+
+msgid "busy · {}%"
+msgstr "busy · {}%"
+
+msgid "canceled · 保持 {}"
+msgstr "canceled · kept {}"
+
+msgid "canceled · 未完成"
+msgstr "canceled · not completed"
+
+msgid "changed · {}"
+msgstr "changed · {}"
+
+msgid "checked 与右侧复选框双向绑定，两边任意一处修改都会同步。"
+msgstr "checked is two-way bound to the checkbox on the right; a change on either side syncs to the other."
+
+msgid "clicked · checked: {}"
+msgstr "clicked · checked: {}"
+
+msgid "clicked · {}"
+msgstr "clicked · {}"
+
+msgid "clicked · 任务已完成 {} 次"
+msgstr "clicked · task completed {} times"
+
+msgid "clicked · 已操作 {} 次"
+msgstr "clicked · {} actions"
+
+msgid "clicked · 已点击 {} 次"
+msgstr "clicked · {} clicks"
+
+msgid "clicked · 已点击 {} 次 · selected: {}"
+msgstr "clicked · clicked {} times · selected: {}"
+
+msgid "clicked · 第 {} 次确认"
+msgstr "clicked · confirmation #{}"
+
+msgid "column-count = {} · item-width = {}px"
+msgstr "column-count = {} · item-width = {}px"
+
+msgid "column-count = {} · {}"
+msgstr "column-count = {} · {}"
+
+msgid "columns = {} · rows = {}"
+msgstr "columns = {} · rows = {}"
+
+msgid "content-padding = {}px"
+msgstr "content-padding = {}px"
+
+msgid "content-y · {}px / {}px"
+msgstr "content-y · {}px / {}px"
+
+msgid "copy · 已复制 {} 次"
+msgstr "copy · copied {} times"
+
+msgid "cover 裁切填满，contain 完整显示，fill 拉伸。"
+msgstr "cover crops to fill, contain shows the whole image, fill stretches it."
+
+msgid "current-index = {}"
+msgstr "current-index = {}"
+
+msgid "cycle-duration = {}s"
+msgstr "cycle-duration = {}s"
+
+msgid "db-01 已重启"
+msgstr "db-01 restarted"
+
+msgid "delay · {}ms"
+msgstr "delay · {}ms"
+
+msgid "dismissed · 已关闭 {} 次"
+msgstr "dismissed · Closed {} times"
+
+msgid "edited · {}"
+msgstr "edited · {}"
+
+msgid "edited · {} 个字符"
+msgstr "edited · {} characters"
+
+msgid "error · {}"
+msgstr "error · {}"
+
+msgid "family · {} · scale · {}"
+msgstr "family · {} · scale · {}"
+
+msgid "glyph · ForgeIcons.{}"
+msgstr "glyph · ForgeIcons.{}"
+
+msgid "hold：按满即确认；hold-release：按满后松开确认；click：点击开始倒计时，再次点击取消。"
+msgstr "hold: confirms when full; hold-release: confirms on release after full; click: starts a countdown, click again to cancel."
+
+msgid "horizontal 左右排列，vertical 上下排列。"
+msgstr "horizontal places panes side by side; vertical stacks them."
+
+msgid "image-fit = {} · corner-radius = {}px"
+msgstr "image-fit = {} · corner-radius = {}px"
+
+msgid "language · {} · {} 个字符"
+msgstr "language · {} · {} characters"
+
+msgid "language · {} · {} 行"
+msgstr "language · {} · {} lines"
+
+msgid "link-clicked · {}"
+msgstr "link-clicked · {}"
+
+msgid "mark-opacity = {}"
+msgstr "mark-opacity = {}"
+
+msgid "maximized = {} · pinned = {} · rounded-corners = {}"
+msgstr "maximized = {} · pinned = {} · rounded-corners = {}"
+
+msgid "min-column-width = {}px"
+msgstr "min-column-width = {}px"
+
+msgid "min-item-width = {}px"
+msgstr "min-item-width = {}px"
+
+msgid "modules = {} · {}"
+msgstr "modules = {} · {}"
+
+msgid "navigate-requested · {}"
+msgstr "navigate-requested · {}"
+
+msgid "no-wrap 时长行可横向滚动；word-wrap 时只有纵向滚动。"
+msgstr "With no-wrap, long lines scroll horizontally; with word-wrap, only vertical scrolling is available."
+
+msgid "none、single 或 multiple。"
+msgstr "none, single, or multiple."
+
+msgid "ok、cancel、apply、close、yes、no 等标准按钮，文字随系统语言。"
+msgstr "Standard buttons such as ok, cancel, apply, close, yes, and no; text follows the system language."
+
+msgid "overflowing = {} · running = {}"
+msgstr "overflowing = {} · running = {}"
+
+msgid "page-changed · 第 {} 页 / 共 {} 页"
+msgstr "page-changed · Page {} of {}"
+
+msgid "pane-size-changed · {} = {}px"
+msgstr "pane-size-changed · {} = {}px"
+
+msgid "password 遮盖输入，text 显示明文。"
+msgstr "password masks the input; text shows it in plain text."
+
+msgid "progress · {}%"
+msgstr "progress · {}%"
+
+msgid "ratio = {}%"
+msgstr "ratio = {}%"
+
+msgid "released · {}"
+msgstr "released · {}"
+
+msgid "selected · Palette.{}"
+msgstr "selected · Palette.{}"
+
+msgid "selected · {}"
+msgstr "selected · {}"
+
+msgid "selected 不会自动切换，示例在 clicked 中取反实现开关效果。"
+msgstr "selected does not toggle automatically; this example inverts it in clicked to act as a toggle."
+
+msgid "selection-changed · {}"
+msgstr "selection-changed · {}"
+
+msgid "selection-text 为空时显示占位提示；禁用后不能展开。"
+msgstr "An empty selection-text shows the placeholder; the list cannot open when disabled."
+
+msgid "selection-text 为空时显示默认提示；禁用后不能展开。"
+msgstr "An empty selection-text shows the default hint; the list cannot open when disabled."
+
+msgid "shortcut-changed · {}"
+msgstr "shortcut-changed · {}"
+
+msgid "shortcut-changed · 已清除"
+msgstr "shortcut-changed · cleared"
+
+msgid "spacing = {}px"
+msgstr "spacing = {}px"
+
+msgid "stacked-layout = {}"
+msgstr "stacked-layout = {}"
+
+msgid "std-widgets 的 Palette 全局对象提供当前样式与明暗主题下的语义颜色。自绘组件取色时使用它，切换主题时自动更新。"
+msgstr "The std-widgets Palette global provides semantic colors for the current style and light or dark theme. Use it in custom-drawn components so they update when the theme changes."
+
+msgid "step-changed · {}"
+msgstr "step-changed · {}"
+
+msgid "tags · {} / {}"
+msgstr "tags · {} / {}"
+
+msgid "tile-width = {}px"
+msgstr "tile-width = {}px"
+
+msgid "toggled · checked: {}"
+msgstr "toggled · checked: {}"
+
+msgid "toggled · {}"
+msgstr "toggled · {}"
+
+msgid "touched 为 true 时才显示错误；外部传入 error-message 可覆盖内置提示。"
+msgstr "Errors appear only when touched is true. An external error-message overrides the built-in hint."
+
+msgid "trend = {}%"
+msgstr "trend = {}%"
+
+msgid "true 为滚轮选择，false 为数字输入。"
+msgstr "true selects with wheels, false uses numeric input."
+
+msgid "value · {}"
+msgstr "value · {}"
+
+msgid "value-changed · {}"
+msgstr "value-changed · {}"
+
+msgid "value-changed · 评分 {} / {}"
+msgstr "value-changed · rating {} / {}"
+
+msgid "vertical-scrollbar-visible = {}"
+msgstr "vertical-scrollbar-visible = {}"
+
+msgid "web-01 已重启"
+msgstr "web-01 restarted"
+
+msgid "word-wrap 按宽度换行，no-wrap 只在换行符处换行。"
+msgstr "word-wrap wraps at the box width; no-wrap breaks only at newlines."
+
+msgid "{} · 自动换行 {} · 行号 {}"
+msgstr "{} · Word wrap {} · Line numbers {}"
+
+msgid "{} 个字符"
+msgstr "{} characters"
 
 msgid "{} 属于表格组件，继续按要求暂缓。"
 msgstr "{} is a table component and remains deferred."
@@ -84,17 +465,62 @@ msgstr "{} is a table component and remains deferred."
 msgid "{} 星"
 msgstr "{} stars"
 
-msgid "↑ ↓ 导航 · Enter 选择 · Esc 关闭"
-msgstr "Up / Down navigates; Enter selects; Esc closes."
+msgid "{}. {}"
+msgstr "{}. {}"
 
-msgid "一套 Slint 组件，同时服务 Rust 与 C++ 应用"
-msgstr "One Slint component set for both Rust and C++ apps"
+msgid "{}/{} 字"
+msgstr "{}/{} characters"
+
+msgid "{}{}，{}"
+msgstr "{}{}, {}"
+
+msgid "{}～{} 个字符"
+msgstr "{}–{} characters"
+
+msgid "“企业版”单独禁用；可切换横向排列或禁用整组。"
+msgstr "\"Enterprise\" is disabled on its own. Switch to a horizontal layout or disable the whole group."
+
+msgid "“保存”只在文档有未保存的修改时可用。"
+msgstr "\"Save\" is available only when the document has unsaved changes."
+
+msgid "“保存”可用"
+msgstr "\"Save\" enabled"
+
+msgid "“全选”在所有项都勾选时自动勾上；没有选中任何项时导出按钮不可用。"
+msgstr "\"Select all\" is checked automatically when every item is checked. The export button is unavailable when nothing is selected."
+
+msgid "“删除”可用"
+msgstr "\"Delete\" enabled"
+
+msgid "“导出”和“更多”分别收纳格式选择与次要操作，Excel 格式暂不可用。"
+msgstr "\"Export\" and \"More\" hold the format choices and secondary actions. Excel is not available yet."
+
+msgid "“年”enabled"
+msgstr "\"Year\" enabled"
+
+msgid "一套 Slint 组件，同时服务 Rust 与 C++ 应用。每个页面都可以直接操作、切换属性并查看 API。"
+msgstr "One set of Slint components for both Rust and C++ apps. Every page lets you interact, change properties, and read the API."
 
 msgid "一月"
 msgstr "January"
 
+msgid "一次扫光的时长，默认 1600ms。"
+msgstr "Duration of one shimmer sweep. Defaults to 1600ms."
+
+msgid "一级页面不显示返回按钮；详情页显示返回按钮。"
+msgstr "Top-level pages have no back button; detail pages show one."
+
+msgid "一组互斥的分段按钮，用于在少量并列选项或视图之间切换，当前选项高亮显示。"
+msgstr "A group of mutually exclusive segment buttons for switching between a few options or views. The current option is highlighted."
+
+msgid "一行轻量标签，用于在同一页面的几个视图间切换。只负责标签本身，内容区域由应用根据 active-id 切换。"
+msgstr "A row of lightweight tabs for switching between views on the same page. It only draws the tabs; the app switches the content by active-id."
+
 msgid "七月"
 msgstr "July"
+
+msgid "三个扇区"
+msgstr "Three sectors"
 
 msgid "三月"
 msgstr "March"
@@ -105,11 +531,38 @@ msgstr "Previous"
 msgid "上一页"
 msgstr "Previous"
 
-msgid "上传报告"
-msgstr "Upload report"
+msgid "上一首"
+msgstr "Previous"
+
+msgid "上下边区的保存高度；空间不足时只压缩实际几何。"
+msgstr "Saved heights of the top and bottom panes; when space is short only the actual geometry shrinks."
+
+msgid "上传"
+msgstr "Upload"
+
+msgid "上传到“设计资料”"
+msgstr "Upload to \"Design assets\""
+
+msgid "上传期间按钮显示总进度，完成后恢复可用。"
+msgstr "While uploading, the button shows the total progress and becomes available again when done."
+
+msgid "上传附件"
+msgstr "Upload attachments"
+
+msgid "上升、下降与不显示趋势。"
+msgstr "Rising, falling, and no trend."
 
 msgid "上方内容"
 msgstr "Upper content"
+
+msgid "上方编辑代码，下方实时显示高亮结果；可切换片段语言。"
+msgstr "Edit code above and see the highlighted result below in real time. The snippet language can be switched."
+
+msgid "上次同步：今天 09:41"
+msgstr "Last synced: today 09:41"
+
+msgid "上海浦东转运中心"
+msgstr "Shanghai Pudong transit center"
 
 msgid "下一步"
 msgstr "Next"
@@ -117,23 +570,83 @@ msgstr "Next"
 msgid "下一页"
 msgstr "Next"
 
+msgid "下一首"
+msgstr "Next"
+
+msgid "下划线"
+msgstr "Underline"
+
+msgid "下拉选择框，对应 Slint 原生 ComboBox。从固定的选项列表中选择一项，选项较少时可改用 RadioGroup。"
+msgstr "A drop-down selector backed by native Slint ComboBox. Choose one item from a fixed list; for only a few options, consider RadioGroup."
+
 msgid "下方内容"
 msgstr "Lower content"
 
-msgid "不小于 560px"
-msgstr "At least 560 px"
+msgid "不保存"
+msgstr "Don't save"
+
+msgid "不保存，所做的更改将会丢失。"
+msgstr "If you don't save, your changes will be lost."
+
+msgid "不可用"
+msgstr "Unavailable"
+
+msgid "不可选择"
+msgstr "Not selectable"
+
+msgid "不同字段使用不同的范围和步长。"
+msgstr "Each field uses its own range and step."
+
+msgid "不模糊、默认模糊与开启折射的效果。"
+msgstr "No blur, default blur, and refraction enabled."
+
+msgid "与 Acrylic 对比，以及关闭折射后的玻璃面板。"
+msgstr "Compared with Acrylic, and a glass panel with refraction turned off."
+
+msgid "与文字混排"
+msgstr "Mixed with text"
 
 msgid "专业二维绘图"
 msgstr "Professional 2D plot"
 
-msgid "专业绘图、交互与导出"
-msgstr "Professional plots, interaction and export"
+msgid "专业绘图，支持缩放、测量与导出"
+msgstr "Professional plotting with zoom, measurement, and export"
 
-msgid "业务组合"
-msgstr "Business example"
+msgid "两次输入一致"
+msgstr "Passwords match"
+
+msgid "两次输入不一致"
+msgstr "Passwords do not match"
+
+msgid "两端为半圆的胶囊形按钮，适合工具栏、筛选条和对话框中的次要操作。"
+msgstr "A capsule-shaped button with rounded ends, suited to secondary actions in toolbars, filter bars, and dialogs."
+
+msgid "个人版"
+msgstr "Personal"
+
+msgid "个人网站"
+msgstr "Website"
+
+msgid "个人资料"
+msgstr "Profile"
+
+msgid "个人资料卡"
+msgstr "Profile card"
+
+msgid "个性化推荐"
+msgstr "Personalized recommendations"
+
+msgid "中"
+msgstr "Medium"
 
 msgid "中央"
 msgstr "Center"
+
+msgid "中央公园"
+msgstr "Central Park"
+
+msgid "中央区保留的最小尺寸。"
+msgstr "Minimum size kept for the center area."
 
 msgid "中点"
 msgstr "Midpoint"
@@ -141,20 +654,80 @@ msgstr "Midpoint"
 msgid "中间阶梯"
 msgstr "Centered steps"
 
-msgid "主色 · 背景 · 控件背景 · 前景"
-msgstr "Accent · Background · Control background · Foreground"
+msgid "为 true 后才显示错误提示，编辑时自动置位。"
+msgstr "Error hints appear only when true. Set automatically on edit."
 
-msgid "主色按钮用于强调当前操作。"
-msgstr "Primary buttons emphasize the current action."
+msgid "为 true 时不可编辑，但仍可选择与复制。"
+msgstr "Not editable when true, but can still be selected and copied."
 
-msgid "主色胶囊"
-msgstr "Primary pill"
+msgid "为 true 时只能选择和复制，不能编辑。"
+msgstr "When true, text can be selected and copied but not edited."
 
-msgid "主要操作"
-msgstr "Primary action"
+msgid "为 true 时图标在上、文字居中。"
+msgstr "When true, the icon is on top and the text is centered."
+
+msgid "为 true 时圆点使用强调色。"
+msgstr "When true, the dot uses the accent color."
+
+msgid "为 true 时在左侧显示返回按钮。"
+msgstr "When true, a back button is shown on the left."
+
+msgid "为 true 时显示加载指示并禁用按钮。"
+msgstr "Shows a loading indicator and disables the button when true."
+
+msgid "为 true 时显示骨架，为 false 时显示子元素。"
+msgstr "Shows the skeleton when true and the children when false."
+
+msgid "为 true 时每个节点显示复选框。"
+msgstr "When true, each node shows a check box."
+
+msgid "为“编辑者”角色分配权限；勾选分组即选中组内全部可用权限，未开通的权限不可选。"
+msgstr "Assign permissions to the Editor role; checking a group selects all available permissions in it, and inactive permissions cannot be chosen."
+
+msgid "为本次订单评分"
+msgstr "Rate this order"
+
+msgid "主列表与底部固定项；分组的展开由应用改写列表实现。"
+msgstr "Main list and pinned footer items. The app expands groups by rewriting the list."
+
+msgid "主窗口发起导出前弹出确认对话框，预览可放到独立窗口中对照查看。窗口内容由宿主提供，这里沿用通用示例窗口。"
+msgstr "Before exporting, the main window opens a confirmation dialog, and the preview can be opened in a separate window for comparison. The host provides the window content; the generic demo windows are used here."
+
+msgid "主色及主色上的文字颜色。"
+msgstr "Accent color and the text color on it."
+
+msgid "主色按钮的可用与禁用状态，以及与普通按钮的对比。"
+msgstr "Enabled and disabled primary buttons, compared with a regular button."
+
+msgid "主要操作使用 primary，其余操作保持默认样式并靠右排列。"
+msgstr "The main action uses primary; other actions keep the default style, aligned to the right."
+
+msgid "主要文字"
+msgstr "Primary text"
+
+msgid "主页"
+msgstr "Home"
+
+msgid "主题"
+msgstr "Theme"
+
+msgid "主题 {} · 自动保存 {}"
+msgstr "Theme {} · Auto save {}"
+
+msgid "主题强调色"
+msgstr "Theme accent color"
+
+msgid "主题按钮显示的明暗状态。"
+msgstr "Light or dark state shown by the theme button."
 
 msgid "主题模式"
 msgstr "Theme mode"
+
+msgid "事件列表，按给定顺序从上到下排列。"
+msgstr "Event list, laid out top to bottom in the given order."
+
+msgid "事件标题，显示在时间之后。"
+msgstr "Event title, shown after the time."
 
 msgid "二月"
 msgstr "February"
@@ -168,6 +741,15 @@ msgstr "QR code service is not connected"
 msgid "二维色图"
 msgstr "Color map"
 
+msgid "云盘空间"
+msgstr "Cloud storage"
+
+msgid "云端同步"
+msgstr "Cloud sync"
+
+msgid "五个区域的位置与尺寸，子元素据此放置。"
+msgstr "Position and size of the five areas, used to place children."
+
 msgid "五月"
 msgstr "May"
 
@@ -177,23 +759,134 @@ msgstr "Interaction and export"
 msgid "交互示例"
 msgstr "Interactive example"
 
+msgid "产品介绍页常用的特性网格，每一项都是一个 IconLabel。"
+msgstr "A feature grid common on product pages; each item is an IconLabel."
+
+msgid "产品团队 · 3 分钟前"
+msgstr "Product team · 3 minutes ago"
+
+msgid "产品经理"
+msgstr "Product manager"
+
+msgid "亮度"
+msgstr "Brightness"
+
+msgid "人"
+msgstr "people"
+
 msgid "仅图标"
 msgstr "Icons only"
+
+msgid "仅图标、选中与禁用三种状态。"
+msgstr "Icon only, selected and disabled states."
+
+msgid "仅提及"
+msgstr "Mentions only"
 
 msgid "仅散点"
 msgstr "Scatter only"
 
-msgid "仅文字"
-msgstr "Text only"
-
 msgid "仅显示与当前工作相关的通知。"
 msgstr "Show only notifications relevant to the current work."
 
-msgid "从侧边展开抽屉，关闭后输入会保留。"
-msgstr "Open a side drawer and preserve input after closing."
+msgid "仅未读邮件"
+msgstr "Unread mail only"
 
-msgid "从按钮下拉菜单中选择操作。"
-msgstr "Choose an action from a button menu."
+msgid "仅看未读"
+msgstr "Unread only"
+
+msgid "仅紧急"
+msgstr "Urgent only"
+
+msgid "今天"
+msgstr "Today"
+
+msgid "今日任务"
+msgstr "Today's tasks"
+
+msgid "从按钮开始浏览可交互示例"
+msgstr "Start with buttons and explore interactive examples"
+
+msgid "从根到当前位置的路径，每项包含 id 与 title。"
+msgstr "Path from the root to the current location; each item has an id and a title."
+
+msgid "从模板或空白页创建第一份报表。"
+msgstr "Create your first report from a template or a blank page."
+
+msgid "从第一步开始引导，或中途关闭。"
+msgstr "Start the tour from the first step, or close it midway."
+
+msgid "从页面左侧或右侧滑出的面板，带半透明遮罩，适合放置设置、筛选或详情等次要内容。关闭后面板内的输入会保留。"
+msgstr "A panel that slides out from the left or right of the page with a translucent overlay, suited to settings, filters, or details. Input inside the panel is kept after closing."
+
+msgid "代码字号，默认 14px。"
+msgstr "Code font size, 14px by default."
+
+msgid "代码片段编辑器"
+msgstr "Code snippet editor"
+
+msgid "代码编辑器工作区"
+msgstr "Code editor workspace"
+
+msgid "以“/”分隔显示当前位置的层级路径，点击某一级返回该层。路径列表由应用维护。"
+msgstr "Shows the path to the current location separated by \"/\". Click a level to go back to it. The app maintains the path list."
+
+msgid "以下按钮直接操作当前窗口。拖动标题栏可移动窗口，双击标题栏切换最大化，拖动窗口边缘调整大小。"
+msgstr "These buttons act on the current window. Drag the title bar to move it, double-click the title bar to toggle maximize, and drag the edges to resize."
+
+msgid "以专辑背景作为材质来源，播放信息和控制按钮放在磨砂面板上。"
+msgstr "The album artwork is the material source, with playback info and controls on a frosted panel."
+
+msgid "以主色背景显示选中状态，由外部维护。"
+msgstr "Show the selected state with an accent background. Maintained externally."
+
+msgid "以代码开始、结束或取消一次确认。"
+msgstr "Start, finish or cancel a confirmation from code."
+
+msgid "以代码打开或关闭菜单。"
+msgstr "Open or close the menu from code."
+
+msgid "以代码提交当前输入。"
+msgstr "Submit the current input from code."
+
+msgid "以图标、标题和说明呈现一次操作的结果，并提供继续处理的按钮。适合提交、导出、注册等流程的结束页。"
+msgstr "Presents the result of an operation with an icon, title, and description, plus a button to continue. Suitable as the final page of submit, export, or sign-up flows."
+
+msgid "以圆点遮盖输入内容的密码框，由原生 LineEdit 设置 input-type: password 实现；可切换为明文以便核对。"
+msgstr "A password field that masks input with dots, implemented with native LineEdit and input-type: password; it can switch to plain text for checking."
+
+msgid "以星级表示评分。点击星星评分，聚焦后可用方向键调整。"
+msgstr "Shows a rating as stars. Click a star to rate, or use the arrow keys when focused."
+
+msgid "以树形列表展开的多选下拉框，适合按层级选择目录、部门或权限。树的展开与选中状态由宿主维护。"
+msgstr "A multi-select drop-down that opens as a tree, suited to choosing folders, departments, or permissions by hierarchy. The host maintains expansion and selection state."
+
+msgid "以编程方式关闭并触发 dismissed。"
+msgstr "Close programmatically and raise dismissed."
+
+msgid "以编程方式展开或收起列表。"
+msgstr "Opens or closes the list programmatically."
+
+msgid "以编程方式展开或收起树形列表。"
+msgstr "Opens or closes the tree list programmatically."
+
+msgid "以编程方式打开或关闭弹层。"
+msgstr "Open or close the popup from code."
+
+msgid "以编程方式排序、选择、编辑与删除。"
+msgstr "Sort, select, edit, and delete from code."
+
+msgid "以编程方式选择或清除数据点。"
+msgstr "Select or clear a data point from code."
+
+msgid "以缩进列表显示目录与文件，支持展开、单选和多选。数据是扁平的可见列表，展开与选择由应用更新后回传。"
+msgstr "Shows folders and files as an indented list with expansion, single selection, and multiple selection. The data is a flat visible list that the app updates on expansion and selection."
+
+msgid "以链接样式显示的文字按钮，由原生 StyledText 渲染 Markdown 链接，在 link-clicked 中用 Platform.open-url 打开浏览器。"
+msgstr "A text button styled as a link. Native StyledText renders a Markdown link, and link-clicked opens the browser with Platform.open-url."
+
+msgid "仪表盘"
+msgstr "Dashboard"
 
 msgid "价格"
 msgstr "Price"
@@ -201,53 +894,179 @@ msgstr "Price"
 msgid "任务"
 msgstr "Task"
 
-msgid "任务状态面板"
-msgstr "Task status panel"
+msgid "任务列表卡片"
+msgstr "Task list card"
 
-msgid "任务通知"
-msgstr "Task notifications"
+msgid "份数"
+msgstr "Copies"
+
+msgid "企业版"
+msgstr "Enterprise"
+
+msgid "会议时间 {} – {}"
+msgstr "Meeting {} – {}"
+
+msgid "会议纪要"
+msgstr "Meeting notes"
+
+msgid "会议纪要\n1. 确认下周发布范围\n2. 补充 C++ 示例与文档\n3. 周五前完成截图验收"
+msgstr "Meeting notes\n1. Confirm next week's release scope\n2. Add C++ examples and docs\n3. Finish screenshot review by Friday"
+
+msgid "会议预约"
+msgstr "Meeting booking"
 
 msgid "位置"
 msgstr "Position"
 
+msgid "位置信息"
+msgstr "Location"
+
+msgid "位置信息 {} · 使用统计 {} · 个性化推荐 {}"
+msgstr "Location {} · Usage statistics {} · Personalized recommendations {}"
+
 msgid "位置表示两个数值，圆的大小表示第三个数值。"
 msgstr "Position represents two values; bubble size represents a third."
 
-msgid "使用 ForgeTypography 统一控制文字字体和字号比例。"
-msgstr "Use ForgeTypography to control text font and scale consistently."
+msgid "你对新版本有什么建议？"
+msgstr "Any suggestions for the new version?"
 
-msgid "使用按钮或键盘调整整数。"
-msgstr "Adjust an integer with buttons or the keyboard."
+msgid "使用 24 小时制；默认显示上午/下午。"
+msgstr "Uses the 24-hour format; AM/PM is shown by default."
 
-msgid "使用鼠标和键盘选择、复制文本。"
-msgstr "Select and copy text with the mouse and keyboard."
+msgid "使用主色填充。"
+msgstr "Fill with the accent color."
+
+msgid "使用主色填充，用于主要操作。"
+msgstr "Fills with the accent color for the main action."
+
+msgid "使用统计"
+msgstr "Usage statistics"
+
+msgid "使用默认快捷键"
+msgstr "Using default shortcuts"
+
+msgid "侧栏 {}% · 编辑区 {}%"
+msgstr "Sidebar {}% · Editor {}%"
+
+msgid "侧边导航中每项显示未读数，点击后标记为已读。"
+msgstr "Each side navigation item shows its unread count; click to mark it as read."
 
 msgid "保存"
 msgstr "Save"
 
-msgid "保存项目"
-msgstr "Save project"
+msgid "保存　Ctrl+S"
+msgstr "Save　Ctrl+S"
+
+msgid "保存、清除或取消时触发。"
+msgstr "Raised when the shortcut is saved, cleared, or canceled."
+
+msgid "保存对“季度报告”的更改？"
+msgstr "Save changes to \"Quarterly report\"?"
 
 msgid "保护阈值"
 msgstr "Protection threshold"
 
-msgid "信息"
-msgstr "Information"
+msgid "保持温度"
+msgstr "Holding temperature"
+
+msgid "修改"
+msgstr "Change"
+
+msgid "修改元素数量和间距，或缩放窗口，观察换行与滚动条。"
+msgstr "Change the item count and spacing, or resize the window, to see wrapping and the scrollbar."
+
+msgid "修改右侧文本，二维码随之更新；生成成功后可导出为 PNG。"
+msgstr "Edit the text in the options and the QR code follows. Once generated, it can be exported as PNG."
+
+msgid "修改密码"
+msgstr "Change password"
+
+msgid "修改数值和上限，观察超出上限时的显示。"
+msgstr "Change the value and limit to see how values beyond the limit are shown."
+
+msgid "修改文字或滚动速度，可随时暂停。"
+msgstr "Change the text or scroll speed, and pause at any time."
+
+msgid "修改文本或按 Enter 时触发。"
+msgstr "Raised when the text changes or Enter is pressed."
+
+msgid "修改文本，或选中候选项及按 Enter 时触发。"
+msgstr "Raised when the text changes, or when a candidate is chosen or Enter is pressed."
+
+msgid "修改标题与说明，或切换返回按钮。"
+msgstr "Edit the title and description, or toggle the back button."
+
+msgid "修改标题和内边距；卡片内的按钮与普通控件一样响应操作。"
+msgstr "Edit the title and padding; buttons inside the card respond like any other control."
+
+msgid "修改标题和说明，或切换排列方向。"
+msgstr "Edit the title and description, or switch the orientation."
+
+msgid "修改水印文字、不透明度和单元宽度。"
+msgstr "Change the watermark text, opacity and tile width."
 
 msgid "修改输入后获取截图"
 msgstr "Edit the input before capturing"
 
-msgid "倒计时完成"
-msgstr "Countdown completed"
+msgid "修改输入框后取消勾选 active，再重新勾选，输入内容仍然保留。"
+msgstr "Edit the text box, uncheck active and check it again; the input is kept."
 
-msgid "允许修改配置"
-msgstr "Allow changes"
+msgid "候选项；按不区分大小写的前缀匹配显示。"
+msgstr "Candidates, shown by case-insensitive prefix match."
+
+msgid "值在拖动或按键过程中改变时触发。"
+msgstr "Fires when the value changes while dragging or pressing keys."
+
+msgid "偏好设置"
+msgstr "Preferences"
+
+msgid "儿童"
+msgstr "Children"
+
+msgid "允许应用获取大致位置"
+msgstr "Allow the app to get your approximate location"
 
 msgid "允许确认"
 msgstr "Allow confirmation"
 
+msgid "元素数量"
+msgstr "Item count"
+
 msgid "光标复位"
 msgstr "Reset cursors"
+
+msgid "免打扰时长"
+msgstr "Do not disturb duration"
+
+msgid "免运费"
+msgstr "Free shipping"
+
+msgid "入住晚数"
+msgstr "Nights"
+
+msgid "入门"
+msgstr "Getting started"
+
+msgid "全局筛选文本与排序状态。"
+msgstr "Global filter text and sort state."
+
+msgid "全选"
+msgstr "Select all"
+
+msgid "全选、复制与粘贴。"
+msgstr "Select all, copy, and paste."
+
+msgid "全选或取消选择。"
+msgstr "Selects all or clears the selection."
+
+msgid "全选文本，并把选中内容复制到剪贴板。"
+msgstr "Select all text and copy the selection to the clipboard."
+
+msgid "全部"
+msgstr "All"
+
+msgid "全部内容的尺寸。"
+msgstr "Size of the whole content."
 
 msgid "全部分类"
 msgstr "All categories"
@@ -255,101 +1074,320 @@ msgstr "All categories"
 msgid "全部展开"
 msgstr "Expand all"
 
+msgid "全部已读"
+msgstr "Mark all read"
+
+msgid "全部应用"
+msgstr "All apps"
+
 msgid "全部折叠"
 msgstr "Collapse all"
+
+msgid "全部文件已同步。"
+msgstr "All files are synced."
+
+msgid "全部邮件"
+msgstr "All mail"
+
+msgid "全部邮件，按时间排序"
+msgstr "All mail, sorted by date"
+
+msgid "全部隐藏"
+msgstr "Hide all"
+
+msgid "公告已关闭"
+msgstr "Announcement closed"
+
+msgid "公告显示中"
+msgstr "Announcement shown"
 
 msgid "六月"
 msgstr "June"
 
-msgid "共享 Slint 契约"
-msgstr "Shared Slint contract"
+msgid "共 1,284 条记录，导出为 Excel 文件。"
+msgstr "1,284 records in total, exported as an Excel file."
+
+msgid "共 237 条记录。翻页或修改每页条数，页数随之变化。"
+msgstr "237 records in total. Change the page or the page size, and the page count follows."
+
+msgid "共 3 人"
+msgstr "3 people"
+
+msgid "共 {} 个项目，清空后将永久删除。"
+msgstr "{} items. Emptying deletes them permanently."
 
 msgid "共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。"
 msgstr "Shared Slint components - Rust / C++ SDK\nAll 96 navigation pages have working demos.\nNative widgets and component APIs share the same UI contract."
 
-msgid "关键词匹配"
-msgstr "Keyword matching"
+msgid "共享组件"
+msgstr "Shared component"
+
+msgid "共享链接"
+msgstr "Share link"
+
+msgid "关"
+msgstr "Off"
+
+msgid "关于"
+msgstr "About"
+
+msgid "关于对话框"
+msgstr "About dialog"
+
+msgid "关注"
+msgstr "Follow"
+
+msgid "关键词"
+msgstr "Keywords"
+
+msgid "关键词已满"
+msgstr "Keywords are full"
 
 msgid "关闭"
 msgstr "Close"
 
-msgid "内容与选中状态"
-msgstr "Content and selection"
+msgid "关闭 primary 可与普通按钮对比。"
+msgstr "Turn off primary to compare with a regular button."
+
+msgid "关闭“使用统计”后，依赖它的“个性化推荐”自动关闭并禁用。"
+msgstr "Turning off \"Usage statistics\" automatically turns off and disables \"Personalized recommendations\", which depends on it."
+
+msgid "关闭、开启，以及开启后禁用。"
+msgstr "Off, on, and on but disabled."
+
+msgid "关闭后触发，用于把焦点还给触发按钮。"
+msgstr "Raised after closing, to return focus to the trigger button."
+
+msgid "其他"
+msgstr "Other"
+
+msgid "内存"
+msgstr "Memory"
+
+msgid "内容与边框之间的内边距。"
+msgstr "Padding between the content and the border."
+
+msgid "内容与页面边缘的距离。"
+msgstr "Distance between the content and the page edges."
 
 msgid "内容仍可交互"
 msgstr "Content remains interactive"
 
-msgid "内容组合"
-msgstr "Content composition"
+msgid "内容修改时触发；按 Enter 且内容有效时触发 accepted。"
+msgstr "Fires when the content changes. accepted fires on Enter when the content is valid."
 
-msgid "内联状态反馈 · ForgeInfoBar"
-msgstr "Inline status feedback · ForgeInfoBar"
+msgid "内容内边距，默认取样式的 layout-padding。"
+msgstr "Content padding, defaulting to the style's layout-padding."
+
+msgid "内容内边距；禁用后不响应切换。"
+msgstr "Content padding; when disabled, toggling is ignored."
+
+msgid "内容区与面板边缘的距离，默认 18px。"
+msgstr "Distance between content and panel edge, 18px by default."
+
+msgid "内容区高度；0 或负值时使用内容的自然高度。"
+msgstr "Content area height; zero or negative uses the content's natural height."
+
+msgid "内容区（title-bar-height 之下）"
+msgstr "Content area (below title-bar-height)"
+
+msgid "内容已加载"
+msgstr "Content loaded"
+
+msgid "内容形式"
+msgstr "Content forms"
+
+msgid "内容是否超出可视高度。"
+msgstr "Whether the content exceeds the visible height."
+
+msgid "内容的自然高度（含内边距）。"
+msgstr "Natural content height, including padding."
+
+msgid "内容相对视口的偏移，向下或向右滚动时为负值。"
+msgstr "Content offset relative to the viewport; negative when scrolled down or right."
+
+msgid "内容越长，模块越密；空内容无法生成，显示错误提示。"
+msgstr "Longer content means denser modules. Empty content cannot be encoded and shows an error."
+
+msgid "内部资料 · 仅限查看"
+msgstr "Internal · View only"
 
 msgid "内部验收 · 已注册页面常驻，隐藏时宿主继续采样"
 msgstr "Internal verification · registered pages remain mounted while sampling continues"
 
-msgid "冻结任务列，横向滚动查看其他列。"
-msgstr "The task column stays frozen while scrolling horizontally."
+msgid "再次输入"
+msgstr "Enter again"
+
+msgid "决定列数：按最小列宽能放下几列，且不超过最大列数。"
+msgstr "Determine the column count: as many columns as fit the minimum width, up to the maximum."
+
+msgid "冷灰"
+msgstr "Cool gray"
 
 msgid "冻结名称列"
 msgstr "Freeze name column"
 
-msgid "分析"
-msgstr "Analysis"
+msgid "出生日期"
+msgstr "Date of birth"
 
-msgid "分栏选择年、月、日，支持字段显示和日期范围。"
-msgstr "Select year, month and day with configurable fields and date ranges."
+msgid "出生日期 {} · 有效期至 {} 年 {} 月"
+msgstr "Born {} · Expires {}-{}"
 
-msgid "分栏选择时间，支持区域语言、12/24 小时制和分钟步长。"
-msgstr "Segmented time selection with locale, 12/24-hour format and minute increments."
+msgid "出生日期不晚于今天；有效期只需年和月。"
+msgstr "The birth date cannot be later than today; the expiry only needs a year and month."
+
+msgid "出错时展示可复制的错误信息，便于粘贴到工单；下方输入框用来验证粘贴结果。"
+msgstr "On failure, show copyable error details to paste into a ticket. Use the field below to check the pasted result."
+
+msgid "出错时展示可复制的错误详情，用户一键复制后粘贴到反馈渠道。"
+msgstr "On failure, show copyable error details so the user can copy them in one click and paste them into a support channel."
+
+msgid "函数"
+msgstr "Function"
+
+msgid "分享文档"
+msgstr "Share documents"
+
+msgid "分别控制四个边区是否显示。"
+msgstr "Show or hide each of the four panes."
+
+msgid "分别控制年、月、日字段是否显示。"
+msgstr "Controls whether the year, month, and day fields are shown."
+
+msgid "分别控制菜单、主题、置顶、设置与最大化按钮是否显示。"
+msgstr "Show or hide the menu, theme, pin, settings and maximize buttons."
+
+msgid "分栏滚轮选择年、月、日的日期按钮，可隐藏部分字段并限制日期范围；需要月历视图时改用 CalendarPicker。"
+msgstr "A date button with wheel columns for year, month, and day; fields can be hidden and the range limited. Use CalendarPicker when a month view is needed."
+
+msgid "分栏滚轮选择时、分（可选秒）的时间按钮，支持区域语言、12/24 小时制和分钟步长。"
+msgstr "A time button with wheel columns for hours and minutes (seconds optional), supporting locales, 12/24-hour formats, and minute steps."
+
+msgid "分段列表，每项包含 id、label 与 enabled。"
+msgstr "Segment list; each item has an id, a label, and enabled."
 
 msgid "分组"
 msgstr "Group"
 
-msgid "切换加载占位和实际内容，输入会保留。"
-msgstr "Switch between loading placeholders and content while preserving input."
+msgid "分辨率"
+msgstr "Resolution"
 
-msgid "切换圆形"
-msgstr "Toggle circular shape"
+msgid "分钟步长与是否显示秒字段。"
+msgstr "Minute step and whether the seconds field is shown."
+
+msgid "分隔条宽度，默认 8px。"
+msgstr "Divider thickness, 8px by default."
+
+msgid "分隔线粗细，默认 8px。"
+msgstr "Divider thickness, 8px by default."
+
+msgid "切换 mode 体验三种确认方式；键盘上按住 Enter 或 Space 效果相同。"
+msgstr "Switch mode to try the three confirmation styles. Holding Enter or Space on the keyboard works the same way."
+
+msgid "切换主题、字体与导航位置"
+msgstr "Change theme, font, and navigation position"
+
+msgid "切换加载状态；在输入框中输入文字后再切换，内容会保留。"
+msgstr "Toggle the loading state; text typed into the field is kept after switching."
+
+msgid "切换圆形、填充方式或清空图片，观察裁切与边框。"
+msgstr "Toggle circle, fit mode or an empty image to see clipping and the border."
 
 msgid "切换圆角"
 msgstr "Use rounded corners"
 
-msgid "切换开关，查看开启、关闭和禁用状态。"
-msgstr "Explore on, off, and disabled switch states."
-
-msgid "切换按钮"
-msgstr "Toggle button"
-
-msgid "切换日、周、月三个视图。"
-msgstr "Switch between day, week, and month views."
-
-msgid "切换标签保留输入"
-msgstr "Switching tabs preserves input"
-
-msgid "切换标签页，输入内容会保留。"
-msgstr "Switch tabs while preserving the entered text."
-
-msgid "切换标签，关闭可移除的标签。"
-msgstr "Switch tabs and close removable ones."
-
 msgid "切换直角"
 msgstr "Use square corners"
 
-msgid "切换页码，或跳至第一页和最后一页。"
-msgstr "Change pages or jump to the first and last page."
+msgid "切换级别、修改文字，关闭后可重新显示。"
+msgstr "Switch the level, edit the text, and show it again after closing."
 
-msgid "创建任务"
-msgstr "Create task"
+msgid "切换结果类型，修改标题与按钮文字。"
+msgstr "Switch the result type and edit the title and button text."
+
+msgid "切换语言查看对应示例代码的高亮，并调整行号与字号。"
+msgstr "Switch languages to see highlighted sample code, and adjust line numbers and font size."
+
+msgid "列定义与行数据，由应用持有。"
+msgstr "Column definitions and row data, owned by the app."
+
+msgid "列数变化时触发，宿主据此重新计算卡片位置。"
+msgstr "Fires when the column count changes so the host can recompute card positions."
+
+msgid "列表"
+msgstr "List"
+
+msgid "列表是否展开。"
+msgstr "Whether the list is open."
+
+msgid "列间距与行间距。"
+msgstr "Column and row gaps."
+
+msgid "创建副本"
+msgstr "Duplicate"
 
 msgid "创建工程"
 msgstr "Create project"
 
+msgid "创建项目"
+msgstr "Create projects"
+
+msgid "初始化仓库与界面契约"
+msgstr "Set up the repository and UI contract"
+
+msgid "初始选中项；都不设置时整组未选择。"
+msgstr "Initially selected option. If none is set, nothing in the group is selected."
+
+msgid "删除"
+msgstr "Delete"
+
+msgid "删除后无法恢复。"
+msgstr "This can't be undone."
+
 msgid "删除所选"
 msgstr "Delete selected"
 
+msgid "删除文件"
+msgstr "Delete file"
+
+msgid "到达上限时增加按钮自动禁用；禁用状态不可输入。"
+msgstr "The increment button disables at the maximum; a disabled box accepts no input."
+
+msgid "到达范围边界后对应方向不再变化；禁用状态不可输入和步进。"
+msgstr "At a range limit the value stops changing in that direction; disabled boxes cannot be typed in or stepped."
+
+msgid "到达转运中心"
+msgstr "Arrived at transit center"
+
+msgid "制冷中"
+msgstr "Cooling"
+
+msgid "制热中"
+msgstr "Heating"
+
+msgid "刷新"
+msgstr "Refresh"
+
 msgid "前往设置调整字体"
 msgstr "Adjust fonts in Settings"
+
+msgid "前端工程师"
+msgstr "Front-end engineer"
+
+msgid "前端工程师 · 上海"
+msgstr "Front-end engineer · Shanghai"
+
+msgid "前进或后退一步；最后一步前进即完成。"
+msgstr "Move one step forward or back. Moving forward on the last step finishes the tour."
+
+msgid "功能特性列表"
+msgstr "Feature list"
+
+msgid "加入时间　2025 年 3 月"
+msgstr "Joined　March 2025"
+
+msgid "加粗、斜体、下划线可同时选中；对齐方式三选一。"
+msgstr "Bold, italic and underline can be combined; alignment is one of three."
 
 msgid "加载万行"
 msgstr "Load 10,000 rows"
@@ -357,14 +1395,83 @@ msgstr "Load 10,000 rows"
 msgid "加载中"
 msgstr "Loading"
 
+msgid "加载中、单行骨架与加载完成。"
+msgstr "Loading, a single-row skeleton, and loaded."
+
+msgid "加载完成"
+msgstr "Loaded"
+
+msgid "加载完成后显示的实际内容。"
+msgstr "The real content shown after loading."
+
 msgid "加载完成，输入状态保留"
 msgstr "Loaded; input state is preserved"
+
+msgid "加载期间用头像和若干行占位块代替实际内容，加载完成后显示子元素。子元素始终存在，切换时输入状态会保留。"
+msgstr "Shows an avatar and placeholder rows instead of real content while loading, then shows its children when done. Children always exist, so input state is kept when switching."
+
+msgid "勾选同意后主按钮才可用；“拒绝”保持普通样式。"
+msgstr "The primary button is enabled only after agreeing; \"Decline\" keeps the regular style."
+
+msgid "勾选或取消某一项时触发，参数为 id 与新状态。"
+msgstr "Raised when an item is checked or unchecked, with its id and new state."
+
+msgid "勾选或取消节点时触发；宿主据此更新 selected。"
+msgstr "Raised when a node is checked or unchecked; the host updates selected."
+
+msgid "勾选确认后才能删除。"
+msgstr "Check the confirmation before deleting."
+
+msgid "勾选窄屏预览把容器限制为 420px，或拖动断点，观察控件位置的变化。"
+msgstr "Check narrow preview to limit the container to 420px, or drag the breakpoint, to see the control move."
+
+msgid "勾选项会自动切换状态；子菜单在悬停或方向键展开。"
+msgstr "Checkable items toggle automatically; submenus open on hover or with arrow keys."
+
+msgid "勾选项；激活时自动切换 checked。"
+msgstr "Checkable item; checked toggles automatically when activated."
+
+msgid "包含已归档"
+msgstr "Include archived"
+
+msgid "包裹从揽收到派送的轨迹，最新状态在最上方，尚未发生的节点显示为灰色。"
+msgstr "A parcel's route from pickup to delivery, latest status first. Steps that have not happened yet are gray."
+
+msgid "包邮"
+msgstr "Free shipping"
 
 msgid "匹配图标"
 msgstr "Matching icons"
 
+msgid "匹配图标 {} 个 · 第 {} / {} 页"
+msgstr "{} matching icons · page {} / {}"
+
+msgid "区分区域的次级背景及其文字颜色。"
+msgstr "Secondary background for distinguishing areas, and its text color."
+
+msgid "区域语言决定字段顺序与上午/下午文字；步长限制可选的分钟值。"
+msgstr "The locale sets the field order and AM/PM text; the step limits which minutes can be chosen."
+
+msgid "匿名发送功能使用情况"
+msgstr "Send anonymous feature usage data"
+
+msgid "半透明的磨砂材质面板，将背景模糊并叠加色调。用于浮层、侧栏或悬浮在图片上的内容区。"
+msgstr "A translucent frosted panel that blurs the backdrop and adds a tint. Use it for overlays, sidebars, or content floating over images."
+
+msgid "单击卡片时触发，参数为卡片 id。"
+msgstr "Fires when a card is clicked, with the card id."
+
+msgid "单击置顶按钮后触发，参数为新的置顶状态。"
+msgstr "Fires after the pin button is clicked, with the new pinned state."
+
+msgid "单击菜单或设置按钮时触发。"
+msgstr "Fires when the menu or settings button is clicked."
+
 msgid "单击表头排序，拖动列边界调整宽度，双击单元格编辑。"
 msgstr "Click a header to sort, drag its edge to resize, and double-click a cell to edit."
+
+msgid "单系列"
+msgstr "Single series"
 
 msgid "单系列数据"
 msgstr "Single series"
@@ -372,20 +1479,47 @@ msgstr "Single series"
 msgid "单行数据"
 msgstr "Single row"
 
+msgid "单行文本输入框，对应 Slint 原生 LineEdit。适合姓名、标题、搜索词等短文本，按 Enter 触发提交。"
+msgstr "A single-line text field backed by native Slint LineEdit. Suited to short text such as names, titles, and search terms; Enter submits."
+
+msgid "占位提示与是否可用。"
+msgstr "Placeholder hint and whether the control is enabled."
+
+msgid "占位行数，最后一行较短，默认 3。"
+msgstr "Number of placeholder rows; the last row is shorter. Defaults to 3."
+
 msgid "卡片 {}"
 msgstr "Card {}"
 
 msgid "卡片内操作"
 msgstr "Card action"
 
+msgid "卡片只使用 Palette 取色：选中行用 selection 颜色，标签用 accent 颜色，切换明暗主题无需另写样式。"
+msgstr "The card takes all colors from Palette: the selected row uses selection colors and the tag uses accent colors, so no extra styling is needed for light and dark themes."
+
 msgid "卡片尺寸由页面控制。"
 msgstr "The page controls the card size."
 
-msgid "卡片等宽、逐行对齐；缩放窗口时自动换列，内容过高时竖向滚动。"
-msgstr "Cards have equal widths and align by row; resizing changes columns and overflow scrolls vertically."
+msgid "卡片数据；column 与 top 由宿主计算。"
+msgstr "Card data; column and top are computed by the host."
 
-msgid "卡片自动进入当前最短列；缩放窗口可观察列数和位置变化。"
-msgstr "Cards enter the shortest column; resize the window to see columns and positions change."
+msgid "卡片数量"
+msgstr "Card count"
+
+msgid "卡片标题；为空时不显示标题行。"
+msgstr "Card title; the title row is hidden when empty."
+
+msgid "卡片的最小宽度，决定一行能放几列。"
+msgstr "Minimum card width, which decides how many columns fit in a row."
+
+msgid "卡片间距与内容内边距，需与宿主布局算法使用的值一致。"
+msgstr "Card gap and content padding; must match the values used by the host layout algorithm."
+
+msgid "卫星"
+msgstr "Satellite"
+
+msgid "历史"
+msgstr "History"
 
 msgid "历史归档"
 msgstr "Historical archive"
@@ -393,8 +1527,20 @@ msgstr "Historical archive"
 msgid "原生 Dialog 自动排列标准操作按钮。"
 msgstr "Native Dialog arranges standard action buttons automatically."
 
-msgid "原生标签内容"
-msgstr "Native tab content"
+msgid "原生单选按钮，放在 RadioGroup 中使用，同组内只能选中一项。选项少且需要全部可见时使用，选项较多时改用 ComboBox。"
+msgstr "Native radio buttons used inside a RadioGroup; only one option in a group can be selected. Use them when there are few options that should all be visible; use ComboBox for more options."
+
+msgid "原生复选框，用于开启或关闭一个独立选项，也可在列表中多选。"
+msgstr "Native checkbox for turning a single option on or off, or for multiple selection in a list."
+
+msgid "原生开关，切换后立即生效，适合设置项。需要点击“保存”才生效的选项改用 Checkbox。"
+msgstr "Native switch that takes effect as soon as it is toggled; suits settings. Use Checkbox for options that apply only after clicking \"Save\"."
+
+msgid "原生控件"
+msgstr "Native control"
+
+msgid "原生滑块，拖动或用方向键在连续范围内选择数值，适合音量、亮度等不需要精确输入的场景。"
+msgstr "Native slider for choosing a value in a continuous range by dragging or with the arrow keys. Suits volume, brightness and other values that do not need precise input."
 
 msgid "参数曲线"
 msgstr "Parametric curve"
@@ -411,65 +1557,221 @@ msgstr "Lower reference"
 msgid "双光标测量"
 msgstr "Dual cursor measurement"
 
+msgid "双击列表中的文件夹进入下一层，面包屑同步更新；点击路径返回上层。"
+msgstr "Double-click a folder in the list to open it and the breadcrumb follows. Click the path to go back up."
+
+msgid "反馈"
+msgstr "Feedback"
+
+msgid "发布版本"
+msgstr "Publish release"
+
+msgid "发票"
+msgstr "Invoice"
+
+msgid "发票明细"
+msgstr "Invoice details"
+
 msgid "发送消息"
 msgstr "Send Message"
+
+msgid "发送消息 · {}"
+msgstr "Send message · {}"
+
+msgid "取值范围。"
+msgstr "Allowed range."
+
+msgid "取值范围，默认 0 到 100。"
+msgstr "Value range, 0 to 100 by default."
+
+msgid "取值范围，默认 0～100。"
+msgstr "Value range. Defaults to 0–100."
+
+msgid "取值范围，默认为 0 到 100。"
+msgstr "Value range; defaults to 0 to 100."
 
 msgid "取消"
 msgstr "Cancel"
 
+msgid "取消勾选 open-url 后，点击只记录地址而不打开浏览器。"
+msgstr "Uncheck open-url to only record the address without opening the browser."
+
+msgid "取消勾选 password 即可显示明文。"
+msgstr "Clear password to show the plain text."
+
 msgid "取消置顶"
 msgstr "Stop keeping on top"
+
+msgid "取消订阅"
+msgstr "Unsubscribe"
+
+msgid "取色器"
+msgstr "Color picker"
+
+msgid "叠加折射扭曲效果。"
+msgstr "Adds a refraction distortion effect."
+
+msgid "另有 {} 条未读通知"
+msgstr "{} more unread notifications"
+
+msgid "只显示圆点，不显示数字。"
+msgstr "Show only a dot, without a number."
+
+msgid "只显示评分，不接受修改。"
+msgstr "Shows the rating without accepting changes."
+
+msgid "只有一行或没有数据时，表头和列布局保持不变。"
+msgstr "With one row or no data, the header and column layout stay the same."
+
+msgid "只有根节点时不显示分隔符；层级较深时依次排列。"
+msgstr "No separator is shown with only the root; deeper levels are laid out in order."
+
+msgid "只能选择和复制"
+msgstr "Select and copy only"
 
 msgid "只读"
 msgstr "Read-only"
 
+msgid "只读但可选择、可复制的文本区域，由原生 TextEdit 设置 read-only 实现，适合展示日志、命令和错误详情。"
+msgstr "A read-only text area that can still be selected and copied, implemented with a native TextEdit and read-only. Suits logs, commands and error details."
+
+msgid "只读可选择、可编辑与禁用。"
+msgstr "Read-only and selectable, editable, and disabled."
+
+msgid "只读或禁用编辑。"
+msgstr "Makes the text read-only or disables editing."
+
 msgid "只读文本"
 msgstr "Read-only text"
 
-msgid "可直接操作此示例"
-msgstr "Interact with this example"
+msgid "只读文本\n第二行"
+msgstr "Read-only text\nSecond line"
 
-msgid "可移除标签"
-msgstr "Removable tag"
+msgid "只读文本可选择但不能修改；禁用后既不能编辑也不能选择。"
+msgstr "Read-only text can be selected but not changed; disabled text can be neither edited nor selected."
 
-msgid "可继续查看或导出结果。"
-msgstr "View or export the results."
+msgid "只读时仍可步进但不能输入；禁用后完全不可操作。"
+msgstr "Read-only still allows stepping but not typing; disabled blocks all interaction."
 
-msgid "可返回的页面标题"
-msgstr "Page header with back navigation"
+msgid "只读时可选择复制但不能编辑；禁用后不可聚焦。"
+msgstr "Read-only text can be selected and copied but not edited; disabled fields cannot take focus."
 
-msgid "可选中"
-msgstr "Selectable"
+msgid "只读的代码高亮视图，带行号和复制按钮。用于文档、日志或配置片段的展示。"
+msgstr "A read-only syntax-highlighted code view with line numbers and a copy button. Use it to show documentation, logs, or configuration snippets."
+
+msgid "可以。文字使用 @tr 标记，运行时按所选语言加载译文。"
+msgstr "Yes. Text is marked with @tr and translations load at runtime for the selected language."
+
+msgid "可以修改这段文字"
+msgstr "This text can be edited"
+
+msgid "可多选的下拉框。展开后逐项勾选，按钮上显示宿主提供的选择摘要；单选场景改用 ComboBox。"
+msgstr "A drop-down that allows multiple selection. Check items in the open list; the button shows a summary provided by the host. Use ComboBox for single selection."
+
+msgid "可展开、折叠的内容面板。单击标题栏或聚焦后按 Enter / Space 切换；折叠只隐藏内容，内部控件状态保留。"
+msgstr "A content panel that expands and collapses. Click the header, or focus it and press Enter / Space, to toggle; collapsing only hides the content and keeps control state."
+
+msgid "可用、禁用与垂直方向。"
+msgstr "Enabled, disabled and vertical."
+
+msgid "可用与禁用状态；禁用后点击不会弹出菜单。"
+msgstr "Enabled and disabled states. When disabled, clicking does not open the menu."
+
+msgid "可编辑时内容修改后触发。"
+msgstr "Fires after the content changes when editable."
+
+msgid "可选中、可移除的紧凑标签，用于筛选条件、已选项和关键词。"
+msgstr "A compact tag that can be selected and removed, used for filters, selections and keywords."
 
 msgid "可选择、复制的文本。\n使用鼠标选择，或按 Ctrl+A、Ctrl+C。\n选中内容可复制到其他应用。"
 msgstr "Selectable text.\nSelect with the mouse, or press Ctrl+A and Ctrl+C.\nCopy the selection into other applications."
 
+msgid "可选日期范围。"
+msgstr "Selectable date range."
+
+msgid "可配置"
+msgstr "Configurable"
+
 msgid "右侧"
 msgstr "Right"
+
+msgid "右侧与左侧滑出的面板，在缩小的区域中预览。"
+msgstr "Panels sliding out from the right and left, previewed in a smaller area."
 
 msgid "右侧内容"
 msgstr "Right content"
 
+msgid "右击区域，内含一个 Menu；禁用后不再弹出。"
+msgstr "Right-click area containing one Menu; no longer opens when disabled."
+
+msgid "右击查看“视图”菜单"
+msgstr "Right-click to see the \"View\" menu"
+
+msgid "右对齐"
+msgstr "Align right"
+
 msgid "右阶梯"
 msgstr "Right steps"
 
-msgid "同步策略"
-msgstr "Sync policy"
+msgid "合同.pdf"
+msgstr "Contract.pdf"
 
-msgid "同组内只能选择一个选项。"
-msgstr "Choose one option in a radio group."
+msgid "合同编号：HT-2026-0412"
+msgstr "Agreement no.: HT-2026-0412"
+
+msgid "同一份界面运行在 Windows、Linux 和 macOS 上。"
+msgstr "One interface runs on Windows, Linux and macOS."
+
+msgid "同一位置的提示条随同步进度切换级别与文字。"
+msgstr "The same bar switches level and text as the sync progresses."
+
+msgid "同一区域依次显示待导出、完成与失败三种结果，按钮文字随之变化。"
+msgstr "The same area shows the pending, complete, and failed results in turn, with matching button text."
+
+msgid "同一应用中同时打开普通窗口与对话窗口；隐藏后再次打开，窗口内的输入仍然保留。"
+msgstr "Open a regular window and a dialog window in the same app; input inside a window is kept after hiding and reopening it."
+
+msgid "同一张图片在宽幅区域中的三种填充方式。"
+msgstr "The same image in a wide area with three fit modes."
+
+msgid "同一段文字分别以遮盖、明文和禁用状态显示。"
+msgstr "The same text shown masked, in plain text, and disabled."
+
+msgid "同一段正文在不同 scale 下的效果，这里只在本例内模拟，不修改全局设置。"
+msgstr "The same body text at different scale values, simulated within this example without changing the global setting."
+
+msgid "同一组数据的基础样式与变体样式。"
+msgstr "The same data in the basic style and a variant style."
+
+msgid "同意并继续"
+msgstr "Agree and continue"
+
+msgid "同样宽度下，断点不同决定了左右排列还是上下排列。"
+msgstr "At the same width, the breakpoint decides between side-by-side and stacked layout."
+
+msgid "同步中"
+msgstr "Syncing"
+
+msgid "同步失败"
+msgstr "Sync failed"
+
+msgid "同步完成"
+msgstr "Sync complete"
+
+msgid "同步状态"
+msgstr "Sync status"
 
 msgid "名称"
 msgstr "Name"
 
-msgid "名称控件"
-msgstr "Name control"
-
 msgid "后台采样计数：{}"
 msgstr "Background sample count: {}"
 
-msgid "启动任务，按钮显示进度并避免重复提交。"
-msgstr "Start a task and display progress while preventing duplicate submissions."
+msgid "否"
+msgstr "No"
+
+msgid "启动时打开上次的工程"
+msgstr "Open the last project on startup"
 
 msgid "启用功能"
 msgstr "Enable feature"
@@ -477,26 +1779,95 @@ msgstr "Enable feature"
 msgid "启用端口输入"
 msgstr "Enable port input"
 
-msgid "启用自动归档"
-msgstr "Enable automatic archiving"
-
 msgid "启用通知"
 msgstr "Enable notifications"
+
+msgid "告警通知"
+msgstr "Alert notifications"
 
 msgid "周"
 msgstr "Week"
 
+msgid "周二　版本评审"
+msgstr "Tue　Release review"
+
+msgid "周六　上线窗口"
+msgstr "Sat　Release window"
+
+msgid "周四　团队分享"
+msgstr "Thu　Team talk"
+
 msgid "周工"
 msgstr "Zhou"
+
+msgid "周报"
+msgstr "Weekly report"
+
+msgid "周航"
+msgstr "Zhou Hang"
+
+msgid "命令面板　Ctrl+Shift+P"
+msgstr "Command palette　Ctrl+Shift+P"
+
+msgid "商品"
+msgstr "Items"
+
+msgid "商品 ¥199"
+msgstr "Items ¥199"
+
+msgid "商品筛选"
+msgstr "Product filters"
+
+msgid "商品质量"
+msgstr "Product quality"
+
+msgid "四周停靠、中央填充的布局。拖动分隔线调整边区尺寸，隐藏任一边区后中央区自动扩展。适合编辑器、管理后台等多面板界面。"
+msgstr "A layout with panes docked on four sides and a filling center. Drag dividers to resize panes; hiding any pane lets the center expand. Suits editors, admin consoles and other multi-panel interfaces."
 
 msgid "四月"
 msgstr "April"
 
+msgid "四种级别，以及不可关闭的提示。"
+msgstr "Four levels, plus a bar that can't be closed."
+
+msgid "回到开头"
+msgstr "Go to start"
+
+msgid "回到首页"
+msgstr "Back to home"
+
+msgid "回复客户邮件"
+msgstr "Reply to customer emails"
+
 msgid "回归测试"
 msgstr "Regression testing"
 
+msgid "回收站"
+msgstr "Recycle bin"
+
+msgid "回收站中有 12 个项目"
+msgstr "12 items in the recycle bin"
+
+msgid "回收站已清空。"
+msgstr "The recycle bin is empty."
+
+msgid "回调"
+msgstr "Callback"
+
+msgid "团队成员"
+msgstr "Team members"
+
+msgid "团队版"
+msgstr "Team"
+
+msgid "固定两列的图板，卡片高度随内容而定；示例中的位置按同一规则预先算好。"
+msgstr "A two-column board whose card heights follow their content; positions in this example are precomputed with the same rule."
+
 msgid "固定视图"
 msgstr "Pin view"
+
+msgid "国际化"
+msgstr "Internationalization"
 
 msgid "图例"
 msgstr "Legend"
@@ -543,65 +1914,158 @@ msgstr "Compact legend"
 msgid "图例边框"
 msgstr "Framed legend"
 
-msgid "图文组合"
-msgstr "Icon and text"
-
-msgid "图标、标题与说明组合显示，可切换排列方向。"
-msgstr "Display an icon, title, and description in either orientation."
+msgid "图标、标题与说明的组合。水平排列时图标在左，垂直排列时图标在上并居中，适合功能列表、空状态和快捷入口。"
+msgstr "An icon with a title and description. Horizontally the icon sits on the left; vertically it sits on top, centered. Suits feature lists, empty states and shortcuts."
 
 msgid "图标与文字保持一致的字体和间距。"
 msgstr "The icon and text use consistent typography and spacing."
 
-msgid "图标与文字按钮 · ForgeIconButton"
-msgstr "Icon and text button · ForgeIconButton"
-
-msgid "图标字体"
-msgstr "Icon font"
-
 msgid "图标字体库"
 msgstr "Icon font library"
 
-msgid "图片按区域裁切并显示圆角边框。"
-msgstr "The image is cropped to its bounds and shown with rounded corners."
+msgid "图标字形，通常取自 ForgeIcons。"
+msgstr "Icon glyph, usually from ForgeIcons."
 
-msgid "圆点提示"
-msgstr "Dot badge"
+msgid "图标字符；为空时只显示文字。"
+msgstr "Icon character. When empty, only the text is shown."
+
+msgid "图标尺寸与颜色，继承自 Text，默认 20px 乘以字号比例。"
+msgstr "Icon size and color, inherited from Text. Defaults to 20px times the font scale."
+
+msgid "图标按钮空间有限，用提示说明功能与快捷键。"
+msgstr "Icon buttons have little room, so tooltips explain the function and shortcut."
+
+msgid "图标按钮组成工具栏，选中的工具高亮显示；常用操作带文字标签。"
+msgstr "Icon buttons form a toolbar. The selected tool is highlighted and common actions have text labels."
+
+msgid "图标草稿"
+msgstr "Icon sketches"
+
+msgid "图表"
+msgstr "Charts"
+
+msgid "圆形"
+msgstr "Circle"
+
+msgid "圆形头像配合名称与简介，是资料卡和评论列表的常见写法。"
+msgstr "A circular avatar with a name and bio, a common pattern for profile cards and comment lists."
+
+msgid "圆形旋钮，在范围内调整一个数值。上下拖动、滚轮或方向键均可调节，适合音量、温度等连续参数。"
+msgstr "A round knob that adjusts a value within a range. Drag up or down, scroll, or use arrow keys. Suited to continuous parameters such as volume or temperature."
+
+msgid "圆环尺寸，宽高相同。"
+msgstr "Ring size; width and height are equal."
+
+msgid "圆环显示空间占用；刷新时在标题旁显示小号加载环。"
+msgstr "The ring shows space usage; a small spinner appears next to the title while refreshing."
 
 msgid "圆角"
 msgstr "Rounded"
 
+msgid "圆角半径，默认 12px。"
+msgstr "Corner radius, 12px by default."
+
+msgid "圆角，设为宽度一半即为圆形占位。"
+msgstr "Corner radius; set it to half the width for a circular placeholder."
+
+msgid "在 16～30 °C 之间以 0.5 °C 步长设定目标温度，根据室温显示运行模式。"
+msgstr "Set a target temperature between 16 and 30 °C in 0.5 °C steps. The running mode follows the room temperature."
+
+msgid "在 foreground 上叠加透明度得到主要、次要和辅助文字，三者始终与背景保持同一色相。"
+msgstr "Applying transparency to foreground gives primary, secondary, and tertiary text that always share the same hue against the background."
+
 msgid "在交互示例中打开"
 msgstr "Open in interactive demo"
 
-msgid "在内容对话框中编辑文字，并确认或取消。"
-msgstr "Edit text in a content dialog, then confirm or cancel."
+msgid "在可编辑文本框中粘贴剪贴板内容。"
+msgstr "Paste clipboard content into an editable text box."
 
-msgid "在容器内容上叠加低对比度的重复水印。"
-msgstr "Overlay a subtle repeating watermark on the container content."
+msgid "在右侧修改文字和属性，预览即时更新。"
+msgstr "Change the text and properties on the right; the preview updates immediately."
 
-msgid "在彩色背景上比较半透明材质。"
-msgstr "Compare translucent materials over a colorful backdrop."
+msgid "在右侧修改文字或禁用按钮，预览即时更新。"
+msgstr "Change the text or disable the button on the right; the preview updates immediately."
 
-msgid "在明暗主题中比较前景、背景和主色。"
-msgstr "Compare foreground, background, and accent colors in both themes."
+msgid "在启用状态下切换展开与折叠。"
+msgstr "Toggle between expanded and collapsed when enabled."
 
-msgid "在此区域右击打开原生菜单"
-msgstr "Right-click here to open a native menu"
+msgid "在容器内容上方平铺低对比度的重复文字，用于标注机密文档、草稿或截图来源。水印不拦截鼠标，内容仍可正常操作。"
+msgstr "Tiles low-contrast repeated text over the container content to mark confidential documents, drafts or screenshot sources. The watermark does not block the mouse, so content stays interactive."
+
+msgid "在左侧切换概览、报表和数据源。"
+msgstr "Switch between overview, reports, and data sources on the left."
+
+msgid "在弹层中附带时间选择。"
+msgstr "Adds time selection to the popup."
+
+msgid "在成员列表中选择一人进入详情页，页头显示返回按钮；返回后回到列表。"
+msgstr "Pick someone in the member list to open the detail page, where the header shows a back button that returns to the list."
+
+msgid "在指定位置以编程方式打开菜单，或关闭菜单。"
+msgstr "Open the menu at a given position programmatically, or close it."
+
+msgid "在文件上右击"
+msgstr "Right-click a file"
+
+msgid "在新窗口中预览"
+msgstr "Preview in new window"
+
+msgid "在框内输入多行文字；切换 wrap 比较长行的显示方式。"
+msgstr "Type several lines in the box; switch wrap to compare how long lines are shown."
+
+msgid "在此区域右击打开菜单"
+msgstr "Right-click here to open the menu"
+
+msgid "在此粘贴"
+msgstr "Paste here"
 
 msgid "在此粘贴以验证复制"
 msgstr "Paste here to verify copying"
 
-msgid "在演示区右击，选择菜单中的操作。"
-msgstr "Right-click the preview and choose a menu action."
+msgid "在灰色区域右击，或用按钮在固定位置打开菜单。"
+msgstr "Right-click the gray area, or use the button to open the menu at a fixed position."
 
-msgid "在背景上预览玻璃效果及内容交互。"
-msgstr "Preview the glass effect and interact with its content."
+msgid "在第一页输入文字，切到其他页再返回，内容保持不变；未知 ID 不显示任何页面。"
+msgstr "Type on the first page, switch away and back, and the text is still there; an unknown ID shows no page."
+
+msgid "在线设备"
+msgstr "Online devices"
+
+msgid "在线预览敏感文件时叠加查看者信息，截图外传后也能追溯来源。"
+msgstr "Overlay viewer information when previewing sensitive files so leaked screenshots can be traced."
+
+msgid "在输入框中输入文字后折叠再展开，内容仍然保留。"
+msgstr "Type in the text box, collapse and expand again; the text is kept."
+
+msgid "在这里输入要处理的内容。"
+msgstr "Enter the content to process here."
+
+msgid "地名"
+msgstr "Labels"
+
+msgid "地图图层"
+msgstr "Map layers"
+
+msgid "坐标类图表用 series，饼图与极坐标图用 slices。"
+msgstr "Cartesian charts use series; pie and polar charts use slices."
 
 msgid "垂直排列"
 msgstr "Vertical layout"
 
-msgid "基本示例"
-msgstr "Basic example"
+msgid "城市夜景"
+msgstr "City at night"
+
+msgid "城市灯火乐队 · 第 3 首"
+msgstr "City Lights Band · track 3"
+
+msgid "基于 Fluent System Icons Regular 字体的图标。常用图标通过 ForgeIcons 按名称引用，其余图标可在下方目录中按名称搜索并查看码位。"
+msgstr "Icons from the Fluent System Icons Regular font. Reference common icons by name through ForgeIcons, and search the catalog below for others and their code points."
+
+msgid "基本用法"
+msgstr "Basic usage"
+
+msgid "基础架构 · 昨天"
+msgstr "Infrastructure · Yesterday"
 
 msgid "基础样式"
 msgstr "Basic style"
@@ -609,14 +2073,17 @@ msgstr "Basic style"
 msgid "堆叠"
 msgstr "Stacked"
 
-msgid "堆叠柱状图"
-msgstr "Stacked bars"
-
-msgid "增益 {}%"
-msgstr "Gain {}%"
+msgid "堆叠、平滑、面积填充与环形样式。"
+msgstr "Stacked, smooth, area fill, and doughnut styles."
 
 msgid "处理中…"
 msgstr "Processing…"
+
+msgid "处理后的背景图；未绑定服务时等于 source。"
+msgstr "The processed backdrop. Equals source when no service is bound."
+
+msgid "备注"
+msgstr "Notes"
 
 msgid "复位"
 msgstr "Reset"
@@ -627,17 +2094,59 @@ msgstr "Copy code"
 msgid "复制全部"
 msgstr "Copy all"
 
+msgid "复制到剪贴板"
+msgstr "Copy to clipboard"
+
+msgid "复制路径"
+msgstr "Copy path"
+
+msgid "复制错误信息"
+msgstr "Copy error details"
+
+msgid "复制错误详情"
+msgstr "Copy error details"
+
+msgid "外层左右分割放置文件列表，右侧再上下分割出编辑区与终端。"
+msgstr "The outer split holds a file list on the left; the right side splits again into editor and terminal."
+
 msgid "外观"
 msgstr "Appearance"
+
+msgid "外观与语言"
+msgstr "Appearance and language"
+
+msgid "外观属性互相独立，可任意组合；禁用时会立即取消进行中的确认。"
+msgstr "Appearance properties are independent and can be combined freely. Disabling cancels a confirmation in progress immediately."
+
+msgid "外部校验错误；非空时视为无效并显示该文字。"
+msgstr "External validation error. When not empty, the input is invalid and this text is shown."
+
+msgid "多个 FormRow 纵向排列成设置分组，控件统一靠右对齐。"
+msgstr "Several FormRows stacked into a settings group, with controls aligned to the right."
+
+msgid "多个指标横向排列，构成看板的概览行。"
+msgstr "Several metrics side by side form a dashboard's summary row."
 
 msgid "多个绘图区"
 msgstr "Multiple plot areas"
 
-msgid "多种效果"
-msgstr "State comparison"
+msgid "多个维度分别评分，汇总显示平均分。"
+msgstr "Rate each aspect separately and show the average."
+
+msgid "多个页面叠放在同一区域，按稳定 ID 显示其中一页。所有页面编译时创建，切换只改变可见性，隐藏页中的输入内容不会丢失。"
+msgstr "Several pages share one area and the one matching a stable ID is shown. All pages are created at compile time and switching only changes visibility, so input on hidden pages is kept."
+
+msgid "多文档编辑"
+msgstr "Multi-document editing"
+
+msgid "多窗口工具"
+msgstr "Multi-window tool"
 
 msgid "多绘图区"
 msgstr "Multiple panels"
+
+msgid "多行文本编辑框，对应 Slint 原生 TextEdit。Enter 换行，内容超出时在框内滚动，适合备注、描述和反馈。"
+msgstr "A multi-line text editor backed by native Slint TextEdit. Enter inserts a line break and overflowing content scrolls inside the box; suited to notes, descriptions, and feedback."
 
 msgid "多轴"
 msgstr "Multiple axes"
@@ -645,41 +2154,146 @@ msgstr "Multiple axes"
 msgid "多选"
 msgstr "Multiple selection"
 
+msgid "多选模式显示复选框；禁用后节点不可操作。"
+msgstr "Multiple selection shows check boxes; disabled nodes cannot be used."
+
+msgid "夜航星"
+msgstr "Night Voyage"
+
+msgid "夜间在此时长内不弹出通知，单位为小时。"
+msgstr "No notifications pop up during this many hours at night."
+
 msgid "大数据"
 msgstr "Large data"
 
-msgid "大量卡片"
-msgstr "More cards"
+msgid "大纲"
+msgstr "Outline"
 
-msgid "大量矩形"
-msgstr "More tiles"
+msgid "如何为桌面应用设计深色模式"
+msgstr "Designing dark mode for desktop apps"
+
+msgid "如何在 C++ 项目中使用组件？"
+msgstr "How do I use the components in a C++ project?"
+
+msgid "姓名"
+msgstr "Name"
+
+msgid "姓名需为 2–20 个字符"
+msgstr "Name must be 2–20 characters"
+
+msgid "姓名需为 2–20 个字符，不符合时显示提示并禁用保存；网站为选填项。"
+msgstr "The name must be 2–20 characters; otherwise a hint appears and Save is disabled. The website is optional."
+
+msgid "子元素即该页内容，未显示时仍保留状态。"
+msgstr "Child elements are the page content and keep their state while hidden."
+
+msgid "子元素按各自尺寸从左到右排列，一行放不下时自动换行；内容超出高度时出现竖向滚动条。适合标签、缩略图等数量不定的内容。"
+msgstr "Children are placed left to right at their own size and wrap when a row is full; a vertical scrollbar appears when content exceeds the height. Suits tags, thumbnails and other content of variable count."
 
 msgid "字体"
 msgstr "Typography"
 
-msgid "字体排版"
-msgstr "Typography"
+msgid "字体搭配"
+msgstr "Font pairings"
+
+msgid "字体缩放"
+msgstr "Font scaling"
 
 msgid "字号比例"
 msgstr "Font scale"
 
-msgid "安全输入"
-msgstr "Secure input"
+msgid "字号比例，默认 1.0；写法如 font-size: 14px * ForgeTypography.scale。"
+msgstr "Font size scale, 1.0 by default. Use it as font-size: 14px * ForgeTypography.scale."
+
+msgid "字符数范围；maximum-length 为 0 时不限上限。"
+msgstr "Character count range. A maximum-length of 0 means no upper limit."
+
+msgid "存储概览"
+msgstr "Storage overview"
+
+msgid "存储空间不足"
+msgstr "Storage almost full"
+
+msgid "季度总结.pptx"
+msgstr "Quarterly review.pptx"
+
+msgid "季度报告.slint"
+msgstr "Quarterly report.slint"
+
+msgid "安装"
+msgstr "Installation"
 
 msgid "完成"
 msgstr "Finish"
 
+msgid "完成同步"
+msgstr "Finish sync"
+
+msgid "完成确认时触发；中途松开、移出、失焦或按 Esc 时触发 canceled。"
+msgstr "Fires when confirmed. canceled fires when released early, moved out, focus is lost or Esc is pressed."
+
 msgid "完成组件"
 msgstr "Complete components"
+
+msgid "完整图标目录"
+msgstr "Full icon catalog"
 
 msgid "实时数据"
 msgstr "Live data"
 
-msgid "宽屏时控件靠右；宽度低于断点后，控件移到标题和说明下方。"
-msgstr "Controls align right on wide screens and move below the label and description below the breakpoint."
+msgid "实时统计字数，超过 200 字时提示并禁用提交。"
+msgstr "Characters are counted live; over 200 characters shows a warning and disables Submit."
 
-msgid "宽屏预览"
-msgstr "Wide preview"
+msgid "实际显示的文字，已按上限截断。"
+msgstr "The text actually displayed, truncated to the limit."
+
+msgid "审核结果将通过邮件通知。"
+msgstr "The review result will be sent by email."
+
+msgid "客厅空调"
+msgstr "Living room AC"
+
+msgid "客户"
+msgstr "Customers"
+
+msgid "客户资料"
+msgstr "Customers"
+
+msgid "客户门户"
+msgstr "Customer portal"
+
+msgid "室温 {}°C"
+msgstr "Room {}°C"
+
+msgid "容器"
+msgstr "Surfaces"
+
+msgid "宽度低于此值时改为上下排列，默认 560px。"
+msgstr "Below this width the row stacks vertically; 560px by default."
+
+msgid "宿主侧 ComponentHandle 方法，显示或隐藏窗口，实例可重复使用。"
+msgstr "Host-side ComponentHandle methods that show or hide the window; instances can be reused."
+
+msgid "宿主创建并显示一个原生 Dialog；点击 OK 或 Cancel 后隐藏。"
+msgstr "The host creates and shows a native Dialog; it hides after OK or Cancel is clicked."
+
+msgid "宿主提供的编码服务；未绑定时显示“二维码服务未绑定”。"
+msgstr "Encoding service provided by the host. Shows \"QR code service is not connected\" when unbound."
+
+msgid "宿主算出的内容总高度，用于滚动范围。"
+msgstr "Total content height computed by the host, used as the scroll range."
+
+msgid "宿主通过窗口句柄显示或隐藏对话窗口。"
+msgstr "The host shows or hides the dialog window through its window handle."
+
+msgid "密码"
+msgstr "Password"
+
+msgid "密码已修改（{} 位）"
+msgstr "Password changed ({} characters)"
+
+msgid "密码至少 8 位，需包含字母和数字。"
+msgstr "Passwords need at least 8 characters, including letters and numbers."
 
 msgid "对数轴"
 msgstr "Log axis"
@@ -687,29 +2301,74 @@ msgstr "Log axis"
 msgid "对比多个维度上的系列表现。"
 msgstr "Compare series across multiple dimensions."
 
-msgid "对照已填内容或另一种样式。"
-msgstr "Compare populated content or an alternative style."
-
 msgid "对话框关闭后此输入保持"
 msgstr "This input persists after closing the dialog"
+
+msgid "对话框内放置表单；Tab / Shift+Tab 在输入框与按钮间循环，跳过禁用项。"
+msgstr "A form inside the dialog; Tab / Shift+Tab cycles through fields and buttons, skipping disabled items."
+
+msgid "对话框操作栏"
+msgstr "Dialog action bar"
+
+msgid "对话窗口"
+msgstr "Dialog window"
 
 msgid "对话窗口内容"
 msgstr "Dialog content"
 
+msgid "对话窗口标题与图标。"
+msgstr "Dialog window title and icon."
+
 msgid "导出"
 msgstr "Export"
+
+msgid "导出 10 月销售报表"
+msgstr "Export October sales report"
+
+msgid "导出 PDF"
+msgstr "Export PDF"
 
 msgid "导出 PNG"
 msgstr "Export PNG"
 
+msgid "导出 {} 项"
+msgstr "Export {} items"
+
+msgid "导出为"
+msgstr "Export as"
+
+msgid "导出图片"
+msgstr "Export image"
+
+msgid "导出失败"
+msgstr "Export failed"
+
 msgid "导出失败，请检查目标路径"
 msgstr "Export failed. Check the destination path."
+
+msgid "导出完成"
+msgstr "Export complete"
 
 msgid "导出成功"
 msgstr "Export succeeded"
 
-msgid "导出报告"
+msgid "导出报表"
 msgstr "Export report"
+
+msgid "导出状态 · {}"
+msgstr "Export status · {}"
+
+msgid "导出确认"
+msgstr "Export confirmation"
+
+msgid "导航"
+msgstr "Navigation"
+
+msgid "导航位置（左、右、顶部）与侧栏状态（展开、紧凑、隐藏）。"
+msgstr "Navigation position (left, right, top) and pane state (expanded, compact, hidden)."
+
+msgid "导航未读数"
+msgstr "Navigation unread counts"
 
 msgid "导航窗格"
 msgstr "Navigation pane"
@@ -717,74 +2376,152 @@ msgstr "Navigation pane"
 msgid "将状态、操作和内容放在同一卡片中。"
 msgstr "Combine status, actions, and content in one card."
 
-msgid "将鼠标停在按钮上查看提示。"
-msgstr "Hover over a button to display a tooltip."
+msgid "将通过 {} 发送通知"
+msgstr "Notifications will be sent via {}"
 
-msgid "小于 560px"
-msgstr "Below 560 px"
+msgid "将鼠标停在工具栏按钮上"
+msgstr "Hover over a toolbar button"
 
-msgid "少量卡片"
-msgstr "Fewer cards"
+msgid "将鼠标停在按钮上查看提示，在右侧修改提示内容。"
+msgstr "Hover over the button to see the tooltip, and edit its content on the right."
 
-msgid "少量数据与空列表同样保留表头和列布局。"
-msgstr "Small and empty data sets preserve headers and columns."
+msgid "小节标题 · Subtitle"
+msgstr "Subtitle"
 
-msgid "少量矩形"
-msgstr "Fewer tiles"
+msgid "少量数据，以及清空数据后保留容器与空状态提示。"
+msgstr "Sparse data, and the empty state kept after clearing the data."
+
+msgid "少量进度、接近完成与持续旋转。"
+msgstr "Low progress, nearly complete, and continuous spinning."
+
+msgid "尚未保存"
+msgstr "Not saved yet"
+
+msgid "尚未修改"
+msgstr "Not changed yet"
+
+msgid "尚未切换"
+msgstr "Not toggled yet"
+
+msgid "尚未复制"
+msgstr "Not copied yet"
+
+msgid "尚未导出"
+msgstr "Not exported yet"
+
+msgid "尚未开始"
+msgstr "Not started"
+
+msgid "尚未打开图板"
+msgstr "No board opened yet"
+
+msgid "尚未打开应用"
+msgstr "No app opened yet"
+
+msgid "尚未打开窗口"
+msgstr "No window opened yet"
+
+msgid "尚未拖动分隔线"
+msgstr "No divider dragged yet"
+
+msgid "尚未提交"
+msgstr "Not submitted yet"
+
+msgid "尚未点击"
+msgstr "Not clicked yet"
+
+msgid "尚未点击链接"
+msgstr "No link clicked yet"
+
+msgid "尚未确认"
+msgstr "Not confirmed yet"
 
 msgid "尚未绑定图表服务"
 msgstr "Chart services are not bound."
 
+msgid "尚未编辑"
+msgstr "Not edited yet"
+
+msgid "尚未读完"
+msgstr "Not read to the end yet"
+
+msgid "尚未选择"
+msgstr "Nothing selected yet"
+
 msgid "尚未选择卡片"
 msgstr "No card selected"
+
+msgid "尚未选择操作"
+msgstr "No action chosen yet"
+
+msgid "尚未选择标签"
+msgstr "No tag selected"
+
+msgid "尚未预订"
+msgstr "Not booked yet"
 
 msgid "就绪"
 msgstr "Ready"
 
+msgid "层级 {} / 4"
+msgstr "Level {} / 4"
+
+msgid "层级标识，回调中原样返回。"
+msgstr "Level identifier, returned as is in the callback."
+
+msgid "居中"
+msgstr "Center"
+
 msgid "展开"
 msgstr "Expanded"
 
-msgid "展开分组、搜索并选择导航项。"
-msgstr "Expand groups, search, and select a navigation item."
+msgid "展开列表勾选多项，点“完成”或列表外任意位置收起。"
+msgstr "Open the list and check several items; click Finish or anywhere outside to close it."
 
-msgid "展开列表，选中多个选项。"
-msgstr "Open the list and select multiple options."
+msgid "展开列表选择一项；也可聚焦后用上下方向键切换。"
+msgstr "Open the list and choose an item, or focus it and use the Up and Down keys."
 
-msgid "展开列表，选择一个选项。"
-msgstr "Open a list and choose an option."
+msgid "展开后的内容"
+msgstr "Expanded content"
 
-msgid "展开或折叠内容，输入状态在折叠后保留。"
-msgstr "Expand or collapse content. Input state persists while collapsed."
-
-msgid "展开树节点，选择一个或多个子项。"
-msgstr "Expand tree nodes and select one or more children."
-
-msgid "展开目录，选择文件和子节点。"
-msgstr "Expand folders and select files and child nodes."
+msgid "展开或折叠节点时触发；宿主据此更新 expanded 与子项 visible。"
+msgstr "Raised when a node is expanded or collapsed; the host updates expanded and the children's visible."
 
 msgid "展开行"
 msgstr "Expand row"
 
-msgid "展示已选、未选与禁用状态。"
-msgstr "Checked, unchecked, and disabled states."
-
-msgid "展示操作结果，以及继续处理的入口。"
-msgstr "Display an operation result and its follow-up action."
-
-msgid "展示数值、单位、精度和趋势。"
-msgstr "Display values, units, precision, and trends."
-
 msgid "展示标题 · Display"
 msgstr "Display heading"
+
+msgid "属性"
+msgstr "Properties"
+
+msgid "嵌入式"
+msgstr "Embedded"
+
+msgid "嵌在页面中的状态提示条，用颜色区分信息、成功、警告与错误，可由用户关闭。适合不打断操作的持续性反馈。"
+msgstr "An inline status bar that uses color to distinguish info, success, warning, and error, and can be closed by the user. Suitable for persistent feedback that doesn't interrupt the workflow."
+
+msgid "嵌套 Menu 生成子菜单，MenuSeparator 生成分隔线。"
+msgstr "Nest a Menu to create a submenu; MenuSeparator creates a separator."
+
+msgid "嵌套分割：编辑器布局"
+msgstr "Nested splits: editor layout"
 
 msgid "工作区名称"
 msgstr "Workspace name"
 
+msgid "工具栏停靠在顶部，资源管理器和大纲分列两侧，终端在底部；编辑区占据剩余空间。"
+msgstr "The toolbar docks at the top, the explorer and outline sit on either side and the terminal at the bottom; the editor fills the rest."
+
+msgid "工具类窗口通常只保留关闭和最小化，主窗口再加上菜单、主题和设置。勾选右侧选项预览标题栏的组成。"
+msgstr "Tool windows usually keep only close and minimize, while main windows add menu, theme and settings. Check the options on the right to preview the title bar."
+
 msgid "工程"
 msgstr "Project"
 
-msgid "工程名称"
-msgstr "Project name"
+msgid "工程笔记 · 5 分钟阅读"
+msgstr "Engineering notes · 5 min read"
 
 msgid "工程详情"
 msgstr "Project details"
@@ -795,44 +2532,122 @@ msgstr "Left"
 msgid "左侧内容"
 msgstr "Left content"
 
+msgid "左侧文件树，右侧显示所选节点的信息；折叠目录时隐藏其子节点。"
+msgstr "A file tree on the left and details of the selected node on the right. Collapsing a folder hides its children."
+
 msgid "左右双轴"
 msgstr "Left and right axes"
+
+msgid "左右排列时标题区的宽度，默认 220px。"
+msgstr "Width of the label area in side-by-side mode, 220px by default."
+
+msgid "左右边区的保存宽度。"
+msgstr "Saved widths of the left and right panes."
+
+msgid "左对齐"
+msgstr "Align left"
 
 msgid "左阶梯"
 msgstr "Left steps"
 
+msgid "已从杭州发出，下一站上海"
+msgstr "Left Hangzhou, next stop Shanghai"
+
 msgid "已保存"
 msgstr "Saved"
+
+msgid "已保存 · {} <{}>"
+msgstr "Saved · {} <{}>"
 
 msgid "已保存设备：{}"
 msgstr "Saved device: {}"
 
-msgid "已关闭"
-msgstr "Off"
+msgid "已关注"
+msgstr "Following"
+
+msgid "已创建副本"
+msgstr "Duplicate created"
+
+msgid "已到达上海转运中心"
+msgstr "Arrived at the Shanghai transit center"
+
+msgid "已刷新 {} 次"
+msgstr "Refreshed {} times"
+
+msgid "已加载 3 篇文章"
+msgstr "3 articles loaded"
+
+msgid "已发货"
+msgstr "Shipped"
 
 msgid "已取消"
 msgstr "Canceled"
 
-msgid "已启用"
-msgstr "Enabled"
+msgid "已同意协议"
+msgstr "Agreement accepted"
 
-msgid "已固定"
-msgstr "Pinned"
+msgid "已同意条款"
+msgstr "Terms accepted"
+
+msgid "已同步"
+msgstr "Synced"
+
+msgid "已复制 {} 的路径"
+msgstr "Copied the path of {}"
+
+msgid "已复制共享链接"
+msgstr "Share link copied"
+
+msgid "已复制到剪贴板"
+msgstr "Copied to clipboard"
 
 msgid "已完成"
 msgstr "Complete"
 
-msgid "已完成 {}%"
-msgstr "{}% complete"
+msgid "已完成 {} / 3"
+msgstr "Completed {} / 3"
+
+msgid "已完成 {} / 4"
+msgstr "Completed {} / 4"
+
+msgid "已完成、未完成，以及没有说明文字的事件。"
+msgstr "Completed, pending, and an event without a description."
 
 msgid "已完成任务"
 msgstr "Completed tasks"
 
+msgid "已完成步骤"
+msgstr "Completed steps"
+
+msgid "已导出 chart@{}.{} · {}"
+msgstr "Exported chart@{}.{} · {}"
+
+msgid "已导出 {} 项数据"
+msgstr "Exported {} items of data"
+
+msgid "已导出为 {}"
+msgstr "Exported as {}"
+
+msgid "已将 {} 移到回收站"
+msgstr "Moved {} to the Recycle Bin"
+
+msgid "已展开 {} 项"
+msgstr "{} expanded"
+
 msgid "已展开：{}"
 msgstr "Expanded: {}"
 
+msgid "已应用{}"
+msgstr "Applied {}"
+
 msgid "已归档"
 msgstr "Archived"
+
+msgid "已恢复"
+msgstr "Restored"
+
+msgid "已恢复全部项目"
+msgstr "All items restored"
 
 msgid "已恢复示例数据。"
 msgstr "Sample data restored."
@@ -840,29 +2655,104 @@ msgstr "Sample data restored."
 msgid "已打开"
 msgstr "Opened"
 
+msgid "已打开 {}"
+msgstr "Opened {}"
+
+msgid "已打开“季度报告”"
+msgstr "Opened \"Quarterly report\""
+
+msgid "已打开对话窗口"
+msgstr "Dialog window opened"
+
+msgid "已打开普通窗口"
+msgstr "Regular window opened"
+
 msgid "已折叠：{}"
 msgstr "Collapsed: {}"
 
-msgid "已操作 {} 次"
-msgstr "Actions: {}"
+msgid "已拒绝条款"
+msgstr "Terms declined"
 
-msgid "已暂停"
-msgstr "Paused"
+msgid "已提交"
+msgstr "Submitted"
+
+msgid "已提交 {} 字"
+msgstr "Submitted {} characters"
+
+msgid "已提交的快捷键文本，如 Ctrl+S；为空时显示占位文字。"
+msgstr "The committed shortcut text, such as Ctrl+S; placeholder text is shown when empty."
+
+msgid "已提交的日期，以及是否已选择。"
+msgstr "The committed date and whether a value has been chosen."
+
+msgid "已提交的时间，以及是否已选择。"
+msgstr "The committed time and whether a value has been chosen."
+
+msgid "已提交的颜色，以及弹层中正在调整的颜色。"
+msgstr "The committed color and the color being adjusted in the popup."
+
+msgid "已提交颜色的通道值，范围 0–255。"
+msgstr "Channel values of the committed color, from 0 to 255."
+
+msgid "已插入链接"
+msgstr "Link inserted"
+
+msgid "已揽收"
+msgstr "Picked up"
+
+msgid "已收藏"
+msgstr "Favorited"
+
+msgid "已放弃更改"
+msgstr "Changes discarded"
+
+msgid "已新建“未命名文档”"
+msgstr "Created \"Untitled document\""
+
+msgid "已显示图层：{}"
+msgstr "Layers shown: {}"
+
+msgid "已暂停 · 进度 {}%"
+msgstr "Paused · {}%"
 
 msgid "已更新：{} · {} = {}"
 msgstr "Updated: {} - {} = {}"
 
+msgid "已有 2 个依赖"
+msgstr "2 dependencies"
+
+msgid "已松开，未清空"
+msgstr "Released, not emptied"
+
+msgid "已格式化的数值文本。"
+msgstr "Pre-formatted value text."
+
+msgid "已格式化的时间文本。"
+msgstr "Formatted time text."
+
+msgid "已永久删除 {} 个项目"
+msgstr "Permanently deleted {} items"
+
+msgid "已添加 {}"
+msgstr "Added {}"
+
+msgid "已用 72 GB，共 100 GB"
+msgstr "72 GB of 100 GB used"
+
 msgid "已确认"
 msgstr "Confirmed"
 
-msgid "已移除，可重新选择"
-msgstr "Removed; select again to restore"
+msgid "已读完，可以勾选同意"
+msgstr "Read to the end, ready to agree"
 
-msgid "已选中"
-msgstr "Selected"
+msgid "已连接"
+msgstr "Connected"
 
-msgid "已选择"
-msgstr "Selected"
+msgid "已选 {} 项"
+msgstr "{} selected"
+
+msgid "已选 · {}"
+msgstr "Selected · {}"
 
 msgid "已选择 {}，原始索引 {}，数值 {}"
 msgstr "Selected {}, original index {}, value {}"
@@ -873,38 +2763,110 @@ msgstr "Selected card {}"
 msgid "已选择：系列 {}，数据 {}，值 {}"
 msgstr "Selected: series {}, point {}, value {}"
 
-msgid "带图标"
-msgstr "With icon"
+msgid "已选日期与时间。"
+msgstr "Selected date and time."
 
-msgid "带标题的内容容器 · ForgeCard"
-msgstr "Titled content container · ForgeCard"
+msgid "已重置尺寸"
+msgstr "Sizes reset"
+
+msgid "已隐藏全部窗口"
+msgstr "All windows hidden"
+
+msgid "已隐藏示例窗口"
+msgstr "Sample windows hidden"
+
+msgid "已预订 · {} 位成人、{} 位儿童，共 {} 晚"
+msgstr "Booked · {} adults, {} children, {} nights"
+
+msgid "布局"
+msgstr "Layouts"
+
+msgid "带圆角和细边框的图片视图，图片按区域裁切。圆角设为边长一半即为圆形，常用于头像、封面和缩略图。"
+msgstr "An image view with rounded corners and a thin border; the image is clipped to the area. A radius of half the side makes a circle. Common for avatars, covers and thumbnails."
+
+msgid "带建议列表的文本框。输入时按前缀筛选候选项，可用上下方向键移动、Enter 选中，适合搜索和快速填写。"
+msgstr "A text field with a suggestion list. Typing filters candidates by prefix; use the Up and Down keys to move and Enter to choose. Suited to search and quick entry."
+
+msgid "带扫光动画的占位块，在内容加载期间占住位置，提示用户数据即将出现。可自由组合成任意版式。"
+msgstr "A placeholder block with a shimmer animation that holds space while content loads, signaling that data is on its way. Combine blocks into any layout."
+
+msgid "带折射和高光描边的玻璃材质，继承自 Acrylic，默认模糊更轻、圆角更大。适合悬浮控件和小组件。"
+msgstr "A glass material with refraction and a highlight border. It inherits from Acrylic with lighter blur and larger corners by default. Suited to floating controls and widgets."
+
+msgid "带标准按钮的对话框窗口，按钮回调如 ok-clicked。"
+msgstr "Dialog window with standard buttons and callbacks such as ok-clicked."
+
+msgid "带标题与不带标题的卡片。"
+msgstr "Cards with and without a title."
+
+msgid "带校验提示的单行输入框，按必填和长度规则检查内容，用户编辑后在下方显示错误信息。"
+msgstr "A single-line input with validation hints. It checks required and length rules and shows an error below after the user edits."
+
+msgid "带滚动视口的多行文本框，基于原生 TextEdit。通过 content-x / content-y 读取或设置滚动位置，适合日志、协议等长文本。"
+msgstr "A multi-line text box with a scrolling viewport, based on native TextEdit. Read or set the scroll position through content-x / content-y; suited to long text such as logs and agreements."
+
+msgid "带边框与圆角的内容容器，可选标题，内容纵向排列。卡片尺寸由放置它的页面决定。"
+msgstr "A bordered, rounded content container with an optional title; content is stacked vertically. The page that hosts the card decides its size."
 
 msgid "帧校验"
 msgstr "Frame validation"
 
+msgid "常用图标的字符常量，如 home、settings、search。"
+msgstr "Glyph constants for common icons, such as home, settings, and search."
+
+msgid "常用的字号层级。字体和比例在设置页调整，本页随之更新。"
+msgstr "Common text size levels. Adjust the font and scale in settings and this page updates."
+
 msgid "常用示例"
 msgstr "Common examples"
 
-msgid "常驻页面容器与当前可视区域截图"
-msgstr "Persistent page container and visible-area capture"
+msgid "常见问题"
+msgstr "FAQ"
 
-msgid "平滑曲线"
-msgstr "Smooth curve"
+msgid "常规"
+msgstr "General"
 
-msgid "平滑面积图"
-msgstr "Smooth area chart"
+msgid "常驻页面容器：active 同时控制可见性与截图许可，隐藏后内部控件状态保留。capture() 截取页面当前可视区域。"
+msgstr "A persistent page container: active controls both visibility and capture permission, and control state is kept while hidden. capture() grabs the page's currently visible area."
+
+msgid "平台默认"
+msgstr "Platform default"
+
+msgid "年"
+msgstr "Year"
+
+msgid "应用"
+msgstr "Apply"
+
+msgid "应用启动台"
+msgstr "App launcher"
+
+msgid "应用栏、分组标题、分隔线与底部设置项组成完整的后台导航；返回按钮回到上一个页面。"
+msgstr "An app bar, section headers, a separator, and a footer settings item form a complete admin navigation. The back button returns to the previous page."
+
+msgid "应用级导航框架：侧栏或顶栏列出页面，右侧区域承载当前页面内容。导航项由应用提供，选择与展开通过回调交给应用处理。"
+msgstr "An app-level navigation frame: a side or top bar lists pages and the content area shows the current page. The app supplies the items and handles selection and expansion through callbacks."
 
 msgid "底部"
 msgstr "Bottom"
 
-msgid "延时按钮"
-msgstr "DelayButton"
+msgid "建议列表是否展开；输入时自动展开。"
+msgstr "Whether the suggestion list is open; it opens automatically while typing."
 
-msgid "开启"
+msgid "开"
 msgstr "On"
 
-msgid "开启或暂停内容加载的扫光效果。"
-msgstr "Start or pause the loading shimmer."
+msgid "开关旁的说明文字。"
+msgstr "Description text next to the switch."
+
+msgid "开发文档"
+msgstr "Developer docs"
+
+msgid "开启或暂停动画，调整扫光速度。"
+msgstr "Start or pause the animation and adjust the shimmer speed."
+
+msgid "开始与结束时间以 15 分钟为步长，确认后更新会议时段。"
+msgstr "Start and end times use 15-minute steps; confirming updates the meeting slot."
 
 msgid "开始任务"
 msgstr "Start task"
@@ -912,8 +2874,29 @@ msgstr "Start task"
 msgid "开始使用"
 msgstr "Get started"
 
+msgid "开始使用前，需要同意服务条款与隐私政策。"
+msgstr "Before getting started, you need to agree to the terms of service and privacy policy."
+
+msgid "开始同步"
+msgstr "Start sync"
+
+msgid "开始导出"
+msgstr "Start export"
+
 msgid "开始引导"
 msgstr "Start tour"
+
+msgid "开始录制、关闭弹层，或清除快捷键。"
+msgstr "Starts recording, closes the popup, or clears the shortcut."
+
+msgid "开始时间"
+msgstr "Start time"
+
+msgid "开源"
+msgstr "Open source"
+
+msgid "开源许可证"
+msgstr "Open-source license"
 
 msgid "引导已完成"
 msgstr "Tour completed"
@@ -921,53 +2904,185 @@ msgstr "Tour completed"
 msgid "引导已跳过"
 msgstr "Tour skipped"
 
+msgid "引导覆盖示例区域，逐个高亮两个目标。方向键切换步骤，Esc 关闭。"
+msgstr "The tour covers the example area and highlights two targets in turn. Arrow keys switch steps and Esc closes it."
+
 msgid "张工"
 msgstr "Zhang"
 
-msgid "归档"
-msgstr "Archive"
+msgid "弱"
+msgstr "Weak"
+
+msgid "弹出层"
+msgstr "Popups"
+
+msgid "弹层中尚未确认的日期。"
+msgstr "The date in the popup that has not been confirmed yet."
+
+msgid "弹层是否打开、是否正在屏幕取色。"
+msgstr "Whether the popup is open and whether screen picking is active."
+
+msgid "强"
+msgstr "Strong"
+
+msgid "强调色"
+msgstr "Accent color"
+
+msgid "强调色 rgb({}, {}, {})"
+msgstr "Accent rgb({}, {}, {})"
 
 msgid "归档记录"
 msgstr "Archive record"
 
-msgid "当前 Gallery 主窗口就是 ForgeWindow 实例。"
-msgstr "The Gallery window is an instance of ForgeWindow."
+msgid "归档项目"
+msgstr "Archive projects"
 
-msgid "当前值：{}"
-msgstr "Current value: {}"
+msgid "当前位置 · {}"
+msgstr "Current location · {}"
 
-msgid "当前无需滚动"
-msgstr "No scrolling needed"
+msgid "当前值，可双向绑定。"
+msgstr "The current value; supports two-way binding."
+
+msgid "当前值，自动限制在 minimum 与 maximum 之间。"
+msgstr "Current value, clamped between minimum and maximum."
+
+msgid "当前值；外部赋值同样限制在范围内。"
+msgstr "Current value; values set by the host are also kept in range."
+
+msgid "当前列数与列宽。"
+msgstr "Current column count and column width."
+
+msgid "当前列数与卡片宽度；卡片的 width 应绑定到 item-width。"
+msgstr "Current column count and card width; bind each card's width to item-width."
+
+msgid "当前平铺的列数与行数。"
+msgstr "Current tile columns and rows."
+
+msgid "当前扫光位置，取值 0 到 1。"
+msgstr "Current shimmer position, from 0 to 1."
+
+msgid "当前文本能否解析为数字。"
+msgstr "Whether the current text parses as a number."
+
+msgid "当前文档：{}"
+msgstr "Current document: {}"
+
+msgid "当前明暗模式，可读写。"
+msgstr "Current light or dark mode. Readable and writable."
+
+msgid "当前是否为上下排列。"
+msgstr "Whether the row is currently stacked."
+
+msgid "当前是否有效，以及无效时的提示文字。"
+msgstr "Whether the input is valid, and the hint text when it is not."
+
+msgid "当前是否选中，可双向绑定。"
+msgstr "Whether it is checked, two-way bindable."
+
+msgid "当前显示的页面 ID。"
+msgstr "ID of the page currently shown."
+
+msgid "当前标签列表，由应用提供。"
+msgstr "Current tag list, provided by the application."
+
+msgid "当前标签序号，可读写。"
+msgstr "Index of the current tab; readable and writable."
+
+msgid "当前标签的 id，对应标签显示背景。"
+msgstr "ID of the current tab, which is shown with a background."
 
 msgid "当前行：{}"
 msgstr "Current row: {}"
 
-msgid "当前页：{}，总页数：{}"
-msgstr "Current page: {}, total pages: {}"
+msgid "当前评分，限制在 0 到 maximum 之间。"
+msgstr "Current rating, kept between 0 and maximum."
 
-msgid "当前：已展开"
-msgstr "Current: expanded"
+msgid "当前选中的 id；点击后组件自行更新，可双向绑定。"
+msgstr "ID of the selected segment. The component updates it on click, so it can be two-way bound."
 
-msgid "当前：已折叠"
-msgstr "Current: collapsed"
+msgid "当前选中项的文字。"
+msgstr "Text of the selected item."
+
+msgid "当前选中项的索引，可双向绑定。"
+msgstr "Index of the selected item; supports two-way binding."
+
+msgid "当前页面 {} · 搜索 “{}”"
+msgstr "Current page {} · Search \"{}\""
+
+msgid "当前页面 · 列表"
+msgstr "Current page · List"
+
+msgid "当前页面 · 详情"
+msgstr "Current page · Details"
+
+msgid "当前页面的 id，对应项显示选中指示。"
+msgstr "ID of the current page; its item shows the selection indicator."
+
+msgid "当前页，从 1 开始；越界时自动收回范围内。"
+msgstr "Current page, starting at 1. Out-of-range values are clamped automatically."
+
+msgid "当日达"
+msgstr "Same day"
+
+msgid "录制中尚未保存的组合键。"
+msgstr "The recorded combination that has not been saved yet."
+
+msgid "录制组合键的按钮。点击后按下新的快捷键，再用保存、重置或取消决定是否提交。"
+msgstr "A button that records key combinations. Click it, press a new shortcut, then save, reset, or cancel."
+
+msgid "待同步"
+msgstr "Pending sync"
 
 msgid "待处理"
 msgstr "Pending"
 
+msgid "待审批"
+msgstr "Pending approval"
+
+msgid "待审核"
+msgstr "Pending review"
+
+msgid "待导出"
+msgstr "Pending export"
+
 msgid "待开始"
 msgstr "Pending"
+
+msgid "待派送"
+msgstr "Out for delivery soon"
+
+msgid "待确认"
+msgstr "Needs confirmation"
+
+msgid "必填"
+msgstr "Required"
 
 msgid "快捷键"
 msgstr "Shortcut"
 
-msgid "快捷键选择器"
-msgstr "ShortcutPicker"
+msgid "快捷键设置"
+msgstr "Shortcut settings"
+
+msgid "性能"
+msgstr "Performance"
+
+msgid "性能优化"
+msgstr "Performance"
 
 msgid "性能测试"
 msgstr "Performance testing"
 
-msgid "总行数 {} · 可见 {} · 已选 {}"
-msgstr "Total {} - visible {} - selected {}"
+msgid "总条数与每页条数，共同决定页数。"
+msgstr "Total items and items per page, which together determine the page count."
+
+msgid "总行数 {} · 可见 {} · 已选 {} — {}"
+msgstr "Rows {} · Visible {} · Selected {} — {}"
+
+msgid "总页数；没有数据时为 0。"
+msgstr "Total page count; 0 when there is no data."
+
+msgid "恢复全部"
+msgstr "Restore all"
 
 msgid "恢复数据"
 msgstr "Reset data"
@@ -978,20 +3093,56 @@ msgstr "Restore tag"
 msgid "恢复验证"
 msgstr "Recovery validation"
 
+msgid "恢复默认"
+msgstr "Restore defaults"
+
 msgid "悬停查看提示"
 msgstr "Hover for a tooltip"
 
 msgid "悬停查看数值，点击选择数据，点击图例显示或隐藏系列。"
 msgstr "Hover for values, click to select, and use legends to show or hide series."
 
-msgid "悬停读取数值，点击数据或图例进行交互。"
-msgstr "Hover to read values; click data or legends to interact."
+msgid "悬停读取数值，点击数据点或图例进行交互；在右侧更新数据或切换样式。"
+msgstr "Hover to read values and click data points or the legend; update data or switch styles on the right."
 
-msgid "成功"
-msgstr "Success"
+msgid "意见反馈"
+msgstr "Feedback"
 
-msgid "截图"
-msgstr "Screenshots"
+msgid "成人"
+msgstr "Adults"
+
+msgid "成人至少 1 位，儿童与入住晚数各有上限。"
+msgstr "At least 1 adult is required; children and nights each have an upper limit."
+
+msgid "成功、警告与错误三种结果，未设置按钮文字。"
+msgstr "Success, warning, and error results without button text."
+
+msgid "成员详情"
+msgstr "Member details"
+
+msgid "我已阅读并同意"
+msgstr "I have read and agree"
+
+msgid "我的工作区"
+msgstr "My workspace"
+
+msgid "我的应用"
+msgstr "My app"
+
+msgid "我的报表"
+msgstr "My reports"
+
+msgid "我的文档"
+msgstr "My documents"
+
+msgid "截取整个窗口；截图服务未接入时返回错误。"
+msgstr "Capture the whole window; returns an error when the capture service is not connected."
+
+msgid "截取页面区域；未激活或截图服务未接入时返回错误。"
+msgstr "Capture the page area; returns an error when inactive or when the capture service is not connected."
+
+msgid "截图 · 15 张"
+msgstr "Screenshots · 15"
 
 msgid "截图将在此处显示"
 msgstr "The captured image will appear here"
@@ -1005,8 +3156,23 @@ msgstr "Capture service is not connected"
 msgid "所有任务已完成，可继续下一步。"
 msgstr "All tasks are complete. Continue to the next step."
 
+msgid "所有组件按全局缩放比例调整字号。"
+msgstr "All components scale their font size with the global factor."
+
+msgid "所有通知已处理"
+msgstr "All notifications handled"
+
+msgid "扁平化的树节点，含 parent-id、depth、folder、expanded、selected、visible。"
+msgstr "Flattened tree nodes with parent-id, depth, folder, expanded, selected, and visible."
+
+msgid "扁平节点列表，含 id、parent-id、label、depth、folder、expanded、selected、visible、enabled。"
+msgstr "Flat node list with id, parent-id, label, depth, folder, expanded, selected, visible, and enabled."
+
 msgid "扇区角度相同，面积随类别数值变化。"
 msgstr "Sectors have equal angles; area changes with each value."
+
+msgid "打印设置"
+msgstr "Print settings"
 
 msgid "打开"
 msgstr "Open"
@@ -1014,20 +3180,35 @@ msgstr "Open"
 msgid "打开 Gallery"
 msgstr "Open Gallery"
 
-msgid "打开原生对话窗口"
-msgstr "Open native dialog"
+msgid "打开 Gallery · {}"
+msgstr "Open Gallery · {}"
 
-msgid "打开原生窗口"
-msgstr "Open native window"
+msgid "打开 · {}"
+msgstr "Open · {}"
 
-msgid "打开对话窗口，确认或取消操作。"
-msgstr "Open a dialog to confirm or cancel an action."
+msgid "打开一个普通窗口或对话框；再次打开会复用同一个实例。"
+msgstr "Open a window or a dialog. Opening it again reuses the same instance."
+
+msgid "打开对话框"
+msgstr "Open dialog"
+
+msgid "打开对话窗口"
+msgstr "Open dialog window"
+
+msgid "打开或关闭弹层，或预设弹层中的颜色。"
+msgstr "Opens or closes the popup, or presets the color in the popup."
 
 msgid "打开抽屉"
 msgstr "Open drawer"
 
-msgid "打开独立窗口，再隐藏或重新显示。"
-msgstr "Open an independent window, then hide or show it again."
+msgid "打开抽屉，在面板中输入后关闭再打开，内容仍然保留。"
+msgstr "Open the drawer, type in the panel, then close and reopen it; the content is kept."
+
+msgid "打开确认对话框，用确认、取消或 Esc 关闭。"
+msgstr "Open the confirmation dialog and close it with confirm, cancel, or Esc."
+
+msgid "打开窗口"
+msgstr "Open window"
 
 msgid "执行"
 msgstr "Run"
@@ -1035,14 +3216,59 @@ msgstr "Run"
 msgid "执行任务"
 msgstr "Run task"
 
+msgid "执行耗时操作的主按钮。忙碌时显示加载指示和进度并自动禁用，防止重复提交。"
+msgstr "A primary button for long-running operations. While busy it shows a loading indicator and progress and disables itself to prevent duplicate submissions."
+
 msgid "执行验证"
 msgstr "Run verification"
+
+msgid "批量导出"
+msgstr "Bulk export"
+
+msgid "找到 {} 件商品"
+msgstr "{} products found"
+
+msgid "技术服务合同"
+msgstr "Technical services agreement"
+
+msgid "把 current-page 收回到有效范围。"
+msgstr "Clamps current-page to the valid range."
+
+msgid "把区域分成两块，拖动中间的分隔条调整比例。两块内容由应用按输出的几何属性放置。"
+msgstr "Splits an area into two panes; drag the divider to change the ratio. The app places pane content using the output geometry."
+
+msgid "把文本编码为二维码图像，内容变化时自动重新生成。编码由宿主绑定的服务完成，失败时显示错误原因。"
+msgstr "Encodes text as a QR code image and regenerates it when the content changes. A host-bound service does the encoding and shows the reason on failure."
+
+msgid "把选中内容复制到系统剪贴板。"
+msgstr "Copies the selection to the system clipboard."
+
+msgid "把键盘焦点移到按钮上。"
+msgstr "Moves keyboard focus to the button."
+
+msgid "把长列表拆成多页，提供首页、上一页、页码、下一页和末页按钮。总条数与每页条数决定页数，最多同时显示 7 个页码。"
+msgstr "Splits a long list into pages with first, previous, page number, next, and last buttons. The total and page size determine the page count, and up to 7 page numbers are shown at once."
+
+msgid "折叠、展开与禁用三种状态。"
+msgstr "Collapsed, expanded and disabled."
 
 msgid "折叠行"
 msgstr "Collapse row"
 
-msgid "报告已生成"
-msgstr "Report generated"
+msgid "折射扭曲效果，默认开启。"
+msgstr "Refraction distortion, on by default."
+
+msgid "折扣"
+msgstr "On sale"
+
+msgid "报表"
+msgstr "Reports"
+
+msgid "报表中心"
+msgstr "Report center"
+
+msgid "报表导出"
+msgstr "Report export"
 
 msgid "抽屉已关闭"
 msgstr "Drawer closed"
@@ -1050,77 +3276,239 @@ msgstr "Drawer closed"
 msgid "抽屉设置"
 msgstr "Drawer settings"
 
-msgid "拖动分隔条调整两个内容区域的比例，可切换水平或垂直布局。"
-msgstr "Drag the divider to resize both panes, and switch between horizontal and vertical layouts."
+msgid "拒绝"
+msgstr "Decline"
 
-msgid "拖动四条分隔线调整尺寸；独立隐藏边区后，中央区自动填充。"
-msgstr "Drag any of the four dividers; hiding an edge lets the center fill its space."
+msgid "拖动分隔条，或在右侧切换排列方向。"
+msgstr "Drag the divider, or switch the orientation on the right."
 
-msgid "拖动标题栏可移动窗口；双击标题栏切换最大化；拖动窗口边缘可调整大小。"
-msgstr "Drag the title bar to move; double-click to maximize; drag an edge to resize."
+msgid "拖动分隔线后触发，参数为边区与新尺寸。"
+msgstr "Fires after a divider is dragged, with the pane edge and its new size."
 
-msgid "拖动水平或垂直滑块调整数值。"
-msgstr "Adjust values with horizontal or vertical sliders."
+msgid "拖动四条分隔线调整尺寸，或在右侧单独隐藏某个边区。"
+msgstr "Drag the four dividers to resize, or hide individual panes on the right."
 
-msgid "按下组合键，使用保存、重置或取消提交快捷键。"
-msgstr "Press a key combination, then save, reset or cancel."
+msgid "拖动旋钮或滑块调整同一数值；聚焦后可用方向键、Home 与 End。"
+msgstr "Drag the knob or slider to adjust the same value. When focused, use arrow keys, Home, and End."
 
-msgid "按住 1 秒"
-msgstr "Hold for 1 second"
+msgid "拖动滑块修改趋势，正负值分别显示为上升和下降。"
+msgstr "Drag the slider to change the trend; positive values rise and negative values fall."
 
-msgid "按住 1.2 秒直接确认"
-msgstr "Hold 1.2 seconds to confirm"
+msgid "拖动滑块修改进度，或切换为未知进度。"
+msgstr "Drag the slider to change progress, or switch to unknown progress."
 
-msgid "按住 1.2 秒，松开确认"
-msgstr "Hold 1.2 seconds, release to confirm"
+msgid "拖动滑块修改进度，调整尺寸或切换为持续旋转。"
+msgstr "Drag the slider to change progress, adjust the size, or switch to continuous spinning."
 
-msgid "按住 2 秒"
-msgstr "Hold for 2 seconds"
+msgid "拖动滑块，或聚焦后按方向键按 step 调整。"
+msgstr "Drag the slider, or focus it and use the arrow keys to adjust by step."
+
+msgid "拖选文本或使用右侧按钮；取消 read-only 后可直接编辑。"
+msgstr "Drag to select text or use the buttons in the options. Clear read-only to edit directly."
+
+msgid "指定当前页，以及标签栏竖排在左侧。"
+msgstr "A preset current page, and a vertical tab bar on the left."
+
+msgid "指示点角度，范围 -135° 到 135°。"
+msgstr "Indicator angle, from -135° to 135°."
+
+msgid "按 Enter 或点击“添加”时触发，参数为输入文字。"
+msgstr "Fires on Enter or when \"Add\" is clicked, with the input text."
+
+msgid "按 Enter 时触发。"
+msgstr "Raised when Enter is pressed."
+
+msgid "按 Wi-Fi 二维码格式拼接网络名称与密码，访客扫码即可连接。"
+msgstr "Builds the Wi-Fi QR format from the network name and password so guests can scan to connect."
+
+msgid "按 parent-id 显示层级，并指定显示缩进的列。"
+msgstr "Shows hierarchy from parent-id and sets which column is indented."
+
+msgid "按下与焦点状态。"
+msgstr "Pressed and focus state."
+
+msgid "按住发布"
+msgstr "Hold to publish"
+
+msgid "按住清空"
+msgstr "Hold to empty"
 
 msgid "按住确认"
 msgstr "Hold to confirm"
 
-msgid "按住确认完成"
-msgstr "Hold confirmed"
+msgid "按分类浏览全部组件页面"
+msgstr "Browse every component page by category"
 
-msgid "按分类浏览已实现和规划中的页面"
-msgstr "Browse implemented and planned pages by category"
+msgid "按发件人"
+msgstr "By sender"
+
+msgid "按发件人排序"
+msgstr "sorted by sender"
+
+msgid "按名称"
+msgstr "By name"
+
+msgid "按名称或标签快速找到报表。"
+msgstr "Quickly find reports by name or tag."
+
+msgid "按名称搜索 Fluent System Icons Regular 的全部图标，查看图形和对应码位。搜索与分页由宿主处理。"
+msgstr "Search all Fluent System Icons Regular icons by name and see each glyph and code point. Search and paging are handled by the host."
 
 msgid "按名称搜索，例如 home、settings、arrow"
 msgstr "Search by name, such as home, settings, or arrow"
 
-msgid "按层级查看数据，展开分组并对同级节点排序。"
-msgstr "Browse hierarchical data, expand groups, and sort sibling rows."
+msgid "按大小"
+msgstr "By size"
+
+msgid "按大小排序"
+msgstr "sorted by size"
+
+msgid "按字节偏移设置选区。"
+msgstr "Sets the selection by byte offsets."
+
+msgid "按层级查看数据，展开分组并对同级节点排序；其余能力与 DataGrid 相同。"
+msgstr "View data by hierarchy, expand groups, and sort sibling nodes; everything else matches DataGrid."
+
+msgid "按日期"
+msgstr "By date"
+
+msgid "按时间"
+msgstr "By date"
+
+msgid "按时间排序"
+msgstr "sorted by date"
+
+msgid "按时间顺序纵向排列事件，圆点区分已完成与未完成。适合展示流程进度、操作记录与物流轨迹。"
+msgstr "Lists events vertically in time order, with dots marking completed and pending ones. Suits process progress, activity logs, and shipment tracking."
 
 msgid "按测试域组织任务。"
 msgstr "Organize tasks by test area."
 
-msgid "按稳定 ID 切换页签"
-msgstr "Switch tabs by stable ID"
+msgid "按类别把设置项分到不同标签页，修改在各页之间保留。"
+msgstr "Settings are grouped into tabs by category, and changes are kept across tabs."
 
-msgid "按稳定 ID 立即切换预编译页面；隐藏页的输入内容保持不变。"
-msgstr "Switch precompiled pages instantly by stable ID; hidden pages retain their input."
+msgid "按范围约束设置数值并触发 value-changed。"
+msgstr "Sets the value within range and triggers value-changed."
 
-msgid "按钮内部显示填色进度，支持按住完成、松开确认与点击倒计时。"
-msgstr "Progress fills the button; hold, release to confirm, or click to start a countdown."
+msgid "按范围约束设置评分。"
+msgstr "Sets the rating within range."
 
-msgid "排序、筛选与单元格编辑"
-msgstr "Sort, filter and edit cells"
+msgid "按钮"
+msgstr "Button"
+
+msgid "按钮、输入框等控件的底色和文字颜色。"
+msgstr "Background and text color of controls such as buttons and inputs."
+
+msgid "按钮上显示的选择摘要，由宿主生成。"
+msgstr "Selection summary shown on the button, generated by the host."
+
+msgid "按钮与方向键的步长。"
+msgstr "Step used by the buttons and arrow keys."
+
+msgid "按钮文字。"
+msgstr "Button text."
+
+msgid "按钮文字，右侧自动显示下拉箭头。"
+msgstr "Button text. A drop-down arrow is shown on the right automatically."
+
+msgid "按钮文字；为空时不显示按钮。"
+msgstr "Button text; the button is hidden when empty."
+
+msgid "按钮文字；为空时按钮为 36px 宽的方形。"
+msgstr "Button text. When empty, the button is a 36px square."
+
+msgid "换行后内容的总高度。"
+msgstr "Total content height after wrapping."
+
+msgid "换行方式与是否只读。"
+msgstr "Wrap mode and whether the text is read-only."
+
+msgid "换行方式，默认按单词换行。"
+msgstr "Wrap mode; wraps at words by default."
+
+msgid "排序"
+msgstr "Sort"
+
+msgid "排序、筛选、冻结列与单元格编辑"
+msgstr "Sorting, filtering, frozen columns, and cell editing"
+
+msgid "排序方式"
+msgstr "Sort by"
+
+msgid "排期.xlsx"
+msgstr "Schedule.xlsx"
+
+msgid "排版 · 4 套"
+msgstr "Typography · 4"
 
 msgid "接口检查"
 msgstr "Interface checks"
 
-msgid "搜索图标名称，查看图形和对应码位。"
-msgstr "Search icon names and inspect glyphs and code points."
+msgid "接管初始焦点与 Tab 顺序；返回 true 表示已处理。"
+msgstr "Take over initial focus and Tab order; return true if handled."
+
+msgid "控件区域的起点。"
+msgstr "Origin of the control area."
+
+msgid "推荐"
+msgstr "Suggested"
+
+msgid "描述遇到的问题或希望增加的功能"
+msgstr "Describe a problem or a feature you would like"
+
+msgid "提交"
+msgstr "Submit"
+
+msgid "提交反馈"
+msgstr "Send feedback"
+
+msgid "提交失败"
+msgstr "Submission failed"
+
+msgid "提交时把所有字段标记为 touched，一次性显示全部错误；全部有效才允许注册。"
+msgstr "On submit, all fields are marked as touched so every error shows at once. Sign-up is allowed only when all fields are valid."
+
+msgid "提示内容"
+msgstr "Tooltip content"
+
+msgid "提示文字，过长时自动换行。"
+msgstr "Message text; wraps automatically when long."
+
+msgid "提示级别：info、success、warning、error，决定左侧色条与图标。"
+msgstr "Level: info, success, warning, or error; determines the left color strip and icon."
+
+msgid "插入链接"
+msgstr "Insert link"
+
+msgid "插画 · 9 个"
+msgstr "Illustrations · 9"
+
+msgid "搜索"
+msgstr "Search"
+
+msgid "搜索 crate"
+msgstr "Search crates"
+
+msgid "搜索报表"
+msgstr "Search reports"
+
+msgid "搜索框输入与返回按钮。"
+msgstr "Search box input and the back button."
 
 msgid "搜索组件"
 msgstr "Search components"
 
-msgid "搜索设备或组件"
-msgstr "Search devices or components"
+msgid "摄影 · 12 张"
+msgstr "Photos · 12"
 
-msgid "操作已完成"
-msgstr "Action completed"
+msgid "摄影 · 20 张"
+msgstr "Photos · 20"
+
+msgid "播放"
+msgstr "Play"
+
+msgid "播放、暂停与圆形占位。"
+msgstr "Playing, paused, and circular placeholder."
 
 msgid "操作成功"
 msgstr "Operation successful"
@@ -1128,17 +3516,41 @@ msgstr "Operation successful"
 msgid "操作菜单"
 msgstr "Action menu"
 
-msgid "数字、提示点和状态徽标。"
-msgstr "Numeric, dot, and status badges."
+msgid "支持。所有组件使用 Palette 配色，随应用主题自动切换。"
+msgstr "Yes. All components use Palette colors and follow the app theme."
 
-msgid "数字徽标"
-msgstr "Numeric badge"
+msgid "收件箱"
+msgstr "Inbox"
+
+msgid "收藏"
+msgstr "Favorite"
+
+msgid "放在任意元素内部，每个元素最多一个。"
+msgstr "Place it inside any element; at most one per element."
+
+msgid "数值上方的标题。"
+msgstr "Title above the value."
+
+msgid "数值为 0 时仍然显示。"
+msgstr "Still show the badge when the value is 0."
+
+msgid "数值后的单位。"
+msgstr "Unit after the value."
 
 msgid "数据与空状态"
 msgstr "Data and empty states"
 
+msgid "数据可视化"
+msgstr "Data visualization"
+
+msgid "数据展示"
+msgstr "Data display"
+
 msgid "数据或坐标范围无效"
 msgstr "Invalid data or coordinate range"
+
+msgid "数据源"
+msgstr "Data sources"
 
 msgid "数据目录"
 msgstr "Data directory"
@@ -1146,95 +3558,287 @@ msgstr "Data directory"
 msgid "数据边界"
 msgstr "Data boundaries"
 
+msgid "数据返回前用头像与文字占位块排出列表版式，加载完成后替换为真实内容。"
+msgstr "Before data arrives, avatar and text placeholders lay out the list; real content replaces them once loaded."
+
 msgid "数量"
 msgstr "Count"
 
-msgid "整数：{}"
-msgstr "Integer: {}"
+msgid "整数输入框，对应 Slint 原生 SpinBox。可直接输入，也可用按钮、方向键或滚轮按步长增减；小数改用 NumberBox。"
+msgstr "An integer field backed by native Slint SpinBox. Type directly, or step with the buttons, arrow keys, or mouse wheel; use NumberBox for decimals."
+
+msgid "整理需求文档"
+msgstr "Organize requirements doc"
+
+msgid "文件"
+msgstr "File"
+
+msgid "文件上传队列"
+msgstr "File upload queue"
+
+msgid "文件列表右键菜单"
+msgstr "File list context menu"
+
+msgid "文件夹"
+msgstr "Folder"
+
+msgid "文件已保存到“下载”文件夹。"
+msgstr "The file has been saved to the \"Downloads\" folder."
+
+msgid "文件浏览器"
+msgstr "File browser"
+
+msgid "文字"
+msgstr "Text"
+
+msgid "文字、主色填充与胶囊外形。"
+msgstr "Text, accent fill and pill shape."
 
 msgid "文字字体"
 msgstr "Text font"
 
+msgid "文字宽度与当前水平位置。"
+msgstr "Text width and current horizontal position."
+
+msgid "文字层级"
+msgstr "Text hierarchy"
+
+msgid "文字是否超出可视宽度；只有超出时才滚动。"
+msgstr "Whether the text exceeds the visible width; it only scrolls when it does."
+
+msgid "文字超出宽度时在固定区域内循环滚动，未超出时静止显示。适合公告栏、状态栏中的长消息。"
+msgstr "Text that exceeds the width scrolls in a loop inside a fixed area; shorter text stays still. Suits long messages in banners and status bars."
+
+msgid "文本为空时显示的提示。"
+msgstr "Hint shown when the text is empty."
+
+msgid "文本内容；只读时仍可滚动和选择。"
+msgstr "The text content; read-only text can still be scrolled and selected."
+
+msgid "文本格式栏"
+msgstr "Text format bar"
+
+msgid "文档"
+msgstr "Documents"
+
+msgid "文档工具栏"
+msgstr "Document toolbar"
+
+msgid "文章关键词"
+msgstr "Article keywords"
+
+msgid "文章列表加载"
+msgstr "Article list loading"
+
+msgid "文章排版"
+msgstr "Article layout"
+
+msgid "文章标签"
+msgstr "Article tags"
+
+msgid "斜体"
+msgstr "Italic"
+
 msgid "断连恢复"
 msgstr "Reconnect recovery"
+
+msgid "新品"
+msgstr "New arrivals"
 
 msgid "新增条目"
 msgstr "New item"
 
+msgid "新增用户"
+msgstr "New users"
+
 msgid "新增行"
 msgstr "Add row"
 
-msgid "方案一"
-msgstr "Option A"
+msgid "新密码"
+msgstr "New password"
 
-msgid "方案三"
-msgstr "Option C"
+msgid "新建"
+msgstr "New"
 
-msgid "方案二"
-msgstr "Option B"
+msgid "新建任务"
+msgstr "New task"
 
-msgid "旋转拨盘或拖动滑块调整同一数值。"
-msgstr "Rotate the dial or drag the slider to adjust the same value."
+msgid "新建报表"
+msgstr "New report"
+
+msgid "新版本已下载，重启后生效。"
+msgstr "A new version has been downloaded and takes effect after restart."
+
+msgid "方向键调整时的步长，默认 1。"
+msgstr "Step for arrow-key adjustment. Defaults to 1."
 
 msgid "无"
 msgstr "None"
 
+msgid "无修改"
+msgstr "No changes"
+
+msgid "无法连接到服务器。复制下方详情并发送给技术支持。"
+msgstr "Cannot connect to the server. Copy the details below and send them to technical support."
+
+msgid "无法连接服务器。"
+msgstr "Unable to connect to the server."
+
 msgid "无边框窗口与标题栏"
 msgstr "Frameless window and title bar"
 
-msgid "无边框窗口与自定义标题栏"
-msgstr "Frameless window and custom title bar"
+msgid "无边框窗口：自绘标题栏，原生窗口负责拖动和缩放。当前 Gallery 主窗口就是一个 ForgeWindow 实例，本页的操作直接作用于它。"
+msgstr "A frameless window with a custom-drawn title bar; the native window handles moving and resizing. The Gallery main window is a ForgeWindow instance, and the actions on this page apply to it directly."
 
-msgid "无需滚动"
-msgstr "No scrolling needed"
+msgid "无障碍"
+msgstr "Accessibility"
 
 msgid "日"
 msgstr "Day"
 
-msgid "日历选择器"
-msgstr "CalendarPicker"
+msgid "日历"
+msgstr "Calendar"
 
-msgid "日期"
-msgstr "Date"
+msgid "日历 · 10:30 设计评审"
+msgstr "Calendar · 10:30 design review"
+
+msgid "日历顶部用分段控件切换日、周、月视图，下方列出对应范围内的日程。"
+msgstr "A segmented control at the top of the calendar switches between day, week, and month views, and events in that range are listed below."
+
+msgid "日志"
+msgstr "Log"
 
 msgid "日期与时间"
 msgstr "Date and time"
 
-msgid "日期选择器"
-msgstr "DatePicker"
+msgid "日程视图"
+msgstr "Agenda views"
 
 msgid "时间 / s"
 msgstr "Time / s"
 
-msgid "时间选择器"
-msgstr "TimePicker"
+msgid "星星数量，默认 5。"
+msgstr "Number of stars, 5 by default."
 
-msgid "显示加载动画"
-msgstr "Show loading animation"
+msgid "是"
+msgstr "Yes"
+
+msgid "是否允许编辑，以及整体禁用。"
+msgstr "Whether editing is allowed, and whether the grid is disabled."
+
+msgid "是否勾选，可双向绑定。"
+msgstr "Whether it is checked, two-way bindable."
+
+msgid "是否展开，可双向绑定。"
+msgstr "Whether it is expanded; supports two-way binding."
+
+msgid "是否已选择；未选择时显示占位文字。"
+msgstr "Whether a value is chosen; shows placeholder text otherwise."
+
+msgid "是否开启，可双向绑定。"
+msgstr "Whether it is on, two-way bindable."
+
+msgid "是否必填，默认 true。"
+msgstr "Whether the field is required. Defaults to true."
+
+msgid "是否拥有键盘焦点，聚焦时按 Space 切换。"
+msgstr "Whether it has keyboard focus. Press Space to toggle when focused."
+
+msgid "是否播放扫光动画；页面隐藏时应关闭。"
+msgstr "Whether to play the shimmer animation; turn it off when the page is hidden."
+
+msgid "是否支持深色主题？"
+msgstr "Is a dark theme supported?"
+
+msgid "是否显示关闭按钮，默认 true。"
+msgstr "Whether to show the close button. Defaults to true."
+
+msgid "是否显示行号，默认显示。"
+msgstr "Whether to show line numbers. Shown by default."
+
+msgid "是否显示趋势行。"
+msgstr "Whether to show the trend line."
+
+msgid "是否显示，可双向绑定。"
+msgstr "Whether it is shown; supports two-way binding."
+
+msgid "是否正在引导，以及当前步骤序号。"
+msgstr "Whether the tour is running, and the current step index."
+
+msgid "是否正在录制。"
+msgstr "Whether recording is in progress."
+
+msgid "是否正在计时，以及 0～1 的进度。"
+msgstr "Whether timing is in progress, and the progress from 0 to 1."
+
+msgid "是否滚动；暂停后从原位置继续。"
+msgstr "Whether it scrolls; resumes from the same position after pausing."
+
+msgid "是否选中，点击标签切换，可双向绑定。"
+msgstr "Whether it is selected. Clicking the tag toggles it; two-way bindable."
+
+msgid "显示“日志”标签"
+msgstr "Show \"Log\" tab"
+
+msgid "显示上限，超过时显示为“99+”形式，默认 99。"
+msgstr "Display limit; larger values show as \"99+\". Defaults to 99."
+
+msgid "显示右侧的移除按钮，默认 true。"
+msgstr "Show the remove button on the right. Defaults to true."
+
+msgid "显示名称"
+msgstr "Display name"
+
+msgid "显示图例与网格线。"
+msgstr "Show the legend and grid lines."
+
+msgid "显示在数值后的单位，如 %、°C。"
+msgstr "Unit shown after the value, such as % or °C."
+
+msgid "显示在文字前的图标。"
+msgstr "Icon shown before the text."
+
+msgid "显示在选项上方的分组标题。"
+msgstr "Group title shown above the options."
 
 msgid "显示密码"
 msgstr "Show password"
 
-msgid "显示建议"
-msgstr "Show suggestions"
-
 msgid "显示数据"
 msgstr "Show data"
+
+msgid "显示文字。"
+msgstr "Display text."
+
+msgid "显示的图片；为空时只显示背景与边框。"
+msgstr "Image to show; when empty only the background and border are drawn."
+
+msgid "显示的数字；小于等于 0 时默认隐藏。"
+msgstr "Number to display; hidden by default when less than or equal to 0."
+
+msgid "显示的文本。"
+msgstr "Text to display."
+
+msgid "显示菜单"
+msgstr "Show menu"
+
+msgid "显示行号"
+msgstr "Show line numbers"
+
+msgid "显示语言与深浅配色。"
+msgstr "Display language and light or dark colors."
 
 msgid "显示说明"
 msgstr "Show notes"
 
-msgid "普通、主色和禁用的胶囊按钮。"
-msgstr "Standard, primary, and disabled pill buttons."
+msgid "普通数字、超出上限与提示点。"
+msgstr "A normal number, a value beyond the limit, and a dot."
 
-msgid "普通、带图标和禁用按钮，点击查看反馈。"
-msgstr "Standard, icon, and disabled buttons with click feedback."
+msgid "普通窗口"
+msgstr "Regular window"
 
-msgid "普通操作"
-msgstr "Standard action"
-
-msgid "暂停滚动"
-msgstr "Pause scrolling"
+msgid "暂停"
+msgstr "Pause"
 
 msgid "暂无可显示的数据"
 msgstr "No data to display"
@@ -1248,6 +3852,9 @@ msgstr "No data."
 msgid "暂缓实现"
 msgstr "Deferred"
 
+msgid "暖红"
+msgstr "Warm red"
+
 msgid "曲线 / 误差 / 填充"
 msgstr "Graph / errors / fill"
 
@@ -1260,8 +3867,8 @@ msgstr "Curves, errors and fill"
 msgid "曲线与统计"
 msgstr "Curves and statistics"
 
-msgid "更多示例"
-msgstr "More examples"
+msgid "更多"
+msgstr "More"
 
 msgid "更新数据"
 msgstr "Update data"
@@ -1269,38 +3876,161 @@ msgstr "Update data"
 msgid "更新首行"
 msgstr "Update first row"
 
+msgid "最后更新于 10 月 25 日"
+msgstr "Last updated Oct 25"
+
+msgid "最多 20 个字符"
+msgstr "Up to 20 characters"
+
+msgid "最多 5 个关键词，可手动输入或点击推荐词添加。与基本用法共用宿主提供的标签数据。"
+msgstr "Up to 5 keywords, typed manually or added by clicking a suggestion. Shares the host-provided tag data with the basic usage example."
+
+msgid "最大列数；0 表示不限制。"
+msgstr "Maximum columns; 0 means unlimited."
+
 msgid "最大化"
 msgstr "Maximize"
+
+msgid "最小值、中间值与禁用状态。"
+msgstr "Minimum, midpoint, and disabled states."
 
 msgid "最小化"
 msgstr "Minimize"
 
-msgid "最近添加的示例"
-msgstr "Recently added examples"
+msgid "最近一次由用户选中的选项文字。"
+msgstr "Option text most recently selected by the user."
+
+msgid "最近操作 · {}"
+msgstr "Last action · {}"
 
 msgid "月"
 msgstr "Month"
 
+msgid "有 3 个文件尚未同步到云端。"
+msgstr "3 files haven't been synced to the cloud yet."
+
+msgid "有字段未通过校验"
+msgstr "Some fields failed validation"
+
+msgid "有效期至"
+msgstr "Expires"
+
+msgid "有新消息时在系统通知区域提示。"
+msgstr "Show an alert in the system notification area for new messages."
+
+msgid "有未保存的修改"
+msgstr "Unsaved changes"
+
+msgid "有货"
+msgstr "In stock"
+
+msgid "有选中项时显示背景；active-id 不匹配任何标签时全部为普通样式。"
+msgstr "The selected tab has a background. When active-id matches no tab, all tabs look normal."
+
+msgid "服务器暂时不可用，稍后重试。"
+msgstr "The server is temporarily unavailable. Try again later."
+
+msgid "服务器监控"
+msgstr "Server monitoring"
+
+msgid "服务态度"
+msgstr "Service"
+
+msgid "服务条款确认"
+msgstr "Terms of service"
+
+msgid "服务运行中"
+msgstr "Services running"
+
+msgid "未关注"
+msgstr "Not following"
+
+msgid "未分配任何权限"
+msgstr "No permissions assigned"
+
+msgid "未勾选、已勾选，以及勾选后禁用。"
+msgstr "Unchecked, checked, and checked but disabled."
+
+msgid "未开始"
+msgstr "Not started"
+
 msgid "未找到匹配的组件"
 msgstr "No matching components"
+
+msgid "未显示任何图层"
+msgstr "No layers shown"
 
 msgid "未知 ID"
 msgstr "Unknown ID"
 
-msgid "未选中"
-msgstr "Not selected"
+msgid "未设置时显示占位文字；禁用后不能开始录制。"
+msgstr "Placeholder text is shown when unset; recording cannot start when disabled."
+
+msgid "未评分、部分评分与只读满分。"
+msgstr "Unrated, partly rated, and a read-only full score."
+
+msgid "未读合计 {}"
+msgstr "Total unread {}"
+
+msgid "未读通知 {} 条"
+msgstr "{} unread notifications"
+
+msgid "未输入时显示占位提示；已有文本时展开会只列出匹配项。"
+msgstr "The placeholder shows when empty; with existing text, the open list shows only matches."
+
+msgid "未选中、选中且不可移除，以及禁用。"
+msgstr "Unselected, selected and not removable, and disabled."
+
+msgid "未选中、选中，以及选中后被禁用。"
+msgstr "Unchecked, checked, and checked but disabled."
+
+msgid "未选择、横向排列与整组禁用。"
+msgstr "Nothing selected, horizontal layout, and the whole group disabled."
+
+msgid "未选择任何渠道，将不会收到通知"
+msgstr "No channel selected; no notifications will be sent"
+
+msgid "未选择工具"
+msgstr "No tool selected"
+
+msgid "未选择时的提示与是否可用。"
+msgstr "Hint shown when nothing is selected, and whether the control is enabled."
 
 msgid "末页"
 msgstr "Last"
 
-msgid "本月完成"
-msgstr "Completed this month"
+msgid "本周完成 12 项任务"
+msgstr "12 tasks completed this week"
+
+msgid "本周完成：\n- 组件页迁移到新模板"
+msgstr "Done this week:\n- Migrated component pages to the new template"
+
+msgid "本月收入"
+msgstr "Revenue this month"
+
+msgid "本示例的宿主接口：false 打开普通窗口，true 打开对话框。"
+msgstr "Host interface for this demo: false opens a window, true opens a dialog."
+
+msgid "本示例的宿主接口：隐藏所有示例窗口。"
+msgstr "Host interface for this demo: hides all demo windows."
+
+msgid "机密合同预览"
+msgstr "Confidential contract preview"
+
+msgid "机械键盘 × 1　¥ 499"
+msgstr "Mechanical keyboard × 1　¥ 499"
+
+msgid "权限"
+msgstr "Permissions"
 
 msgid "李工"
 msgstr "Li"
 
-msgid "松开确认完成"
-msgstr "Release confirmed"
+msgid "杭州西湖区营业点"
+msgstr "Hangzhou Xihu service point"
+
+msgid "松开滑块时触发，适合提交最终值。"
+msgstr "Fires when the slider is released; suitable for committing the final value."
 
 msgid "极坐标"
 msgstr "Polar plot"
@@ -1311,35 +4041,110 @@ msgstr "Polar curve"
 msgid "构建、行为测试与页面截图"
 msgstr "Builds, behavior tests, and page captures"
 
+msgid "林"
+msgstr "L"
+
+msgid "林晓"
+msgstr "Lin Xiao"
+
+msgid "查找　Ctrl+F"
+msgstr "Find　Ctrl+F"
+
 msgid "查看两个系列的分布和相关性。"
 msgstr "Explore distributions and correlations of two series."
 
-msgid "查看和编辑表格数据，调整列宽并选择多行。"
-msgstr "Browse and edit tabular data, resize columns, and select multiple rows."
+msgid "查看文档"
+msgstr "View documents"
 
-msgid "查看基础组件的可交互示例"
-msgstr "Explore interactive examples of basic components"
-
-msgid "查看报告"
-msgstr "View report"
-
-msgid "查看简化后的数据分布。"
-msgstr "Explore a simplified data distribution."
-
-msgid "查看限制、只读或异常情况。"
-msgstr "Explore limits, read-only or error states."
+msgid "查看详情"
+msgstr "View details"
 
 msgid "柱状图"
 msgstr "Bars"
 
-msgid "标签数量：{}"
-msgstr "Tag count: {}"
+msgid "标准按钮"
+msgstr "Standard buttons"
 
-msgid "树形层级与数据展示"
-msgstr "Hierarchical data and tree navigation"
+msgid "标准配送（3～5 天）"
+msgstr "Standard (3–5 days)"
+
+msgid "标签切换下方的内容区域，内容由应用按 active-id 显示。"
+msgstr "The tabs switch the content area below, which the app shows by active-id."
+
+msgid "标签列表，每项包含 id 与 title。"
+msgstr "Tab list; each item has an id and a title."
+
+msgid "标签宽度随文字变化，FlowLayout 负责换行。单击标签用于筛选文章。"
+msgstr "Tag width follows its text and FlowLayout handles wrapping. Click a tag to filter articles."
+
+msgid "标签数量上限，达到后不能再添加，默认 20。"
+msgstr "Maximum number of tags. No more can be added once reached. Defaults to 20."
+
+msgid "标签文字。"
+msgstr "Label text."
+
+msgid "标签栏位置：horizontal 在上方，vertical 在左侧；只接受常量。"
+msgstr "Tab bar position: horizontal on top, vertical on the left. Constants only."
+
+msgid "标签由宿主程序维护，重复或空白内容会被忽略。"
+msgstr "Tags are maintained by the host application; duplicate or blank entries are ignored."
+
+msgid "标题、元信息和正文段落都按 scale 计算字号，放大字号后行宽内自动换行。"
+msgstr "The title, metadata, and body all size text by scale, and wrap within the line width when enlarged."
+
+msgid "标题下方的说明文字。"
+msgstr "Description below the title."
+
+msgid "标题下方的说明，过长时自动换行。"
+msgstr "Description below the title; wraps when too long."
+
+msgid "标题与子元素之间的纵向间距，默认 8px。"
+msgstr "Vertical spacing between the title and children, 8px by default."
+
+msgid "标题与说明文字；子元素显示在说明下方。"
+msgstr "Title and message text; children appear below the message."
+
+msgid "标题区与控件、控件之间的间距。"
+msgstr "Spacing between the label area and controls, and between controls."
+
+msgid "标题文字。"
+msgstr "Title text."
+
+msgid "标题栏左侧的品牌字符或图标。"
+msgstr "Brand character or icon on the left of the title bar."
+
+msgid "标题栏按钮配置"
+msgstr "Title bar buttons"
+
+msgid "标题栏文字。"
+msgstr "Header text."
+
+msgid "标题栏高度，内容区从其下方开始。"
+msgstr "Title bar height; the content area starts below it."
+
+msgid "树数据来自宿主的 GalleryDemoModels；勾选文件夹会同时选中其子项。"
+msgstr "Tree data comes from the host's GalleryDemoModels; checking a folder also selects its children."
 
 msgid "样式对照"
 msgstr "Style comparison"
+
+msgid "根据 content-y 判断是否已滚动到底部，读完后才能勾选同意。"
+msgstr "content-y tells whether the text has been scrolled to the bottom; the agree box is enabled only after reading."
+
+msgid "根据使用统计推荐内容"
+msgstr "Recommend content based on usage statistics"
+
+msgid "根据长度提示强度，两次输入一致且不少于 8 位时才能提交。"
+msgstr "Strength is estimated from length; submitting requires both entries to match and be at least 8 characters."
+
+msgid "格式"
+msgstr "Format"
+
+msgid "格式、分辨率和背景各用一个下拉框；选择 JPEG 时透明背景不可用。"
+msgstr "Format, resolution, and background each use a drop-down; a transparent background is unavailable for JPEG."
+
+msgid "桌面通知"
+msgstr "Desktop notifications"
 
 msgid "检查保护触发与恢复。"
 msgstr "Check protection activation and recovery."
@@ -1356,17 +4161,65 @@ msgstr "Check output voltage and protection thresholds."
 msgid "概览"
 msgstr "Overview"
 
-msgid "模块数：{}"
-msgstr "Module count: {}"
+msgid "模拟失败"
+msgstr "Simulate failure"
 
-msgid "正在滚动"
-msgstr "Scrolling"
+msgid "模拟服务器错误"
+msgstr "Simulate server error"
 
-msgid "正在连接…"
-msgstr "Connecting..."
+msgid "模糊半径，默认 10。"
+msgstr "Blur radius, 10 by default."
+
+msgid "模糊半径，默认 4。"
+msgstr "Blur radius, 4 by default."
+
+msgid "横条尺寸，宽度通常随布局拉伸。"
+msgstr "Bar size; the width usually stretches with the layout."
+
+msgid "次日达"
+msgstr "Next day"
+
+msgid "次要文字"
+msgstr "Secondary text"
+
+msgid "正在上传 3 个文件…"
+msgstr "Uploading 3 files…"
+
+msgid "正在上传…"
+msgstr "Uploading…"
+
+msgid "正在下载更新包，完成后将提示重启。"
+msgstr "Downloading the update; you will be prompted to restart when it finishes."
+
+msgid "正在准备安装…"
+msgstr "Preparing to install…"
+
+msgid "正在刷新…"
+msgstr "Refreshing…"
+
+msgid "正在安装更新 {}%"
+msgstr "Installing update {}%"
+
+msgid "正在播放 · 进度 {}%"
+msgstr "Playing · {}%"
+
+msgid "正在获取资料…"
+msgstr "Fetching profile…"
+
+msgid "正在重试…"
+msgstr "Retrying…"
+
+msgid "正常"
+msgstr "Healthy"
 
 msgid "正常帧与异常帧"
 msgstr "Valid and invalid frames"
+
+msgid "正常选择、单项不可用与整体禁用。"
+msgstr "Normal selection, one unavailable item, and fully disabled."
+
+msgid "正文 Body"
+msgstr "Body text"
 
 msgid "正文 · Body：你好 SlintForge，Hello World!"
 msgstr "Body: Hello SlintForge, Hello World!"
@@ -1377,14 +4230,59 @@ msgstr "Positive and negative bars"
 msgid "此单元格无法编辑。"
 msgstr "This cell cannot be edited."
 
-msgid "此处输入工程参数。"
-msgstr "Enter project parameters here."
-
 msgid "此窗口由 Rust/C++ 宿主创建并持有。"
 msgstr "This window is created and retained by the Rust/C++ host."
 
 msgid "此项不能为空"
 msgstr "This field is required"
+
+msgid "步骤切换后触发，参数为新的步骤序号。"
+msgstr "Triggered after the step changes, with the new step index."
+
+msgid "每一步是一个 ForgeStackPage。返回上一步时，已填写的内容仍在原处，最后一步直接读取前面各页的输入。"
+msgstr "Each step is a ForgeStackPage. Going back keeps what was entered, and the last step reads the input from earlier pages directly."
+
+msgid "每一行有自己的菜单，操作作用于被右击的文件。"
+msgstr "Each row has its own menu, and actions apply to the right-clicked file."
+
+msgid "每个应用占一张等宽卡片，窗口变窄时自动减少列数。"
+msgstr "Each app takes one equal-width card; the column count drops as the window narrows."
+
+msgid "每个按钮独立控制一个图层，可同时打开多个。"
+msgstr "Each button controls one layer independently; several can be on at once."
+
+msgid "每个文件一条进度，依次上传；可暂停或重新开始。"
+msgstr "One progress bar per file, uploaded in order; pause or start over."
+
+msgid "每个文档放在一个 ForgePage 中，切换标签只改变 active；未保存的草稿在切回时仍在。"
+msgstr "Each document lives in a ForgePage and switching tabs only changes active; unsaved drafts are still there when you switch back."
+
+msgid "每个水印单元的尺寸，决定平铺密度。"
+msgstr "Size of each watermark tile, which sets the density."
+
+msgid "每个继承 Window 的组件都是一个独立的顶层窗口。界面通过回调请求，由宿主创建窗口实例并调用 show() 或 hide()。"
+msgstr "Every component that inherits Window is a separate top-level window. The UI requests one through a callback, and the host creates the instance and calls show() or hide()."
+
+msgid "每个选项对应不同运费，所选方式即时计入订单合计；当日达在当前地址不可用。"
+msgstr "Each option has a different shipping fee, and the chosen one is added to the order total immediately. Same-day delivery is not available for the current address."
+
+msgid "每格用背景色绘制，并以对应的前景色书写示例文字。随应用的明暗主题切换。"
+msgstr "Each tile is filled with a background color and shows sample text in the matching foreground color. It follows the app's light or dark theme."
+
+msgid "每次点击触发，此时 checked 已更新。"
+msgstr "Fires on each click, after checked has been updated."
+
+msgid "每步的标题、说明和目标区域（x、y、width、height，相对于引导组件）。"
+msgstr "Title, description, and target area of each step (x, y, width, height, relative to the tour)."
+
+msgid "每种标准按钮自动生成对应的 <kind>-clicked 回调。"
+msgstr "Each standard button automatically generates a matching <kind>-clicked callback."
+
+msgid "每项功能对应一个快捷键，可逐项修改或一键恢复默认。"
+msgstr "Each action has one shortcut; change them one by one or restore all defaults at once."
+
+msgid "比较各月份数据，切换分组或堆叠"
+msgstr "Compare monthly data, grouped or stacked"
 
 msgid "比较各月份的数据，切换分组或堆叠。"
 msgstr "Compare monthly values in grouped or stacked bars."
@@ -1392,20 +4290,50 @@ msgstr "Compare monthly values in grouped or stacked bars."
 msgid "比较各类别占比，切换饼图或环形图。"
 msgstr "Compare category proportions as a pie or doughnut chart."
 
-msgid "水印覆盖在内容上方。"
-msgstr "The watermark is overlaid on the content."
+msgid "水印不透明度，默认 0.12。"
+msgstr "Watermark opacity, 0.12 by default."
 
-msgid "水平排列"
-msgstr "Horizontal layout"
+msgid "水印文字；为空时不绘制。"
+msgstr "Watermark text; nothing is drawn when empty."
+
+msgid "水印绘制在内容上方，不影响内容本身的布局。"
+msgstr "The watermark is drawn above the content without affecting its layout."
+
+msgid "水平、垂直与不带说明三种形态。"
+msgstr "Horizontal, vertical and without description."
+
+msgid "水平（默认）或垂直。"
+msgstr "Horizontal (default) or vertical."
 
 msgid "没有匹配的行。"
 msgstr "No matching rows."
 
-msgid "沿时间顺序查看已完成和待完成的步骤。"
-msgstr "Follow completed and pending steps in chronological order."
+msgid "没有未读通知"
+msgstr "No unread notifications"
+
+msgid "没有标签时只显示输入框；达到上限后“添加”按钮禁用。"
+msgstr "With no tags, only the input box is shown. The \"Add\" button is disabled once the limit is reached."
+
+msgid "没有标题时，内容从顶部开始。"
+msgstr "Without a title, content starts at the top."
+
+msgid "注册"
+msgstr "Sign up"
+
+msgid "注册向导"
+msgstr "Sign-up wizard"
+
+msgid "注册成功：{}"
+msgstr "Signed up: {}"
+
+msgid "注册表单"
+msgstr "Sign-up form"
 
 msgid "浅色"
 msgstr "Light"
+
+msgid "测试工程师"
+msgstr "QA engineer"
 
 msgid "测试计划"
 msgstr "Test plan"
@@ -1455,11 +4383,26 @@ msgstr "Measure series 1"
 msgid "测量曲线 2"
 msgstr "Measure series 2"
 
-msgid "浏览 Fluent System Icons Regular 的完整图标目录，按名称搜索并查看码位。"
-msgstr "Browse the full Fluent System Icons Regular catalog, search by name, and inspect code points."
+msgid "浏览器"
+msgstr "Browser"
 
 msgid "浏览完整目录"
 msgstr "Browse full catalog"
+
+msgid "浮点数输入框。可直接输入，也可用按钮或上下方向键按步长调整；整数场景请使用原生 SpinBox。"
+msgstr "A floating-point input. Type directly, or step with the buttons or the up and down arrow keys; use the native SpinBox for integers."
+
+msgid "海边日落"
+msgstr "Seaside sunset"
+
+msgid "消息"
+msgstr "Messages"
+
+msgid "涨跌百分比；正数上升、负数下降。"
+msgstr "Percentage change; positive rises, negative falls."
+
+msgid "深浅主题"
+msgstr "Light and dark themes"
 
 msgid "深色"
 msgstr "Dark"
@@ -1467,14 +4410,29 @@ msgstr "Dark"
 msgid "添加"
 msgstr "Add"
 
+msgid "添加依赖项"
+msgstr "Add a dependency"
+
+msgid "添加备注"
+msgstr "Add a note"
+
+msgid "清空"
+msgstr "Clear"
+
+msgid "清空后无法恢复，因此要求按住 2 秒再松开；中途松开不会执行。"
+msgstr "Emptying cannot be undone, so it requires holding for 2 seconds and then releasing. Releasing early does nothing."
+
+msgid "清空回收站"
+msgstr "Empty recycle bin"
+
 msgid "清空图片"
 msgstr "Clear image"
 
 msgid "清空数据"
 msgstr "Clear data"
 
-msgid "清空数据后保留容器与空状态提示。"
-msgstr "An empty data set retains its container and empty-state message."
+msgid "清除筛选"
+msgstr "Clear filters"
 
 msgid "温度"
 msgstr "Temperature"
@@ -1485,47 +4443,149 @@ msgstr "Temperature / C"
 msgid "温度循环"
 msgstr "Thermal cycling"
 
-msgid "滚动查看长文本，内容仍可编辑。"
-msgstr "Scroll through long text while keeping it editable."
+msgid "源代码 · 4 KB"
+msgstr "Source code · 4 KB"
+
+msgid "滑出方向：left 或 right，默认 right。"
+msgstr "Slide-out edge: left or right. Defaults to right."
+
+msgid "滚动一轮所需时间，默认 8s。"
+msgstr "Time for one full scroll cycle, 8s by default."
+
+msgid "滚动查看日志，或用按钮直接设置 content-y 跳到开头和结尾。"
+msgstr "Scroll through the log, or use the buttons to set content-y and jump to the start or end."
+
+msgid "滚动的文字。"
+msgstr "Text to scroll."
+
+msgid "滚轮和方向键每次调整的步长，默认 1。"
+msgstr "Step for each scroll or arrow key, 1 by default."
 
 msgid "滚轮缩放，拖动平移，Shift 框选缩放，Ctrl 框选数据。"
 msgstr "Wheel to zoom, drag to pan, Shift-drag to zoom a rectangle, Ctrl-drag to select."
 
+msgid "瀑布流布局：等宽列、不等高卡片，每张卡片放进当前最短的一列。适合图片墙、灵感板等高度不一的内容。"
+msgstr "A masonry layout with equal-width columns and cards of varying height; each card goes into the currently shortest column. Suits photo walls, mood boards and other content of uneven height."
+
 msgid "灰色"
 msgstr "Grey"
 
-msgid "点击 {} 次"
-msgstr "Clicked {} times"
+msgid "灵感图板"
+msgstr "Mood board"
 
-msgid "点击启动倒计时，再次点击取消"
-msgstr "Click to start; click again to cancel"
+msgid "点击关闭按钮时触发；是否隐藏由宿主决定。"
+msgstr "Raised when the close button is clicked; the host decides whether to hide the bar."
+
+msgid "点击分段切换统计周期；右侧可启用“年”或禁用整个控件。"
+msgstr "Click a segment to change the period. Use the options to enable \"Year\" or disable the whole control."
+
+msgid "点击分组时触发，由应用切换展开状态。"
+msgstr "Fires when a group is clicked; the app toggles its expansion."
+
+msgid "点击刷新后显示骨架，数据返回后恢复资料内容。"
+msgstr "Click refresh to show the skeleton; the profile returns when the data arrives."
+
+msgid "点击后弹出操作菜单的按钮，把一组相关操作收进一个入口，适合导出、更多操作等场景。"
+msgstr "A button that opens an action menu, grouping related actions behind one entry. Suits export and \"more actions\" scenarios."
+
+msgid "点击后模拟一个 2 秒的任务；关闭 progress 后改为不确定进度。"
+msgstr "Click to simulate a 2-second task. Turn off progress for indeterminate progress."
+
+msgid "点击开始倒计时"
+msgstr "Click to start countdown"
 
 msgid "点击按钮"
 msgstr "Click button"
 
-msgid "点击按钮切换选中状态。"
-msgstr "Click a button to toggle its selected state."
+msgid "点击按钮后按下组合键，在弹层中保存。"
+msgstr "Click the button, press a key combination, and save it in the popup."
 
-msgid "点击星级评分，使用键盘继续调整。"
-msgstr "Choose a star rating and adjust it with the keyboard."
+msgid "点击按钮打开分栏弹层，滚动选择年、月、日后确认。"
+msgstr "Click the button to open the column popup, scroll to the year, month, and day, then confirm."
 
-msgid "点击次数：{}"
-msgstr "Click count: {}"
+msgid "点击按钮打开时间弹层，滚动或点击各栏后确认。"
+msgstr "Click the button to open the time popup, scroll or click each column, then confirm."
 
-msgid "点击计数"
-msgstr "Click counter"
+msgid "点击按钮打开月历，选中日期后确认。"
+msgstr "Click the button to open the calendar, pick a date, then confirm."
 
-msgid "点击路径节点返回对应层级。"
-msgstr "Click a breadcrumb to return to its level."
+msgid "点击按钮时触发。"
+msgstr "Raised when the button is clicked."
 
-msgid "点击链接在浏览器打开页面。"
-msgstr "Open a page in the browser through a link."
+msgid "点击数据点，参数为系列、索引与数值。"
+msgstr "A data point was clicked; arguments are series, index, and value."
+
+msgid "点击文字切换选中，点击 × 移除；移除后可恢复。"
+msgstr "Click the text to toggle selection, click × to remove. It can be restored after removal."
+
+msgid "点击某一级时触发，参数为该项 id；应用据此截断路径。"
+msgstr "Fires when a level is clicked with its id; the app truncates the path accordingly."
+
+msgid "点击标签切换；右侧可追加一个标签。"
+msgstr "Click a tab to switch. Use the options to add another tab."
+
+msgid "点击标签或在右侧修改 current-index；在“概览”中输入的内容切换后仍在。"
+msgstr "Click a tab or change current-index in the options. Text typed in \"Overview\" stays after switching."
+
+msgid "点击标签时触发；组件不改写 active-id，由应用更新。"
+msgstr "Fires when a tab is clicked. The component does not change active-id; the app updates it."
+
+msgid "点击标签的 × 时触发，参数为标签下标。"
+msgstr "Fires when × on a tag is clicked, with the tag index."
+
+msgid "点击目录前的展开按钮时触发，参数为 id 与目标状态。"
+msgstr "Fires when a folder's expand button is clicked, with the id and the target state."
+
+msgid "点击移除按钮时触发；组件本身不会隐藏，由外部移除数据。"
+msgstr "Fires when the remove button is clicked. The chip does not hide itself; remove the data externally."
+
+msgid "点击色块打开选色弹层；吸管图标表示支持屏幕取色。"
+msgstr "Click the swatch to open the color popup; the eyedropper icon indicates screen picking."
+
+msgid "点击菜单按钮时触发，请求切换侧栏状态。"
+msgstr "Fires when the menu button is clicked to request a pane state change."
+
+msgid "点击路径中的某一级返回该层，或在右侧进入下一级。"
+msgstr "Click a level in the path to go back to it, or go one level deeper from the options."
+
+msgid "点击返回按钮时触发，由应用执行返回。"
+msgstr "Fires when the back button is clicked; the app navigates back."
+
+msgid "点击遮罩是否关闭，默认 true。"
+msgstr "Whether clicking the overlay closes it. Defaults to true."
+
+msgid "点击链接时触发，参数为链接地址。"
+msgstr "Fires when a link is clicked, with the link address."
+
+msgid "照片 41 GB · 文档 23 GB · 其他 8 GB"
+msgstr "Photos 41 GB · Documents 23 GB · Other 8 GB"
+
+msgid "片段语言"
+msgstr "Snippet language"
+
+msgid "版本 0.1.2 · 基于 Slint 1.18"
+msgstr "Version 0.1.2 · Built with Slint 1.18"
+
+msgid "物流"
+msgstr "Shipping"
+
+msgid "物流跟踪"
+msgstr "Shipment tracking"
+
+msgid "物流速度"
+msgstr "Delivery speed"
 
 msgid "状态"
 msgstr "Status"
 
+msgid "状态对照"
+msgstr "State comparison"
+
 msgid "状态提示"
 msgstr "Status notice"
+
+msgid "独立链接、自定义颜色，以及嵌在句子中的链接。"
+msgstr "A standalone link, a custom color, and a link inside a sentence."
 
 msgid "王工"
 msgstr "Wang"
@@ -1539,17 +4599,95 @@ msgstr "Environment test group"
 msgid "环境试验"
 msgstr "Environmental testing"
 
-msgid "环形图"
-msgstr "Doughnut"
+msgid "玻璃面板悬浮在背景图上，调整模糊半径并切换折射。"
+msgstr "A glass panel floats over the backdrop. Adjust the blur radius and toggle refraction."
 
-msgid "生成报告"
-msgstr "Generate report"
+msgid "生成安装包并更新文档"
+msgstr "Build installers and update the docs"
+
+msgid "生成结果：ok、image、modules（每边模块数）与 error。"
+msgstr "Generation result: ok, image, modules (modules per side), and error."
+
+msgid "用 @markdown 写成 Markdown 链接，可与普通文字混排。"
+msgstr "Write a Markdown link with @markdown; it can be mixed with plain text."
+
+msgid "用一套界面同时支持 Rust 与 C++"
+msgstr "One interface for both Rust and C++"
+
+msgid "用一组链接指向官网、文档和开源许可证。"
+msgstr "A set of links pointing to the website, documentation and open-source license."
 
 msgid "用于在设置页和窗口标题中区分工作区。"
 msgstr "Distinguishes the workspace in settings and the window title."
 
-msgid "用法与状态"
-msgstr "Usage and states"
+msgid "用只读的原生 TextEdit 展示可选择、可复制的文本：用户可以拖选、Ctrl+A 全选和 Ctrl+C 复制，但不能修改内容。"
+msgstr "Uses a read-only native TextEdit to show selectable, copyable text. Users can drag to select, press Ctrl+A and Ctrl+C, but cannot edit it."
+
+msgid "用户修改后触发；回车或失焦时提交输入。"
+msgstr "Fires after the user changes the value; input commits on Enter or when focus leaves."
+
+msgid "用户修改数值后触发。"
+msgstr "Raised after the user changes the value."
+
+msgid "用户修改文本后触发。"
+msgstr "Raised after the user changes the text."
+
+msgid "用户修改评分后触发；宿主赋值不会触发。"
+msgstr "Fires after the user changes the rating, not when the host sets it."
+
+msgid "用户切换勾选状态后触发。"
+msgstr "Fires after the user toggles the checked state."
+
+msgid "用户切换后触发，参数为新的展开状态。"
+msgstr "Fires after the user toggles, with the new expanded state."
+
+msgid "用户切换开关后触发。"
+msgstr "Fires after the user toggles the switch."
+
+msgid "用户协议"
+msgstr "User agreement"
+
+msgid "用户名"
+msgstr "Username"
+
+msgid "用户名：{}"
+msgstr "Username: {}"
+
+msgid "用户拖动分隔条后触发。"
+msgstr "Fires after the user drags the divider."
+
+msgid "用户每次修改文本后触发。"
+msgstr "Raised each time the user changes the text."
+
+msgid "用户第一次进入报表应用时，依次介绍导航、搜索和新建报表三个入口。"
+msgstr "When a user first opens the reporting app, introduce navigation, search, and new report in turn."
+
+msgid "用户翻页后触发，参数为新页码。"
+msgstr "Fires after the user changes the page, with the new page number."
+
+msgid "用户调整数值后触发；宿主赋值不会触发。"
+msgstr "Triggered after the user changes the value. Host assignments do not trigger it."
+
+msgid "用户资料卡"
+msgstr "Profile card"
+
+msgid "用户选中新选项时触发，参数为选项文字。"
+msgstr "Fires when the user selects a new option, with the option text."
+
+msgid "用户选择新的一项后触发。"
+msgstr "Raised when the user selects a new item."
+
+msgid "用户选择某一分段后触发。"
+msgstr "Fires after the user selects a segment."
+
+msgid "用系统默认浏览器打开地址。"
+msgstr "Open an address in the system default browser."
+
+msgid "用鼠标选择部分文字后按 Ctrl+C，或点击“复制全部”，再粘贴到下方输入框验证。"
+msgstr "Select some text with the mouse and press Ctrl+C, or click \"Copy all\", then paste into the input below to check."
+
+msgid "由图标字符和可选文字组成的紧凑按钮，可显示选中状态，适合工具栏和格式栏。"
+msgstr "A compact button made of an icon character and optional text. It can show a selected state and suits toolbars and format bars."
 
 msgid "电压"
 msgstr "Voltage"
@@ -1557,8 +4695,8 @@ msgstr "Voltage"
 msgid "电压 / V"
 msgstr "Voltage / V"
 
-msgid "电流"
-msgstr "Current"
+msgid "电子普通发票 · 个人"
+msgstr "E-invoice · Personal"
 
 msgid "电源"
 msgstr "Power"
@@ -1569,8 +4707,38 @@ msgstr "Power testing"
 msgid "电源测试分组"
 msgstr "Power test group"
 
+msgid "电话（仅紧急事件）"
+msgstr "Phone (emergencies only)"
+
+msgid "界面写在 .slint 文件中，两种宿主语言绑定同一套属性和回调。业务逻辑留在宿主一侧，界面只负责展示与交互。"
+msgstr "The interface lives in .slint files, and both host languages bind the same properties and callbacks. Business logic stays in the host while the interface handles display and interaction."
+
+msgid "界面参考"
+msgstr "UI references"
+
+msgid "界面字体名称；为空时使用平台默认字体。"
+msgstr "Interface font family. Uses the platform default when empty."
+
+msgid "界面文字可以翻译吗？"
+msgstr "Can the UI text be translated?"
+
+msgid "界面设计"
+msgstr "UI design"
+
 msgid "界面语言，切换后立即更新"
 msgstr "Interface language, updated immediately"
+
+msgid "白色"
+msgstr "White"
+
+msgid "监控面板中每台服务器一张卡片，卡片内放指标和操作。"
+msgstr "One card per server in a monitoring panel, holding its metrics and actions."
+
+msgid "目录"
+msgstr "Contents"
+
+msgid "目标 {}°C · 室温 {}°C"
+msgstr "Target {}°C · room {}°C"
 
 msgid "目标一：输入"
 msgstr "Target 1: input"
@@ -1578,50 +4746,74 @@ msgstr "Target 1: input"
 msgid "目标二：执行"
 msgstr "Target 2: run"
 
-msgid "直接操作，观察组件反馈。"
-msgstr "Interact and observe the component's response."
-
 msgid "直角"
 msgstr "Square"
+
+msgid "相邻元素的水平与垂直间距，默认 12px。"
+msgstr "Horizontal and vertical gap between items, 12px by default."
+
+msgid "省略 text 时，放入一个子元素作为自定义内容。"
+msgstr "When text is omitted, place one child element as custom content."
 
 msgid "睡眠"
 msgstr "Sleeping"
 
-msgid "矩形 {}"
-msgstr "Tile {}"
+msgid "短信"
+msgstr "SMS"
 
-msgid "矩形按可用宽度自动换行，内容超出时出现竖向滚动条。"
-msgstr "Tiles wrap to fit the available width, and a vertical scrollbar appears when content overflows."
+msgid "短文字静止显示，长文字滚动，暂停后停在当前位置。"
+msgstr "Short text stays still, long text scrolls, and pausing stops it in place."
 
 msgid "确定"
 msgstr "OK"
 
-msgid "确定进度"
-msgstr "Determinate progress"
+msgid "确认"
+msgstr "Confirm"
 
-msgid "确定进度与持续加载两种状态。"
-msgstr "Determinate progress and continuous loading."
+msgid "确认与取消按钮文字。"
+msgstr "Confirm and cancel button text."
 
 msgid "确认后执行下一步。"
 msgstr "Confirm to proceed to the next step."
 
+msgid "确认密码"
+msgstr "Confirm password"
+
 msgid "确认对话框"
 msgstr "Confirmation dialog"
+
+msgid "确认或取消弹层时触发。"
+msgstr "Raised when the popup is confirmed or canceled."
+
+msgid "确认所需时间，默认 1200ms。"
+msgstr "Time required to confirm. Defaults to 1200ms."
+
+msgid "确认按钮可用与不可用时的对话框外观。"
+msgstr "The dialog with the confirm button enabled and disabled."
+
+msgid "确认按钮是否可用；点击遮罩是否关闭。"
+msgstr "Whether the confirm button is enabled; whether clicking the overlay closes it."
 
 msgid "确认操作"
 msgstr "Confirm action"
 
-msgid "确认模式"
-msgstr "Confirmation modes"
-
-msgid "确认次数：{}"
-msgstr "Confirmation count: {}"
+msgid "确认新颜色后，右侧的标题栏与按钮立即使用该颜色。"
+msgstr "After a new color is confirmed, the title bar and button on the right use it immediately."
 
 msgid "确认版本、资源和参数配置。"
 msgstr "Verify versions, resources, and parameter settings."
 
-msgid "确认配置"
-msgstr "Confirm configuration"
+msgid "确认选择后触发。"
+msgstr "Fires after a selection is confirmed."
+
+msgid "确认，或通过取消、Esc、遮罩关闭时触发。"
+msgstr "Raised on confirm, or when closed via cancel, Esc, or the overlay."
+
+msgid "磁盘剩余空间不足 10%。"
+msgstr "Less than 10% of disk space remains."
+
+msgid "示例文字 Sample Text"
+msgstr "Sample text"
 
 msgid "示例文档"
 msgstr "Example documentation"
@@ -1629,32 +4821,77 @@ msgstr "Example documentation"
 msgid "禁用"
 msgstr "Disabled"
 
-msgid "禁用与边界状态"
-msgstr "Disabled and boundary states"
+msgid "禁用后不可选择。"
+msgstr "Cannot be selected when disabled."
+
+msgid "禁用后不响应鼠标与键盘。"
+msgstr "When disabled, ignores mouse and keyboard."
+
+msgid "禁用后不能展开。"
+msgstr "Cannot be opened when disabled."
+
+msgid "禁用后不能展开列表。"
+msgstr "The list cannot be opened when disabled."
+
+msgid "禁用后不能选择文本。"
+msgstr "When disabled, text cannot be selected."
+
+msgid "禁用后保持当前状态，不能切换。"
+msgstr "Keeps its current state and cannot be toggled when disabled."
+
+msgid "禁用后半透明显示并不响应点击。"
+msgstr "Semi-transparent and ignores clicks when disabled."
+
+msgid "禁用后变暗且不可操作。"
+msgstr "When disabled, dims and can't be used."
+
+msgid "禁用后所有分段不可操作。"
+msgstr "When disabled, no segment can be used."
+
+msgid "禁用后所有按钮不可操作。"
+msgstr "When disabled, no button can be used."
+
+msgid "禁用后整棵树不可操作。"
+msgstr "When disabled, the whole tree cannot be used."
+
+msgid "禁用后显示为灰色并不响应操作。"
+msgstr "Grayed out and unresponsive when disabled."
+
+msgid "禁用拖动与键盘调整。"
+msgstr "Disable dragging and keyboard adjustment."
+
+msgid "禁用按钮。"
+msgstr "Disable the button."
 
 msgid "禁用操作"
 msgstr "Disabled action"
 
+msgid "禁用整组选项。"
+msgstr "Disable the whole group."
+
 msgid "禁用文本"
 msgstr "Disabled text"
 
-msgid "禁用标签"
-msgstr "Disabled tag"
+msgid "禁用文本\n第二行"
+msgstr "Disabled text\nSecond line"
 
-msgid "禁用状态"
-msgstr "Disabled"
-
-msgid "禁用示例"
-msgstr "Disabled example"
+msgid "禁用时关闭已打开的菜单。"
+msgstr "Closes an open menu when disabled."
 
 msgid "禁用行不可选择或编辑。"
 msgstr "Disabled rows cannot be selected or edited."
 
-msgid "禁用视图"
-msgstr "Disabled view"
+msgid "禁用输入、添加与移除。"
+msgstr "Disable input, adding and removing."
 
-msgid "禁用输入"
-msgstr "Disabled input"
+msgid "禁用输入。"
+msgstr "Disables input."
+
+msgid "禁用输入与步进。"
+msgstr "Disables typing and stepping."
+
+msgid "禁用选中与移除。"
+msgstr "Disable selecting and removing."
 
 msgid "禁用选项"
 msgstr "Disabled option"
@@ -1662,11 +4899,38 @@ msgstr "Disabled option"
 msgid "科学绘图"
 msgstr "Scientific plots"
 
+msgid "移到回收站"
+msgstr "Move to Recycle Bin"
+
+msgid "移动端"
+msgstr "Mobile"
+
 msgid "移除标签"
 msgstr "Remove tag"
 
-msgid "空结果"
-msgstr "No matches"
+msgid "稍后提醒"
+msgstr "Remind me later"
+
+msgid "空内容显示占位提示；只读与禁用都不能编辑，禁用时文字变淡。"
+msgstr "Empty content shows the placeholder; read-only and disabled boxes cannot be edited, and disabled text is dimmed."
+
+msgid "空文本显示占位提示；只读文本仍可选中复制。"
+msgstr "Empty fields show the placeholder; read-only text can still be selected and copied."
+
+msgid "空调温控"
+msgstr "Thermostat"
+
+msgid "空闲、不确定进度与确定进度三种状态。"
+msgstr "Idle, indeterminate and determinate progress states."
+
+msgid "空闲时点击触发，通常在此开始任务并设置 busy。"
+msgstr "Fires on click when idle. Usually starts the task and sets busy."
+
+msgid "空闲时的按钮文字。"
+msgstr "Button text when idle."
+
+msgid "突出显示一个关键数值，可附带单位与涨跌趋势。数值格式由应用提供。"
+msgstr "Highlights a key value with an optional unit and trend. The app supplies the number format."
 
 msgid "窄屏预览"
 msgstr "Narrow preview"
@@ -1674,41 +4938,128 @@ msgstr "Narrow preview"
 msgid "窗口"
 msgstr "Window"
 
+msgid "窗口与页面的背景色和正文颜色。"
+msgstr "Background and body text color of windows and pages."
+
+msgid "窗口对象由宿主持有，页面只发出打开或关闭请求。"
+msgstr "Window objects are owned by the host; the page only sends open or close requests."
+
+msgid "窗口截图"
+msgstr "Window capture"
+
+msgid "窗口管理"
+msgstr "Windows"
+
 msgid "窗口置顶"
 msgstr "Always on top"
+
+msgid "窗口置顶与圆角，可双向绑定。"
+msgstr "Always-on-top and rounded corners; support two-way binding."
 
 msgid "窗口边角"
 msgstr "Window corners"
 
-msgid "竖向滚动条已显示"
-msgstr "Vertical scrollbar visible"
+msgid "立即重新生成；text 变化时会自动调用。"
+msgstr "Regenerates immediately; called automatically when text changes."
+
+msgid "站内消息"
+msgstr "In-app message"
 
 msgid "端口（演示禁用项）"
 msgstr "Port (disabled example)"
 
-msgid "第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行"
-msgstr "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10"
+msgid "第 {} / 3 步"
+msgstr "Step {} / 3"
 
-msgid "第一页"
-msgstr "First page"
+msgid "第 {} – {} 条 / 共 {} 条"
+msgstr "Items {} – {} of {}"
+
+msgid "第 {} 步，共 3 步"
+msgstr "Step {} of 3"
+
+msgid "第一条　服务内容：乙方为甲方提供界面组件的定制开发与维护服务。"
+msgstr "Article 1. Services: Party B provides Party A with custom development and maintenance of UI components."
 
 msgid "第一页：输入内容，切走后再返回"
 msgstr "First page: type something, switch away, then return"
 
+msgid "第三条　保密条款：双方对合作中获知的技术资料负有保密义务。"
+msgstr "Article 3. Confidentiality: both parties keep technical information obtained during the cooperation confidential."
+
 msgid "第三页"
 msgstr "Third page"
 
-msgid "第二个标签页"
-msgstr "Second tab"
+msgid "第三页内容。"
+msgstr "Third page content."
+
+msgid "第二块的位置与尺寸。"
+msgstr "Position and size of the second pane."
+
+msgid "第二条　服务期限：自签订之日起十二个月。"
+msgstr "Article 2. Term: twelve months from the date of signing."
 
 msgid "第二页"
 msgstr "Second page"
 
-msgid "策略控件"
-msgstr "Policy control"
+msgid "第二页内容。"
+msgstr "Second page content."
+
+msgid "等宽卡片网格：按最小卡片宽度自动计算列数，卡片宽度随可用空间伸缩。适合仪表盘卡片、应用列表等需要逐列对齐的内容。"
+msgstr "An equal-width card grid: the column count follows the minimum card width and cards stretch with the available space. Suits dashboard cards, app lists and other content that should align in columns."
+
+msgid "等待"
+msgstr "Waiting"
+
+msgid "等待审核"
+msgstr "Awaiting review"
+
+msgid "等待确认"
+msgstr "Waiting for confirmation"
+
+msgid "筛选"
+msgstr "Filter"
+
+msgid "筛选 · {}"
+msgstr "Filter · {}"
 
 msgid "筛选名称、负责人或说明"
 msgstr "Filter by name, owner, or notes"
+
+msgid "筛选后的可见行数与已选行数。"
+msgstr "Visible rows after filtering, and selected rows."
+
+msgid "筛选条件"
+msgstr "Filters"
+
+msgid "筛选条件可以多选，结果数量随选择即时更新。"
+msgstr "Filters can be combined, and the result count updates immediately."
+
+msgid "筛选条件放在抽屉中，点击“应用”后关闭抽屉并更新列表条件。"
+msgstr "Filters live in a drawer; clicking \"Apply\" closes the drawer and updates the list conditions."
+
+msgid "筛选邮件"
+msgstr "Filter mail"
+
+msgid "简单提示文字，字符串需用 @markdown 转换；使用自定义内容时不要设置。"
+msgstr "Simple tooltip text; strings must be converted with @markdown. Don't set it when using custom content."
+
+msgid "简历.docx"
+msgstr "Resume.docx"
+
+msgid "类别"
+msgstr "Kind"
+
+msgid "类别轴或雷达图维度的标签。"
+msgstr "Labels for the category axis or radar dimensions."
+
+msgid "类型"
+msgstr "Type"
+
+msgid "粗体"
+msgstr "Bold"
+
+msgid "精选组件"
+msgstr "Featured components"
 
 msgid "系列一"
 msgstr "Series one"
@@ -1719,11 +5070,20 @@ msgstr "Series B"
 msgid "系列二"
 msgstr "Series two"
 
-msgid "系列对照"
-msgstr "Series comparison"
-
 msgid "系列甲"
 msgstr "Series A"
+
+msgid "系统公告栏"
+msgstr "System announcement bar"
+
+msgid "系统将于今晚 23:00 至次日 01:00 进行维护升级，届时部分功能暂停使用。"
+msgstr "Scheduled maintenance tonight from 23:00 to 01:00; some features will be unavailable during this time."
+
+msgid "系统将在今晚 23:00 维护。"
+msgstr "The system will be under maintenance tonight at 23:00."
+
+msgid "系统通知"
+msgstr "System notifications"
 
 msgid "系统默认"
 msgstr "System default"
@@ -1731,23 +5091,53 @@ msgstr "System default"
 msgid "紧凑与只读"
 msgstr "Compact and read-only"
 
-msgid "紧凑只读视图"
-msgstr "Compact read-only view"
+msgid "紧凑侧栏只显示图标；顶部导航把一级页面排成一行。"
+msgstr "A compact pane shows icons only; top navigation lays out top-level pages in a row."
+
+msgid "紧凑的日期与时间选择"
+msgstr "Compact date and time picking"
+
+msgid "紧凑的日期按钮，点击后弹出月历；可附带时间选择，并支持年月快速切换与日期范围限制。"
+msgstr "A compact date button that opens a calendar, with optional time selection, quick year and month switching, and date limits."
 
 msgid "红色"
 msgstr "Red"
 
-msgid "级别控件"
-msgstr "Level control"
+msgid "级别：{} · 免打扰 {} 小时"
+msgstr "Level: {} · Do not disturb {} h"
+
+msgid "纯文字、自定义布局，以及附在非按钮元素上的提示。"
+msgstr "Plain text, a custom layout, and a tooltip on a non-button element."
+
+msgid "纵向（默认）或横向排列。"
+msgstr "Vertical (default) or horizontal layout."
+
+msgid "组件属性均可在 Rust 或 C++ 中绑定。"
+msgstr "Component properties can be bound from Rust or C++."
 
 msgid "组件目录"
 msgstr "Component catalog"
 
-msgid "组合标题、说明、返回入口和操作按钮。"
-msgstr "Combine a title, description, back action, and controls."
-
 msgid "终点"
 msgstr "Endpoint"
+
+msgid "终端"
+msgstr "Terminal"
+
+msgid "绑定到所属 PageStack 的 active-id；两者相等时页面可见。"
+msgstr "Bind to the parent PageStack's active-id; the page is visible when the two match."
+
+msgid "结束时间"
+msgstr "End time"
+
+msgid "结束时间需晚于开始时间"
+msgstr "End time must be later than start time"
+
+msgid "结果标题。"
+msgstr "Result title."
+
+msgid "结果类型，决定图标与颜色，默认 success。"
+msgstr "Result type; determines the icon and color. Defaults to success."
 
 msgid "统计分布"
 msgstr "Statistical distribution"
@@ -1767,8 +5157,14 @@ msgstr "Box plot and outliers"
 msgid "继续"
 msgstr "Continue"
 
-msgid "继续滚动"
-msgstr "Resume scrolling"
+msgid "继续上传"
+msgstr "Resume upload"
+
+msgid "继续阅读"
+msgstr "Read more"
+
+msgid "综合评分 {}"
+msgstr "Overall {}"
 
 msgid "绿色"
 msgstr "Green"
@@ -1776,14 +5172,68 @@ msgstr "Green"
 msgid "编程"
 msgstr "Coding"
 
-msgid "编辑多行文字，输入框内可滚动。"
-msgstr "Edit multiple lines and scroll inside the field."
+msgid "编辑"
+msgstr "Edit"
 
-msgid "编辑文本，切换语言并查看高亮结果。"
-msgstr "Edit text, switch languages, and inspect syntax highlighting."
+msgid "编辑区"
+msgstr "Editor"
+
+msgid "编辑后立即保存。"
+msgstr "Save right after editing."
+
+msgid "编辑器工具栏"
+msgstr "Editor toolbar"
+
+msgid "编辑文档"
+msgstr "Edit documents"
+
+msgid "编辑的文本，可双向绑定。"
+msgstr "The edited text; supports two-way binding."
+
+msgid "编辑者"
+msgstr "Editor"
+
+msgid "编辑者 · {}"
+msgstr "Editor · {}"
+
+msgid "缩放"
+msgstr "Zoom"
+
+msgid "缩放 {}"
+msgstr "Zoom {}"
+
+msgid "缩放 {}% · 页边距 {} mm · {} 份"
+msgstr "Scale {}% · Margin {} mm · {} copies"
+
+msgid "缩放比例 (%)"
+msgstr "Scale (%)"
+
+msgid "网格"
+msgstr "Grid"
+
+msgid "网络中断，同步未完成。"
+msgstr "Network interrupted; sync incomplete."
+
+msgid "网络名称"
+msgstr "Network name"
+
+msgid "网络连接已断开。"
+msgstr "The network connection was lost."
+
+msgid "联系方式"
+msgstr "Contact"
+
+msgid "聚焦确认按钮；以取消方式关闭。"
+msgstr "Focus the confirm button; close as a cancel."
+
+msgid "背景"
+msgstr "Background"
 
 msgid "背景图上的材质效果"
 msgstr "Material effect on a background image"
+
+msgid "背景色，默认白色。"
+msgstr "Background color; white by default."
 
 msgid "胶囊按钮"
 msgstr "Pill button"
@@ -1794,17 +5244,92 @@ msgstr "Impulses"
 msgid "自动保存"
 msgstr "Auto save"
 
-msgid "英文区域"
-msgstr "English locale"
+msgid "自动换行"
+msgstr "Word wrap"
 
-msgid "英文区域，2000—2100 年"
-msgstr "English locale, years 2000–2100"
+msgid "自动换行方式。"
+msgstr "Text wrapping mode."
+
+msgid "自定义布局"
+msgstr "Custom layout"
+
+msgid "至少 8 位"
+msgstr "At least 8 characters"
+
+msgid "舒适 24°C"
+msgstr "Comfort 24°C"
+
+msgid "色块按钮，点击后通过色谱、调色板、十六进制或 RGBA 通道选色，也可从屏幕取色，确认后提交。"
+msgstr "A swatch button that opens a spectrum, palette, hex field, and RGBA channels, with screen picking; the color is committed on confirm."
+
+msgid "色块直接显示已提交的颜色，半透明颜色叠加在棋盘格背景上。"
+msgstr "The swatch shows the committed color; translucent colors appear over a checkerboard."
+
+msgid "色板 · 6 组"
+msgstr "Palettes · 6"
+
+msgid "色相"
+msgstr "Hue"
+
+msgid "色相、饱和度与亮度三个滑块共同决定右侧的颜色。"
+msgstr "Hue, saturation and brightness sliders together determine the color on the right."
+
+msgid "节点与连线编辑器"
+msgstr "Node and edge editor"
+
+msgid "节点数据由宿主模型提供。展开目录、选择文件，或切换多选。"
+msgstr "The host model supplies the nodes. Expand folders, select files, or toggle multiple selection."
+
+msgid "节能 26°C"
+msgstr "Eco 26°C"
+
+msgid "英文区域按月、日、年排列；超出范围的日期在弹层中会被限制。"
+msgstr "The English locale orders fields as month, day, year; out-of-range dates are clamped in the popup."
+
+msgid "范围为 -10 到 100。切换步长后用按钮或方向键试一试。"
+msgstr "The range is -10 to 100. Change the step, then try the buttons or arrow keys."
+
+msgid "范围为 -100 到 100。切换步长后用按钮或方向键试一试。"
+msgstr "The range is -100 to 100. Change the step, then try the buttons or arrow keys."
+
+msgid "草稿"
+msgstr "Draft"
+
+msgid "获取上方页面的当前画面并导出为 PNG。预览区放在截图目标之外，避免把上一次截图拍进去。"
+msgstr "Capture the page above and export it as PNG. The preview sits outside the capture target so the previous capture is not included."
 
 msgid "获取截图"
 msgstr "Capture image"
 
+msgid "菜单中禁用的项显示为灰色，不可选择。"
+msgstr "Disabled menu items are grayed out and cannot be chosen."
+
+msgid "菜单已禁用"
+msgstr "Menu disabled"
+
+msgid "菜单是否处于打开状态。"
+msgstr "Whether the menu is open."
+
+msgid "菜单项文字与可用状态。"
+msgstr "Menu item text and availability."
+
+msgid "菜单项类型"
+msgstr "Menu item types"
+
+msgid "菜单项被选中时触发。"
+msgstr "Raised when a menu item is chosen."
+
+msgid "菜单项，每项包含 id、label 与 enabled。"
+msgstr "Menu items, each with id, label and enabled."
+
+msgid "蓝牙"
+msgstr "Bluetooth"
+
 msgid "蓝色"
 msgstr "Blue"
+
+msgid "虚拟化的数据表格，支持排序、筛选、列宽调整、冻结与隐藏列、多选和单元格编辑。"
+msgstr "A virtualized data grid with sorting, filtering, column resizing, frozen and hidden columns, multi-select, and cell editing."
 
 msgid "蜡烛图"
 msgstr "Candlesticks"
@@ -1812,8 +5337,41 @@ msgstr "Candlesticks"
 msgid "行或列标识重复、父节点缺失或树关系存在循环。"
 msgstr "Duplicate row or column IDs, missing parents, or a hierarchy cycle."
 
+msgid "行点击、单元格提交与展开变化。"
+msgstr "Row clicks, cell commits, and expansion changes."
+
+msgid "补充说明，居中换行显示。"
+msgstr "Additional description, centered and wrapped."
+
+msgid "表单"
+msgstr "Form"
+
+msgid "表单 / 选择器"
+msgstr "Form / Pickers"
+
+msgid "表格下方放置分页，每页显示 5 条订单，翻页时列表内容随之更新。"
+msgstr "Pagination sits below the table with 5 orders per page, and the list updates when the page changes."
+
 msgid "表格服务尚未绑定。"
 msgstr "Grid services are not connected."
+
+msgid "要显示的图标字符。"
+msgstr "The icon glyph to display."
+
+msgid "要显示的源代码。"
+msgstr "Source code to display."
+
+msgid "要编码的内容；为空或过长时生成失败。"
+msgstr "Content to encode. Generation fails when it is empty or too long."
+
+msgid "覆盖在模糊背景上的半透明色调。"
+msgstr "Translucent tint over the blurred backdrop."
+
+msgid "覆盖在背景上的半透明色调。"
+msgstr "Translucent tint over the backdrop."
+
+msgid "覆盖在页面上的模态对话框，包含标题、说明、自定义内容和确认/取消按钮。打开期间页面状态保持不变，关闭后焦点回到触发按钮。"
+msgstr "A modal dialog overlaid on the page with a title, message, custom content, and confirm/cancel buttons. Page state is unchanged while it is open, and focus returns to the trigger button after closing."
 
 msgid "覆盖本轮修改和已有功能。"
 msgstr "Cover current changes and existing behavior."
@@ -1821,23 +5379,74 @@ msgstr "Cover current changes and existing behavior."
 msgid "观察趋势，切换折线、平滑曲线和面积填充。"
 msgstr "Explore trends with lines, smooth curves, and area fills."
 
+msgid "视口的可见尺寸。"
+msgstr "Visible size of the viewport."
+
+msgid "视图"
+msgstr "View"
+
+msgid "视图 · {}"
+msgstr "View · {}"
+
 msgid "角度 / °"
 msgstr "Angle / degrees"
 
-msgid "触发采集"
-msgstr "Triggered acquisition"
+msgid "角色"
+msgstr "Role"
 
-msgid "警告"
-msgstr "Warning"
+msgid "角色权限"
+msgstr "Role permissions"
+
+msgid "订单"
+msgstr "Orders"
+
+msgid "订单 #20261025-018"
+msgstr "Order #20261025-018"
+
+msgid "订单列表"
+msgstr "Order list"
+
+msgid "订单号"
+msgstr "Order no."
+
+msgid "订单合计 ¥{}"
+msgstr "Order total ¥{}"
+
+msgid "订单完成后开具"
+msgstr "Issued when the order is completed"
+
+msgid "订单记录"
+msgstr "Orders"
+
+msgid "订单评价"
+msgstr "Order review"
+
+msgid "订单详情"
+msgstr "Order details"
+
+msgid "订阅方案"
+msgstr "Subscription plan"
 
 msgid "让 Gallery 保持在其他窗口上方，也可点击标题栏图钉。"
 msgstr "Keep Gallery above other windows. You can also use the title bar pin."
+
+msgid "让普通 Button 参与对话框按钮排列。"
+msgstr "Lets a regular Button take part in the dialog button layout."
+
+msgid "记住我"
+msgstr "Remember me"
 
 msgid "记录温度与运行状态。"
 msgstr "Record temperature and operating status."
 
 msgid "记录温度循环与运行状态。"
 msgstr "Record thermal cycles and operating status."
+
+msgid "设为 true 后点击会切换 checked。"
+msgstr "When true, clicking toggles checked."
+
+msgid "设为 true 时使用主色填充。"
+msgstr "Fill with the accent color when true."
 
 msgid "设备名称"
 msgstr "Device name"
@@ -1854,13 +5463,58 @@ msgstr "Device configuration dialog"
 msgid "设置"
 msgstr "Settings"
 
+msgid "设置 checkable: true 的原生 Button，每次点击在选中与未选中之间切换，适合表示可开关的视图选项。"
+msgstr "A native Button with checkable: true. Each click switches between checked and unchecked; suits view options that can be turned on and off."
+
+msgid "设置 primary: true 的原生 Button，以主色填充突出当前界面最重要的操作。一组按钮中通常只放一个。"
+msgstr "A native Button with primary: true. The accent fill highlights the most important action on the screen. Usually only one per button group."
+
+msgid "设置 show-time 后，弹层右侧增加时间选择。"
+msgstr "With show-time set, the popup adds time selection on the right."
+
+msgid "设置值，或立即提交当前文本。"
+msgstr "Set the value, or commit the current text now."
+
+msgid "设置已保存。"
+msgstr "Settings saved."
+
+msgid "设置项标题与说明文字；说明会自动换行。"
+msgstr "Setting title and description; the description wraps automatically."
+
+msgid "设置项的一行：左侧是标题和说明，右侧是控件。宽度低于断点时，控件移到说明下方。多行由 VerticalLayout 排列。"
+msgstr "One settings row: title and description on the left, control on the right. Below the breakpoint the control moves under the description. Stack rows with a VerticalLayout."
+
 msgid "设计"
 msgstr "Designing"
 
-msgid "评分：{}"
-msgstr "Rating: {}"
+msgid "设计组 · 1 小时前"
+msgstr "Design team · 1 hour ago"
+
+msgid "访客网络"
+msgstr "Guest network"
+
+msgid "访问量"
+msgstr "Visits"
+
+msgid "证件信息"
+msgstr "ID details"
+
+msgid "评审登录页设计"
+msgstr "Review sign-in page design"
+
+msgid "试用版剩余 3 天。"
+msgstr "Trial expires in 3 days."
+
+msgid "该用户名已被占用"
+msgstr "This username is already taken"
+
+msgid "该选项被选中时触发，适合按下标记录选择。"
+msgstr "Fires when this option is selected; useful for recording the choice by index."
 
 msgid "详情"
+msgstr "Details"
+
+msgid "详细信息"
 msgstr "Details"
 
 msgid "语法高亮服务未绑定"
@@ -1869,20 +5523,17 @@ msgstr "Syntax highlighting service is not connected"
 msgid "语言"
 msgstr "Language"
 
+msgid "语言名称，如 slint、rust、cpp、python、json。"
+msgstr "Language name, such as slint, rust, cpp, python, or json."
+
 msgid "说明"
 msgstr "Notes"
 
-msgid "请检查设备后重试。"
-msgstr "Check the device and try again."
+msgid "说明文字；为空时不显示。"
+msgstr "Description text; hidden when empty."
 
 msgid "请绑定图表服务"
 msgstr "Bind chart services to display data"
-
-msgid "请输入 3～24 个字符"
-msgstr "Enter 3 to 24 characters"
-
-msgid "请输入文本"
-msgstr "Enter text"
 
 msgid "请输入有限的有效数字。"
 msgstr "Enter a valid finite number."
@@ -1890,20 +5541,50 @@ msgstr "Enter a valid finite number."
 msgid "调整 Gallery 的外观、语言、字体与导航方式。更改会立即生效。"
 msgstr "Adjust Gallery appearance, language, fonts, and navigation. Changes take effect immediately."
 
-msgid "调整后台任务的默认运行方式。"
-msgstr "Adjust how background tasks run by default."
+msgid "调整、确认或取消时触发。"
+msgstr "Raised when the color is adjusted, confirmed, or canceled."
+
+msgid "调整已完成的步骤数，圆点颜色随之变化。"
+msgstr "Change the number of completed steps and the dot colors follow."
+
+msgid "调整星星数量，或切换只读与禁用状态。"
+msgstr "Change the number of stars, or toggle read-only and disabled."
+
+msgid "调整最小列宽或最大列数，列数变化后宿主（Rust / C++）用同一算法重新排布卡片。"
+msgstr "Adjust the minimum column width or maximum columns; when the column count changes, the host (Rust / C++) rearranges cards with the same algorithm."
+
+msgid "调整最小卡片宽度或最大列数，卡片始终等宽并逐行对齐。"
+msgstr "Adjust the minimum card width or maximum columns; cards stay equal in width and aligned in rows."
+
+msgid "调用 capture() 获取整个窗口的画面，并导出为 PNG。"
+msgstr "Call capture() to grab the whole window and export it as PNG."
 
 msgid "负责人"
 msgstr "Owner"
 
+msgid "负责桌面客户端界面与组件库维护。"
+msgstr "Maintains the desktop client UI and the component library."
+
+msgid "账号"
+msgstr "Account"
+
+msgid "资料已更新 {} 次"
+msgstr "Profile updated {} times"
+
+msgid "资源管理器"
+msgstr "Explorer"
+
+msgid "走完全部步骤或被跳过、按 Esc 关闭时触发。"
+msgstr "Triggered when all steps are completed, or when skipped or closed with Esc."
+
 msgid "赵工"
 msgstr "Zhao"
 
+msgid "起始、进行中、完成与未知进度。"
+msgstr "Start, in progress, complete, and unknown progress."
+
 msgid "起点"
 msgstr "Start"
-
-msgid "超出上限"
-msgstr "Over the limit"
 
 msgid "超时、重连和状态恢复"
 msgstr "Timeouts, reconnection, and state recovery"
@@ -1911,8 +5592,29 @@ msgstr "Timeouts, reconnection, and state recovery"
 msgid "跑步"
 msgstr "Running"
 
+msgid "跟随系统"
+msgstr "System"
+
+msgid "跟随系统切换，也可在设置中手动选择。"
+msgstr "Follows the system, or choose manually in settings."
+
+msgid "跨平台"
+msgstr "Cross-platform"
+
+msgid "跨平台界面组件库 · 128 位关注者"
+msgstr "Cross-platform UI component library · 128 followers"
+
+msgid "路况"
+msgstr "Traffic"
+
 msgid "路由参数：{}"
 msgstr "Route parameters: {}"
+
+msgid "跳到指定页，并触发 page-changed。"
+msgstr "Goes to the given page and fires page-changed."
+
+msgid "跳到结尾"
+msgstr "Go to end"
 
 msgid "跳过"
 msgstr "Skip"
@@ -1920,14 +5622,23 @@ msgstr "Skip"
 msgid "轨迹"
 msgstr "Trajectory"
 
+msgid "较小行高、不可编辑；冻结任务列后横向滚动查看其他列。右侧为禁用状态。"
+msgstr "Shorter rows and no editing; the task column stays frozen while you scroll sideways. The right grid is disabled."
+
+msgid "辅助文字"
+msgstr "Tertiary text"
+
 msgid "辅助文字 · Caption"
 msgstr "Supporting text · Caption"
 
-msgid "输入 3～24 个字符"
-msgstr "Enter 3 to 24 characters"
+msgid "输入"
+msgstr "Inputs"
 
-msgid "输入、只读和禁用的单行文本框。"
-msgstr "Editable, read-only, and disabled text fields."
+msgid "输入 / 按钮"
+msgstr "Inputs / Buttons"
+
+msgid "输入 S 或 R 查看匹配的建议，也可勾选 open 直接展开列表。"
+msgstr "Type S or R to see matching suggestions, or check open to show the list directly."
 
 msgid "输入一些文字"
 msgstr "Type something"
@@ -1938,23 +5649,20 @@ msgstr "Type to search"
 msgid "输入会保留"
 msgstr "Input persists"
 
-msgid "输入内容生成二维码，空内容显示提示。"
-msgstr "Generate a QR code from text or show a message for empty input."
+msgid "输入内容，双向绑定。"
+msgstr "Input content, two-way bound."
 
-msgid "输入前缀，展开并选择匹配的建议。"
-msgstr "Type a prefix and select a matching suggestion."
+msgid "输入包名前缀，从建议中选择后加入依赖列表。"
+msgstr "Type a package name prefix, pick a suggestion, and add it to the dependency list."
 
 msgid "输入参数"
 msgstr "Enter parameters"
 
+msgid "输入后切换标签再回来"
+msgstr "Type, switch tabs, then come back"
+
 msgid "输入密码"
 msgstr "Enter password"
-
-msgid "输入密码，并切换显示或隐藏。"
-msgstr "Enter a password and toggle its visibility."
-
-msgid "输入建议与快速选择"
-msgstr "Input suggestions and quick selection"
 
 msgid "输入文字 → 切到其他页面 → 等待后返回。"
 msgstr "Enter text → switch pages → wait → return."
@@ -1962,62 +5670,140 @@ msgstr "Enter text → switch pages → wait → return."
 msgid "输入文字后折叠并重新展开"
 msgstr "Enter text, then collapse and reopen"
 
-msgid "输入文字后验证长度与必填规则。"
-msgstr "Validate required text and length limits."
+msgid "输入文字后按 Enter 提交；调整右侧的长度范围查看提示变化。"
+msgstr "Type and press Enter to submit. Adjust the length range on the right to see the hint change."
+
+msgid "输入文字后按 Enter 生成标签，点击标签上的 × 移除。标签数据由应用持有，组件只发出增删请求。"
+msgstr "Type text and press Enter to create a tag; click × on a tag to remove it. The application owns the tag data; the component only emits add and remove requests."
+
+msgid "输入文字后按 Enter，输出栏显示最近一次回调。"
+msgstr "Type some text and press Enter; the output bar shows the latest callback."
+
+msgid "输入文本"
+msgstr "Enter text"
+
+msgid "输入时给出建议并快速选择"
+msgstr "Suggestions while typing, for quick selection"
 
 msgid "输入标签并回车"
 msgstr "Enter a tag and press Enter"
 
-msgid "输入标签并按回车添加，点击叉号移除。"
-msgstr "Press Enter to add a tag and click its close icon to remove it."
+msgid "输入框中尚未提交的文字。"
+msgstr "Text in the input box that has not been submitted yet."
+
+msgid "输入框中的文本。"
+msgstr "The text in the field."
 
 msgid "输入水印文字"
 msgstr "Enter watermark text"
 
-msgid "输入浮点数，或按设定步长增减。"
-msgstr "Enter a decimal value or change it by the configured step."
+msgid "输入的密码，可双向绑定。"
+msgstr "The entered password; supports two-way binding."
+
+msgid "输入的文本，可双向绑定。"
+msgstr "The entered text; supports two-way binding."
 
 msgid "输入长度不符合要求"
 msgstr "Input length is outside the allowed range"
 
+msgid "输出"
+msgstr "Output"
+
 msgid "输出电压"
 msgstr "Output voltage"
 
-msgid "运行动画"
-msgstr "Animate"
+msgid "边框与分隔线颜色。"
+msgstr "Border and divider color."
+
+msgid "运营后台"
+msgstr "Admin console"
+
+msgid "运营后台框架"
+msgstr "Admin console frame"
+
+msgid "运营看板"
+msgstr "Operations dashboard"
+
+msgid "运行"
+msgstr "Run"
+
+msgid "运费 ¥{}"
+msgstr "Shipping ¥{}"
+
+msgid "运输中"
+msgstr "In transit"
+
+msgid "返回"
+msgstr "Back"
 
 msgid "返回后应保留输入内容"
 msgstr "Input should be retained when you return"
 
-msgid "返回次数：{}"
-msgstr "Back action count: {}"
-
 msgid "还原"
 msgstr "Restore"
 
-msgid "这是一条可关闭的反馈信息。"
-msgstr "This feedback message can be dismissed."
+msgid "还可添加 {} 个关键词"
+msgstr "{} more keywords allowed"
+
+msgid "还没有报表"
+msgstr "No reports yet"
 
 msgid "这是保留页面状态的内容对话框。"
 msgstr "This content dialog preserves page state."
 
-msgid "这里还可以放置任意业务组件。"
-msgstr "Any application component can be placed here."
+msgid "这里可以放置任意组件。"
+msgstr "Any component can go here."
+
+msgid "进入下一级"
+msgstr "Go deeper"
+
+msgid "进入重命名"
+msgstr "Renaming"
+
+msgid "进度未知时持续旋转。"
+msgstr "Spins continuously when progress is unknown."
+
+msgid "进度未知时显示循环动画，忽略 progress。"
+msgstr "Shows a looping animation when progress is unknown and ignores progress."
+
+msgid "进度，取值 0 到 1。"
+msgstr "Progress, from 0 to 1."
+
+msgid "进度，取值 0 到 1，圆环按比例填充。"
+msgstr "Progress, from 0 to 1; the ring fills proportionally."
 
 msgid "进行中"
 msgstr "In progress"
 
-msgid "连接失败"
-msgstr "Connection failed"
+msgid "进行中在文字后显示百分比。"
+msgstr "Show a percentage after the text while running."
 
 msgid "连续折线"
 msgstr "Continuous line"
 
-msgid "连续采集"
-msgstr "Continuous acquisition"
+msgid "退款率"
+msgstr "Refund rate"
 
-msgid "选择、移除和恢复标签。"
-msgstr "Select, remove, and restore chips."
+msgid "选中 · 第 {} 项"
+msgstr "Selected · item {}"
+
+msgid "选中指定值，或提交当前激活的候选项。"
+msgstr "Chooses a given value, or submits the highlighted candidate."
+
+msgid "选中状态改变时触发，参数为新状态。"
+msgstr "Fires when the selected state changes, with the new state."
+
+msgid "选中菜单项后触发，参数为该项的 id，随后菜单关闭。"
+msgstr "Fires when a menu item is chosen, with the item's id. The menu then closes."
+
+msgid "选中项的背景和文字颜色。"
+msgstr "Background and text color of selected items."
+
+msgid "选填，如 https://…"
+msgstr "Optional, e.g. https://…"
+
+msgid "选填，最多 8 位"
+msgstr "Optional, up to 8 characters"
 
 msgid "选择全部可见行"
 msgstr "Select all visible rows"
@@ -2025,8 +5811,11 @@ msgstr "Select all visible rows"
 msgid "选择多个项目"
 msgstr "Select multiple items"
 
-msgid "选择或复制文本，然后在输入框粘贴。"
-msgstr "Select or copy text and paste it into the input."
+msgid "选择或取消选择节点时触发。"
+msgstr "Fires when a node is selected or deselected."
+
+msgid "选择接收告警的渠道；未开通的渠道以禁用项列出。"
+msgstr "Choose channels for alerts; channels not activated are listed as disabled."
 
 msgid "选择操作"
 msgstr "Select action"
@@ -2034,23 +5823,38 @@ msgstr "Select action"
 msgid "选择日期"
 msgstr "Select date"
 
-msgid "选择时间"
-msgstr "Select time"
-
 msgid "选择树节点"
 msgstr "Select tree nodes"
 
-msgid "选择此项"
-msgstr "Select this option"
+msgid "选择渠道"
+msgstr "Select channels"
 
 msgid "选择行 {} "
 msgstr "Select row {} "
 
-msgid "选择颜色"
-msgstr "Choose Color"
+msgid "选择配送方式"
+msgstr "Choose shipping method"
 
-msgid "逐步浏览功能提示，支持返回、继续和关闭。"
-msgstr "Follow a guided tour with back, next, and close actions."
+msgid "选择页面或展开“工程”分组；右侧切换导航位置、侧栏状态和应用栏。"
+msgstr "Select a page or expand the \"Projects\" group. Use the options to change placement, pane state, and the app bar."
+
+msgid "选择页面项时触发。"
+msgstr "Fires when a page item is selected."
+
+msgid "选项列表，含 id、label、enabled、selected；勾选时写回 selected。"
+msgstr "Option list with id, label, enabled, and selected; checking an item writes back selected."
+
+msgid "选项文字列表。"
+msgstr "List of option labels."
+
+msgid "选项文字，以及该选项是否可选。"
+msgstr "Option text, and whether the option can be selected."
+
+msgid "选项文字，点击文字同样会切换。"
+msgstr "Option text. Clicking the text also toggles it."
+
+msgid "透明"
+msgstr "Transparent"
 
 msgid "通信"
 msgstr "Communication"
@@ -2061,29 +5865,80 @@ msgstr "Communication test group"
 msgid "通信验证"
 msgstr "Communication validation"
 
+msgid "通知已关闭"
+msgstr "Notifications off"
+
+msgid "通知渠道"
+msgstr "Notification channels"
+
 msgid "通知级别"
 msgstr "Notification level"
 
-msgid "通过色谱、调色板、十六进制和颜色通道选择颜色，确认后提交。"
-msgstr "Choose with spectrum, palette, hexadecimal or color channels; confirm to commit."
+msgid "通知设置"
+msgstr "Notification settings"
 
-msgid "部分数据缺失"
-msgstr "Some data is missing"
+msgid "通过 CMake 引入 SDK，并在 .slint 文件中导入 @slintforge 即可。"
+msgstr "Add the SDK with CMake and import @slintforge in your .slint files."
 
-msgid "采集"
-msgstr "Acquisition"
+msgid "通过关闭按钮、Esc 或遮罩关闭时触发。"
+msgstr "Raised when closed via the close button, Esc, or the overlay."
 
-msgid "采集、分析"
-msgstr "Acquisition, analysis"
+msgid "遇到问题？"
+msgstr "Having trouble?"
 
-msgid "采集报告已加载\n电压：12.8 V\n温度：24.5 ℃"
-msgstr "Acquisition report loaded\nVoltage: 12.8 V\nTemperature: 24.5 C"
+msgid "遮罩并高亮界面中的目标区域，按步骤显示说明气泡。用于新功能介绍或首次使用引导。"
+msgstr "Dims the interface and highlights target areas, showing a callout for each step. Use it to introduce new features or onboard first-time users."
 
-msgid "采集数据"
-msgstr "Acquire data"
+msgid "邀请码"
+msgstr "Invite code"
 
-msgid "采集项目配置"
-msgstr "Acquisition project configuration"
+msgid "邮件"
+msgstr "Email"
+
+msgid "邮件筛选"
+msgstr "Mail filters"
+
+msgid "邮箱"
+msgstr "Email"
+
+msgid "邮箱　member@example.com"
+msgstr "Email　member@example.com"
+
+msgid "邮箱：{}"
+msgstr "Email: {}"
+
+msgid "部分数据需要人工复核。"
+msgstr "Some data needs manual review."
+
+msgid "配色方案"
+msgstr "Color schemes"
+
+msgid "配送方式"
+msgstr "Shipping method"
+
+msgid "酒店预订"
+msgstr "Hotel booking"
+
+msgid "重启服务"
+msgstr "Restart service"
+
+msgid "重命名"
+msgstr "Rename"
+
+msgid "重命名 {}"
+msgstr "Rename {}"
+
+msgid "重新处理背景；source 或参数变化时自动调用。"
+msgstr "Reprocesses the backdrop. Called automatically when source or parameters change."
+
+msgid "重新开始"
+msgstr "Start over"
+
+msgid "重新显示"
+msgstr "Show again"
+
+msgid "重新高亮；把全部代码复制到剪贴板。"
+msgstr "Re-highlights the code; copies all code to the clipboard."
 
 msgid "重置"
 msgstr "Reset"
@@ -2094,29 +5949,68 @@ msgstr "Reset sizes"
 msgid "重置比例"
 msgstr "Reset ratio"
 
+msgid "重置示例"
+msgstr "Reset example"
+
 msgid "重试"
 msgstr "Retry"
+
+msgid "金额"
+msgstr "Amount"
+
+msgid "链接"
+msgstr "Link"
+
+msgid "链接文字的颜色，默认跟随主题。"
+msgstr "Color of link text. Follows the theme by default."
+
+msgid "销售"
+msgstr "Sales"
+
+msgid "销售月报"
+msgstr "Sales report"
+
+msgid "销售月报 · 2026 年 9 月"
+msgstr "Sales report · September 2026"
 
 msgid "锁定 Gallery"
 msgstr "Lock Gallery"
 
-msgid "错误"
-msgstr "Error"
+msgid "锁定 Gallery · {}"
+msgstr "Lock Gallery · {}"
 
-msgid "错误数量"
-msgstr "Error count"
+msgid "锁屏背景上的时间和通知卡片，玻璃面板保留背景的色彩层次。"
+msgstr "Time and notification cards on a lock screen. The glass panels keep the backdrop's color depth."
 
-msgid "错误率"
-msgstr "Error rate"
+msgid "锁屏通知"
+msgstr "Lock screen notifications"
 
-msgid "长文本在固定区域内连续滚动，可暂停和继续。"
-msgstr "Long text scrolls continuously within a fixed area and can be paused or resumed."
+msgid "错误报告"
+msgstr "Error report"
+
+msgid "错误详情已复制到剪贴板"
+msgstr "Error details copied to clipboard"
+
+msgid "键盘激活的候选项索引，-1 表示无。"
+msgstr "Index of the keyboard-highlighted candidate; -1 means none."
+
+msgid "问答列表中每个问题是一个 Expander，用户只展开关心的条目。"
+msgstr "Each question in the list is an Expander, so users open only what they care about."
 
 msgid "阶梯"
 msgstr "Steps"
 
+msgid "附在图标或文字旁的小徽标，显示未读数量或一个提示点。数值为 0 时默认隐藏。"
+msgstr "A small badge attached to an icon or label that shows an unread count or a dot. Hidden by default when the value is 0."
+
 msgid "陈工"
 msgstr "Chen"
+
+msgid "陈雨"
+msgstr "Chen Yu"
+
+msgid "隐私设置"
+msgstr "Privacy settings"
 
 msgid "隐藏"
 msgstr "Hidden"
@@ -2124,26 +6018,68 @@ msgstr "Hidden"
 msgid "隐藏再打开会保留输入"
 msgstr "Hiding and reopening preserves input"
 
-msgid "隐藏密码"
-msgstr "Hide password"
+msgid "隐藏的内容"
+msgstr "Hidden content"
 
 msgid "隐藏示例窗口"
 msgstr "Hide demo windows"
 
-msgid "需要滚动"
-msgstr "Scroll available"
+msgid "隐藏输入内容的密码框"
+msgstr "A password box that hides its input"
+
+msgid "需求说明.md"
+msgstr "Requirements.md"
+
+msgid "需要持续按住或等待倒计时才会确认的按钮，按钮内部以填色显示进度，用来防止误触删除、发布等不可撤销的操作。"
+msgstr "A button that confirms only after being held or after a countdown. The fill shows progress inside the button, preventing accidental deletes, publishes and other irreversible actions."
+
+msgid "非按钮元素"
+msgstr "Non-button element"
+
+msgid "非链接文字的颜色与字号。"
+msgstr "Color and font size of non-link text."
+
+msgid "面板宽度，不超过页面宽度，默认 360px。"
+msgstr "Panel width, no wider than the page. Defaults to 360px."
+
+msgid "面板悬浮在背景图上，调整模糊半径、折射与色调。面板内的控件照常响应输入。"
+msgstr "The panel floats over the backdrop. Adjust blur radius, refraction, and tint. Controls inside the panel respond to input as usual."
+
+msgid "面板标题，右侧带关闭按钮。"
+msgstr "Panel title, with a close button on the right."
 
 msgid "面板状态"
 msgstr "Pane state"
 
-msgid "面积填充"
-msgstr "Area fill"
+msgid "面板背后的背景图，通常由应用采样得到。"
+msgstr "Backdrop behind the panel, usually sampled by the app."
 
-msgid "页面"
-msgstr "Page"
+msgid "音乐播放卡片"
+msgstr "Music player card"
+
+msgid "页数较少、没有数据与禁用。"
+msgstr "Few pages, no data, and disabled."
+
+msgid "页边距 (mm)"
+msgstr "Margin (mm)"
+
+msgid "页面内容"
+msgstr "Page content"
+
+msgid "页面内容区域，由应用根据 active-route-id 切换。"
+msgstr "Page content area, switched by the app according to active-route-id."
+
+msgid "页面在窗口中的位置与尺寸。"
+msgstr "Position and size of the page in the window."
+
+msgid "页面截图"
+msgstr "Page capture"
 
 msgid "页面截图目标"
 msgstr "Page capture target"
+
+msgid "页面是否激活；未激活时隐藏且不允许截图。"
+msgstr "Whether the page is active; an inactive page is hidden and cannot be captured."
 
 msgid "页面未激活"
 msgstr "Page is not active"
@@ -2151,35 +6087,74 @@ msgstr "Page is not active"
 msgid "页面标题 · Title"
 msgstr "Page title"
 
+msgid "页面标题。"
+msgstr "Page title."
+
 msgid "页面生命周期"
 msgstr "Page lifecycle"
 
-msgid "页面隐藏后保留输入；截图包含当前区域的背景、内容和覆盖层。"
-msgstr "Hidden pages retain input. Captures include the current area's background, content, and overlays."
+msgid "页面自身的稳定 ID。"
+msgstr "The page's own stable ID."
+
+msgid "页面顶部的公告条：左侧图标，中间滚动消息，右侧可关闭。"
+msgstr "An announcement bar at the top of a page: icon on the left, scrolling message in the middle, close button on the right."
+
+msgid "页面顶部的标题区，组合大标题、说明文字和可选的返回按钮，用于二级页面或详情页。"
+msgstr "The title area at the top of a page, combining a large title, a description, and an optional back button. Used on secondary or detail pages."
+
+msgid "顶层窗口组件；可设置 title、icon、no-frame、always-on-top 等。"
+msgstr "Top-level window component with title, icon, no-frame, always-on-top, and more."
 
 msgid "顶部"
 msgstr "Top"
 
+msgid "顶部应用栏、品牌名称与返回按钮是否可用。"
+msgstr "Top app bar, brand name, and whether the back button is enabled."
+
 msgid "项"
 msgstr "items"
 
-msgid "项目名称"
-msgstr "Project name"
+msgid "项目"
+msgstr "Projects"
 
-msgid "项目数据看板"
-msgstr "Project dashboard"
+msgid "项目文件"
+msgstr "Project files"
 
-msgid "项目说明\n通道 1：电压采集\n通道 2：温度监测\n采样频率：100 Hz\n触发模式：连续\n存储格式：CSV\n记录开始\n记录结束\n继续滚动查看完整内容\n备注：支持中文输入"
-msgstr "Project description\nChannel 1: voltage\nChannel 2: temperature\nSampling rate: 100 Hz\nTrigger: continuous\nStorage: CSV\nStart recording\nStop recording\nScroll to read all content\nNote: Chinese input is supported"
+msgid "项目概览"
+msgstr "Project overview"
+
+msgid "项目资源管理器"
+msgstr "Project explorer"
+
+msgid "顺丰速运 SF1024886"
+msgstr "SF Express SF1024886"
+
+msgid "预算.xlsx"
+msgstr "Budget.xlsx"
+
+msgid "预览中的复选框与右侧 checked 选项双向绑定。"
+msgstr "The checkbox in the preview is two-way bound to the checked option on the right."
+
+msgid "预览中的开关与右侧 checked 选项双向绑定。"
+msgstr "The switch in the preview is two-way bound to the checked option on the right."
+
+msgid "预览窗口已打开"
+msgstr "Preview window open"
 
 msgid "预览：你好，SlintForge！ABC 123"
 msgstr "Preview: Hello, SlintForge! ABC 123"
 
-msgid "颜色与屏幕取色"
-msgstr "Color and screen eyedropper"
+msgid "预计今天完成"
+msgstr "Expected today"
 
-msgid "颜色选择器"
-msgstr "ColorPicker"
+msgid "预计明天 12:00 前送达"
+msgstr "Expected by 12:00 tomorrow"
+
+msgid "预订"
+msgstr "Book"
+
+msgid "颜色调节"
+msgstr "Color adjustment"
 
 msgid "饮水"
 msgstr "Drinking"
@@ -2187,14 +6162,20 @@ msgstr "Drinking"
 msgid "饮食"
 msgstr "Eating"
 
-msgid "首区 {}%"
-msgstr "First pane {}%"
+msgid "饱和度"
+msgstr "Saturation"
+
+msgid "首区尺寸。"
+msgstr "Size of the first pane."
+
+msgid "首区所占比例；拖动时限制在 0.15 到 0.85。"
+msgstr "Share of the first pane; dragging keeps it between 0.15 and 0.85."
+
+msgid "首次使用引导"
+msgstr "First-run onboarding"
 
 msgid "首页"
 msgstr "Home"
-
-msgid "验证"
-msgstr "Validate"
 
 msgid "验证正常帧、异常帧和超时处理。"
 msgstr "Validate good frames, invalid frames, and timeout handling."
@@ -2202,21 +6183,60 @@ msgstr "Validate good frames, invalid frames, and timeout handling."
 msgid "验证步骤"
 msgstr "Verification steps"
 
-msgid "验证通过"
-msgstr "Valid"
-
 msgid "骑行"
 msgstr "Cycling"
+
+msgid "骨架是否播放扫光动画。"
+msgstr "Whether the skeleton plays the shimmer animation."
+
+msgid "高亮后的行；未绑定服务时为空。"
+msgstr "Highlighted lines. Empty when no service is bound."
+
+msgid "高级"
+msgstr "Advanced"
 
 msgid "高级选项"
 msgstr "Advanced options"
 
+msgid "高负载"
+msgstr "High load"
+
 msgid "黄色"
 msgstr "Yellow"
 
-msgid "默认区域"
-msgstr "Default locale"
+msgid "黑色"
+msgstr "Black"
 
-msgid "默认状态"
-msgstr "Default state"
+msgid "默认"
+msgstr "Default"
+
+msgid "默认、主色与禁用三种状态并排比较。"
+msgstr "Default, primary, and disabled side by side."
+
+msgid "默认、禁用与主色按钮并排比较。"
+msgstr "Default, disabled and primary buttons side by side."
+
+msgid "默认密度、加深与无水印。"
+msgstr "Default density, stronger and no watermark."
+
+msgid "默认带行号，以及关闭行号的紧凑显示。"
+msgstr "Default with line numbers, and a compact view without them."
+
+msgid "默认选中第一项；current-index 可预设初始选项。"
+msgstr "The first item is selected by default; current-index presets the initial item."
+
+msgid "鼠标单击时触发。"
+msgstr "Fires on mouse click."
+
+msgid "鼠标单击，或聚焦时按 Enter / Space 触发。"
+msgstr "Fires on click, or on Enter or Space when focused."
+
+msgid "鼠标垫 × 2　¥ 58"
+msgstr "Mouse pad × 2　¥ 58"
+
+msgid "（含归档）"
+msgstr " (including archived)"
+
+msgid "（未填写）"
+msgstr "(not provided)"
 

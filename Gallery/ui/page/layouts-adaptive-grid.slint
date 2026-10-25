@@ -1,47 +1,105 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeAdaptiveGrid, ForgeIconButton, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { Palette, Slider, SpinBox } from "std-widgets.slint";
+import { ForgeAdaptiveGrid, ForgeIcon, ForgeIcons, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：AdaptiveGrid。
 export component GalleryAdaptiveGridPage inherits Rectangle {
     in-out property<int> tile-count: 18;
-    GalleryPageFrame {
+    private property<float> item-min: 180;
+    private property<int> max-columns: 5;
+    private property<string> launched: "";
+
+    GalleryComponentPage {
         width: parent.width; height: parent.height;
+        category: @tr("布局");
         title: "AdaptiveGrid";
-        subtitle: @tr("卡片等宽、逐行对齐；缩放窗口时自动换列，内容过高时竖向滚动。");
-        HorizontalLayout {
-            height: 34px; vertical-stretch: 0; spacing: 10px;
-            ForgeIconButton { label: @tr("少量卡片"); selected: root.tile-count == 8; clicked => { root.tile-count = 8; } }
-            ForgeIconButton { label: @tr("大量卡片"); selected: root.tile-count == 30; clicked => { root.tile-count = 30; } }
-            Rectangle { horizontal-stretch: 1; }
-            Text {
-                text: @tr("{} 列 · {}", grid.column-count, grid.vertical-scrollbar-visible ? @tr("需要滚动") : @tr("无需滚动"));
-                color: Palette.foreground; font-size: 13px * ForgeTypography.scale; vertical-alignment: center;
+        subtitle: @tr("等宽卡片网格：按最小卡片宽度自动计算列数，卡片宽度随可用空间伸缩。适合仪表盘卡片、应用列表等需要逐列对齐的内容。");
+        api: [
+            { name: "min-item-width", kind: @tr("属性"), type: "length", description: @tr("卡片的最小宽度，决定一行能放几列。") },
+            { name: "max-columns", kind: @tr("属性"), type: "int", description: @tr("最大列数；0 表示不限制。") },
+            { name: "column-gap / row-gap", kind: @tr("属性"), type: "length", description: @tr("列间距与行间距。") },
+            { name: "content-padding", kind: @tr("属性"), type: "length", description: @tr("内容与边框之间的内边距。") },
+            { name: "column-count / item-width", kind: @tr("输出"), type: "int / length", description: @tr("当前列数与卡片宽度；卡片的 width 应绑定到 item-width。") },
+            { name: "vertical-scrollbar-visible", kind: @tr("输出"), type: "bool", description: @tr("内容是否超出可视高度。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("调整最小卡片宽度或最大列数，卡片始终等宽并逐行对齐。");
+            output: @tr("column-count = {} · item-width = {}px", grid.column-count, Math.round(grid.item-width / 1px));
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                grid := ForgeAdaptiveGrid {
+                    height: 340px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    min-item-width: root.item-min * 1px;
+                    max-columns: root.max-columns;
+                    for index in root.tile-count : Rectangle {
+                        width: grid.item-width;
+                        height: Math.mod(index, 3) == 0 ? 110px : Math.mod(index, 3) == 1 ? 80px : 96px;
+                        border-radius: 6px;
+                        background: Math.mod(index, 4) == 0 ? #3762a8 : Math.mod(index, 4) == 1 ? #8756aa : Math.mod(index, 4) == 2 ? #247b6f : #a05332;
+                        Text {
+                            text: @tr("卡片 {}", index + 1);
+                            color: white; font-size: 15px * ForgeTypography.scale;
+                            horizontal-alignment: center; vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: @tr("卡片数量"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 1; maximum: 40; value <=> root.tile-count; }
+                Text { text: @tr("min-item-width = {}px", Math.round(root.item-min)); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 100; maximum: 300; value <=> root.item-min; }
+                Text { text: "max-columns"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 0; maximum: 8; value <=> root.max-columns; }
             }
         }
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        preview := GalleryDemoCard {
-            preview-height: 360px;
-            grid := ForgeAdaptiveGrid {
-                x: 18px; y: 16px;
-                width: Math.max(0px, preview.width - 36px);
-                height: Math.max(0px, preview.height - 32px);
-                min-item-width: 180px;
-                max-columns: 5;
-                for index in root.tile-count : Rectangle {
-                    width: grid.item-width;
-                    height: Math.mod(index, 3) == 0 ? 130px : Math.mod(index, 3) == 1 ? 90px : 110px;
-                    border-radius: 6px;
-                    background: Math.mod(index, 4) == 0 ? #3762a8 : Math.mod(index, 4) == 1 ? #8756aa : Math.mod(index, 4) == 2 ? #247b6f : #a05332;
-                    Text {
-                        width: parent.width; height: parent.height;
-                        text: @tr("卡片 {}", index + 1);
-                        color: white; font-size: 16px * ForgeTypography.scale;
-                        horizontal-alignment: center; vertical-alignment: center;
+
+        GalleryExample {
+            title: @tr("应用启动台");
+            description: @tr("每个应用占一张等宽卡片，窗口变窄时自动减少列数。");
+            output: root.launched == "" ? @tr("尚未打开应用") : @tr("打开 · {}", root.launched);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                apps := ForgeAdaptiveGrid {
+                    height: 220px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    min-item-width: 120px;
+                    for app in [
+                        { name: @tr("主页"), glyph: ForgeIcons.home, tint: #3762a8 },
+                        { name: @tr("搜索"), glyph: ForgeIcons.search, tint: #247b6f },
+                        { name: @tr("日历"), glyph: ForgeIcons.calendar, tint: #a05332 },
+                        { name: @tr("设置"), glyph: ForgeIcons.settings, tint: #8756aa },
+                        { name: @tr("浏览器"), glyph: ForgeIcons.globe, tint: #2c7994 },
+                        { name: @tr("取色器"), glyph: ForgeIcons.eyedropper, tint: #a24d70 },
+                        { name: @tr("窗口管理"), glyph: ForgeIcons.window, tint: #43689f },
+                        { name: @tr("全部应用"), glyph: ForgeIcons.apps, tint: #697043 },
+                    ] : Rectangle {
+                        width: apps.item-width;
+                        height: 84px * ForgeTypography.scale;
+                        border-radius: 8px;
+                        border-width: 1px; border-color: Palette.border;
+                        background: touch.has-hover ? Palette.control-background : Palette.background;
+                        VerticalLayout {
+                            padding: 10px; spacing: 6px; alignment: center;
+                            HorizontalLayout {
+                                alignment: center;
+                                Rectangle {
+                                    width: 34px * ForgeTypography.scale; height: self.width;
+                                    border-radius: 8px; background: app.tint;
+                                    ForgeIcon { glyph: app.glyph; color: white; font-size: 20px * ForgeTypography.scale; }
+                                }
+                            }
+                            Text { text: app.name; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; overflow: elide; }
+                        }
+                        touch := TouchArea { mouse-cursor: pointer; clicked => { root.launched = app.name; } }
                     }
                 }
             }
         }
-
     }
 }

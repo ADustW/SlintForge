@@ -1,7 +1,6 @@
-import { Switch } from "std-widgets.slint";
+import { CheckBox, Palette, Slider } from "std-widgets.slint";
 import { ForgeShimmer, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：Shimmer。
 export component GalleryFeedbackShimmerPage inherits Rectangle {
@@ -12,22 +11,91 @@ export component GalleryFeedbackShimmerPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "feedback-shimmer";
-        active: root.visible;
+    private property<int> cycle-ms: 1600;
+    private property<bool> articles-loading: true;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("反馈");
         title: "Shimmer";
-        subtitle: @tr("开启或暂停内容加载的扫光效果。");
-        example-title: @tr("用法与状态");
-        preview-height: 210px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Switch { text: @tr("运行动画"); checked <=> root.flag; }
-ForgeShimmer { height: 36px; running: root.flag && root.visible; }
-ForgeShimmer { height: 24px; width: 260px; running: root.flag && root.visible; }
+        subtitle: @tr("带扫光动画的占位块，在内容加载期间占住位置，提示用户数据即将出现。可自由组合成任意版式。");
+        showcase-route: "feedback-shimmer";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "running", kind: @tr("属性"), type: "bool", description: @tr("是否播放扫光动画；页面隐藏时应关闭。") },
+            { name: "cycle", kind: @tr("属性"), type: "duration", description: @tr("一次扫光的时长，默认 1600ms。") },
+            { name: "phase", kind: @tr("输出"), type: "float", description: @tr("当前扫光位置，取值 0 到 1。") },
+            { name: "border-radius", kind: @tr("属性"), type: "length", description: @tr("圆角，设为宽度一半即为圆形占位。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("开启或暂停动画，调整扫光速度。");
+            GalleryPreview {
+                stretch: true;
+                VerticalLayout {
+                    spacing: 10px; alignment: center;
+                    ForgeShimmer { height: 32px; running: root.flag && root.visible; cycle: root.cycle-ms * 1ms; }
+                    HorizontalLayout { ForgeShimmer { height: 20px; horizontal-stretch: 3; running: root.flag && root.visible; cycle: root.cycle-ms * 1ms; } Rectangle { horizontal-stretch: 2; } }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "running"; checked <=> root.flag; }
+                Text { text: "cycle · \{root.cycle-ms}ms"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 400; maximum: 3000; value: root.cycle-ms; changed(value) => { root.cycle-ms = Math.round(value / 100) * 100; } }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("播放、暂停与圆形占位。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "running: true"; ForgeShimmer { width: 120px; height: 24px; running: root.visible; } }
+                GalleryVariant { caption: "running: false"; ForgeShimmer { width: 120px; height: 24px; running: false; } }
+                GalleryVariant { caption: "border-radius: 24px"; ForgeShimmer { width: 48px; height: 48px; border-radius: 24px; running: root.visible; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("文章列表加载");
+            description: @tr("数据返回前用头像与文字占位块排出列表版式，加载完成后替换为真实内容。");
+            output: root.articles-loading ? @tr("加载中") : @tr("已加载 3 篇文章");
+            GalleryPreview {
+                stretch: true;
+                VerticalLayout {
+                    spacing: 12px;
+                    CheckBox { text: @tr("加载中"); checked <=> root.articles-loading; }
+                    for article in [
+                        { title: @tr("Slint 1.18 发布说明"), meta: @tr("产品团队 · 3 分钟前") },
+                        { title: @tr("如何为桌面应用设计深色模式"), meta: @tr("设计组 · 1 小时前") },
+                        { title: @tr("Rust 与 C++ 混合构建实践"), meta: @tr("基础架构 · 昨天") },
+                    ] : Rectangle {
+                        height: 64px * ForgeTypography.scale;
+                        border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                        background: Palette.background;
+                        HorizontalLayout {
+                            padding: 12px; spacing: 12px;
+                            if root.articles-loading : ForgeShimmer { width: 40px; height: 40px; border-radius: 20px; running: root.visible; }
+                            if !root.articles-loading : Rectangle {
+                                width: 40px; height: 40px; border-radius: 20px;
+                                background: Palette.accent-background;
+                                Text { text: "S"; color: Palette.accent-foreground; font-weight: 600; }
+                            }
+                            if root.articles-loading : VerticalLayout {
+                                spacing: 8px; alignment: center;
+                                ForgeShimmer { height: 14px; running: root.visible; }
+                                HorizontalLayout { ForgeShimmer { height: 12px; horizontal-stretch: 1; running: root.visible; } Rectangle { horizontal-stretch: 1; } }
+                            }
+                            if !root.articles-loading : VerticalLayout {
+                                spacing: 4px; alignment: center;
+                                Text { text: article.title; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; font-weight: 600; overflow: elide; }
+                                Text { text: article.meta; color: Palette.foreground.transparentize(0.4); font-size: 12px * ForgeTypography.scale; overflow: elide; }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

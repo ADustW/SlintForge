@@ -1,17 +1,20 @@
-import { Palette, Button, LineEdit, CheckBox, ComboBox } from "std-widgets.slint";
+import { Palette, Button, LineEdit, CheckBox } from "std-widgets.slint";
 import { ForgeDataGrid, ForgeGridColumn, ForgeGridSelectionMode, ForgeTypography } from "@slintforge";
 import { GalleryGridDemoModels } from "grid-demo-models.slint";
-import { GalleryPageFrame } from "page-frame.slint";
-import { GalleryDemoCard } from "demo-card.slint";
-import { GalleryGridShowcase } from "grid-showcase.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "component-page.slint";
 import { GalleryShowcaseState } from "showcase.slint";
 
 export component GalleryGridPage inherits Rectangle {
     in property<bool> tree: false;
     out property<bool> qa-editing: grid.editing;
+    private property<string> route: root.tree ? "data-tree-grid" : "data-grid";
     private property<bool> disabled: false;
     private property<bool> multi-enabled: true;
     private property<string> message: @tr("单击表头排序，拖动列边界调整宽度，双击单元格编辑。");
+    private property<[ForgeGridColumn]> compact-columns: [{id:"name",title:@tr("任务"),width:200,frozen:true},{id:"count",title:@tr("数量"),width:80,numeric:true},{id:"owner",title:@tr("负责人"),width:100},{id:"status",title:@tr("状态"),width:100}];
+    // 原交互表格可能仍持有焦点；验收滚动到对照区域时转移焦点，避免自动滚动拉回编辑行。
+    private property<int> qa-tab: GalleryShowcaseState.route == root.route ? GalleryShowcaseState.tab : -1;
+    changed qa-tab => { if root.qa-tab >= 0 { qa-focus.focus(); } }
     function default-columns() -> [ForgeGridColumn] { return [
         {id: "name", title: @tr("名称"), width: root.tree ? 240 : 180, min-width: 120, max-width: 520, sortable: true, editable: true, frozen: true},
         {id: "count", title: @tr("数量"), width: 90, min-width: 60, max-width: 200, numeric: true, sortable: true, editable: true},
@@ -36,59 +39,97 @@ export component GalleryGridPage inherits Rectangle {
             grid.begin-edit(1, 1);
         }
     }
-    GalleryPageFrame {
-        viewport-y: GalleryShowcaseState.route == (root.tree ? "data-tree-grid" : "data-grid") && GalleryShowcaseState.tab >= 0 ? -comparison.y + 20px : 0px;
+    qa-focus := FocusScope { width: 1px; height: 1px; enabled: root.qa-tab >= 0; }
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("数据展示");
         title: root.tree ? "TreeDataGrid" : "DataGrid";
-        subtitle: root.tree ? @tr("按层级查看数据，展开分组并对同级节点排序。") : @tr("查看和编辑表格数据，调整列宽并选择多行。");
-        Text { text: @tr("交互示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        GalleryDemoCard {
-            preview-height: 600px * ForgeTypography.scale;
-            VerticalLayout {
-                x: 20px; y: 20px; width: parent.width - 40px; height: parent.height - 40px;
-                spacing: 12px;
-                HorizontalLayout {
-                    height: 34px; vertical-stretch: 0; spacing: 8px;
-                    search := LineEdit { placeholder-text: @tr("筛选名称、负责人或说明"); text <=> grid.filter; enabled: !root.disabled; }
-                    Button {
-                        text: @tr("重置");
-                        clicked => { root.reset(); root.message = @tr("已恢复示例数据。"); }
+        subtitle: root.tree ? @tr("按层级查看数据，展开分组并对同级节点排序；其余能力与 DataGrid 相同。") : @tr("虚拟化的数据表格，支持排序、筛选、列宽调整、冻结与隐藏列、多选和单元格编辑。");
+        showcase-route: root.route;
+        qa-anchors: [compact.y, boundary.y];
+        api: [
+            { name: "columns / rows", kind: @tr("属性"), type: "[ForgeGridColumn] / [ForgeGridRow]", description: @tr("列定义与行数据，由应用持有。") },
+            { name: "tree / tree-column", kind: @tr("属性"), type: "bool / int", description: @tr("按 parent-id 显示层级，并指定显示缩进的列。") },
+            { name: "selection-mode", kind: @tr("属性"), type: "ForgeGridSelectionMode", description: @tr("none、single 或 multiple。") },
+            { name: "editable / enabled", kind: @tr("属性"), type: "bool", description: @tr("是否允许编辑，以及整体禁用。") },
+            { name: "filter / sort-column / sort-descending", kind: @tr("属性"), type: "string / int / bool", description: @tr("全局筛选文本与排序状态。") },
+            { name: "visible-row-count / selected-row-count", kind: @tr("输出"), type: "int", description: @tr("筛选后的可见行数与已选行数。") },
+            { name: "row-clicked / cell-edited / expansion-changed", kind: @tr("回调"), type: "", description: @tr("行点击、单元格提交与展开变化。") },
+            { name: "sort-by / select-row / begin-edit / delete-selected", kind: @tr("函数"), type: "", description: @tr("以编程方式排序、选择、编辑与删除。") },
+        ];
+
+        GalleryExample {
+            title: @tr("交互示例");
+            description: @tr("Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑，Enter 确认，Esc 取消。");
+            output: @tr("总行数 {} · 可见 {} · 已选 {} — {}", grid.rows.length, grid.visible-row-count, grid.selected-row-count, root.message);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 10px;
+                    HorizontalLayout {
+                        spacing: 8px;
+                        LineEdit { placeholder-text: @tr("筛选名称、负责人或说明"); text <=> grid.filter; enabled: !root.disabled; }
+                        Button { text: @tr("新增行"); enabled: !root.disabled; clicked => { grid.rows = GalleryGridDemoModels.action(root.tree, "append", grid.rows); } }
+                        Button { text: @tr("删除所选"); enabled: !root.disabled && grid.selected-row-count > 0; clicked => { grid.delete-selected(); } }
+                    }
+                    grid := ForgeDataGrid {
+                        height: 420px * ForgeTypography.scale;
+                        tree: root.tree; columns: root.default-columns();
+                        rows: root.tree ? GalleryGridDemoModels.tree-seed : GalleryGridDemoModels.flat-seed;
+                        enabled: !root.disabled; selection-mode: root.multi-enabled ? ForgeGridSelectionMode.multiple : ForgeGridSelectionMode.single;
+                        row-clicked(id) => { root.message = @tr("当前行：{}", id); }
+                        cell-edited(id, column, text) => { root.message = @tr("已更新：{} · {} = {}", id, column, text); }
+                        expansion-changed(id, expanded) => { root.message = expanded ? @tr("已展开：{}", id) : @tr("已折叠：{}", id); }
                     }
                 }
-                HorizontalLayout {
-                    height: 34px; vertical-stretch: 0; spacing: 8px; alignment: start;
-                    Button { text: @tr("新增行"); enabled: !root.disabled; clicked => { grid.rows = GalleryGridDemoModels.action(root.tree, "append", grid.rows); } }
-                    Button { text: @tr("删除所选"); enabled: !root.disabled && grid.selected-row-count > 0; clicked => { grid.delete-selected(); } }
-                    Button { text: @tr("更新首行"); enabled: !root.disabled && grid.rows.length > 0; clicked => { grid.rows = GalleryGridDemoModels.action(root.tree, "update", grid.rows); } }
-                    Button { text: @tr("加载万行"); enabled: !root.disabled; clicked => { grid.cancel-edit(); grid.rows = GalleryGridDemoModels.action(root.tree, "large", grid.rows); } }
-                }
-                HorizontalLayout {
-                    height: 34px; vertical-stretch: 0; spacing: 10px; alignment: start;
-                    CheckBox { text: @tr("多选"); checked <=> root.multi-enabled; enabled: !root.disabled; }
-                    CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
-                    CheckBox { text: @tr("冻结名称列"); checked: grid.columns[0].frozen; enabled: !root.disabled; toggled => { grid.columns[0].frozen = self.checked; grid.refresh(); } }
-                    CheckBox { text: @tr("显示说明"); checked: !grid.columns[4].hidden; enabled: !root.disabled; toggled => { grid.columns[4].hidden = !self.checked; grid.refresh(); } }
-                }
-                if root.tree : HorizontalLayout {
-                    height: 30px; vertical-stretch: 0; spacing: 8px; alignment: start;
-                    Button { text: @tr("全部展开"); enabled: !root.disabled; clicked => { grid.expand-all(true); } }
-                    Button { text: @tr("全部折叠"); enabled: !root.disabled; clicked => { grid.expand-all(false); } }
-                }
-                grid := ForgeDataGrid {
-                    tree: root.tree; columns: root.default-columns();
-                    rows: root.tree ? GalleryGridDemoModels.tree-seed : GalleryGridDemoModels.flat-seed;
-                    enabled: !root.disabled; selection-mode: root.multi-enabled ? ForgeGridSelectionMode.multiple : ForgeGridSelectionMode.single;
-                    row-clicked(id) => { root.message = @tr("当前行：{}", id); }
-                    cell-edited(id, column, text) => { root.message = @tr("已更新：{} · {} = {}", id, column, text); }
-                    expansion-changed(id, expanded) => { root.message = expanded ? @tr("已展开：{}", id) : @tr("已折叠：{}", id); }
-                }
-                Text { text: @tr("总行数 {} · 可见 {} · 已选 {}", grid.rows.length, grid.visible-row-count, grid.selected-row-count);
-                    height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; }
-                Text { text: root.message; height: self.preferred-height; vertical-stretch: 0; wrap: word-wrap; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("多选"); checked <=> root.multi-enabled; enabled: !root.disabled; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                CheckBox { text: @tr("冻结名称列"); checked: grid.columns[0].frozen; enabled: !root.disabled; toggled => { grid.columns[0].frozen = self.checked; grid.refresh(); } }
+                CheckBox { text: @tr("显示说明"); checked: !grid.columns[4].hidden; enabled: !root.disabled; toggled => { grid.columns[4].hidden = !self.checked; grid.refresh(); } }
+                if root.tree : Button { text: @tr("全部展开"); enabled: !root.disabled; clicked => { grid.expand-all(true); } }
+                if root.tree : Button { text: @tr("全部折叠"); enabled: !root.disabled; clicked => { grid.expand-all(false); } }
+                Button { text: @tr("更新首行"); enabled: !root.disabled && grid.rows.length > 0; clicked => { grid.rows = GalleryGridDemoModels.action(root.tree, "update", grid.rows); } }
+                Button { text: @tr("加载万行"); enabled: !root.disabled; clicked => { grid.cancel-edit(); grid.rows = GalleryGridDemoModels.action(root.tree, "large", grid.rows); } }
+                Button { text: @tr("重置"); clicked => { root.reset(); root.message = @tr("已恢复示例数据。"); } }
             }
         }
-        Text { text: @tr("Ctrl 单击切换选择，Shift 单击选择范围；方向键移动，F2 编辑，Enter 确认，Esc 取消。");
-            height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; wrap: word-wrap; }
-        Text { text: @tr("更多示例"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        comparison := GalleryGridShowcase { tree: root.tree; }
+
+        compact := GalleryExample {
+            title: @tr("紧凑与只读");
+            description: @tr("较小行高、不可编辑；冻结任务列后横向滚动查看其他列。右侧为禁用状态。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "editable: false · row-height: 28px";
+                    ForgeDataGrid { height: 260px * ForgeTypography.scale; horizontal-stretch: 1; tree: root.tree; columns: root.compact-columns; rows: root.tree ? GalleryGridDemoModels.tree-seed : GalleryGridDemoModels.flat-seed; editable: false; row-height: 28px * ForgeTypography.scale; }
+                }
+                GalleryVariant {
+                    caption: "enabled: false";
+                    ForgeDataGrid { height: 260px * ForgeTypography.scale; horizontal-stretch: 1; tree: root.tree; columns: root.compact-columns; rows: root.tree ? GalleryGridDemoModels.tree-seed : GalleryGridDemoModels.flat-seed; editable: false; enabled: false; row-height: 28px * ForgeTypography.scale; }
+                }
+            }
+        }
+
+        boundary := GalleryExample {
+            title: @tr("数据边界");
+            description: @tr("只有一行或没有数据时，表头和列布局保持不变。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: @tr("单行数据");
+                    ForgeDataGrid { height: 180px * ForgeTypography.scale; horizontal-stretch: 1; columns: root.compact-columns; rows: [GalleryGridDemoModels.flat-seed[0]]; editable: false; }
+                }
+                GalleryVariant {
+                    caption: @tr("暂无数据");
+                    ForgeDataGrid { height: 180px * ForgeTypography.scale; horizontal-stretch: 1; columns: root.compact-columns; rows: []; editable: false; }
+                }
+            }
+        }
     }
 }

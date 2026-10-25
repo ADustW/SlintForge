@@ -1,30 +1,120 @@
-import { Button, LineEdit } from "std-widgets.slint";
-import { ForgeLiquidGlass, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { Button, CheckBox, LineEdit, Palette, Slider } from "std-widgets.slint";
+import { ForgeAcrylic, ForgeLiquidGlass, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 import { GalleryDemoModels } from "../component/demo-models.slint";
 
-// 共享组件演示：Liquid Glass。
+// 共享组件演示：Liquid Glass。背景处理由宿主通过 ForgeWidgetServices.backdrop 提供。
 export component GalleryThemeLiquidGlassPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<int> blur: 4;
+    private property<bool> refraction: true;
+    private property<int> unread: 3;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("主题");
         title: "Liquid Glass";
-        subtitle: @tr("在背景上预览玻璃效果及内容交互。");
-        example-title: @tr("用法与状态");
-        preview-height: 420px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Image { source: GalleryDemoModels.backdrop-image; height: 90px; image-fit: cover; }
-ForgeLiquidGlass { height: 260px; source: GalleryDemoModels.backdrop-image; VerticalLayout { spacing: 18px; Text { text: @tr("背景图上的材质效果"); color: white; font-size: 24px; font-weight: 600; } LineEdit { placeholder-text: @tr("内容仍可交互"); } Button { text: @tr("点击按钮"); clicked => { root.count += 1; } } Text { text: @tr("点击次数：{}", root.count); color: white; } } }
+        subtitle: @tr("带折射和高光描边的玻璃材质，继承自 Acrylic，默认模糊更轻、圆角更大。适合悬浮控件和小组件。");
+        api: [
+            { name: "source", kind: @tr("属性"), type: "image", description: @tr("面板背后的背景图，通常由应用采样得到。") },
+            { name: "blur-radius", kind: @tr("属性"), type: "int", description: @tr("模糊半径，默认 4。") },
+            { name: "refraction", kind: @tr("属性"), type: "bool", description: @tr("折射扭曲效果，默认开启。") },
+            { name: "tint", kind: @tr("属性"), type: "color", description: @tr("覆盖在背景上的半透明色调。") },
+            { name: "content-padding", kind: @tr("属性"), type: "length", description: @tr("内容区与面板边缘的距离，默认 18px。") },
+            { name: "processed", kind: @tr("输出"), type: "image", description: @tr("处理后的背景图；未绑定服务时等于 source。") },
+            { name: "refresh()", kind: @tr("函数"), type: "", description: @tr("重新处理背景；source 或参数变化时自动调用。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("玻璃面板悬浮在背景图上，调整模糊半径并切换折射。");
+            output: @tr("blur-radius · {} · 点击 {} 次", root.blur, root.count);
+            GalleryPreview {
+                Rectangle {
+                    preferred-width: 440px * ForgeTypography.scale; min-width: 260px;
+                    height: 260px * ForgeTypography.scale;
+                    border-radius: 8px; clip: true;
+                    Image { width: parent.width; height: parent.height; source: GalleryDemoModels.backdrop-image; image-fit: cover; }
+                    ForgeLiquidGlass {
+                        x: 32px; y: 28px; width: parent.width - 64px; height: parent.height - 56px;
+                        source: GalleryDemoModels.backdrop-image;
+                        blur-radius: root.blur; refraction: root.refraction;
+                        VerticalLayout {
+                            spacing: 12px; alignment: center;
+                            Text { text: @tr("背景图上的材质效果"); color: white; font-size: 20px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
+                            LineEdit { placeholder-text: @tr("内容仍可交互"); }
+                            HorizontalLayout {
+                                alignment: start;
+                                Button { text: @tr("点击按钮"); clicked => { root.count += 1; } }
+                            }
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: "blur-radius"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 0; maximum: 30; value: root.blur; changed(value) => { root.blur = Math.round(value); } }
+                CheckBox { text: "refraction"; checked <=> root.refraction; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("与 Acrylic 对比，以及关闭折射后的玻璃面板。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "ForgeAcrylic";
+                    ForgeAcrylic { width: 140px; height: 90px; source: GalleryDemoModels.backdrop-image; }
+                }
+                GalleryVariant {
+                    caption: "ForgeLiquidGlass";
+                    ForgeLiquidGlass { width: 140px; height: 90px; source: GalleryDemoModels.backdrop-image; }
+                }
+                GalleryVariant {
+                    caption: "refraction: false";
+                    ForgeLiquidGlass { width: 140px; height: 90px; source: GalleryDemoModels.backdrop-image; refraction: false; }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("锁屏通知");
+            description: @tr("锁屏背景上的时间和通知卡片，玻璃面板保留背景的色彩层次。");
+            output: root.unread > 0 ? @tr("未读通知 {} 条", root.unread) : @tr("没有未读通知");
+            GalleryPreview {
+                Rectangle {
+                    preferred-width: 360px * ForgeTypography.scale; min-width: 260px;
+                    height: lock.preferred-height;
+                    border-radius: 8px; clip: true;
+                    Image { width: parent.width; height: parent.height; source: GalleryDemoModels.backdrop-image; image-fit: cover; }
+                    lock := VerticalLayout {
+                        padding: 20px; spacing: 14px;
+                        Text { text: "09:41"; color: white; font-size: 44px * ForgeTypography.scale; font-weight: 300; horizontal-alignment: center; }
+                        Text { text: @tr("10月25日 星期日"); color: #ffffffd0; font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; }
+                        ForgeLiquidGlass {
+                            height: note.preferred-height + 36px;
+                            source: GalleryDemoModels.backdrop-image;
+                            note := VerticalLayout {
+                                spacing: 8px;
+                                Text { text: @tr("日历 · 10:30 设计评审"); color: white; font-size: 14px * ForgeTypography.scale; font-weight: 600; }
+                                Text { text: root.unread > 0 ? @tr("另有 {} 条未读通知", root.unread) : @tr("所有通知已处理"); color: #ffffffd0; font-size: 12px * ForgeTypography.scale; }
+                                HorizontalLayout {
+                                    spacing: 8px; alignment: end;
+                                    Button { text: @tr("稍后提醒"); }
+                                    Button { text: @tr("全部已读"); enabled: root.unread > 0; clicked => { root.unread = 0; } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

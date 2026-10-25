@@ -1,7 +1,6 @@
-import { Palette } from "std-widgets.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
 import { ForgeSegmentedControl, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：SegmentedControl。
 export component GalleryNavigationSegmentedPage inherits Rectangle {
@@ -12,21 +11,101 @@ export component GalleryNavigationSegmentedPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "navigation-segmented";
-        active: root.visible;
+
+    private property<string> range: "week";
+    private property<bool> disabled: false;
+    private property<bool> year-enabled: false;
+    private property<string> view: "day";
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("导航");
         title: "SegmentedControl";
-        subtitle: @tr("切换日、周、月三个视图。");
-        example-title: @tr("用法与状态");
-        preview-height: 150px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeSegmentedControl { selected-id: "day"; items: [{id: "day", label: @tr("日"), enabled: true}, {id: "week", label: @tr("周"), enabled: true}, {id: "month", label: @tr("月"), enabled: true}]; selected(id) => { root.status = id; } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("一组互斥的分段按钮，用于在少量并列选项或视图之间切换，当前选项高亮显示。");
+        showcase-route: "navigation-segmented";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "items", kind: @tr("属性"), type: "[ForgeChoiceItem]", description: @tr("分段列表，每项包含 id、label 与 enabled。") },
+            { name: "selected-id", kind: @tr("属性"), type: "string", description: @tr("当前选中的 id；点击后组件自行更新，可双向绑定。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后所有分段不可操作。") },
+            { name: "selected(string)", kind: @tr("回调"), type: "", description: @tr("用户选择某一分段后触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击分段切换统计周期；右侧可启用“年”或禁用整个控件。");
+            output: @tr("selected · {}", root.range);
+            GalleryPreview {
+                ForgeSegmentedControl {
+                    items: [
+                        { id: "day", label: @tr("日"), enabled: true },
+                        { id: "week", label: @tr("周"), enabled: true },
+                        { id: "month", label: @tr("月"), enabled: true },
+                        { id: "year", label: @tr("年"), enabled: root.year-enabled },
+                    ];
+                    selected-id <=> root.range;
+                    enabled: !root.disabled;
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("“年”enabled"); checked <=> root.year-enabled; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("正常选择、单项不可用与整体禁用。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "selected-id: \"list\"";
+                    ForgeSegmentedControl { selected-id: "list"; items: [{ id: "list", label: @tr("列表"), enabled: true }, { id: "grid", label: @tr("网格"), enabled: true }]; }
+                }
+                GalleryVariant {
+                    caption: "item.enabled: false";
+                    ForgeSegmentedControl { selected-id: "list"; items: [{ id: "list", label: @tr("列表"), enabled: true }, { id: "grid", label: @tr("网格"), enabled: false }]; }
+                }
+                GalleryVariant {
+                    caption: "enabled: false";
+                    ForgeSegmentedControl { selected-id: "grid"; enabled: false; items: [{ id: "list", label: @tr("列表"), enabled: true }, { id: "grid", label: @tr("网格"), enabled: true }]; }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("日程视图");
+            description: @tr("日历顶部用分段控件切换日、周、月视图，下方列出对应范围内的日程。");
+            output: @tr("视图 · {}", root.view);
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: agenda.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    agenda := VerticalLayout {
+                        padding: 16px; spacing: 12px;
+                        HorizontalLayout {
+                            spacing: 12px;
+                            Text {
+                                text: root.view == "day" ? @tr("10 月 25 日") : root.view == "week" ? @tr("10 月 20 日 – 26 日") : @tr("2026 年 10 月");
+                                color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600;
+                                vertical-alignment: center; horizontal-stretch: 1;
+                            }
+                            ForgeSegmentedControl {
+                                items: [{ id: "day", label: @tr("日"), enabled: true }, { id: "week", label: @tr("周"), enabled: true }, { id: "month", label: @tr("月"), enabled: true }];
+                                selected-id <=> root.view;
+                            }
+                        }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        for entry in (root.view == "day" ? [@tr("09:30　产品例会"), @tr("14:00　客户回访")]
+                            : root.view == "week" ? [@tr("周二　版本评审"), @tr("周四　团队分享"), @tr("周六　上线窗口")]
+                            : [@tr("10 月 8 日　季度规划"), @tr("10 月 18 日　运营复盘"), @tr("10 月 25 日　客户回访"), @tr("10 月 30 日　版本发布")]) : Text {
+                            text: entry; color: Palette.foreground;
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

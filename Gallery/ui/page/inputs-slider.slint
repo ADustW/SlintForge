@@ -1,7 +1,6 @@
-import { Slider, Palette } from "std-widgets.slint";
+import { CheckBox, ComboBox, Palette, Slider } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // Slint 原生示例：Slider。
 export component GalleryInputsSliderPage inherits Rectangle {
@@ -10,28 +9,103 @@ export component GalleryInputsSliderPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<bool> vertical-layout: false;
+    private property<bool> disabled: false;
+    private property<[float]> steps: [1, 5, 10, 25];
+    private property<int> step-index: 0;
+    private property<float> hue: 210;
+    private property<float> saturation: 70;
+    private property<float> brightness: 85;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-slider";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入");
         title: "Slider";
-        subtitle: @tr("拖动水平或垂直滑块调整数值。");
-        example-title: @tr("用法与状态");
-        preview-height: 310px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Slider { minimum: 0; maximum: 100; value <=> root.number; }
-    Slider { minimum: 0; maximum: 100; value: 75; enabled: false; }
-    HorizontalLayout { height: 130px; spacing: 24px; alignment: start;
-        Slider { orientation: vertical; minimum: 0; maximum: 100; value <=> root.number; width: 24px; }
-        Slider { orientation: vertical; minimum: 0; maximum: 100; value: 75; enabled: false; width: 24px; }
-        Text { text: @tr("当前值：{}", round(root.number)); color: Palette.foreground; vertical-alignment: center; }
-    }
+        subtitle: @tr("原生滑块，拖动或用方向键在连续范围内选择数值，适合音量、亮度等不需要精确输入的场景。");
+        native: true;
+        showcase-route: "inputs-slider";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "value", kind: @tr("属性"), type: "float", description: @tr("当前值，可双向绑定。") },
+            { name: "minimum / maximum", kind: @tr("属性"), type: "float", description: @tr("取值范围，默认 0～100。") },
+            { name: "step", kind: @tr("属性"), type: "float", description: @tr("方向键调整时的步长，默认 1。") },
+            { name: "orientation", kind: @tr("属性"), type: "Orientation", description: @tr("水平（默认）或垂直。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用拖动与键盘调整。") },
+            { name: "changed(float)", kind: @tr("回调"), type: "", description: @tr("值在拖动或按键过程中改变时触发。") },
+            { name: "released(float)", kind: @tr("回调"), type: "", description: @tr("松开滑块时触发，适合提交最终值。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("拖动滑块，或聚焦后按方向键按 step 调整。");
+            output: root.status;
+            GalleryPreview {
+                Slider {
+                    width: root.vertical-layout ? 32px : 280px * ForgeTypography.scale;
+                    height: root.vertical-layout ? 140px * ForgeTypography.scale : 32px;
+                    orientation: root.vertical-layout ? Orientation.vertical : Orientation.horizontal;
+                    minimum: 0; maximum: 100; step: root.steps[root.step-index];
+                    value <=> root.number; enabled: !root.disabled;
+                    changed(value) => { root.status = @tr("changed · {}", round(value)); }
+                    released(value) => { root.count += 1; root.status = @tr("released · {}", round(value)); }
+                }
+            }
+            GalleryOptions {
+                Text { text: "step"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["1", "5", "10", "25"]; current-index <=> root.step-index; }
+                CheckBox { text: "orientation: vertical"; checked <=> root.vertical-layout; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("可用、禁用与垂直方向。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "value: 40"; Slider { width: 140px; value: 40; } }
+                GalleryVariant { caption: "enabled: false"; Slider { width: 140px; value: 75; enabled: false; } }
+                GalleryVariant { caption: "orientation: vertical"; Slider { height: 80px; orientation: vertical; value: 60; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("颜色调节");
+            description: @tr("色相、饱和度与亮度三个滑块共同决定右侧的颜色。");
+            output: @tr("H {}° · S {}% · V {}%", round(root.hue), round(root.saturation), round(root.brightness));
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: panel.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    panel := HorizontalLayout {
+                        padding: 20px; spacing: 20px;
+                        GridLayout {
+                            spacing-horizontal: 12px; spacing-vertical: 8px;
+                            Row {
+                                Text { text: @tr("色相"); color: Palette.foreground; vertical-alignment: center; }
+                                Slider { minimum: 0; maximum: 360; value <=> root.hue; }
+                            }
+                            Row {
+                                Text { text: @tr("饱和度"); color: Palette.foreground; vertical-alignment: center; }
+                                Slider { minimum: 0; maximum: 100; value <=> root.saturation; }
+                            }
+                            Row {
+                                Text { text: @tr("亮度"); color: Palette.foreground; vertical-alignment: center; }
+                                Slider { minimum: 0; maximum: 100; value <=> root.brightness; }
+                            }
+                        }
+                        Rectangle {
+                            width: 88px * ForgeTypography.scale;
+                            border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                            background: hsv(root.hue, root.saturation / 100, root.brightness / 100);
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

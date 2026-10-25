@@ -903,3 +903,1633 @@ Tab / Shift+Tab 遍历业务输入，跳过禁用项；关闭后恢复焦点。|
 颜色与屏幕取色|Color and screen eyedropper
 颜色选择器|ColorPicker
 默认区域|Default locale
+accepted · {}|accepted · {}
+accepted · {} {}|accepted · {} {}
+bar、line、pie、polar、bubble、scatter 或 radar。|bar, line, pie, polar, bubble, scatter, or radar.
+clicked · 已点击 {} 次|clicked · {} clicks
+horizontal 左右排列，vertical 上下排列。|horizontal places panes side by side; vertical stacks them.
+none、single 或 multiple。|none, single, or multiple.
+ratio = {}%|ratio = {}%
+trend = {}%|trend = {}%
+value-changed · {}|value-changed · {}
+value-changed · 评分 {} / {}|value-changed · rating {} / {}
+一套 Slint 组件，同时服务 Rust 与 C++ 应用。每个页面都可以直接操作、切换属性并查看 API。|One set of Slint components for both Rust and C++ apps. Every page lets you interact, change properties, and read the API.
+三个扇区|Three sectors
+上升、下降与不显示趋势。|Rising, falling, and no trend.
+不保存|Don't save
+不保存，所做的更改将会丢失。|If you don't save, your changes will be lost.
+不可用|Unavailable
+不同字段使用不同的范围和步长。|Each field uses its own range and step.
+专业绘图，支持缩放、测量与导出|Professional plotting with zoom, measurement, and export
+两端为半圆的胶囊形按钮，适合工具栏、筛选条和对话框中的次要操作。|A capsule-shaped button with rounded ends, suited to secondary actions in toolbars, filter bars, and dialogs.
+为本次订单评分|Rate this order
+主要操作使用 primary，其余操作保持默认样式并靠右排列。|The main action uses primary; other actions keep the default style, aligned to the right.
+人|people
+从按钮开始浏览可交互示例|Start with buttons and explore interactive examples
+以星级表示评分。点击星星评分，聚焦后可用方向键调整。|Shows a rating as stars. Click a star to rate, or use the arrow keys when focused.
+以编程方式打开或关闭弹层。|Open or close the popup from code.
+以编程方式排序、选择、编辑与删除。|Sort, select, edit, and delete from code.
+以编程方式选择或清除数据点。|Select or clear a data point from code.
+份数|Copies
+使用主色填充，用于主要操作。|Fills with the accent color for the main action.
+侧栏 {}% · 编辑区 {}%|Sidebar {}% · Editor {}%
+保存对“季度报告”的更改？|Save changes to "Quarterly report"?
+全局筛选文本与排序状态。|Global filter text and sort state.
+共享组件|Shared component
+函数|Function
+分隔条宽度，默认 8px。|Divider thickness, 8px by default.
+切换主题、字体与导航位置|Change theme, font, and navigation position
+列定义与行数据，由应用持有。|Column definitions and row data, owned by the app.
+到达上限时增加按钮自动禁用；禁用状态不可输入。|The increment button disables at the maximum; a disabled box accepts no input.
+单系列|Single series
+原生控件|Native control
+反馈|Feedback
+取值范围。|Allowed range.
+只显示评分，不接受修改。|Shows the rating without accepting changes.
+只有一行或没有数据时，表头和列布局保持不变。|With one row or no data, the header and column layout stay the same.
+可选日期范围。|Selectable date range.
+同一组数据的基础样式与变体样式。|The same data in the basic style and a variant style.
+商品质量|Product quality
+回调|Callback
+图表|Charts
+在右侧修改文字和属性，预览即时更新。|Change the text and properties on the right; the preview updates immediately.
+在弹层中附带时间选择。|Adds time selection to the popup.
+在线设备|Online devices
+坐标类图表用 series，饼图与极坐标图用 slices。|Cartesian charts use series; pie and polar charts use slices.
+基本用法|Basic usage
+堆叠、平滑、面积填充与环形样式。|Stacked, smooth, area fill, and doughnut styles.
+外层左右分割放置文件列表，右侧再上下分割出编辑区与终端。|The outer split holds a file list on the left; the right side splits again into editor and terminal.
+外观与语言|Appearance and language
+多个指标横向排列，构成看板的概览行。|Several metrics side by side form a dashboard's summary row.
+多个维度分别评分，汇总显示平均分。|Rate each aspect separately and show the average.
+对话框操作栏|Dialog action bar
+少量数据，以及清空数据后保留容器与空状态提示。|Sparse data, and the empty state kept after clearing the data.
+尚未选择|Nothing selected yet
+尚未选择操作|No action chosen yet
+属性|Properties
+嵌套分割：编辑器布局|Nested splits: editor layout
+已放弃更改|Changes discarded
+已格式化的数值文本。|Pre-formatted value text.
+已选日期与时间。|Selected date and time.
+布局|Layouts
+当前值；外部赋值同样限制在范围内。|Current value; values set by the host are also kept in range.
+当前文本能否解析为数字。|Whether the current text parses as a number.
+当前评分，限制在 0 到 maximum 之间。|Current rating, kept between 0 and maximum.
+总行数 {} · 可见 {} · 已选 {} — {}|Rows {} · Visible {} · Selected {} — {}
+悬停读取数值，点击数据点或图例进行交互；在右侧更新数据或切换样式。|Hover to read values and click data points or the legend; update data or switch styles on the right.
+打印设置|Print settings
+把区域分成两块，拖动中间的分隔条调整比例。两块内容由应用按输出的几何属性放置。|Splits an area into two panes; drag the divider to change the ratio. The app places pane content using the output geometry.
+把键盘焦点移到按钮上。|Moves keyboard focus to the button.
+拖动分隔条，或在右侧切换排列方向。|Drag the divider, or switch the orientation on the right.
+拖动滑块修改趋势，正负值分别显示为上升和下降。|Drag the slider to change the trend; positive values rise and negative values fall.
+按 parent-id 显示层级，并指定显示缩进的列。|Shows hierarchy from parent-id and sets which column is indented.
+按下与焦点状态。|Pressed and focus state.
+按分类浏览全部组件页面|Browse every component page by category
+按层级查看数据，展开分组并对同级节点排序；其余能力与 DataGrid 相同。|View data by hierarchy, expand groups, and sort sibling nodes; everything else matches DataGrid.
+按范围约束设置评分。|Sets the rating within range.
+按钮与方向键的步长。|Step used by the buttons and arrow keys.
+按钮文字。|Button text.
+排序、筛选、冻结列与单元格编辑|Sorting, filtering, frozen columns, and cell editing
+数值上方的标题。|Title above the value.
+数值后的单位。|Unit after the value.
+数据展示|Data display
+新增用户|New users
+星星数量，默认 5。|Number of stars, 5 by default.
+是否允许编辑，以及整体禁用。|Whether editing is allowed, and whether the grid is disabled.
+是否已选择；未选择时显示占位文字。|Whether a value is chosen; shows placeholder text otherwise.
+是否显示趋势行。|Whether to show the trend line.
+显示图例与网格线。|Show the legend and grid lines.
+显示语言与深浅配色。|Display language and light or dark colors.
+服务态度|Service
+未评分、部分评分与只读满分。|Unrated, partly rated, and a read-only full score.
+本月收入|Revenue this month
+比较各月份数据，切换分组或堆叠|Compare monthly data, grouped or stacked
+浮点数输入框。可直接输入，也可用按钮或上下方向键按步长调整；整数场景请使用原生 SpinBox。|A floating-point input. Type directly, or step with the buttons or the up and down arrow keys; use the native SpinBox for integers.
+涨跌百分比；正数上升、负数下降。|Percentage change; positive rises, negative falls.
+点击按钮打开月历，选中日期后确认。|Click the button to open the calendar, pick a date, then confirm.
+点击数据点，参数为系列、索引与数值。|A data point was clicked; arguments are series, index, and value.
+物流速度|Delivery speed
+状态对照|State comparison
+用户修改后触发；回车或失焦时提交输入。|Fires after the user changes the value; input commits on Enter or when focus leaves.
+用户修改评分后触发；宿主赋值不会触发。|Fires after the user changes the rating, not when the host sets it.
+用户拖动分隔条后触发。|Fires after the user drags the divider.
+确认|Confirm
+确认选择后触发。|Fires after a selection is confirmed.
+禁用后不响应鼠标与键盘。|When disabled, ignores mouse and keyboard.
+禁用后变暗且不可操作。|When disabled, dims and can't be used.
+禁用输入与步进。|Disables typing and stepping.
+突出显示一个关键数值，可附带单位与涨跌趋势。数值格式由应用提供。|Highlights a key value with an optional unit and trend. The app supplies the number format.
+第二块的位置与尺寸。|Position and size of the second pane.
+筛选后的可见行数与已选行数。|Visible rows after filtering, and selected rows.
+类别|Kind
+类别轴或雷达图维度的标签。|Labels for the category axis or radar dimensions.
+类型|Type
+精选组件|Featured components
+紧凑的日期与时间选择|Compact date and time picking
+紧凑的日期按钮，点击后弹出月历；可附带时间选择，并支持年月快速切换与日期范围限制。|A compact date button that opens a calendar, with optional time selection, quick year and month switching, and date limits.
+终端|Terminal
+综合评分 {}|Overall {}
+编辑区|Editor
+缩放 {}% · 页边距 {} mm · {} 份|Scale {}% · Margin {} mm · {} copies
+缩放比例 (%)|Scale (%)
+节点与连线编辑器|Node and edge editor
+范围为 -100 到 100。切换步长后用按钮或方向键试一试。|The range is -100 to 100. Change the step, then try the buttons or arrow keys.
+虚拟化的数据表格，支持排序、筛选、列宽调整、冻结与隐藏列、多选和单元格编辑。|A virtualized data grid with sorting, filtering, column resizing, frozen and hidden columns, multi-select, and cell editing.
+行点击、单元格提交与展开变化。|Row clicks, cell commits, and expansion changes.
+表单|Form
+表单 / 选择器|Form / Pickers
+订单评价|Order review
+设置 show-time 后，弹层右侧增加时间选择。|With show-time set, the popup adds time selection on the right.
+设置值，或立即提交当前文本。|Set the value, or commit the current text now.
+访问量|Visits
+调整星星数量，或切换只读与禁用状态。|Change the number of stars, or toggle read-only and disabled.
+资源管理器|Explorer
+较小行高、不可编辑；冻结任务列后横向滚动查看其他列。右侧为禁用状态。|Shorter rows and no editing; the task column stays frozen while you scroll sideways. The right grid is disabled.
+输入 / 按钮|Inputs / Buttons
+输入时给出建议并快速选择|Suggestions while typing, for quick selection
+输出|Output
+运营看板|Operations dashboard
+退款率|Refund rate
+隐藏输入内容的密码框|A password box that hides its input
+页边距 (mm)|Margin (mm)
+首区尺寸。|Size of the first pane.
+首区所占比例；拖动时限制在 0.15 到 0.85。|Share of the first pane; dragging keeps it between 0.15 and 0.85.
+默认|Default
+默认、主色与禁用三种状态并排比较。|Default, primary, and disabled side by side.
+鼠标单击，或聚焦时按 Enter / Space 触发。|Fires on click, or on Enter or Space when focused.
+09:30　产品例会|09:30　Product meeting
+0～1 的进度，显示为百分比；小于 0 时显示“处理中…”。|Progress from 0 to 1, shown as a percentage. Values below 0 show "Processing…".
+1. 本软件按“现状”提供，不附带任何明示或暗示的担保。\n2. 你可以在遵守本协议的前提下使用、复制和修改本软件。\n3. 再分发时须保留原有的版权声明和本协议全文。\n4. 不得使用作者姓名为衍生产品背书或推广。\n5. 因使用本软件造成的任何损失，作者不承担责任。\n6. 本协议的最新版本以项目主页公布为准。\n7. 如对条款有疑问，可在使用前联系作者。|1. The software is provided "as is", without warranty of any kind, express or implied.\n2. You may use, copy, and modify the software in accordance with this agreement.\n3. Redistributions must retain the original copyright notice and the full text of this agreement.\n4. The author's name may not be used to endorse or promote derived products.\n5. The author is not liable for any loss caused by using the software.\n6. The latest version of this agreement is the one published on the project homepage.\n7. If you have questions about these terms, contact the author before use.
+1. 确认下周发布范围\n2. 整理用户反馈|1. Confirm next week's release scope\n2. Sort user feedback
+10 月 18 日　运营复盘|Oct 18　Operations review
+10 月 20 日 – 26 日|Oct 20 – 26
+10 月 25 日|Oct 25
+10 月 25 日　客户回访|Oct 25　Customer follow-up
+10 月 30 日　版本发布|Oct 30　Release
+10 月 8 日　季度规划|Oct 8　Quarterly planning
+10月25日 星期日|Sunday, October 25
+12 页 · 最后修改于 10:24|12 pages · Last modified at 10:24
+14:00　客户回访|14:00　Customer follow-up
+2 分钟前|2 minutes ago
+2026 年 10 月|October 2026
+2026 年 9 月 · 1,284 条记录|September 2026 · 1,284 records
+2026 年度|Year 2026
+3 个文件已上传|3 files uploaded
+3 个文件待上传，共 4.2 MB|3 files to upload, 4.2 MB in total
+3 到 16 个字符|3 to 16 characters
+3 条未读|3 unread
+3 项|3 items
+4～16 个字符|4–16 characters
+ForgeIcon 显示 ForgeIcons 中的常用图标。调整尺寸与颜色，点击图标查看引用名称。|ForgeIcon shows common icons from ForgeIcons. Adjust size and color, and click an icon to see its reference name.
+ForgeTypography 全局对象统一控制文字字体和字号比例。组件的字号都乘以 scale，修改后整个界面同步缩放。|The ForgeTypography global controls the font family and font size scale. Component font sizes are multiplied by scale, so the whole interface scales together.
+H {}° · S {}% · V {}%|H {}° · S {}% · V {}%
+PNG 图像 · 24 KB|PNG image · 24 KB
+Rust 与 C++ 混合构建实践|Mixed Rust and C++ builds in practice
+Slint 1.18 发布说明|Slint 1.18 release notes
+Slint 原生 ContextMenuArea 与 Menu，在右击或按菜单键时弹出操作列表。支持分隔线、禁用项、勾选项与子菜单。|Slint's native ContextMenuArea and Menu show a list of actions on right-click or the Menu key. Supports separators, disabled items, checkable items, and submenus.
+Slint 原生 Dialog，作为独立的系统窗口弹出，并按平台习惯自动排列 StandardButton。窗口由 Rust/C++ 宿主创建和显示。|Slint's native Dialog opens as a separate system window and arranges StandardButtons according to platform conventions. The window is created and shown by the Rust/C++ host.
+Slint 原生 ProgressIndicator，以横条显示任务进度。已知进度时显示百分比，未知时切换为持续滚动的加载动画。|Slint's native ProgressIndicator shows task progress as a horizontal bar. It shows a percentage when progress is known and switches to a continuous loading animation when it isn't.
+Slint 原生 Spinner，以圆环显示进度。占用空间小，适合卡片、按钮旁或局部区域的加载状态。|Slint's native Spinner shows progress as a ring. It takes little space and suits loading states on cards, next to buttons, or in local areas.
+Slint 原生 TabWidget：标签栏与内容区一体，每个 Tab 承载一页内容。切换标签时各页的控件状态会保留。|The native Slint TabWidget combines a tab bar and a content area, with one Tab per page. Control state on each page is kept when switching tabs.
+Slint 原生 Tooltip，指针在元素上停留片刻后在附近显示说明，移开即隐藏。可以是纯文字，也可以是自定义布局。|Slint's native Tooltip shows a description near an element after the pointer rests on it briefly, and hides when the pointer leaves. It can be plain text or a custom layout.
+Slint 原生按钮，用于触发一次性操作。默认样式适合大多数次要操作，主要操作见 FilledButton。|Native Slint button for one-off actions. The default style suits most secondary actions; see FilledButton for primary actions.
+Slint 官网|Slint website
+Slint 文档|Slint documentation
+SlintForge 软件许可协议|SlintForge software license agreement
+SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例，每个组件页都提供基本用法、状态对照与场景演示。|SlintForge notice: layout and surface components are now in the Gallery, and every component page offers basic usage, state comparison and scenario demos.
+StandardButton 的文字和排列顺序由平台决定，也可以单独放在普通界面中使用。|The text and order of StandardButtons are set by the platform; they can also be used on their own in regular UI.
+TOML 配置 · 1 KB|TOML config · 1 KB
+Wi-Fi 分享卡片|Wi-Fi sharing card
+accepted · rgba({}, {}, {}, {})|accepted · rgba({}, {}, {}, {})
+accepted · {} 个字符|accepted · {} characters
+action-requested · 已点击 {} 次|action-requested · Clicked {} times
+activated · {}|activated · {}
+active = {}|active = {}
+active-id = {}|active-id = {}
+active-id = {} · draft = {}|active-id = {} · draft = {}
+back-requested · {} 次|back-requested · {} times
+blur-radius · {} · 点击 {} 次|blur-radius · {} · {} clicks
+breakpoint = {}px|breakpoint = {}px
+busy · {}%|busy · {}%
+canceled · 保持 {}|canceled · kept {}
+canceled · 未完成|canceled · not completed
+changed · {}|changed · {}
+checked 与右侧复选框双向绑定，两边任意一处修改都会同步。|checked is two-way bound to the checkbox on the right; a change on either side syncs to the other.
+clicked · checked: {}|clicked · checked: {}
+clicked · {}|clicked · {}
+clicked · 任务已完成 {} 次|clicked · task completed {} times
+clicked · 已操作 {} 次|clicked · {} actions
+clicked · 已点击 {} 次 · selected: {}|clicked · clicked {} times · selected: {}
+clicked · 第 {} 次确认|clicked · confirmation #{}
+column-count = {} · item-width = {}px|column-count = {} · item-width = {}px
+column-count = {} · {}|column-count = {} · {}
+columns = {} · rows = {}|columns = {} · rows = {}
+content-padding = {}px|content-padding = {}px
+content-y · {}px / {}px|content-y · {}px / {}px
+copy · 已复制 {} 次|copy · copied {} times
+cover 裁切填满，contain 完整显示，fill 拉伸。|cover crops to fill, contain shows the whole image, fill stretches it.
+current-index = {}|current-index = {}
+cycle-duration = {}s|cycle-duration = {}s
+db-01 已重启|db-01 restarted
+delay · {}ms|delay · {}ms
+dismissed · 已关闭 {} 次|dismissed · Closed {} times
+edited · {}|edited · {}
+edited · {} 个字符|edited · {} characters
+error · {}|error · {}
+family · {} · scale · {}|family · {} · scale · {}
+glyph · ForgeIcons.{}|glyph · ForgeIcons.{}
+hold：按满即确认；hold-release：按满后松开确认；click：点击开始倒计时，再次点击取消。|hold: confirms when full; hold-release: confirms on release after full; click: starts a countdown, click again to cancel.
+image-fit = {} · corner-radius = {}px|image-fit = {} · corner-radius = {}px
+language · {} · {} 个字符|language · {} · {} characters
+language · {} · {} 行|language · {} · {} lines
+link-clicked · {}|link-clicked · {}
+mark-opacity = {}|mark-opacity = {}
+maximized = {} · pinned = {} · rounded-corners = {}|maximized = {} · pinned = {} · rounded-corners = {}
+min-column-width = {}px|min-column-width = {}px
+min-item-width = {}px|min-item-width = {}px
+modules = {} · {}|modules = {} · {}
+navigate-requested · {}|navigate-requested · {}
+no-wrap 时长行可横向滚动；word-wrap 时只有纵向滚动。|With no-wrap, long lines scroll horizontally; with word-wrap, only vertical scrolling is available.
+ok、cancel、apply、close、yes、no 等标准按钮，文字随系统语言。|Standard buttons such as ok, cancel, apply, close, yes, and no; text follows the system language.
+overflowing = {} · running = {}|overflowing = {} · running = {}
+page-changed · 第 {} 页 / 共 {} 页|page-changed · Page {} of {}
+pane-size-changed · {} = {}px|pane-size-changed · {} = {}px
+password 遮盖输入，text 显示明文。|password masks the input; text shows it in plain text.
+progress · {}%|progress · {}%
+released · {}|released · {}
+selected · Palette.{}|selected · Palette.{}
+selected · {}|selected · {}
+selected 不会自动切换，示例在 clicked 中取反实现开关效果。|selected does not toggle automatically; this example inverts it in clicked to act as a toggle.
+selection-changed · {}|selection-changed · {}
+selection-text 为空时显示占位提示；禁用后不能展开。|An empty selection-text shows the placeholder; the list cannot open when disabled.
+selection-text 为空时显示默认提示；禁用后不能展开。|An empty selection-text shows the default hint; the list cannot open when disabled.
+shortcut-changed · {}|shortcut-changed · {}
+shortcut-changed · 已清除|shortcut-changed · cleared
+spacing = {}px|spacing = {}px
+stacked-layout = {}|stacked-layout = {}
+std-widgets 的 Palette 全局对象提供当前样式与明暗主题下的语义颜色。自绘组件取色时使用它，切换主题时自动更新。|The std-widgets Palette global provides semantic colors for the current style and light or dark theme. Use it in custom-drawn components so they update when the theme changes.
+step-changed · {}|step-changed · {}
+tags · {} / {}|tags · {} / {}
+tile-width = {}px|tile-width = {}px
+toggled · checked: {}|toggled · checked: {}
+toggled · {}|toggled · {}
+touched 为 true 时才显示错误；外部传入 error-message 可覆盖内置提示。|Errors appear only when touched is true. An external error-message overrides the built-in hint.
+true 为滚轮选择，false 为数字输入。|true selects with wheels, false uses numeric input.
+value · {}|value · {}
+vertical-scrollbar-visible = {}|vertical-scrollbar-visible = {}
+web-01 已重启|web-01 restarted
+word-wrap 按宽度换行，no-wrap 只在换行符处换行。|word-wrap wraps at the box width; no-wrap breaks only at newlines.
+{} · 自动换行 {} · 行号 {}|{} · Word wrap {} · Line numbers {}
+{} 个字符|{} characters
+{}. {}|{}. {}
+{}/{} 字|{}/{} characters
+{}{}，{}|{}{}, {}
+{}～{} 个字符|{}–{} characters
+“企业版”单独禁用；可切换横向排列或禁用整组。|"Enterprise" is disabled on its own. Switch to a horizontal layout or disable the whole group.
+“保存”只在文档有未保存的修改时可用。|"Save" is available only when the document has unsaved changes.
+“保存”可用|"Save" enabled
+“全选”在所有项都勾选时自动勾上；没有选中任何项时导出按钮不可用。|"Select all" is checked automatically when every item is checked. The export button is unavailable when nothing is selected.
+“删除”可用|"Delete" enabled
+“导出”和“更多”分别收纳格式选择与次要操作，Excel 格式暂不可用。|"Export" and "More" hold the format choices and secondary actions. Excel is not available yet.
+“年”enabled|"Year" enabled
+一次扫光的时长，默认 1600ms。|Duration of one shimmer sweep. Defaults to 1600ms.
+一级页面不显示返回按钮；详情页显示返回按钮。|Top-level pages have no back button; detail pages show one.
+一组互斥的分段按钮，用于在少量并列选项或视图之间切换，当前选项高亮显示。|A group of mutually exclusive segment buttons for switching between a few options or views. The current option is highlighted.
+一行轻量标签，用于在同一页面的几个视图间切换。只负责标签本身，内容区域由应用根据 active-id 切换。|A row of lightweight tabs for switching between views on the same page. It only draws the tabs; the app switches the content by active-id.
+上一首|Previous
+上下边区的保存高度；空间不足时只压缩实际几何。|Saved heights of the top and bottom panes; when space is short only the actual geometry shrinks.
+上传|Upload
+上传到“设计资料”|Upload to "Design assets"
+上传期间按钮显示总进度，完成后恢复可用。|While uploading, the button shows the total progress and becomes available again when done.
+上传附件|Upload attachments
+上方编辑代码，下方实时显示高亮结果；可切换片段语言。|Edit code above and see the highlighted result below in real time. The snippet language can be switched.
+上次同步：今天 09:41|Last synced: today 09:41
+上海浦东转运中心|Shanghai Pudong transit center
+下一首|Next
+下划线|Underline
+下拉选择框，对应 Slint 原生 ComboBox。从固定的选项列表中选择一项，选项较少时可改用 RadioGroup。|A drop-down selector backed by native Slint ComboBox. Choose one item from a fixed list; for only a few options, consider RadioGroup.
+不可选择|Not selectable
+不模糊、默认模糊与开启折射的效果。|No blur, default blur, and refraction enabled.
+与 Acrylic 对比，以及关闭折射后的玻璃面板。|Compared with Acrylic, and a glass panel with refraction turned off.
+与文字混排|Mixed with text
+两次输入一致|Passwords match
+两次输入不一致|Passwords do not match
+个人版|Personal
+个人网站|Website
+个人资料|Profile
+个人资料卡|Profile card
+个性化推荐|Personalized recommendations
+中|Medium
+中央公园|Central Park
+中央区保留的最小尺寸。|Minimum size kept for the center area.
+为 true 后才显示错误提示，编辑时自动置位。|Error hints appear only when true. Set automatically on edit.
+为 true 时不可编辑，但仍可选择与复制。|Not editable when true, but can still be selected and copied.
+为 true 时只能选择和复制，不能编辑。|When true, text can be selected and copied but not edited.
+为 true 时图标在上、文字居中。|When true, the icon is on top and the text is centered.
+为 true 时圆点使用强调色。|When true, the dot uses the accent color.
+为 true 时在左侧显示返回按钮。|When true, a back button is shown on the left.
+为 true 时显示加载指示并禁用按钮。|Shows a loading indicator and disables the button when true.
+为 true 时显示骨架，为 false 时显示子元素。|Shows the skeleton when true and the children when false.
+为 true 时每个节点显示复选框。|When true, each node shows a check box.
+为“编辑者”角色分配权限；勾选分组即选中组内全部可用权限，未开通的权限不可选。|Assign permissions to the Editor role; checking a group selects all available permissions in it, and inactive permissions cannot be chosen.
+主列表与底部固定项；分组的展开由应用改写列表实现。|Main list and pinned footer items. The app expands groups by rewriting the list.
+主窗口发起导出前弹出确认对话框，预览可放到独立窗口中对照查看。窗口内容由宿主提供，这里沿用通用示例窗口。|Before exporting, the main window opens a confirmation dialog, and the preview can be opened in a separate window for comparison. The host provides the window content; the generic demo windows are used here.
+主色及主色上的文字颜色。|Accent color and the text color on it.
+主色按钮的可用与禁用状态，以及与普通按钮的对比。|Enabled and disabled primary buttons, compared with a regular button.
+主要文字|Primary text
+主页|Home
+主题|Theme
+主题 {} · 自动保存 {}|Theme {} · Auto save {}
+主题强调色|Theme accent color
+主题按钮显示的明暗状态。|Light or dark state shown by the theme button.
+事件列表，按给定顺序从上到下排列。|Event list, laid out top to bottom in the given order.
+事件标题，显示在时间之后。|Event title, shown after the time.
+云盘空间|Cloud storage
+云端同步|Cloud sync
+五个区域的位置与尺寸，子元素据此放置。|Position and size of the five areas, used to place children.
+产品介绍页常用的特性网格，每一项都是一个 IconLabel。|A feature grid common on product pages; each item is an IconLabel.
+产品团队 · 3 分钟前|Product team · 3 minutes ago
+产品经理|Product manager
+亮度|Brightness
+仅图标、选中与禁用三种状态。|Icon only, selected and disabled states.
+仅提及|Mentions only
+仅未读邮件|Unread mail only
+仅看未读|Unread only
+仅紧急|Urgent only
+今天|Today
+今日任务|Today's tasks
+从根到当前位置的路径，每项包含 id 与 title。|Path from the root to the current location; each item has an id and a title.
+从模板或空白页创建第一份报表。|Create your first report from a template or a blank page.
+从第一步开始引导，或中途关闭。|Start the tour from the first step, or close it midway.
+从页面左侧或右侧滑出的面板，带半透明遮罩，适合放置设置、筛选或详情等次要内容。关闭后面板内的输入会保留。|A panel that slides out from the left or right of the page with a translucent overlay, suited to settings, filters, or details. Input inside the panel is kept after closing.
+代码字号，默认 14px。|Code font size, 14px by default.
+代码片段编辑器|Code snippet editor
+代码编辑器工作区|Code editor workspace
+以“/”分隔显示当前位置的层级路径，点击某一级返回该层。路径列表由应用维护。|Shows the path to the current location separated by "/". Click a level to go back to it. The app maintains the path list.
+以下按钮直接操作当前窗口。拖动标题栏可移动窗口，双击标题栏切换最大化，拖动窗口边缘调整大小。|These buttons act on the current window. Drag the title bar to move it, double-click the title bar to toggle maximize, and drag the edges to resize.
+以专辑背景作为材质来源，播放信息和控制按钮放在磨砂面板上。|The album artwork is the material source, with playback info and controls on a frosted panel.
+以主色背景显示选中状态，由外部维护。|Show the selected state with an accent background. Maintained externally.
+以代码开始、结束或取消一次确认。|Start, finish or cancel a confirmation from code.
+以代码打开或关闭菜单。|Open or close the menu from code.
+以代码提交当前输入。|Submit the current input from code.
+以图标、标题和说明呈现一次操作的结果，并提供继续处理的按钮。适合提交、导出、注册等流程的结束页。|Presents the result of an operation with an icon, title, and description, plus a button to continue. Suitable as the final page of submit, export, or sign-up flows.
+以圆点遮盖输入内容的密码框，由原生 LineEdit 设置 input-type: password 实现；可切换为明文以便核对。|A password field that masks input with dots, implemented with native LineEdit and input-type: password; it can switch to plain text for checking.
+以树形列表展开的多选下拉框，适合按层级选择目录、部门或权限。树的展开与选中状态由宿主维护。|A multi-select drop-down that opens as a tree, suited to choosing folders, departments, or permissions by hierarchy. The host maintains expansion and selection state.
+以编程方式关闭并触发 dismissed。|Close programmatically and raise dismissed.
+以编程方式展开或收起列表。|Opens or closes the list programmatically.
+以编程方式展开或收起树形列表。|Opens or closes the tree list programmatically.
+以缩进列表显示目录与文件，支持展开、单选和多选。数据是扁平的可见列表，展开与选择由应用更新后回传。|Shows folders and files as an indented list with expansion, single selection, and multiple selection. The data is a flat visible list that the app updates on expansion and selection.
+以链接样式显示的文字按钮，由原生 StyledText 渲染 Markdown 链接，在 link-clicked 中用 Platform.open-url 打开浏览器。|A text button styled as a link. Native StyledText renders a Markdown link, and link-clicked opens the browser with Platform.open-url.
+仪表盘|Dashboard
+任务列表卡片|Task list card
+企业版|Enterprise
+会议时间 {} – {}|Meeting {} – {}
+会议纪要|Meeting notes
+会议纪要\n1. 确认下周发布范围\n2. 补充 C++ 示例与文档\n3. 周五前完成截图验收|Meeting notes\n1. Confirm next week's release scope\n2. Add C++ examples and docs\n3. Finish screenshot review by Friday
+会议预约|Meeting booking
+位置信息|Location
+位置信息 {} · 使用统计 {} · 个性化推荐 {}|Location {} · Usage statistics {} · Personalized recommendations {}
+你对新版本有什么建议？|Any suggestions for the new version?
+使用 24 小时制；默认显示上午/下午。|Uses the 24-hour format; AM/PM is shown by default.
+使用主色填充。|Fill with the accent color.
+使用统计|Usage statistics
+使用默认快捷键|Using default shortcuts
+侧边导航中每项显示未读数，点击后标记为已读。|Each side navigation item shows its unread count; click to mark it as read.
+保存　Ctrl+S|Save　Ctrl+S
+保存、清除或取消时触发。|Raised when the shortcut is saved, cleared, or canceled.
+保持温度|Holding temperature
+修改|Change
+修改元素数量和间距，或缩放窗口，观察换行与滚动条。|Change the item count and spacing, or resize the window, to see wrapping and the scrollbar.
+修改右侧文本，二维码随之更新；生成成功后可导出为 PNG。|Edit the text in the options and the QR code follows. Once generated, it can be exported as PNG.
+修改密码|Change password
+修改数值和上限，观察超出上限时的显示。|Change the value and limit to see how values beyond the limit are shown.
+修改文字或滚动速度，可随时暂停。|Change the text or scroll speed, and pause at any time.
+修改文本或按 Enter 时触发。|Raised when the text changes or Enter is pressed.
+修改文本，或选中候选项及按 Enter 时触发。|Raised when the text changes, or when a candidate is chosen or Enter is pressed.
+修改标题与说明，或切换返回按钮。|Edit the title and description, or toggle the back button.
+修改标题和内边距；卡片内的按钮与普通控件一样响应操作。|Edit the title and padding; buttons inside the card respond like any other control.
+修改标题和说明，或切换排列方向。|Edit the title and description, or switch the orientation.
+修改水印文字、不透明度和单元宽度。|Change the watermark text, opacity and tile width.
+修改输入框后取消勾选 active，再重新勾选，输入内容仍然保留。|Edit the text box, uncheck active and check it again; the input is kept.
+候选项；按不区分大小写的前缀匹配显示。|Candidates, shown by case-insensitive prefix match.
+值在拖动或按键过程中改变时触发。|Fires when the value changes while dragging or pressing keys.
+偏好设置|Preferences
+儿童|Children
+允许应用获取大致位置|Allow the app to get your approximate location
+元素数量|Item count
+免打扰时长|Do not disturb duration
+免运费|Free shipping
+入住晚数|Nights
+入门|Getting started
+全选|Select all
+全选、复制与粘贴。|Select all, copy, and paste.
+全选或取消选择。|Selects all or clears the selection.
+全选文本，并把选中内容复制到剪贴板。|Select all text and copy the selection to the clipboard.
+全部|All
+全部内容的尺寸。|Size of the whole content.
+全部已读|Mark all read
+全部应用|All apps
+全部文件已同步。|All files are synced.
+全部邮件|All mail
+全部邮件，按时间排序|All mail, sorted by date
+全部隐藏|Hide all
+公告已关闭|Announcement closed
+公告显示中|Announcement shown
+共 1,284 条记录，导出为 Excel 文件。|1,284 records in total, exported as an Excel file.
+共 237 条记录。翻页或修改每页条数，页数随之变化。|237 records in total. Change the page or the page size, and the page count follows.
+共 3 人|3 people
+共 {} 个项目，清空后将永久删除。|{} items. Emptying deletes them permanently.
+共享链接|Share link
+关|Off
+关于|About
+关于对话框|About dialog
+关注|Follow
+关键词|Keywords
+关键词已满|Keywords are full
+关闭 primary 可与普通按钮对比。|Turn off primary to compare with a regular button.
+关闭“使用统计”后，依赖它的“个性化推荐”自动关闭并禁用。|Turning off "Usage statistics" automatically turns off and disables "Personalized recommendations", which depends on it.
+关闭、开启，以及开启后禁用。|Off, on, and on but disabled.
+关闭后触发，用于把焦点还给触发按钮。|Raised after closing, to return focus to the trigger button.
+其他|Other
+内存|Memory
+内容与边框之间的内边距。|Padding between the content and the border.
+内容与页面边缘的距离。|Distance between the content and the page edges.
+内容修改时触发；按 Enter 且内容有效时触发 accepted。|Fires when the content changes. accepted fires on Enter when the content is valid.
+内容内边距，默认取样式的 layout-padding。|Content padding, defaulting to the style's layout-padding.
+内容内边距；禁用后不响应切换。|Content padding; when disabled, toggling is ignored.
+内容区与面板边缘的距离，默认 18px。|Distance between content and panel edge, 18px by default.
+内容区高度；0 或负值时使用内容的自然高度。|Content area height; zero or negative uses the content's natural height.
+内容区（title-bar-height 之下）|Content area (below title-bar-height)
+内容已加载|Content loaded
+内容形式|Content forms
+内容是否超出可视高度。|Whether the content exceeds the visible height.
+内容的自然高度（含内边距）。|Natural content height, including padding.
+内容相对视口的偏移，向下或向右滚动时为负值。|Content offset relative to the viewport; negative when scrolled down or right.
+内容越长，模块越密；空内容无法生成，显示错误提示。|Longer content means denser modules. Empty content cannot be encoded and shows an error.
+内部资料 · 仅限查看|Internal · View only
+再次输入|Enter again
+决定列数：按最小列宽能放下几列，且不超过最大列数。|Determine the column count: as many columns as fit the minimum width, up to the maximum.
+冷灰|Cool gray
+出生日期|Date of birth
+出生日期 {} · 有效期至 {} 年 {} 月|Born {} · Expires {}-{}
+出生日期不晚于今天；有效期只需年和月。|The birth date cannot be later than today; the expiry only needs a year and month.
+出错时展示可复制的错误信息，便于粘贴到工单；下方输入框用来验证粘贴结果。|On failure, show copyable error details to paste into a ticket. Use the field below to check the pasted result.
+出错时展示可复制的错误详情，用户一键复制后粘贴到反馈渠道。|On failure, show copyable error details so the user can copy them in one click and paste them into a support channel.
+分享文档|Share documents
+分别控制四个边区是否显示。|Show or hide each of the four panes.
+分别控制年、月、日字段是否显示。|Controls whether the year, month, and day fields are shown.
+分别控制菜单、主题、置顶、设置与最大化按钮是否显示。|Show or hide the menu, theme, pin, settings and maximize buttons.
+分栏滚轮选择年、月、日的日期按钮，可隐藏部分字段并限制日期范围；需要月历视图时改用 CalendarPicker。|A date button with wheel columns for year, month, and day; fields can be hidden and the range limited. Use CalendarPicker when a month view is needed.
+分栏滚轮选择时、分（可选秒）的时间按钮，支持区域语言、12/24 小时制和分钟步长。|A time button with wheel columns for hours and minutes (seconds optional), supporting locales, 12/24-hour formats, and minute steps.
+分段列表，每项包含 id、label 与 enabled。|Segment list; each item has an id, a label, and enabled.
+分辨率|Resolution
+分钟步长与是否显示秒字段。|Minute step and whether the seconds field is shown.
+分隔线粗细，默认 8px。|Divider thickness, 8px by default.
+切换 mode 体验三种确认方式；键盘上按住 Enter 或 Space 效果相同。|Switch mode to try the three confirmation styles. Holding Enter or Space on the keyboard works the same way.
+切换加载状态；在输入框中输入文字后再切换，内容会保留。|Toggle the loading state; text typed into the field is kept after switching.
+切换圆形、填充方式或清空图片，观察裁切与边框。|Toggle circle, fit mode or an empty image to see clipping and the border.
+切换级别、修改文字，关闭后可重新显示。|Switch the level, edit the text, and show it again after closing.
+切换结果类型，修改标题与按钮文字。|Switch the result type and edit the title and button text.
+切换语言查看对应示例代码的高亮，并调整行号与字号。|Switch languages to see highlighted sample code, and adjust line numbers and font size.
+列数变化时触发，宿主据此重新计算卡片位置。|Fires when the column count changes so the host can recompute card positions.
+列表|List
+列表是否展开。|Whether the list is open.
+列间距与行间距。|Column and row gaps.
+创建副本|Duplicate
+创建项目|Create projects
+初始化仓库与界面契约|Set up the repository and UI contract
+初始选中项；都不设置时整组未选择。|Initially selected option. If none is set, nothing in the group is selected.
+删除|Delete
+删除后无法恢复。|This can't be undone.
+删除文件|Delete file
+到达范围边界后对应方向不再变化；禁用状态不可输入和步进。|At a range limit the value stops changing in that direction; disabled boxes cannot be typed in or stepped.
+到达转运中心|Arrived at transit center
+制冷中|Cooling
+制热中|Heating
+刷新|Refresh
+前端工程师|Front-end engineer
+前端工程师 · 上海|Front-end engineer · Shanghai
+前进或后退一步；最后一步前进即完成。|Move one step forward or back. Moving forward on the last step finishes the tour.
+功能特性列表|Feature list
+加入时间　2025 年 3 月|Joined　March 2025
+加粗、斜体、下划线可同时选中；对齐方式三选一。|Bold, italic and underline can be combined; alignment is one of three.
+加载中、单行骨架与加载完成。|Loading, a single-row skeleton, and loaded.
+加载完成|Loaded
+加载完成后显示的实际内容。|The real content shown after loading.
+加载期间用头像和若干行占位块代替实际内容，加载完成后显示子元素。子元素始终存在，切换时输入状态会保留。|Shows an avatar and placeholder rows instead of real content while loading, then shows its children when done. Children always exist, so input state is kept when switching.
+勾选同意后主按钮才可用；“拒绝”保持普通样式。|The primary button is enabled only after agreeing; "Decline" keeps the regular style.
+勾选或取消某一项时触发，参数为 id 与新状态。|Raised when an item is checked or unchecked, with its id and new state.
+勾选或取消节点时触发；宿主据此更新 selected。|Raised when a node is checked or unchecked; the host updates selected.
+勾选确认后才能删除。|Check the confirmation before deleting.
+勾选窄屏预览把容器限制为 420px，或拖动断点，观察控件位置的变化。|Check narrow preview to limit the container to 420px, or drag the breakpoint, to see the control move.
+勾选项会自动切换状态；子菜单在悬停或方向键展开。|Checkable items toggle automatically; submenus open on hover or with arrow keys.
+勾选项；激活时自动切换 checked。|Checkable item; checked toggles automatically when activated.
+包含已归档|Include archived
+包裹从揽收到派送的轨迹，最新状态在最上方，尚未发生的节点显示为灰色。|A parcel's route from pickup to delivery, latest status first. Steps that have not happened yet are gray.
+包邮|Free shipping
+匹配图标 {} 个 · 第 {} / {} 页|{} matching icons · page {} / {}
+区分区域的次级背景及其文字颜色。|Secondary background for distinguishing areas, and its text color.
+区域语言决定字段顺序与上午/下午文字；步长限制可选的分钟值。|The locale sets the field order and AM/PM text; the step limits which minutes can be chosen.
+匿名发送功能使用情况|Send anonymous feature usage data
+半透明的磨砂材质面板，将背景模糊并叠加色调。用于浮层、侧栏或悬浮在图片上的内容区。|A translucent frosted panel that blurs the backdrop and adds a tint. Use it for overlays, sidebars, or content floating over images.
+单击卡片时触发，参数为卡片 id。|Fires when a card is clicked, with the card id.
+单击置顶按钮后触发，参数为新的置顶状态。|Fires after the pin button is clicked, with the new pinned state.
+单击菜单或设置按钮时触发。|Fires when the menu or settings button is clicked.
+单行文本输入框，对应 Slint 原生 LineEdit。适合姓名、标题、搜索词等短文本，按 Enter 触发提交。|A single-line text field backed by native Slint LineEdit. Suited to short text such as names, titles, and search terms; Enter submits.
+占位提示与是否可用。|Placeholder hint and whether the control is enabled.
+占位行数，最后一行较短，默认 3。|Number of placeholder rows; the last row is shorter. Defaults to 3.
+卡片只使用 Palette 取色：选中行用 selection 颜色，标签用 accent 颜色，切换明暗主题无需另写样式。|The card takes all colors from Palette: the selected row uses selection colors and the tag uses accent colors, so no extra styling is needed for light and dark themes.
+卡片数据；column 与 top 由宿主计算。|Card data; column and top are computed by the host.
+卡片数量|Card count
+卡片标题；为空时不显示标题行。|Card title; the title row is hidden when empty.
+卡片的最小宽度，决定一行能放几列。|Minimum card width, which decides how many columns fit in a row.
+卡片间距与内容内边距，需与宿主布局算法使用的值一致。|Card gap and content padding; must match the values used by the host layout algorithm.
+卫星|Satellite
+历史|History
+原生单选按钮，放在 RadioGroup 中使用，同组内只能选中一项。选项少且需要全部可见时使用，选项较多时改用 ComboBox。|Native radio buttons used inside a RadioGroup; only one option in a group can be selected. Use them when there are few options that should all be visible; use ComboBox for more options.
+原生复选框，用于开启或关闭一个独立选项，也可在列表中多选。|Native checkbox for turning a single option on or off, or for multiple selection in a list.
+原生开关，切换后立即生效，适合设置项。需要点击“保存”才生效的选项改用 Checkbox。|Native switch that takes effect as soon as it is toggled; suits settings. Use Checkbox for options that apply only after clicking "Save".
+原生滑块，拖动或用方向键在连续范围内选择数值，适合音量、亮度等不需要精确输入的场景。|Native slider for choosing a value in a continuous range by dragging or with the arrow keys. Suits volume, brightness and other values that do not need precise input.
+双击列表中的文件夹进入下一层，面包屑同步更新；点击路径返回上层。|Double-click a folder in the list to open it and the breadcrumb follows. Click the path to go back up.
+发布版本|Publish release
+发票|Invoice
+发票明细|Invoice details
+发送消息 · {}|Send message · {}
+取值范围，默认 0 到 100。|Value range, 0 to 100 by default.
+取值范围，默认 0～100。|Value range. Defaults to 0–100.
+取值范围，默认为 0 到 100。|Value range; defaults to 0 to 100.
+取消勾选 open-url 后，点击只记录地址而不打开浏览器。|Uncheck open-url to only record the address without opening the browser.
+取消勾选 password 即可显示明文。|Clear password to show the plain text.
+取消订阅|Unsubscribe
+取色器|Color picker
+叠加折射扭曲效果。|Adds a refraction distortion effect.
+另有 {} 条未读通知|{} more unread notifications
+只显示圆点，不显示数字。|Show only a dot, without a number.
+只有根节点时不显示分隔符；层级较深时依次排列。|No separator is shown with only the root; deeper levels are laid out in order.
+只能选择和复制|Select and copy only
+只读但可选择、可复制的文本区域，由原生 TextEdit 设置 read-only 实现，适合展示日志、命令和错误详情。|A read-only text area that can still be selected and copied, implemented with a native TextEdit and read-only. Suits logs, commands and error details.
+只读可选择、可编辑与禁用。|Read-only and selectable, editable, and disabled.
+只读或禁用编辑。|Makes the text read-only or disables editing.
+只读文本\n第二行|Read-only text\nSecond line
+只读文本可选择但不能修改；禁用后既不能编辑也不能选择。|Read-only text can be selected but not changed; disabled text can be neither edited nor selected.
+只读时仍可步进但不能输入；禁用后完全不可操作。|Read-only still allows stepping but not typing; disabled blocks all interaction.
+只读时可选择复制但不能编辑；禁用后不可聚焦。|Read-only text can be selected and copied but not edited; disabled fields cannot take focus.
+只读的代码高亮视图，带行号和复制按钮。用于文档、日志或配置片段的展示。|A read-only syntax-highlighted code view with line numbers and a copy button. Use it to show documentation, logs, or configuration snippets.
+可以。文字使用 @tr 标记，运行时按所选语言加载译文。|Yes. Text is marked with @tr and translations load at runtime for the selected language.
+可以修改这段文字|This text can be edited
+可多选的下拉框。展开后逐项勾选，按钮上显示宿主提供的选择摘要；单选场景改用 ComboBox。|A drop-down that allows multiple selection. Check items in the open list; the button shows a summary provided by the host. Use ComboBox for single selection.
+可展开、折叠的内容面板。单击标题栏或聚焦后按 Enter / Space 切换；折叠只隐藏内容，内部控件状态保留。|A content panel that expands and collapses. Click the header, or focus it and press Enter / Space, to toggle; collapsing only hides the content and keeps control state.
+可用、禁用与垂直方向。|Enabled, disabled and vertical.
+可用与禁用状态；禁用后点击不会弹出菜单。|Enabled and disabled states. When disabled, clicking does not open the menu.
+可编辑时内容修改后触发。|Fires after the content changes when editable.
+可选中、可移除的紧凑标签，用于筛选条件、已选项和关键词。|A compact tag that can be selected and removed, used for filters, selections and keywords.
+可配置|Configurable
+右侧与左侧滑出的面板，在缩小的区域中预览。|Panels sliding out from the right and left, previewed in a smaller area.
+右击区域，内含一个 Menu；禁用后不再弹出。|Right-click area containing one Menu; no longer opens when disabled.
+右击查看“视图”菜单|Right-click to see the "View" menu
+右对齐|Align right
+合同.pdf|Contract.pdf
+合同编号：HT-2026-0412|Agreement no.: HT-2026-0412
+同一份界面运行在 Windows、Linux 和 macOS 上。|One interface runs on Windows, Linux and macOS.
+同一位置的提示条随同步进度切换级别与文字。|The same bar switches level and text as the sync progresses.
+同一区域依次显示待导出、完成与失败三种结果，按钮文字随之变化。|The same area shows the pending, complete, and failed results in turn, with matching button text.
+同一应用中同时打开普通窗口与对话窗口；隐藏后再次打开，窗口内的输入仍然保留。|Open a regular window and a dialog window in the same app; input inside a window is kept after hiding and reopening it.
+同一张图片在宽幅区域中的三种填充方式。|The same image in a wide area with three fit modes.
+同一段文字分别以遮盖、明文和禁用状态显示。|The same text shown masked, in plain text, and disabled.
+同一段正文在不同 scale 下的效果，这里只在本例内模拟，不修改全局设置。|The same body text at different scale values, simulated within this example without changing the global setting.
+同意并继续|Agree and continue
+同样宽度下，断点不同决定了左右排列还是上下排列。|At the same width, the breakpoint decides between side-by-side and stacked layout.
+同步中|Syncing
+同步失败|Sync failed
+同步完成|Sync complete
+同步状态|Sync status
+否|No
+启动时打开上次的工程|Open the last project on startup
+告警通知|Alert notifications
+周二　版本评审|Tue　Release review
+周六　上线窗口|Sat　Release window
+周四　团队分享|Thu　Team talk
+周报|Weekly report
+周航|Zhou Hang
+命令面板　Ctrl+Shift+P|Command palette　Ctrl+Shift+P
+商品|Items
+商品 ¥199|Items ¥199
+商品筛选|Product filters
+四周停靠、中央填充的布局。拖动分隔线调整边区尺寸，隐藏任一边区后中央区自动扩展。适合编辑器、管理后台等多面板界面。|A layout with panes docked on four sides and a filling center. Drag dividers to resize panes; hiding any pane lets the center expand. Suits editors, admin consoles and other multi-panel interfaces.
+四种级别，以及不可关闭的提示。|Four levels, plus a bar that can't be closed.
+回到开头|Go to start
+回到首页|Back to home
+回复客户邮件|Reply to customer emails
+回收站|Recycle bin
+回收站中有 12 个项目|12 items in the recycle bin
+回收站已清空。|The recycle bin is empty.
+团队成员|Team members
+团队版|Team
+固定两列的图板，卡片高度随内容而定；示例中的位置按同一规则预先算好。|A two-column board whose card heights follow their content; positions in this example are precomputed with the same rule.
+国际化|Internationalization
+图标、标题与说明的组合。水平排列时图标在左，垂直排列时图标在上并居中，适合功能列表、空状态和快捷入口。|An icon with a title and description. Horizontally the icon sits on the left; vertically it sits on top, centered. Suits feature lists, empty states and shortcuts.
+图标字形，通常取自 ForgeIcons。|Icon glyph, usually from ForgeIcons.
+图标字符；为空时只显示文字。|Icon character. When empty, only the text is shown.
+图标尺寸与颜色，继承自 Text，默认 20px 乘以字号比例。|Icon size and color, inherited from Text. Defaults to 20px times the font scale.
+图标按钮空间有限，用提示说明功能与快捷键。|Icon buttons have little room, so tooltips explain the function and shortcut.
+图标按钮组成工具栏，选中的工具高亮显示；常用操作带文字标签。|Icon buttons form a toolbar. The selected tool is highlighted and common actions have text labels.
+图标草稿|Icon sketches
+圆形|Circle
+圆形头像配合名称与简介，是资料卡和评论列表的常见写法。|A circular avatar with a name and bio, a common pattern for profile cards and comment lists.
+圆形旋钮，在范围内调整一个数值。上下拖动、滚轮或方向键均可调节，适合音量、温度等连续参数。|A round knob that adjusts a value within a range. Drag up or down, scroll, or use arrow keys. Suited to continuous parameters such as volume or temperature.
+圆环尺寸，宽高相同。|Ring size; width and height are equal.
+圆环显示空间占用；刷新时在标题旁显示小号加载环。|The ring shows space usage; a small spinner appears next to the title while refreshing.
+圆角半径，默认 12px。|Corner radius, 12px by default.
+圆角，设为宽度一半即为圆形占位。|Corner radius; set it to half the width for a circular placeholder.
+在 16～30 °C 之间以 0.5 °C 步长设定目标温度，根据室温显示运行模式。|Set a target temperature between 16 and 30 °C in 0.5 °C steps. The running mode follows the room temperature.
+在 foreground 上叠加透明度得到主要、次要和辅助文字，三者始终与背景保持同一色相。|Applying transparency to foreground gives primary, secondary, and tertiary text that always share the same hue against the background.
+在可编辑文本框中粘贴剪贴板内容。|Paste clipboard content into an editable text box.
+在右侧修改文字或禁用按钮，预览即时更新。|Change the text or disable the button on the right; the preview updates immediately.
+在启用状态下切换展开与折叠。|Toggle between expanded and collapsed when enabled.
+在容器内容上方平铺低对比度的重复文字，用于标注机密文档、草稿或截图来源。水印不拦截鼠标，内容仍可正常操作。|Tiles low-contrast repeated text over the container content to mark confidential documents, drafts or screenshot sources. The watermark does not block the mouse, so content stays interactive.
+在左侧切换概览、报表和数据源。|Switch between overview, reports, and data sources on the left.
+在成员列表中选择一人进入详情页，页头显示返回按钮；返回后回到列表。|Pick someone in the member list to open the detail page, where the header shows a back button that returns to the list.
+在指定位置以编程方式打开菜单，或关闭菜单。|Open the menu at a given position programmatically, or close it.
+在按钮中使用图标字符，可与 label 同时显示。|Uses an icon glyph in a button, optionally together with label.
+在文件上右击|Right-click a file
+在新窗口中预览|Preview in new window
+在框内输入多行文字；切换 wrap 比较长行的显示方式。|Type several lines in the box; switch wrap to compare how long lines are shown.
+在此区域右击打开菜单|Right-click here to open the menu
+在此粘贴|Paste here
+在灰色区域右击，或用按钮在固定位置打开菜单。|Right-click the gray area, or use the button to open the menu at a fixed position.
+在第一页输入文字，切到其他页再返回，内容保持不变；未知 ID 不显示任何页面。|Type on the first page, switch away and back, and the text is still there; an unknown ID shows no page.
+在线预览敏感文件时叠加查看者信息，截图外传后也能追溯来源。|Overlay viewer information when previewing sensitive files so leaked screenshots can be traced.
+在输入框中输入文字后折叠再展开，内容仍然保留。|Type in the text box, collapse and expand again; the text is kept.
+在这里输入要处理的内容。|Enter the content to process here.
+地名|Labels
+地图图层|Map layers
+城市夜景|City at night
+城市灯火乐队 · 第 3 首|City Lights Band · track 3
+基于 Fluent System Icons Regular 字体的图标。常用图标通过 ForgeIcons 按名称引用，其余图标可在下方目录中按名称搜索并查看码位。|Icons from the Fluent System Icons Regular font. Reference common icons by name through ForgeIcons, and search the catalog below for others and their code points.
+基础架构 · 昨天|Infrastructure · Yesterday
+处理后的背景图；未绑定服务时等于 source。|The processed backdrop. Equals source when no service is bound.
+备注|Notes
+复制到剪贴板|Copy to clipboard
+复制路径|Copy path
+复制错误信息|Copy error details
+复制错误详情|Copy error details
+外观属性互相独立，可任意组合；禁用时会立即取消进行中的确认。|Appearance properties are independent and can be combined freely. Disabling cancels a confirmation in progress immediately.
+外部校验错误；非空时视为无效并显示该文字。|External validation error. When not empty, the input is invalid and this text is shown.
+多个 FormRow 纵向排列成设置分组，控件统一靠右对齐。|Several FormRows stacked into a settings group, with controls aligned to the right.
+多个页面叠放在同一区域，按稳定 ID 显示其中一页。所有页面编译时创建，切换只改变可见性，隐藏页中的输入内容不会丢失。|Several pages share one area and the one matching a stable ID is shown. All pages are created at compile time and switching only changes visibility, so input on hidden pages is kept.
+多文档编辑|Multi-document editing
+多窗口工具|Multi-window tool
+多行文本编辑框，对应 Slint 原生 TextEdit。Enter 换行，内容超出时在框内滚动，适合备注、描述和反馈。|A multi-line text editor backed by native Slint TextEdit. Enter inserts a line break and overflowing content scrolls inside the box; suited to notes, descriptions, and feedback.
+多选模式显示复选框；禁用后节点不可操作。|Multiple selection shows check boxes; disabled nodes cannot be used.
+夜航星|Night Voyage
+夜间在此时长内不弹出通知，单位为小时。|No notifications pop up during this many hours at night.
+大纲|Outline
+如何为桌面应用设计深色模式|Designing dark mode for desktop apps
+如何在 C++ 项目中使用组件？|How do I use the components in a C++ project?
+姓名|Name
+姓名需为 2–20 个字符|Name must be 2–20 characters
+姓名需为 2–20 个字符，不符合时显示提示并禁用保存；网站为选填项。|The name must be 2–20 characters; otherwise a hint appears and Save is disabled. The website is optional.
+子元素即该页内容，未显示时仍保留状态。|Child elements are the page content and keep their state while hidden.
+子元素按各自尺寸从左到右排列，一行放不下时自动换行；内容超出高度时出现竖向滚动条。适合标签、缩略图等数量不定的内容。|Children are placed left to right at their own size and wrap when a row is full; a vertical scrollbar appears when content exceeds the height. Suits tags, thumbnails and other content of variable count.
+字体搭配|Font pairings
+字体缩放|Font scaling
+字号比例，默认 1.0；写法如 font-size: 14px * ForgeTypography.scale。|Font size scale, 1.0 by default. Use it as font-size: 14px * ForgeTypography.scale.
+字符数范围；maximum-length 为 0 时不限上限。|Character count range. A maximum-length of 0 means no upper limit.
+存储概览|Storage overview
+存储空间不足|Storage almost full
+季度总结.pptx|Quarterly review.pptx
+季度报告.slint|Quarterly report.slint
+安装|Installation
+完成同步|Finish sync
+完成确认时触发；中途松开、移出、失焦或按 Esc 时触发 canceled。|Fires when confirmed. canceled fires when released early, moved out, focus is lost or Esc is pressed.
+完整图标目录|Full icon catalog
+实时统计字数，超过 200 字时提示并禁用提交。|Characters are counted live; over 200 characters shows a warning and disables Submit.
+实际显示的文字，已按上限截断。|The text actually displayed, truncated to the limit.
+审核结果将通过邮件通知。|The review result will be sent by email.
+客厅空调|Living room AC
+客户|Customers
+客户资料|Customers
+客户门户|Customer portal
+室温 {}°C|Room {}°C
+容器|Surfaces
+宽度低于此值时改为上下排列，默认 560px。|Below this width the row stacks vertically; 560px by default.
+宿主侧 ComponentHandle 方法，显示或隐藏窗口，实例可重复使用。|Host-side ComponentHandle methods that show or hide the window; instances can be reused.
+宿主创建并显示一个原生 Dialog；点击 OK 或 Cancel 后隐藏。|The host creates and shows a native Dialog; it hides after OK or Cancel is clicked.
+宿主提供的编码服务；未绑定时显示“二维码服务未绑定”。|Encoding service provided by the host. Shows "QR code service is not connected" when unbound.
+宿主算出的内容总高度，用于滚动范围。|Total content height computed by the host, used as the scroll range.
+宿主通过窗口句柄显示或隐藏对话窗口。|The host shows or hides the dialog window through its window handle.
+密码|Password
+密码已修改（{} 位）|Password changed ({} characters)
+密码至少 8 位，需包含字母和数字。|Passwords need at least 8 characters, including letters and numbers.
+对话框内放置表单；Tab / Shift+Tab 在输入框与按钮间循环，跳过禁用项。|A form inside the dialog; Tab / Shift+Tab cycles through fields and buttons, skipping disabled items.
+对话窗口|Dialog window
+对话窗口标题与图标。|Dialog window title and icon.
+导出 10 月销售报表|Export October sales report
+导出 PDF|Export PDF
+导出 {} 项|Export {} items
+导出为|Export as
+导出图片|Export image
+导出失败|Export failed
+导出完成|Export complete
+导出报表|Export report
+导出状态 · {}|Export status · {}
+导出确认|Export confirmation
+导航|Navigation
+导航位置（左、右、顶部）与侧栏状态（展开、紧凑、隐藏）。|Navigation position (left, right, top) and pane state (expanded, compact, hidden).
+导航未读数|Navigation unread counts
+将通过 {} 发送通知|Notifications will be sent via {}
+将鼠标停在工具栏按钮上|Hover over a toolbar button
+将鼠标停在按钮上查看提示，在右侧修改提示内容。|Hover over the button to see the tooltip, and edit its content on the right.
+小节标题 · Subtitle|Subtitle
+少量进度、接近完成与持续旋转。|Low progress, nearly complete, and continuous spinning.
+尚未保存|Not saved yet
+尚未修改|Not changed yet
+尚未切换|Not toggled yet
+尚未复制|Not copied yet
+尚未导出|Not exported yet
+尚未开始|Not started
+尚未打开图板|No board opened yet
+尚未打开应用|No app opened yet
+尚未打开窗口|No window opened yet
+尚未拖动分隔线|No divider dragged yet
+尚未提交|Not submitted yet
+尚未点击|Not clicked yet
+尚未点击链接|No link clicked yet
+尚未确认|Not confirmed yet
+尚未编辑|Not edited yet
+尚未读完|Not read to the end yet
+尚未选择标签|No tag selected
+尚未预订|Not booked yet
+层级 {} / 4|Level {} / 4
+层级标识，回调中原样返回。|Level identifier, returned as is in the callback.
+居中|Center
+展开列表勾选多项，点“完成”或列表外任意位置收起。|Open the list and check several items; click Finish or anywhere outside to close it.
+展开列表选择一项；也可聚焦后用上下方向键切换。|Open the list and choose an item, or focus it and use the Up and Down keys.
+展开后的内容|Expanded content
+展开或折叠节点时触发；宿主据此更新 expanded 与子项 visible。|Raised when a node is expanded or collapsed; the host updates expanded and the children's visible.
+嵌入式|Embedded
+嵌在页面中的状态提示条，用颜色区分信息、成功、警告与错误，可由用户关闭。适合不打断操作的持续性反馈。|An inline status bar that uses color to distinguish info, success, warning, and error, and can be closed by the user. Suitable for persistent feedback that doesn't interrupt the workflow.
+嵌套 Menu 生成子菜单，MenuSeparator 生成分隔线。|Nest a Menu to create a submenu; MenuSeparator creates a separator.
+工具栏停靠在顶部，资源管理器和大纲分列两侧，终端在底部；编辑区占据剩余空间。|The toolbar docks at the top, the explorer and outline sit on either side and the terminal at the bottom; the editor fills the rest.
+工具类窗口通常只保留关闭和最小化，主窗口再加上菜单、主题和设置。勾选右侧选项预览标题栏的组成。|Tool windows usually keep only close and minimize, while main windows add menu, theme and settings. Check the options on the right to preview the title bar.
+工程笔记 · 5 分钟阅读|Engineering notes · 5 min read
+左侧文件树，右侧显示所选节点的信息；折叠目录时隐藏其子节点。|A file tree on the left and details of the selected node on the right. Collapsing a folder hides its children.
+左右排列时标题区的宽度，默认 220px。|Width of the label area in side-by-side mode, 220px by default.
+左右边区的保存宽度。|Saved widths of the left and right panes.
+左对齐|Align left
+已从杭州发出，下一站上海|Left Hangzhou, next stop Shanghai
+已保存 · {} <{}>|Saved · {} <{}>
+已关注|Following
+已创建副本|Duplicate created
+已到达上海转运中心|Arrived at the Shanghai transit center
+已加载 3 篇文章|3 articles loaded
+已发货|Shipped
+已同意协议|Agreement accepted
+已同意条款|Terms accepted
+已同步|Synced
+已复制 {} 的路径|Copied the path of {}
+已复制共享链接|Share link copied
+已复制到剪贴板|Copied to clipboard
+已完成 {} / 3|Completed {} / 3
+已完成 {} / 4|Completed {} / 4
+已完成、未完成，以及没有说明文字的事件。|Completed, pending, and an event without a description.
+已完成步骤|Completed steps
+已导出 chart@{}.{} · {}|Exported chart@{}.{} · {}
+已导出 {} 项数据|Exported {} items of data
+已导出为 {}|Exported as {}
+已将 {} 移到回收站|Moved {} to the Recycle Bin
+已展开 {} 项|{} expanded
+已应用{}|Applied {}
+已恢复|Restored
+已恢复全部项目|All items restored
+已打开 {}|Opened {}
+已打开“季度报告”|Opened "Quarterly report"
+已打开对话窗口|Dialog window opened
+已打开普通窗口|Regular window opened
+已拒绝条款|Terms declined
+已提交|Submitted
+已提交 {} 字|Submitted {} characters
+已提交的快捷键文本，如 Ctrl+S；为空时显示占位文字。|The committed shortcut text, such as Ctrl+S; placeholder text is shown when empty.
+已提交的日期，以及是否已选择。|The committed date and whether a value has been chosen.
+已提交的时间，以及是否已选择。|The committed time and whether a value has been chosen.
+已提交的颜色，以及弹层中正在调整的颜色。|The committed color and the color being adjusted in the popup.
+已提交颜色的通道值，范围 0–255。|Channel values of the committed color, from 0 to 255.
+已插入链接|Link inserted
+已揽收|Picked up
+已收藏|Favorited
+已新建“未命名文档”|Created "Untitled document"
+已显示图层：{}|Layers shown: {}
+已暂停 · 进度 {}%|Paused · {}%
+已有 2 个依赖|2 dependencies
+已松开，未清空|Released, not emptied
+已格式化的时间文本。|Formatted time text.
+已永久删除 {} 个项目|Permanently deleted {} items
+已添加 {}|Added {}
+已用 72 GB，共 100 GB|72 GB of 100 GB used
+已读完，可以勾选同意|Read to the end, ready to agree
+已连接|Connected
+已选 {} 项|{} selected
+已选 · {}|Selected · {}
+已重置尺寸|Sizes reset
+已隐藏全部窗口|All windows hidden
+已隐藏示例窗口|Sample windows hidden
+已预订 · {} 位成人、{} 位儿童，共 {} 晚|Booked · {} adults, {} children, {} nights
+带圆角和细边框的图片视图，图片按区域裁切。圆角设为边长一半即为圆形，常用于头像、封面和缩略图。|An image view with rounded corners and a thin border; the image is clipped to the area. A radius of half the side makes a circle. Common for avatars, covers and thumbnails.
+带建议列表的文本框。输入时按前缀筛选候选项，可用上下方向键移动、Enter 选中，适合搜索和快速填写。|A text field with a suggestion list. Typing filters candidates by prefix; use the Up and Down keys to move and Enter to choose. Suited to search and quick entry.
+带扫光动画的占位块，在内容加载期间占住位置，提示用户数据即将出现。可自由组合成任意版式。|A placeholder block with a shimmer animation that holds space while content loads, signaling that data is on its way. Combine blocks into any layout.
+带折射和高光描边的玻璃材质，继承自 Acrylic，默认模糊更轻、圆角更大。适合悬浮控件和小组件。|A glass material with refraction and a highlight border. It inherits from Acrylic with lighter blur and larger corners by default. Suited to floating controls and widgets.
+带标准按钮的对话框窗口，按钮回调如 ok-clicked。|Dialog window with standard buttons and callbacks such as ok-clicked.
+带标题与不带标题的卡片。|Cards with and without a title.
+带校验提示的单行输入框，按必填和长度规则检查内容，用户编辑后在下方显示错误信息。|A single-line input with validation hints. It checks required and length rules and shows an error below after the user edits.
+带滚动视口的多行文本框，基于原生 TextEdit。通过 content-x / content-y 读取或设置滚动位置，适合日志、协议等长文本。|A multi-line text box with a scrolling viewport, based on native TextEdit. Read or set the scroll position through content-x / content-y; suited to long text such as logs and agreements.
+带边框与圆角的内容容器，可选标题，内容纵向排列。卡片尺寸由放置它的页面决定。|A bordered, rounded content container with an optional title; content is stacked vertically. The page that hosts the card decides its size.
+常用图标的字符常量，如 home、settings、search。|Glyph constants for common icons, such as home, settings, and search.
+常用的字号层级。字体和比例在设置页调整，本页随之更新。|Common text size levels. Adjust the font and scale in settings and this page updates.
+常见问题|FAQ
+常规|General
+常驻页面容器：active 同时控制可见性与截图许可，隐藏后内部控件状态保留。capture() 截取页面当前可视区域。|A persistent page container: active controls both visibility and capture permission, and control state is kept while hidden. capture() grabs the page's currently visible area.
+平台默认|Platform default
+年|Year
+应用|Apply
+应用启动台|App launcher
+应用栏、分组标题、分隔线与底部设置项组成完整的后台导航；返回按钮回到上一个页面。|An app bar, section headers, a separator, and a footer settings item form a complete admin navigation. The back button returns to the previous page.
+应用级导航框架：侧栏或顶栏列出页面，右侧区域承载当前页面内容。导航项由应用提供，选择与展开通过回调交给应用处理。|An app-level navigation frame: a side or top bar lists pages and the content area shows the current page. The app supplies the items and handles selection and expansion through callbacks.
+建议列表是否展开；输入时自动展开。|Whether the suggestion list is open; it opens automatically while typing.
+开|On
+开关旁的说明文字。|Description text next to the switch.
+开发文档|Developer docs
+开启或暂停动画，调整扫光速度。|Start or pause the animation and adjust the shimmer speed.
+开始与结束时间以 15 分钟为步长，确认后更新会议时段。|Start and end times use 15-minute steps; confirming updates the meeting slot.
+开始使用前，需要同意服务条款与隐私政策。|Before getting started, you need to agree to the terms of service and privacy policy.
+开始同步|Start sync
+开始导出|Start export
+开始录制、关闭弹层，或清除快捷键。|Starts recording, closes the popup, or clears the shortcut.
+开始时间|Start time
+开源|Open source
+开源许可证|Open-source license
+引导覆盖示例区域，逐个高亮两个目标。方向键切换步骤，Esc 关闭。|The tour covers the example area and highlights two targets in turn. Arrow keys switch steps and Esc closes it.
+弱|Weak
+弹出层|Popups
+弹层中尚未确认的日期。|The date in the popup that has not been confirmed yet.
+弹层是否打开、是否正在屏幕取色。|Whether the popup is open and whether screen picking is active.
+强|Strong
+强调色|Accent color
+强调色 rgb({}, {}, {})|Accent rgb({}, {}, {})
+归档项目|Archive projects
+当前位置 · {}|Current location · {}
+当前值，可双向绑定。|The current value; supports two-way binding.
+当前值，自动限制在 minimum 与 maximum 之间。|Current value, clamped between minimum and maximum.
+当前列数与列宽。|Current column count and column width.
+当前列数与卡片宽度；卡片的 width 应绑定到 item-width。|Current column count and card width; bind each card's width to item-width.
+当前平铺的列数与行数。|Current tile columns and rows.
+当前扫光位置，取值 0 到 1。|Current shimmer position, from 0 to 1.
+当前文档：{}|Current document: {}
+当前明暗模式，可读写。|Current light or dark mode. Readable and writable.
+当前是否为上下排列。|Whether the row is currently stacked.
+当前是否有效，以及无效时的提示文字。|Whether the input is valid, and the hint text when it is not.
+当前是否选中，可双向绑定。|Whether it is checked, two-way bindable.
+当前显示的页面 ID。|ID of the page currently shown.
+当前标签列表，由应用提供。|Current tag list, provided by the application.
+当前标签序号，可读写。|Index of the current tab; readable and writable.
+当前标签的 id，对应标签显示背景。|ID of the current tab, which is shown with a background.
+当前选中的 id；点击后组件自行更新，可双向绑定。|ID of the selected segment. The component updates it on click, so it can be two-way bound.
+当前选中项的文字。|Text of the selected item.
+当前选中项的索引，可双向绑定。|Index of the selected item; supports two-way binding.
+当前页面 {} · 搜索 “{}”|Current page {} · Search "{}"
+当前页面 · 列表|Current page · List
+当前页面 · 详情|Current page · Details
+当前页面的 id，对应项显示选中指示。|ID of the current page; its item shows the selection indicator.
+当前页，从 1 开始；越界时自动收回范围内。|Current page, starting at 1. Out-of-range values are clamped automatically.
+当日达|Same day
+录制中尚未保存的组合键。|The recorded combination that has not been saved yet.
+录制组合键的按钮。点击后按下新的快捷键，再用保存、重置或取消决定是否提交。|A button that records key combinations. Click it, press a new shortcut, then save, reset, or cancel.
+待同步|Pending sync
+待审批|Pending approval
+待审核|Pending review
+待导出|Pending export
+待派送|Out for delivery soon
+待确认|Needs confirmation
+必填|Required
+快捷键设置|Shortcut settings
+性能|Performance
+性能优化|Performance
+总条数与每页条数，共同决定页数。|Total items and items per page, which together determine the page count.
+总页数；没有数据时为 0。|Total page count; 0 when there is no data.
+恢复全部|Restore all
+恢复默认|Restore defaults
+意见反馈|Feedback
+成人|Adults
+成人至少 1 位，儿童与入住晚数各有上限。|At least 1 adult is required; children and nights each have an upper limit.
+成功、警告与错误三种结果，未设置按钮文字。|Success, warning, and error results without button text.
+成员详情|Member details
+我已阅读并同意|I have read and agree
+我的工作区|My workspace
+我的应用|My app
+我的报表|My reports
+我的文档|My documents
+截取整个窗口；截图服务未接入时返回错误。|Capture the whole window; returns an error when the capture service is not connected.
+截取页面区域；未激活或截图服务未接入时返回错误。|Capture the page area; returns an error when inactive or when the capture service is not connected.
+截图 · 15 张|Screenshots · 15
+所有组件按全局缩放比例调整字号。|All components scale their font size with the global factor.
+所有通知已处理|All notifications handled
+扁平化的树节点，含 parent-id、depth、folder、expanded、selected、visible。|Flattened tree nodes with parent-id, depth, folder, expanded, selected, and visible.
+扁平节点列表，含 id、parent-id、label、depth、folder、expanded、selected、visible、enabled。|Flat node list with id, parent-id, label, depth, folder, expanded, selected, visible, and enabled.
+打开 Gallery · {}|Open Gallery · {}
+打开 · {}|Open · {}
+打开一个普通窗口或对话框；再次打开会复用同一个实例。|Open a window or a dialog. Opening it again reuses the same instance.
+打开对话框|Open dialog
+打开对话窗口|Open dialog window
+打开或关闭弹层，或预设弹层中的颜色。|Opens or closes the popup, or presets the color in the popup.
+打开抽屉，在面板中输入后关闭再打开，内容仍然保留。|Open the drawer, type in the panel, then close and reopen it; the content is kept.
+打开确认对话框，用确认、取消或 Esc 关闭。|Open the confirmation dialog and close it with confirm, cancel, or Esc.
+打开窗口|Open window
+执行耗时操作的主按钮。忙碌时显示加载指示和进度并自动禁用，防止重复提交。|A primary button for long-running operations. While busy it shows a loading indicator and progress and disables itself to prevent duplicate submissions.
+批量导出|Bulk export
+找到 {} 件商品|{} products found
+技术服务合同|Technical services agreement
+把 current-page 收回到有效范围。|Clamps current-page to the valid range.
+把文本编码为二维码图像，内容变化时自动重新生成。编码由宿主绑定的服务完成，失败时显示错误原因。|Encodes text as a QR code image and regenerates it when the content changes. A host-bound service does the encoding and shows the reason on failure.
+把选中内容复制到系统剪贴板。|Copies the selection to the system clipboard.
+把长列表拆成多页，提供首页、上一页、页码、下一页和末页按钮。总条数与每页条数决定页数，最多同时显示 7 个页码。|Splits a long list into pages with first, previous, page number, next, and last buttons. The total and page size determine the page count, and up to 7 page numbers are shown at once.
+折叠、展开与禁用三种状态。|Collapsed, expanded and disabled.
+折射扭曲效果，默认开启。|Refraction distortion, on by default.
+折扣|On sale
+报表|Reports
+报表中心|Report center
+报表导出|Report export
+拒绝|Decline
+拖动分隔线后触发，参数为边区与新尺寸。|Fires after a divider is dragged, with the pane edge and its new size.
+拖动四条分隔线调整尺寸，或在右侧单独隐藏某个边区。|Drag the four dividers to resize, or hide individual panes on the right.
+拖动旋钮或滑块调整同一数值；聚焦后可用方向键、Home 与 End。|Drag the knob or slider to adjust the same value. When focused, use arrow keys, Home, and End.
+拖动滑块修改进度，或切换为未知进度。|Drag the slider to change progress, or switch to unknown progress.
+拖动滑块修改进度，调整尺寸或切换为持续旋转。|Drag the slider to change progress, adjust the size, or switch to continuous spinning.
+拖动滑块，或聚焦后按方向键按 step 调整。|Drag the slider, or focus it and use the arrow keys to adjust by step.
+拖选文本或使用右侧按钮；取消 read-only 后可直接编辑。|Drag to select text or use the buttons in the options. Clear read-only to edit directly.
+指定当前页，以及标签栏竖排在左侧。|A preset current page, and a vertical tab bar on the left.
+指示点角度，范围 -135° 到 135°。|Indicator angle, from -135° to 135°.
+按 Enter 或点击“添加”时触发，参数为输入文字。|Fires on Enter or when "Add" is clicked, with the input text.
+按 Enter 时触发。|Raised when Enter is pressed.
+按 Wi-Fi 二维码格式拼接网络名称与密码，访客扫码即可连接。|Builds the Wi-Fi QR format from the network name and password so guests can scan to connect.
+按住发布|Hold to publish
+按住清空|Hold to empty
+按发件人|By sender
+按发件人排序|sorted by sender
+按名称|By name
+按名称或标签快速找到报表。|Quickly find reports by name or tag.
+按名称搜索 Fluent System Icons Regular 的全部图标，查看图形和对应码位。搜索与分页由宿主处理。|Search all Fluent System Icons Regular icons by name and see each glyph and code point. Search and paging are handled by the host.
+按大小|By size
+按大小排序|sorted by size
+按字节偏移设置选区。|Sets the selection by byte offsets.
+按日期|By date
+按时间|By date
+按时间排序|sorted by date
+按时间顺序纵向排列事件，圆点区分已完成与未完成。适合展示流程进度、操作记录与物流轨迹。|Lists events vertically in time order, with dots marking completed and pending ones. Suits process progress, activity logs, and shipment tracking.
+按类别把设置项分到不同标签页，修改在各页之间保留。|Settings are grouped into tabs by category, and changes are kept across tabs.
+按范围约束设置数值并触发 value-changed。|Sets the value within range and triggers value-changed.
+按钮|Button
+按钮、输入框等控件的底色和文字颜色。|Background and text color of controls such as buttons and inputs.
+按钮上显示的选择摘要，由宿主生成。|Selection summary shown on the button, generated by the host.
+按钮文字，右侧自动显示下拉箭头。|Button text. A drop-down arrow is shown on the right automatically.
+按钮文字；为空时不显示按钮。|Button text; the button is hidden when empty.
+按钮文字；为空时按钮为 36px 宽的方形。|Button text. When empty, the button is a 36px square.
+换行后内容的总高度。|Total content height after wrapping.
+换行方式与是否只读。|Wrap mode and whether the text is read-only.
+换行方式，默认按单词换行。|Wrap mode; wraps at words by default.
+排序|Sort
+排序方式|Sort by
+排期.xlsx|Schedule.xlsx
+排版 · 4 套|Typography · 4
+接管初始焦点与 Tab 顺序；返回 true 表示已处理。|Take over initial focus and Tab order; return true if handled.
+控件区域的起点。|Origin of the control area.
+推荐|Suggested
+描述遇到的问题或希望增加的功能|Describe a problem or a feature you would like
+提交|Submit
+提交反馈|Send feedback
+提交失败|Submission failed
+提交时把所有字段标记为 touched，一次性显示全部错误；全部有效才允许注册。|On submit, all fields are marked as touched so every error shows at once. Sign-up is allowed only when all fields are valid.
+提示内容|Tooltip content
+提示文字，过长时自动换行。|Message text; wraps automatically when long.
+提示级别：info、success、warning、error，决定左侧色条与图标。|Level: info, success, warning, or error; determines the left color strip and icon.
+插入链接|Insert link
+插画 · 9 个|Illustrations · 9
+搜索|Search
+搜索 crate|Search crates
+搜索报表|Search reports
+搜索框输入与返回按钮。|Search box input and the back button.
+摄影 · 12 张|Photos · 12
+摄影 · 20 张|Photos · 20
+播放|Play
+播放、暂停与圆形占位。|Playing, paused, and circular placeholder.
+支持。所有组件使用 Palette 配色，随应用主题自动切换。|Yes. All components use Palette colors and follow the app theme.
+收件箱|Inbox
+收藏|Favorite
+放在任意元素内部，每个元素最多一个。|Place it inside any element; at most one per element.
+数值为 0 时仍然显示。|Still show the badge when the value is 0.
+数据可视化|Data visualization
+数据源|Data sources
+数据返回前用头像与文字占位块排出列表版式，加载完成后替换为真实内容。|Before data arrives, avatar and text placeholders lay out the list; real content replaces them once loaded.
+整数输入框，对应 Slint 原生 SpinBox。可直接输入，也可用按钮、方向键或滚轮按步长增减；小数改用 NumberBox。|An integer field backed by native Slint SpinBox. Type directly, or step with the buttons, arrow keys, or mouse wheel; use NumberBox for decimals.
+整理需求文档|Organize requirements doc
+文件|File
+文件上传队列|File upload queue
+文件列表右键菜单|File list context menu
+文件夹|Folder
+文件已保存到“下载”文件夹。|The file has been saved to the "Downloads" folder.
+文件浏览器|File browser
+文字|Text
+文字、主色填充与胶囊外形。|Text, accent fill and pill shape.
+文字宽度与当前水平位置。|Text width and current horizontal position.
+文字层级|Text hierarchy
+文字是否超出可视宽度；只有超出时才滚动。|Whether the text exceeds the visible width; it only scrolls when it does.
+文字超出宽度时在固定区域内循环滚动，未超出时静止显示。适合公告栏、状态栏中的长消息。|Text that exceeds the width scrolls in a loop inside a fixed area; shorter text stays still. Suits long messages in banners and status bars.
+文本为空时显示的提示。|Hint shown when the text is empty.
+文本内容；只读时仍可滚动和选择。|The text content; read-only text can still be scrolled and selected.
+文本格式栏|Text format bar
+文档|Documents
+文档工具栏|Document toolbar
+文章关键词|Article keywords
+文章列表加载|Article list loading
+文章排版|Article layout
+文章标签|Article tags
+斜体|Italic
+新品|New arrivals
+新密码|New password
+新建|New
+新建任务|New task
+新建报表|New report
+新版本已下载，重启后生效。|A new version has been downloaded and takes effect after restart.
+方向键调整时的步长，默认 1。|Step for arrow-key adjustment. Defaults to 1.
+无修改|No changes
+无法连接到服务器。复制下方详情并发送给技术支持。|Cannot connect to the server. Copy the details below and send them to technical support.
+无法连接服务器。|Unable to connect to the server.
+无边框窗口：自绘标题栏，原生窗口负责拖动和缩放。当前 Gallery 主窗口就是一个 ForgeWindow 实例，本页的操作直接作用于它。|A frameless window with a custom-drawn title bar; the native window handles moving and resizing. The Gallery main window is a ForgeWindow instance, and the actions on this page apply to it directly.
+无障碍|Accessibility
+日历|Calendar
+日历 · 10:30 设计评审|Calendar · 10:30 design review
+日历顶部用分段控件切换日、周、月视图，下方列出对应范围内的日程。|A segmented control at the top of the calendar switches between day, week, and month views, and events in that range are listed below.
+日志|Log
+日程视图|Agenda views
+是|Yes
+是否勾选，可双向绑定。|Whether it is checked, two-way bindable.
+是否展开，可双向绑定。|Whether it is expanded; supports two-way binding.
+是否开启，可双向绑定。|Whether it is on, two-way bindable.
+是否必填，默认 true。|Whether the field is required. Defaults to true.
+是否拥有键盘焦点，聚焦时按 Space 切换。|Whether it has keyboard focus. Press Space to toggle when focused.
+是否播放扫光动画；页面隐藏时应关闭。|Whether to play the shimmer animation; turn it off when the page is hidden.
+是否支持深色主题？|Is a dark theme supported?
+是否显示关闭按钮，默认 true。|Whether to show the close button. Defaults to true.
+是否显示行号，默认显示。|Whether to show line numbers. Shown by default.
+是否显示，可双向绑定。|Whether it is shown; supports two-way binding.
+是否正在引导，以及当前步骤序号。|Whether the tour is running, and the current step index.
+是否正在录制。|Whether recording is in progress.
+是否正在计时，以及 0～1 的进度。|Whether timing is in progress, and the progress from 0 to 1.
+是否滚动；暂停后从原位置继续。|Whether it scrolls; resumes from the same position after pausing.
+是否选中，点击标签切换，可双向绑定。|Whether it is selected. Clicking the tag toggles it; two-way bindable.
+显示“日志”标签|Show "Log" tab
+显示上限，超过时显示为“99+”形式，默认 99。|Display limit; larger values show as "99+". Defaults to 99.
+显示右侧的移除按钮，默认 true。|Show the remove button on the right. Defaults to true.
+显示名称|Display name
+显示在数值后的单位，如 %、°C。|Unit shown after the value, such as % or °C.
+显示在文字前的图标。|Icon shown before the text.
+显示在选项上方的分组标题。|Group title shown above the options.
+显示文字。|Display text.
+显示的图片；为空时只显示背景与边框。|Image to show; when empty only the background and border are drawn.
+显示的数字；小于等于 0 时默认隐藏。|Number to display; hidden by default when less than or equal to 0.
+显示的文本。|Text to display.
+显示菜单|Show menu
+显示行号|Show line numbers
+普通数字、超出上限与提示点。|A normal number, a value beyond the limit, and a dot.
+普通窗口|Regular window
+暂停|Pause
+暖红|Warm red
+更多|More
+最后更新于 10 月 25 日|Last updated Oct 25
+最多 20 个字符|Up to 20 characters
+最多 5 个关键词，可手动输入或点击推荐词添加。与基本用法共用宿主提供的标签数据。|Up to 5 keywords, typed manually or added by clicking a suggestion. Shares the host-provided tag data with the basic usage example.
+最大列数；0 表示不限制。|Maximum columns; 0 means unlimited.
+最小值、中间值与禁用状态。|Minimum, midpoint, and disabled states.
+最近一次由用户选中的选项文字。|Option text most recently selected by the user.
+最近操作 · {}|Last action · {}
+有 3 个文件尚未同步到云端。|3 files haven't been synced to the cloud yet.
+有字段未通过校验|Some fields failed validation
+有效期至|Expires
+有新消息时在系统通知区域提示。|Show an alert in the system notification area for new messages.
+有未保存的修改|Unsaved changes
+有货|In stock
+有选中项时显示背景；active-id 不匹配任何标签时全部为普通样式。|The selected tab has a background. When active-id matches no tab, all tabs look normal.
+服务器暂时不可用，稍后重试。|The server is temporarily unavailable. Try again later.
+服务器监控|Server monitoring
+服务条款确认|Terms of service
+服务运行中|Services running
+未关注|Not following
+未分配任何权限|No permissions assigned
+未勾选、已勾选，以及勾选后禁用。|Unchecked, checked, and checked but disabled.
+未开始|Not started
+未显示任何图层|No layers shown
+未设置时显示占位文字；禁用后不能开始录制。|Placeholder text is shown when unset; recording cannot start when disabled.
+未读合计 {}|Total unread {}
+未读通知 {} 条|{} unread notifications
+未输入时显示占位提示；已有文本时展开会只列出匹配项。|The placeholder shows when empty; with existing text, the open list shows only matches.
+未选中、选中且不可移除，以及禁用。|Unselected, selected and not removable, and disabled.
+未选中、选中，以及选中后被禁用。|Unchecked, checked, and checked but disabled.
+未选择、横向排列与整组禁用。|Nothing selected, horizontal layout, and the whole group disabled.
+未选择任何渠道，将不会收到通知|No channel selected; no notifications will be sent
+未选择工具|No tool selected
+未选择时的提示与是否可用。|Hint shown when nothing is selected, and whether the control is enabled.
+本周完成 12 项任务|12 tasks completed this week
+本周完成：\n- 组件页迁移到新模板|Done this week:\n- Migrated component pages to the new template
+本示例的宿主接口：false 打开普通窗口，true 打开对话框。|Host interface for this demo: false opens a window, true opens a dialog.
+本示例的宿主接口：隐藏所有示例窗口。|Host interface for this demo: hides all demo windows.
+机密合同预览|Confidential contract preview
+机械键盘 × 1　¥ 499|Mechanical keyboard × 1　¥ 499
+权限|Permissions
+杭州西湖区营业点|Hangzhou Xihu service point
+松开滑块时触发，适合提交最终值。|Fires when the slider is released; suitable for committing the final value.
+林|L
+林晓|Lin Xiao
+查找　Ctrl+F|Find　Ctrl+F
+查看文档|View documents
+查看详情|View details
+标准按钮|Standard buttons
+标准配送（3～5 天）|Standard (3–5 days)
+标签切换下方的内容区域，内容由应用按 active-id 显示。|The tabs switch the content area below, which the app shows by active-id.
+标签列表，每项包含 id 与 title。|Tab list; each item has an id and a title.
+标签宽度随文字变化，FlowLayout 负责换行。单击标签用于筛选文章。|Tag width follows its text and FlowLayout handles wrapping. Click a tag to filter articles.
+标签数量上限，达到后不能再添加，默认 20。|Maximum number of tags. No more can be added once reached. Defaults to 20.
+标签文字。|Label text.
+标签栏位置：horizontal 在上方，vertical 在左侧；只接受常量。|Tab bar position: horizontal on top, vertical on the left. Constants only.
+标签由宿主程序维护，重复或空白内容会被忽略。|Tags are maintained by the host application; duplicate or blank entries are ignored.
+标题、元信息和正文段落都按 scale 计算字号，放大字号后行宽内自动换行。|The title, metadata, and body all size text by scale, and wrap within the line width when enlarged.
+标题下方的说明文字。|Description below the title.
+标题下方的说明，过长时自动换行。|Description below the title; wraps when too long.
+标题与子元素之间的纵向间距，默认 8px。|Vertical spacing between the title and children, 8px by default.
+标题与说明文字；子元素显示在说明下方。|Title and message text; children appear below the message.
+标题区与控件、控件之间的间距。|Spacing between the label area and controls, and between controls.
+标题文字。|Title text.
+标题栏左侧的品牌字符或图标。|Brand character or icon on the left of the title bar.
+标题栏按钮配置|Title bar buttons
+标题栏文字。|Header text.
+标题栏高度，内容区从其下方开始。|Title bar height; the content area starts below it.
+树数据来自宿主的 GalleryDemoModels；勾选文件夹会同时选中其子项。|Tree data comes from the host's GalleryDemoModels; checking a folder also selects its children.
+根据 content-y 判断是否已滚动到底部，读完后才能勾选同意。|content-y tells whether the text has been scrolled to the bottom; the agree box is enabled only after reading.
+根据使用统计推荐内容|Recommend content based on usage statistics
+根据长度提示强度，两次输入一致且不少于 8 位时才能提交。|Strength is estimated from length; submitting requires both entries to match and be at least 8 characters.
+格式|Format
+格式、分辨率和背景各用一个下拉框；选择 JPEG 时透明背景不可用。|Format, resolution, and background each use a drop-down; a transparent background is unavailable for JPEG.
+桌面通知|Desktop notifications
+模拟失败|Simulate failure
+模拟服务器错误|Simulate server error
+模糊半径，默认 10。|Blur radius, 10 by default.
+模糊半径，默认 4。|Blur radius, 4 by default.
+横条尺寸，宽度通常随布局拉伸。|Bar size; the width usually stretches with the layout.
+次日达|Next day
+次要文字|Secondary text
+正在上传 3 个文件…|Uploading 3 files…
+正在上传…|Uploading…
+正在下载更新包，完成后将提示重启。|Downloading the update; you will be prompted to restart when it finishes.
+正在准备安装…|Preparing to install…
+正在刷新…|Refreshing…
+正在安装更新 {}%|Installing update {}%
+正在播放 · 进度 {}%|Playing · {}%
+正在获取资料…|Fetching profile…
+正在重试…|Retrying…
+正常|Healthy
+正常选择、单项不可用与整体禁用。|Normal selection, one unavailable item, and fully disabled.
+正文 Body|Body text
+步骤切换后触发，参数为新的步骤序号。|Triggered after the step changes, with the new step index.
+每一步是一个 ForgeStackPage。返回上一步时，已填写的内容仍在原处，最后一步直接读取前面各页的输入。|Each step is a ForgeStackPage. Going back keeps what was entered, and the last step reads the input from earlier pages directly.
+每一行有自己的菜单，操作作用于被右击的文件。|Each row has its own menu, and actions apply to the right-clicked file.
+每个应用占一张等宽卡片，窗口变窄时自动减少列数。|Each app takes one equal-width card; the column count drops as the window narrows.
+每个按钮独立控制一个图层，可同时打开多个。|Each button controls one layer independently; several can be on at once.
+每个文件一条进度，依次上传；可暂停或重新开始。|One progress bar per file, uploaded in order; pause or start over.
+每个文档放在一个 ForgePage 中，切换标签只改变 active；未保存的草稿在切回时仍在。|Each document lives in a ForgePage and switching tabs only changes active; unsaved drafts are still there when you switch back.
+每个水印单元的尺寸，决定平铺密度。|Size of each watermark tile, which sets the density.
+每个继承 Window 的组件都是一个独立的顶层窗口。界面通过回调请求，由宿主创建窗口实例并调用 show() 或 hide()。|Every component that inherits Window is a separate top-level window. The UI requests one through a callback, and the host creates the instance and calls show() or hide().
+每个选项对应不同运费，所选方式即时计入订单合计；当日达在当前地址不可用。|Each option has a different shipping fee, and the chosen one is added to the order total immediately. Same-day delivery is not available for the current address.
+每格用背景色绘制，并以对应的前景色书写示例文字。随应用的明暗主题切换。|Each tile is filled with a background color and shows sample text in the matching foreground color. It follows the app's light or dark theme.
+每次点击触发，此时 checked 已更新。|Fires on each click, after checked has been updated.
+每步的标题、说明和目标区域（x、y、width、height，相对于引导组件）。|Title, description, and target area of each step (x, y, width, height, relative to the tour).
+每种标准按钮自动生成对应的 <kind>-clicked 回调。|Each standard button automatically generates a matching <kind>-clicked callback.
+每项功能对应一个快捷键，可逐项修改或一键恢复默认。|Each action has one shortcut; change them one by one or restore all defaults at once.
+水印不透明度，默认 0.12。|Watermark opacity, 0.12 by default.
+水印文字；为空时不绘制。|Watermark text; nothing is drawn when empty.
+水印绘制在内容上方，不影响内容本身的布局。|The watermark is drawn above the content without affecting its layout.
+水平、垂直与不带说明三种形态。|Horizontal, vertical and without description.
+水平（默认）或垂直。|Horizontal (default) or vertical.
+没有未读通知|No unread notifications
+没有标签时只显示输入框；达到上限后“添加”按钮禁用。|With no tags, only the input box is shown. The "Add" button is disabled once the limit is reached.
+没有标题时，内容从顶部开始。|Without a title, content starts at the top.
+注册|Sign up
+注册向导|Sign-up wizard
+注册成功：{}|Signed up: {}
+注册表单|Sign-up form
+测试工程师|QA engineer
+浏览器|Browser
+海边日落|Seaside sunset
+消息|Messages
+深浅主题|Light and dark themes
+添加依赖项|Add a dependency
+添加备注|Add a note
+清空|Clear
+清空后无法恢复，因此要求按住 2 秒再松开；中途松开不会执行。|Emptying cannot be undone, so it requires holding for 2 seconds and then releasing. Releasing early does nothing.
+清空回收站|Empty recycle bin
+清除筛选|Clear filters
+源代码 · 4 KB|Source code · 4 KB
+滑出方向：left 或 right，默认 right。|Slide-out edge: left or right. Defaults to right.
+滚动一轮所需时间，默认 8s。|Time for one full scroll cycle, 8s by default.
+滚动查看日志，或用按钮直接设置 content-y 跳到开头和结尾。|Scroll through the log, or use the buttons to set content-y and jump to the start or end.
+滚动的文字。|Text to scroll.
+滚轮和方向键每次调整的步长，默认 1。|Step for each scroll or arrow key, 1 by default.
+瀑布流布局：等宽列、不等高卡片，每张卡片放进当前最短的一列。适合图片墙、灵感板等高度不一的内容。|A masonry layout with equal-width columns and cards of varying height; each card goes into the currently shortest column. Suits photo walls, mood boards and other content of uneven height.
+灵感图板|Mood board
+点击关闭按钮时触发；是否隐藏由宿主决定。|Raised when the close button is clicked; the host decides whether to hide the bar.
+点击分段切换统计周期；右侧可启用“年”或禁用整个控件。|Click a segment to change the period. Use the options to enable "Year" or disable the whole control.
+点击分组时触发，由应用切换展开状态。|Fires when a group is clicked; the app toggles its expansion.
+点击刷新后显示骨架，数据返回后恢复资料内容。|Click refresh to show the skeleton; the profile returns when the data arrives.
+点击后弹出操作菜单的按钮，把一组相关操作收进一个入口，适合导出、更多操作等场景。|A button that opens an action menu, grouping related actions behind one entry. Suits export and "more actions" scenarios.
+点击后模拟一个 2 秒的任务；关闭 progress 后改为不确定进度。|Click to simulate a 2-second task. Turn off progress for indeterminate progress.
+点击开始倒计时|Click to start countdown
+点击按钮后按下组合键，在弹层中保存。|Click the button, press a key combination, and save it in the popup.
+点击按钮打开分栏弹层，滚动选择年、月、日后确认。|Click the button to open the column popup, scroll to the year, month, and day, then confirm.
+点击按钮打开时间弹层，滚动或点击各栏后确认。|Click the button to open the time popup, scroll or click each column, then confirm.
+点击按钮时触发。|Raised when the button is clicked.
+点击文字切换选中，点击 × 移除；移除后可恢复。|Click the text to toggle selection, click × to remove. It can be restored after removal.
+点击某一级时触发，参数为该项 id；应用据此截断路径。|Fires when a level is clicked with its id; the app truncates the path accordingly.
+点击标签切换；右侧可追加一个标签。|Click a tab to switch. Use the options to add another tab.
+点击标签或在右侧修改 current-index；在“概览”中输入的内容切换后仍在。|Click a tab or change current-index in the options. Text typed in "Overview" stays after switching.
+点击标签时触发；组件不改写 active-id，由应用更新。|Fires when a tab is clicked. The component does not change active-id; the app updates it.
+点击标签的 × 时触发，参数为标签下标。|Fires when × on a tag is clicked, with the tag index.
+点击目录前的展开按钮时触发，参数为 id 与目标状态。|Fires when a folder's expand button is clicked, with the id and the target state.
+点击移除按钮时触发；组件本身不会隐藏，由外部移除数据。|Fires when the remove button is clicked. The chip does not hide itself; remove the data externally.
+点击色块打开选色弹层；吸管图标表示支持屏幕取色。|Click the swatch to open the color popup; the eyedropper icon indicates screen picking.
+点击菜单按钮时触发，请求切换侧栏状态。|Fires when the menu button is clicked to request a pane state change.
+点击路径中的某一级返回该层，或在右侧进入下一级。|Click a level in the path to go back to it, or go one level deeper from the options.
+点击返回按钮时触发，由应用执行返回。|Fires when the back button is clicked; the app navigates back.
+点击遮罩是否关闭，默认 true。|Whether clicking the overlay closes it. Defaults to true.
+点击链接时触发，参数为链接地址。|Fires when a link is clicked, with the link address.
+照片 41 GB · 文档 23 GB · 其他 8 GB|Photos 41 GB · Documents 23 GB · Other 8 GB
+片段语言|Snippet language
+版本 0.1.2 · 基于 Slint 1.18|Version 0.1.2 · Built with Slint 1.18
+物流|Shipping
+物流跟踪|Shipment tracking
+独立链接、自定义颜色，以及嵌在句子中的链接。|A standalone link, a custom color, and a link inside a sentence.
+玻璃面板悬浮在背景图上，调整模糊半径并切换折射。|A glass panel floats over the backdrop. Adjust the blur radius and toggle refraction.
+生成安装包并更新文档|Build installers and update the docs
+生成结果：ok、image、modules（每边模块数）与 error。|Generation result: ok, image, modules (modules per side), and error.
+用 @markdown 写成 Markdown 链接，可与普通文字混排。|Write a Markdown link with @markdown; it can be mixed with plain text.
+用一套界面同时支持 Rust 与 C++|One interface for both Rust and C++
+用一组链接指向官网、文档和开源许可证。|A set of links pointing to the website, documentation and open-source license.
+用只读的原生 TextEdit 展示可选择、可复制的文本：用户可以拖选、Ctrl+A 全选和 Ctrl+C 复制，但不能修改内容。|Uses a read-only native TextEdit to show selectable, copyable text. Users can drag to select, press Ctrl+A and Ctrl+C, but cannot edit it.
+用户修改数值后触发。|Raised after the user changes the value.
+用户修改文本后触发。|Raised after the user changes the text.
+用户切换勾选状态后触发。|Fires after the user toggles the checked state.
+用户切换后触发，参数为新的展开状态。|Fires after the user toggles, with the new expanded state.
+用户切换开关后触发。|Fires after the user toggles the switch.
+用户协议|User agreement
+用户名|Username
+用户名：{}|Username: {}
+用户每次修改文本后触发。|Raised each time the user changes the text.
+用户第一次进入报表应用时，依次介绍导航、搜索和新建报表三个入口。|When a user first opens the reporting app, introduce navigation, search, and new report in turn.
+用户翻页后触发，参数为新页码。|Fires after the user changes the page, with the new page number.
+用户调整数值后触发；宿主赋值不会触发。|Triggered after the user changes the value. Host assignments do not trigger it.
+用户资料卡|Profile card
+用户选中新选项时触发，参数为选项文字。|Fires when the user selects a new option, with the option text.
+用户选择新的一项后触发。|Raised when the user selects a new item.
+用户选择某一分段后触发。|Fires after the user selects a segment.
+用系统默认浏览器打开地址。|Open an address in the system default browser.
+用鼠标选择部分文字后按 Ctrl+C，或点击“复制全部”，再粘贴到下方输入框验证。|Select some text with the mouse and press Ctrl+C, or click "Copy all", then paste into the input below to check.
+由图标字符和可选文字组成的紧凑按钮，可显示选中状态，适合工具栏和格式栏。|A compact button made of an icon character and optional text. It can show a selected state and suits toolbars and format bars.
+电子普通发票 · 个人|E-invoice · Personal
+电话（仅紧急事件）|Phone (emergencies only)
+界面写在 .slint 文件中，两种宿主语言绑定同一套属性和回调。业务逻辑留在宿主一侧，界面只负责展示与交互。|The interface lives in .slint files, and both host languages bind the same properties and callbacks. Business logic stays in the host while the interface handles display and interaction.
+界面参考|UI references
+界面字体名称；为空时使用平台默认字体。|Interface font family. Uses the platform default when empty.
+界面文字可以翻译吗？|Can the UI text be translated?
+界面设计|UI design
+白色|White
+监控面板中每台服务器一张卡片，卡片内放指标和操作。|One card per server in a monitoring panel, holding its metrics and actions.
+目录|Contents
+目标 {}°C · 室温 {}°C|Target {}°C · room {}°C
+相邻元素的水平与垂直间距，默认 12px。|Horizontal and vertical gap between items, 12px by default.
+省略 text 时，放入一个子元素作为自定义内容。|When text is omitted, place one child element as custom content.
+短信|SMS
+短文字静止显示，长文字滚动，暂停后停在当前位置。|Short text stays still, long text scrolls, and pausing stops it in place.
+确认与取消按钮文字。|Confirm and cancel button text.
+确认密码|Confirm password
+确认或取消弹层时触发。|Raised when the popup is confirmed or canceled.
+确认所需时间，默认 1200ms。|Time required to confirm. Defaults to 1200ms.
+确认按钮可用与不可用时的对话框外观。|The dialog with the confirm button enabled and disabled.
+确认按钮是否可用；点击遮罩是否关闭。|Whether the confirm button is enabled; whether clicking the overlay closes it.
+确认新颜色后，右侧的标题栏与按钮立即使用该颜色。|After a new color is confirmed, the title bar and button on the right use it immediately.
+确认，或通过取消、Esc、遮罩关闭时触发。|Raised on confirm, or when closed via cancel, Esc, or the overlay.
+磁盘剩余空间不足 10%。|Less than 10% of disk space remains.
+示例文字 Sample Text|Sample text
+禁用后不可选择。|Cannot be selected when disabled.
+禁用后不能展开。|Cannot be opened when disabled.
+禁用后不能展开列表。|The list cannot be opened when disabled.
+禁用后不能选择文本。|When disabled, text cannot be selected.
+禁用后保持当前状态，不能切换。|Keeps its current state and cannot be toggled when disabled.
+禁用后半透明显示并不响应点击。|Semi-transparent and ignores clicks when disabled.
+禁用后所有分段不可操作。|When disabled, no segment can be used.
+禁用后所有按钮不可操作。|When disabled, no button can be used.
+禁用后整棵树不可操作。|When disabled, the whole tree cannot be used.
+禁用后显示为灰色并不响应操作。|Grayed out and unresponsive when disabled.
+禁用拖动与键盘调整。|Disable dragging and keyboard adjustment.
+禁用按钮。|Disable the button.
+禁用整组选项。|Disable the whole group.
+禁用文本\n第二行|Disabled text\nSecond line
+禁用时关闭已打开的菜单。|Closes an open menu when disabled.
+禁用输入、添加与移除。|Disable input, adding and removing.
+禁用输入。|Disables input.
+禁用选中与移除。|Disable selecting and removing.
+移到回收站|Move to Recycle Bin
+移动端|Mobile
+稍后提醒|Remind me later
+空内容显示占位提示；只读与禁用都不能编辑，禁用时文字变淡。|Empty content shows the placeholder; read-only and disabled boxes cannot be edited, and disabled text is dimmed.
+空文本显示占位提示；只读文本仍可选中复制。|Empty fields show the placeholder; read-only text can still be selected and copied.
+空调温控|Thermostat
+空闲、不确定进度与确定进度三种状态。|Idle, indeterminate and determinate progress states.
+空闲时点击触发，通常在此开始任务并设置 busy。|Fires on click when idle. Usually starts the task and sets busy.
+空闲时的按钮文字。|Button text when idle.
+窗口与页面的背景色和正文颜色。|Background and body text color of windows and pages.
+窗口对象由宿主持有，页面只发出打开或关闭请求。|Window objects are owned by the host; the page only sends open or close requests.
+窗口截图|Window capture
+窗口管理|Windows
+窗口置顶与圆角，可双向绑定。|Always-on-top and rounded corners; support two-way binding.
+立即重新生成；text 变化时会自动调用。|Regenerates immediately; called automatically when text changes.
+站内消息|In-app message
+第 {} / 3 步|Step {} / 3
+第 {} – {} 条 / 共 {} 条|Items {} – {} of {}
+第 {} 步，共 3 步|Step {} of 3
+第一条　服务内容：乙方为甲方提供界面组件的定制开发与维护服务。|Article 1. Services: Party B provides Party A with custom development and maintenance of UI components.
+第三条　保密条款：双方对合作中获知的技术资料负有保密义务。|Article 3. Confidentiality: both parties keep technical information obtained during the cooperation confidential.
+第三页内容。|Third page content.
+第二条　服务期限：自签订之日起十二个月。|Article 2. Term: twelve months from the date of signing.
+第二页内容。|Second page content.
+等宽卡片网格：按最小卡片宽度自动计算列数，卡片宽度随可用空间伸缩。适合仪表盘卡片、应用列表等需要逐列对齐的内容。|An equal-width card grid: the column count follows the minimum card width and cards stretch with the available space. Suits dashboard cards, app lists and other content that should align in columns.
+等待|Waiting
+等待审核|Awaiting review
+等待确认|Waiting for confirmation
+筛选|Filter
+筛选 · {}|Filter · {}
+筛选条件|Filters
+筛选条件可以多选，结果数量随选择即时更新。|Filters can be combined, and the result count updates immediately.
+筛选条件放在抽屉中，点击“应用”后关闭抽屉并更新列表条件。|Filters live in a drawer; clicking "Apply" closes the drawer and updates the list conditions.
+筛选邮件|Filter mail
+简单提示文字，字符串需用 @markdown 转换；使用自定义内容时不要设置。|Simple tooltip text; strings must be converted with @markdown. Don't set it when using custom content.
+简历.docx|Resume.docx
+粗体|Bold
+系统公告栏|System announcement bar
+系统将于今晚 23:00 至次日 01:00 进行维护升级，届时部分功能暂停使用。|Scheduled maintenance tonight from 23:00 to 01:00; some features will be unavailable during this time.
+系统将在今晚 23:00 维护。|The system will be under maintenance tonight at 23:00.
+系统通知|System notifications
+紧凑侧栏只显示图标；顶部导航把一级页面排成一行。|A compact pane shows icons only; top navigation lays out top-level pages in a row.
+级别：{} · 免打扰 {} 小时|Level: {} · Do not disturb {} h
+纯文字、自定义布局，以及附在非按钮元素上的提示。|Plain text, a custom layout, and a tooltip on a non-button element.
+纵向（默认）或横向排列。|Vertical (default) or horizontal layout.
+组件属性均可在 Rust 或 C++ 中绑定。|Component properties can be bound from Rust or C++.
+绑定到所属 PageStack 的 active-id；两者相等时页面可见。|Bind to the parent PageStack's active-id; the page is visible when the two match.
+结束时间|End time
+结束时间需晚于开始时间|End time must be later than start time
+结果标题。|Result title.
+结果类型，决定图标与颜色，默认 success。|Result type; determines the icon and color. Defaults to success.
+继续上传|Resume upload
+继续阅读|Read more
+编辑|Edit
+编辑后立即保存。|Save right after editing.
+编辑器工具栏|Editor toolbar
+编辑文档|Edit documents
+编辑的文本，可双向绑定。|The edited text; supports two-way binding.
+编辑者|Editor
+编辑者 · {}|Editor · {}
+缩放|Zoom
+缩放 {}|Zoom {}
+网格|Grid
+网络中断，同步未完成。|Network interrupted; sync incomplete.
+网络名称|Network name
+网络连接已断开。|The network connection was lost.
+联系方式|Contact
+聚焦确认按钮；以取消方式关闭。|Focus the confirm button; close as a cancel.
+背景|Background
+背景色，默认白色。|Background color; white by default.
+自动换行|Word wrap
+自动换行方式。|Text wrapping mode.
+自定义布局|Custom layout
+至少 8 位|At least 8 characters
+舒适 24°C|Comfort 24°C
+色块按钮，点击后通过色谱、调色板、十六进制或 RGBA 通道选色，也可从屏幕取色，确认后提交。|A swatch button that opens a spectrum, palette, hex field, and RGBA channels, with screen picking; the color is committed on confirm.
+色块直接显示已提交的颜色，半透明颜色叠加在棋盘格背景上。|The swatch shows the committed color; translucent colors appear over a checkerboard.
+色板 · 6 组|Palettes · 6
+色相|Hue
+色相、饱和度与亮度三个滑块共同决定右侧的颜色。|Hue, saturation and brightness sliders together determine the color on the right.
+节点数据由宿主模型提供。展开目录、选择文件，或切换多选。|The host model supplies the nodes. Expand folders, select files, or toggle multiple selection.
+节能 26°C|Eco 26°C
+英文区域按月、日、年排列；超出范围的日期在弹层中会被限制。|The English locale orders fields as month, day, year; out-of-range dates are clamped in the popup.
+范围为 -10 到 100。切换步长后用按钮或方向键试一试。|The range is -10 to 100. Change the step, then try the buttons or arrow keys.
+草稿|Draft
+获取上方页面的当前画面并导出为 PNG。预览区放在截图目标之外，避免把上一次截图拍进去。|Capture the page above and export it as PNG. The preview sits outside the capture target so the previous capture is not included.
+菜单中禁用的项显示为灰色，不可选择。|Disabled menu items are grayed out and cannot be chosen.
+菜单已禁用|Menu disabled
+菜单是否处于打开状态。|Whether the menu is open.
+菜单项文字与可用状态。|Menu item text and availability.
+菜单项类型|Menu item types
+菜单项被选中时触发。|Raised when a menu item is chosen.
+菜单项，每项包含 id、label 与 enabled。|Menu items, each with id, label and enabled.
+蓝牙|Bluetooth
+补充说明，居中换行显示。|Additional description, centered and wrapped.
+表格下方放置分页，每页显示 5 条订单，翻页时列表内容随之更新。|Pagination sits below the table with 5 orders per page, and the list updates when the page changes.
+要显示的图标字符。|The icon glyph to display.
+要显示的源代码。|Source code to display.
+要编码的内容；为空或过长时生成失败。|Content to encode. Generation fails when it is empty or too long.
+覆盖在模糊背景上的半透明色调。|Translucent tint over the blurred backdrop.
+覆盖在背景上的半透明色调。|Translucent tint over the backdrop.
+覆盖在页面上的模态对话框，包含标题、说明、自定义内容和确认/取消按钮。打开期间页面状态保持不变，关闭后焦点回到触发按钮。|A modal dialog overlaid on the page with a title, message, custom content, and confirm/cancel buttons. Page state is unchanged while it is open, and focus returns to the trigger button after closing.
+视口的可见尺寸。|Visible size of the viewport.
+视图|View
+视图 · {}|View · {}
+角色|Role
+角色权限|Role permissions
+订单|Orders
+订单 #20261025-018|Order #20261025-018
+订单列表|Order list
+订单号|Order no.
+订单合计 ¥{}|Order total ¥{}
+订单完成后开具|Issued when the order is completed
+订单记录|Orders
+订单详情|Order details
+订阅方案|Subscription plan
+让普通 Button 参与对话框按钮排列。|Lets a regular Button take part in the dialog button layout.
+记住我|Remember me
+设为 true 后点击会切换 checked。|When true, clicking toggles checked.
+设为 true 时使用主色填充。|Fill with the accent color when true.
+设置 checkable: true 的原生 Button，每次点击在选中与未选中之间切换，适合表示可开关的视图选项。|A native Button with checkable: true. Each click switches between checked and unchecked; suits view options that can be turned on and off.
+设置 primary: true 的原生 Button，以主色填充突出当前界面最重要的操作。一组按钮中通常只放一个。|A native Button with primary: true. The accent fill highlights the most important action on the screen. Usually only one per button group.
+设置已保存。|Settings saved.
+设置项标题与说明文字；说明会自动换行。|Setting title and description; the description wraps automatically.
+设置项的一行：左侧是标题和说明，右侧是控件。宽度低于断点时，控件移到说明下方。多行由 VerticalLayout 排列。|One settings row: title and description on the left, control on the right. Below the breakpoint the control moves under the description. Stack rows with a VerticalLayout.
+设计组 · 1 小时前|Design team · 1 hour ago
+访客网络|Guest network
+证件信息|ID details
+评审登录页设计|Review sign-in page design
+试用版剩余 3 天。|Trial expires in 3 days.
+该用户名已被占用|This username is already taken
+该选项被选中时触发，适合按下标记录选择。|Fires when this option is selected; useful for recording the choice by index.
+语言名称，如 slint、rust、cpp、python、json。|Language name, such as slint, rust, cpp, python, or json.
+说明文字；为空时不显示。|Description text; hidden when empty.
+调整、确认或取消时触发。|Raised when the color is adjusted, confirmed, or canceled.
+调整已完成的步骤数，圆点颜色随之变化。|Change the number of completed steps and the dot colors follow.
+调整最小列宽或最大列数，列数变化后宿主（Rust / C++）用同一算法重新排布卡片。|Adjust the minimum column width or maximum columns; when the column count changes, the host (Rust / C++) rearranges cards with the same algorithm.
+调整最小卡片宽度或最大列数，卡片始终等宽并逐行对齐。|Adjust the minimum card width or maximum columns; cards stay equal in width and aligned in rows.
+调用 capture() 获取整个窗口的画面，并导出为 PNG。|Call capture() to grab the whole window and export it as PNG.
+负责桌面客户端界面与组件库维护。|Maintains the desktop client UI and the component library.
+账号|Account
+资料已更新 {} 次|Profile updated {} times
+走完全部步骤或被跳过、按 Esc 关闭时触发。|Triggered when all steps are completed, or when skipped or closed with Esc.
+起始、进行中、完成与未知进度。|Start, in progress, complete, and unknown progress.
+跟随系统|System
+跟随系统切换，也可在设置中手动选择。|Follows the system, or choose manually in settings.
+跨平台|Cross-platform
+跨平台界面组件库 · 128 位关注者|Cross-platform UI component library · 128 followers
+路况|Traffic
+跳到指定页，并触发 page-changed。|Goes to the given page and fires page-changed.
+跳到结尾|Go to end
+辅助文字|Tertiary text
+输入|Inputs
+输入 S 或 R 查看匹配的建议，也可勾选 open 直接展开列表。|Type S or R to see matching suggestions, or check open to show the list directly.
+输入内容，双向绑定。|Input content, two-way bound.
+输入包名前缀，从建议中选择后加入依赖列表。|Type a package name prefix, pick a suggestion, and add it to the dependency list.
+输入后切换标签再回来|Type, switch tabs, then come back
+输入文字后按 Enter 提交；调整右侧的长度范围查看提示变化。|Type and press Enter to submit. Adjust the length range on the right to see the hint change.
+输入文字后按 Enter 生成标签，点击标签上的 × 移除。标签数据由应用持有，组件只发出增删请求。|Type text and press Enter to create a tag; click × on a tag to remove it. The application owns the tag data; the component only emits add and remove requests.
+输入文字后按 Enter，输出栏显示最近一次回调。|Type some text and press Enter; the output bar shows the latest callback.
+输入文本|Enter text
+输入框中尚未提交的文字。|Text in the input box that has not been submitted yet.
+输入框中的文本。|The text in the field.
+输入的密码，可双向绑定。|The entered password; supports two-way binding.
+输入的文本，可双向绑定。|The entered text; supports two-way binding.
+边框与分隔线颜色。|Border and divider color.
+运营后台|Admin console
+运营后台框架|Admin console frame
+运行|Run
+运费 ¥{}|Shipping ¥{}
+运输中|In transit
+返回|Back
+还可添加 {} 个关键词|{} more keywords allowed
+还没有报表|No reports yet
+这里可以放置任意组件。|Any component can go here.
+进入下一级|Go deeper
+进入重命名|Renaming
+进度未知时持续旋转。|Spins continuously when progress is unknown.
+进度未知时显示循环动画，忽略 progress。|Shows a looping animation when progress is unknown and ignores progress.
+进度，取值 0 到 1。|Progress, from 0 to 1.
+进度，取值 0 到 1，圆环按比例填充。|Progress, from 0 to 1; the ring fills proportionally.
+进行中在文字后显示百分比。|Show a percentage after the text while running.
+选中 · 第 {} 项|Selected · item {}
+选中指定值，或提交当前激活的候选项。|Chooses a given value, or submits the highlighted candidate.
+选中状态改变时触发，参数为新状态。|Fires when the selected state changes, with the new state.
+选中菜单项后触发，参数为该项的 id，随后菜单关闭。|Fires when a menu item is chosen, with the item's id. The menu then closes.
+选中项的背景和文字颜色。|Background and text color of selected items.
+选填，如 https://…|Optional, e.g. https://…
+选填，最多 8 位|Optional, up to 8 characters
+选择或取消选择节点时触发。|Fires when a node is selected or deselected.
+选择接收告警的渠道；未开通的渠道以禁用项列出。|Choose channels for alerts; channels not activated are listed as disabled.
+选择渠道|Select channels
+选择配送方式|Choose shipping method
+选择页面或展开“工程”分组；右侧切换导航位置、侧栏状态和应用栏。|Select a page or expand the "Projects" group. Use the options to change placement, pane state, and the app bar.
+选择页面项时触发。|Fires when a page item is selected.
+选项列表，含 id、label、enabled、selected；勾选时写回 selected。|Option list with id, label, enabled, and selected; checking an item writes back selected.
+选项文字列表。|List of option labels.
+选项文字，以及该选项是否可选。|Option text, and whether the option can be selected.
+选项文字，点击文字同样会切换。|Option text. Clicking the text also toggles it.
+透明|Transparent
+通知已关闭|Notifications off
+通知渠道|Notification channels
+通知设置|Notification settings
+通过 CMake 引入 SDK，并在 .slint 文件中导入 @slintforge 即可。|Add the SDK with CMake and import @slintforge in your .slint files.
+通过关闭按钮、Esc 或遮罩关闭时触发。|Raised when closed via the close button, Esc, or the overlay.
+遇到问题？|Having trouble?
+遮罩并高亮界面中的目标区域，按步骤显示说明气泡。用于新功能介绍或首次使用引导。|Dims the interface and highlights target areas, showing a callout for each step. Use it to introduce new features or onboard first-time users.
+邀请码|Invite code
+邮件|Email
+邮件筛选|Mail filters
+邮箱|Email
+邮箱　member@example.com|Email　member@example.com
+邮箱：{}|Email: {}
+部分数据需要人工复核。|Some data needs manual review.
+配色方案|Color schemes
+配送方式|Shipping method
+酒店预订|Hotel booking
+重启服务|Restart service
+重命名|Rename
+重命名 {}|Rename {}
+重新处理背景；source 或参数变化时自动调用。|Reprocesses the backdrop. Called automatically when source or parameters change.
+重新开始|Start over
+重新显示|Show again
+重新高亮；把全部代码复制到剪贴板。|Re-highlights the code; copies all code to the clipboard.
+重置示例|Reset example
+金额|Amount
+链接|Link
+链接文字的颜色，默认跟随主题。|Color of link text. Follows the theme by default.
+销售|Sales
+销售月报|Sales report
+销售月报 · 2026 年 9 月|Sales report · September 2026
+锁定 Gallery · {}|Lock Gallery · {}
+锁屏背景上的时间和通知卡片，玻璃面板保留背景的色彩层次。|Time and notification cards on a lock screen. The glass panels keep the backdrop's color depth.
+锁屏通知|Lock screen notifications
+错误报告|Error report
+错误详情已复制到剪贴板|Error details copied to clipboard
+键盘激活的候选项索引，-1 表示无。|Index of the keyboard-highlighted candidate; -1 means none.
+问答列表中每个问题是一个 Expander，用户只展开关心的条目。|Each question in the list is an Expander, so users open only what they care about.
+附在图标或文字旁的小徽标，显示未读数量或一个提示点。数值为 0 时默认隐藏。|A small badge attached to an icon or label that shows an unread count or a dot. Hidden by default when the value is 0.
+陈雨|Chen Yu
+隐私设置|Privacy settings
+隐藏的内容|Hidden content
+需求说明.md|Requirements.md
+需要持续按住或等待倒计时才会确认的按钮，按钮内部以填色显示进度，用来防止误触删除、发布等不可撤销的操作。|A button that confirms only after being held or after a countdown. The fill shows progress inside the button, preventing accidental deletes, publishes and other irreversible actions.
+非按钮元素|Non-button element
+非链接文字的颜色与字号。|Color and font size of non-link text.
+面板宽度，不超过页面宽度，默认 360px。|Panel width, no wider than the page. Defaults to 360px.
+面板悬浮在背景图上，调整模糊半径、折射与色调。面板内的控件照常响应输入。|The panel floats over the backdrop. Adjust blur radius, refraction, and tint. Controls inside the panel respond to input as usual.
+面板标题，右侧带关闭按钮。|Panel title, with a close button on the right.
+面板背后的背景图，通常由应用采样得到。|Backdrop behind the panel, usually sampled by the app.
+音乐播放卡片|Music player card
+页数较少、没有数据与禁用。|Few pages, no data, and disabled.
+页面内容|Page content
+页面内容区域，由应用根据 active-route-id 切换。|Page content area, switched by the app according to active-route-id.
+页面在窗口中的位置与尺寸。|Position and size of the page in the window.
+页面截图|Page capture
+页面是否激活；未激活时隐藏且不允许截图。|Whether the page is active; an inactive page is hidden and cannot be captured.
+页面标题。|Page title.
+页面自身的稳定 ID。|The page's own stable ID.
+页面顶部的公告条：左侧图标，中间滚动消息，右侧可关闭。|An announcement bar at the top of a page: icon on the left, scrolling message in the middle, close button on the right.
+页面顶部的标题区，组合大标题、说明文字和可选的返回按钮，用于二级页面或详情页。|The title area at the top of a page, combining a large title, a description, and an optional back button. Used on secondary or detail pages.
+顶层窗口组件；可设置 title、icon、no-frame、always-on-top 等。|Top-level window component with title, icon, no-frame, always-on-top, and more.
+顶部应用栏、品牌名称与返回按钮是否可用。|Top app bar, brand name, and whether the back button is enabled.
+项目|Projects
+项目文件|Project files
+项目概览|Project overview
+项目资源管理器|Project explorer
+顺丰速运 SF1024886|SF Express SF1024886
+预算.xlsx|Budget.xlsx
+预览中的复选框与右侧 checked 选项双向绑定。|The checkbox in the preview is two-way bound to the checked option on the right.
+预览中的开关与右侧 checked 选项双向绑定。|The switch in the preview is two-way bound to the checked option on the right.
+预览窗口已打开|Preview window open
+预计今天完成|Expected today
+预计明天 12:00 前送达|Expected by 12:00 tomorrow
+预订|Book
+颜色调节|Color adjustment
+饱和度|Saturation
+首次使用引导|First-run onboarding
+骨架是否播放扫光动画。|Whether the skeleton plays the shimmer animation.
+高亮后的行；未绑定服务时为空。|Highlighted lines. Empty when no service is bound.
+高级|Advanced
+高负载|High load
+黑色|Black
+默认、禁用与主色按钮并排比较。|Default, disabled and primary buttons side by side.
+默认密度、加深与无水印。|Default density, stronger and no watermark.
+默认带行号，以及关闭行号的紧凑显示。|Default with line numbers, and a compact view without them.
+默认选中第一项；current-index 可预设初始选项。|The first item is selected by default; current-index presets the initial item.
+鼠标单击时触发。|Fires on mouse click.
+鼠标垫 × 2　¥ 58|Mouse pad × 2　¥ 58
+（含归档）| (including archived)
+（未填写）|(not provided)

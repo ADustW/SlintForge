@@ -1,9 +1,9 @@
-import { Button, LineEdit, Palette } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeQRCode, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 import { GalleryDemoModels } from "../component/demo-models.slint";
 
-// 共享组件演示：QRCode。
+// 共享组件演示：QRCode。二维码图像由宿主绑定的 ForgeWidgetServices.qr-code 生成。
 export component GalleryDataQrcodePage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
@@ -13,20 +13,83 @@ export component GalleryDataQrcodePage inherits Rectangle {
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
     in-out property<string> payload: "SlintForge|Rust|C++";
-    sample := GallerySamplePage {
-        showcase-route: "data-qrcode";
-        active: root.visible;
+
+    private property<bool> warm: false;
+    private property<string> ssid: "Office-5G";
+    private property<string> wifi-key: "forge2026";
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("数据展示");
         title: "QRCode";
-        subtitle: @tr("输入内容生成二维码，空内容显示提示。");
-        example-title: @tr("用法与状态");
-        preview-height: 450px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            HorizontalLayout { spacing: 20px; VerticalLayout { spacing: 12px; LineEdit { text <=> root.payload; } qr := ForgeQRCode { text: root.payload; width: 240px; height: 240px; } Text { text: @tr("模块数：{}", qr.result.modules); color: Palette.foreground; } Button { text: @tr("导出 PNG"); enabled: qr.result.ok; clicked => { root.status = GalleryDemoModels.export-image(qr.result.image); } } } }
-Text { text: root.status; color: Palette.foreground; wrap: word-wrap; }
+        subtitle: @tr("把文本编码为二维码图像，内容变化时自动重新生成。编码由宿主绑定的服务完成，失败时显示错误原因。");
+        showcase-route: "data-qrcode";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("要编码的内容；为空或过长时生成失败。") },
+            { name: "light-color", kind: @tr("属性"), type: "color", description: @tr("背景色，默认白色。") },
+            { name: "result", kind: @tr("输出"), type: "ForgeQRCodeResult", description: @tr("生成结果：ok、image、modules（每边模块数）与 error。") },
+            { name: "regenerate()", kind: @tr("函数"), type: "", description: @tr("立即重新生成；text 变化时会自动调用。") },
+            { name: "ForgeWidgetServices.qr-code(string)", kind: @tr("回调"), type: "ForgeQRCodeResult", description: @tr("宿主提供的编码服务；未绑定时显示“二维码服务未绑定”。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改右侧文本，二维码随之更新；生成成功后可导出为 PNG。");
+            output: qr.result.ok ? @tr("modules = {} · {}", qr.result.modules, root.status) : @tr("error · {}", qr.result.error);
+            GalleryPreview {
+                qr := ForgeQRCode {
+                    width: 200px * ForgeTypography.scale; height: 200px * ForgeTypography.scale;
+                    text: root.payload;
+                    light-color: root.warm ? #fff6e0 : white;
+                }
+            }
+            GalleryOptions {
+                Text { text: "text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.payload; }
+                CheckBox { text: "light-color: #fff6e0"; checked <=> root.warm; }
+                Button { text: @tr("导出 PNG"); enabled: qr.result.ok; clicked => { root.status = GalleryDemoModels.export-image(qr.result.image); } }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("内容越长，模块越密；空内容无法生成，显示错误提示。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "text: \"SlintForge\""; ForgeQRCode { width: 120px; height: 120px; text: "SlintForge"; } }
+                GalleryVariant { caption: "text: URL"; ForgeQRCode { width: 120px; height: 120px; text: "https://slint.dev/releases/1.18/docs"; } }
+                GalleryVariant { caption: "text: \"\""; ForgeQRCode { width: 120px; height: 120px; text: ""; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("Wi-Fi 分享卡片");
+            description: @tr("按 Wi-Fi 二维码格式拼接网络名称与密码，访客扫码即可连接。");
+            output: "WIFI:T:WPA;S:" + root.ssid + ";P:" + root.wifi-key + ";;";
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: card.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    card := HorizontalLayout {
+                        padding: 16px; spacing: 16px;
+                        ForgeQRCode {
+                            width: 150px * ForgeTypography.scale; height: 150px * ForgeTypography.scale;
+                            text: "WIFI:T:WPA;S:" + root.ssid + ";P:" + root.wifi-key + ";;";
+                        }
+                        VerticalLayout {
+                            spacing: 8px; alignment: start;
+                            Text { text: @tr("访客网络"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                            Text { text: @tr("网络名称"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                            LineEdit { text <=> root.ssid; }
+                            Text { text: @tr("密码"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                            LineEdit { text <=> root.wifi-key; }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,7 +1,6 @@
-import { Palette } from "std-widgets.slint";
+import { Button, Palette } from "std-widgets.slint";
 import { ForgeBreadcrumb, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：Breadcrumb。
 export component GalleryBreadcrumbPage inherits Rectangle {
@@ -12,19 +11,93 @@ export component GalleryBreadcrumbPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    private property<int> depth: 3;
+    private property<string> clicked-id: "-";
+    private property<int> folder-level: 1;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("导航");
         title: "Breadcrumb";
-        subtitle: @tr("点击路径节点返回对应层级。");
-        example-title: @tr("用法与状态");
-        preview-height: 150px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeBreadcrumb { items: [{id: "home", title: @tr("首页")}, {id: "project", title: @tr("工程")}, {id: "page", title: @tr("页面")}]; selected(id) => { root.status = id; } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("以“/”分隔显示当前位置的层级路径，点击某一级返回该层。路径列表由应用维护。");
+        api: [
+            { name: "items", kind: @tr("属性"), type: "[ForgeBreadcrumbItem]", description: @tr("从根到当前位置的路径，每项包含 id 与 title。") },
+            { name: "selected(string)", kind: @tr("回调"), type: "", description: @tr("点击某一级时触发，参数为该项 id；应用据此截断路径。") },
+            { name: "ForgeBreadcrumbItem.id", kind: @tr("属性"), type: "string", description: @tr("层级标识，回调中原样返回。") },
+            { name: "ForgeBreadcrumbItem.title", kind: @tr("属性"), type: "string", description: @tr("显示文字。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击路径中的某一级返回该层，或在右侧进入下一级。");
+            output: @tr("selected · {}", root.clicked-id);
+            GalleryPreview {
+                ForgeBreadcrumb {
+                    items: root.depth <= 1 ? [{ id: "home", title: @tr("首页") }]
+                        : root.depth == 2 ? [{ id: "home", title: @tr("首页") }, { id: "docs", title: @tr("文档") }]
+                        : root.depth == 3 ? [{ id: "home", title: @tr("首页") }, { id: "docs", title: @tr("文档") }, { id: "guide", title: @tr("入门") }]
+                        : [{ id: "home", title: @tr("首页") }, { id: "docs", title: @tr("文档") }, { id: "guide", title: @tr("入门") }, { id: "install", title: @tr("安装") }];
+                    selected(id) => {
+                        root.clicked-id = id;
+                        root.depth = id == "home" ? 1 : id == "docs" ? 2 : id == "guide" ? 3 : 4;
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: @tr("层级 {} / 4", root.depth); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Button { text: @tr("进入下一级"); enabled: root.depth < 4; clicked => { root.depth += 1; } }
+                Button { text: @tr("回到首页"); enabled: root.depth > 1; clicked => { root.depth = 1; } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("只有根节点时不显示分隔符；层级较深时依次排列。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "items.length: 1"; ForgeBreadcrumb { items: [{ id: "home", title: @tr("首页") }]; } }
+                GalleryVariant { caption: "items.length: 3"; ForgeBreadcrumb { items: [{ id: "home", title: @tr("首页") }, { id: "docs", title: @tr("文档") }, { id: "guide", title: @tr("入门") }]; } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("文件浏览器");
+            description: @tr("双击列表中的文件夹进入下一层，面包屑同步更新；点击路径返回上层。");
+            output: @tr("当前位置 · {}", root.folder-level == 0 ? @tr("我的文档") : root.folder-level == 1 ? @tr("项目") : @tr("2026 年度"));
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: browser.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    browser := VerticalLayout {
+                        padding: 12px; spacing: 8px;
+                        ForgeBreadcrumb {
+                            items: root.folder-level == 0 ? [{ id: "root", title: @tr("我的文档") }]
+                                : root.folder-level == 1 ? [{ id: "root", title: @tr("我的文档") }, { id: "projects", title: @tr("项目") }]
+                                : [{ id: "root", title: @tr("我的文档") }, { id: "projects", title: @tr("项目") }, { id: "y2026", title: @tr("2026 年度") }];
+                            selected(id) => { root.folder-level = id == "root" ? 0 : id == "projects" ? 1 : 2; }
+                        }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        for entry[index] in (root.folder-level == 0 ? [@tr("项目"), @tr("合同.pdf"), @tr("简历.docx")]
+                            : root.folder-level == 1 ? [@tr("2026 年度"), @tr("需求说明.md"), @tr("排期.xlsx")]
+                            : [@tr("季度总结.pptx"), @tr("预算.xlsx")]) : Rectangle {
+                            height: 30px * ForgeTypography.scale;
+                            border-radius: 4px;
+                            background: entry-touch.has-hover ? Palette.control-background : transparent;
+                            property<bool> is-folder: index == 0 && root.folder-level < 2;
+                            Text {
+                                x: 8px; text: (parent.is-folder ? "▸ " : "   ") + entry;
+                                color: Palette.foreground; vertical-alignment: center;
+                            }
+                            entry-touch := TouchArea {
+                                double-clicked => { if parent.is-folder { root.folder-level += 1; } }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

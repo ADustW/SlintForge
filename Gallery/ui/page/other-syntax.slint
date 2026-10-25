@@ -1,9 +1,8 @@
-import { TextEdit, ComboBox } from "std-widgets.slint";
+import { CheckBox, ComboBox, Palette, SpinBox, TextEdit } from "std-widgets.slint";
 import { ForgeSyntaxView, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
-// 共享组件演示：SyntaxView。
+// 共享组件演示：SyntaxView。词法高亮由宿主通过 ForgeWidgetServices.syntax-lines 提供。
 export component GalleryOtherSyntaxPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
@@ -13,20 +12,94 @@ export component GalleryOtherSyntaxPage inherits Rectangle {
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
     in-out property<string> code-language: "slint";
-in-out property<string> code-text: "export component Example inherits Window {\n    width: 420px; // 共享 Slint 界面\n    Text { text: \"Hello\"; }\n}";
-    sample := GallerySamplePage {
+    in-out property<string> code-text: "export component Example inherits Window {\n    width: 420px; // 共享 Slint 界面\n    Text { text: \"Hello\"; }\n}";
+    private property<[string]> languages: ["slint", "rust", "cpp", "python", "json"];
+    private property<[string]> samples: [
+        "export component Counter inherits Window {\n    in-out property<int> value: 0;\n    Button { text: \"+1\"; clicked => { root.value += 1; } }\n}",
+        "fn main() -> Result<(), slint::PlatformError> {\n    let ui = AppWindow::new()?;\n    ui.on_clicked(|| println!(\"clicked\"));\n    ui.run()\n}",
+        "int main() {\n    auto ui = AppWindow::create();\n    ui->on_clicked([] { std::puts(\"clicked\"); });\n    ui->run();\n}",
+        "def greet(name: str) -> str:\n    # Return a greeting\n    return f\"Hello, {name}!\"\n\nprint(greet(\"Slint\"))",
+        "{\n  \"name\": \"slintforge\",\n  \"version\": \"0.0.1\",\n  \"features\": [\"rust\", \"cpp\"]\n}",
+    ];
+    private property<int> language-index: 0;
+    private property<bool> line-numbers: true;
+    private property<int> code-size: 14;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("其他");
         title: "SyntaxView";
-        subtitle: @tr("编辑文本，切换语言并查看高亮结果。");
-        example-title: @tr("用法与状态");
-        preview-height: 570px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ComboBox { model: ["slint", "rust", "cpp", "python", "json"]; selected(value) => { root.code-language = value; } }
-TextEdit { height: 100px; text <=> root.code-text; font-family: "Consolas"; }
-ForgeSyntaxView { height: 260px; code: root.code-text; language: root.code-language; }
+        subtitle: @tr("只读的代码高亮视图，带行号和复制按钮。用于文档、日志或配置片段的展示。");
+        api: [
+            { name: "code", kind: @tr("属性"), type: "string", description: @tr("要显示的源代码。") },
+            { name: "language", kind: @tr("属性"), type: "string", description: @tr("语言名称，如 slint、rust、cpp、python、json。") },
+            { name: "line-numbers", kind: @tr("属性"), type: "bool", description: @tr("是否显示行号，默认显示。") },
+            { name: "font-size", kind: @tr("属性"), type: "length", description: @tr("代码字号，默认 14px。") },
+            { name: "lines", kind: @tr("输出"), type: "[ForgeSyntaxLine]", description: @tr("高亮后的行；未绑定服务时为空。") },
+            { name: "refresh() / copy()", kind: @tr("函数"), type: "", description: @tr("重新高亮；把全部代码复制到剪贴板。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("切换语言查看对应示例代码的高亮，并调整行号与字号。");
+            output: @tr("language · {} · {} 行", view.language, view.lines.length);
+            GalleryPreview {
+                stretch: true;
+                view := ForgeSyntaxView {
+                    height: 200px * ForgeTypography.scale;
+                    code: root.samples[root.language-index];
+                    language: root.languages[root.language-index];
+                    line-numbers: root.line-numbers;
+                    font-size: root.code-size * 1px;
+                }
+            }
+            GalleryOptions {
+                Text { text: "language"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: root.languages; current-index <=> root.language-index; }
+                CheckBox { text: "line-numbers"; checked <=> root.line-numbers; }
+                Text { text: "font-size (px)"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 10; maximum: 22; value <=> root.code-size; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("默认带行号，以及关闭行号的紧凑显示。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "line-numbers: true";
+                    ForgeSyntaxView { preferred-width: 260px; min-width: 150px; height: 130px; language: "json"; code: "{\n  \"theme\": \"dark\",\n  \"scale\": 1.25\n}"; }
+                }
+                GalleryVariant {
+                    caption: "line-numbers: false";
+                    ForgeSyntaxView { preferred-width: 260px; min-width: 150px; height: 130px; language: "json"; line-numbers: false; code: "{\n  \"theme\": \"dark\",\n  \"scale\": 1.25\n}"; }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("代码片段编辑器");
+            description: @tr("上方编辑代码，下方实时显示高亮结果；可切换片段语言。");
+            output: @tr("language · {} · {} 个字符", root.code-language, root.code-text.character-count);
+            GalleryPreview {
+                stretch: true;
+                VerticalLayout {
+                    spacing: 10px;
+                    HorizontalLayout {
+                        spacing: 10px; alignment: start;
+                        Text { text: @tr("片段语言"); color: Palette.foreground; vertical-alignment: center; }
+                        ComboBox {
+                            model: root.languages;
+                            current-value: root.code-language;
+                            selected(value) => { root.code-language = value; }
+                        }
+                    }
+                    TextEdit { height: 110px * ForgeTypography.scale; text <=> root.code-text; font-family: "Consolas"; }
+                    ForgeSyntaxView { height: 180px * ForgeTypography.scale; code: root.code-text; language: root.code-language; }
+                }
+            }
         }
     }
-    
 }

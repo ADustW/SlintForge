@@ -1,29 +1,94 @@
-import { Palette, ComboBox, CheckBox } from "std-widgets.slint";
-import { ForgeIconButton, ForgeRoundImageView, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { CheckBox, ComboBox, Palette, Slider } from "std-widgets.slint";
+import { ForgePillButton, ForgeRoundImageView, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+// 共享组件演示：RoundImageView。
 export component GalleryRoundImagePage inherits Rectangle {
     in-out property<bool> circle: false;
     in-out property<int> fit-index: 0;
     in-out property<bool> empty: false;
     in property<image> empty-source;
-    sample-page := GallerySamplePage {
-        width: parent.width; height: parent.height;
-        title: "RoundImageView";
-        subtitle: @tr("图片按区域裁切并显示圆角边框。");
-        preview-height: 250px;
+    private property<float> radius: 18;
+    private property<bool> following: false;
 
-        preview := ForgeRoundImageView {
-            x: 18px; y: 16px;
-            width: Math.min(sample-page.preview-width * 0.6, sample-page.preview-area-height - 80px);
-            height: root.circle ? self.width : self.width * 0.65;
-            source: root.empty ? root.empty-source : @image-url("../assets/brand/slintforge-gallery.png");
-            corner-radius: root.circle ? self.width / 2 : 18px;
-            image-fit: root.fit-index == 0 ? cover : root.fit-index == 1 ? contain : fill;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("容器");
+        title: "RoundImageView";
+        subtitle: @tr("带圆角和细边框的图片视图，图片按区域裁切。圆角设为边长一半即为圆形，常用于头像、封面和缩略图。");
+        api: [
+            { name: "source", kind: @tr("属性"), type: "image", description: @tr("显示的图片；为空时只显示背景与边框。") },
+            { name: "corner-radius", kind: @tr("属性"), type: "length", description: @tr("圆角半径，默认 12px。") },
+            { name: "image-fit", kind: @tr("属性"), type: "ImageFit", description: @tr("cover 裁切填满，contain 完整显示，fill 拉伸。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("切换圆形、填充方式或清空图片，观察裁切与边框。");
+            output: @tr("image-fit = {} · corner-radius = {}px", root.fit-index == 0 ? "cover" : root.fit-index == 1 ? "contain" : "fill", root.circle ? 90 : Math.round(root.radius));
+            GalleryPreview {
+                min-preview-height: 230px;
+                ForgeRoundImageView {
+                    width: 180px;
+                    height: root.circle ? 180px : 120px;
+                    source: root.empty ? root.empty-source : @image-url("../assets/brand/slintforge-gallery.png");
+                    corner-radius: root.circle ? self.width / 2 : root.radius * 1px;
+                    image-fit: root.fit-index == 0 ? cover : root.fit-index == 1 ? contain : fill;
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("圆形"); checked <=> root.circle; }
+                Text { text: "image-fit"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["cover", "contain", "fill"]; current-index <=> root.fit-index; }
+                Text { text: "corner-radius"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 0; maximum: 60; enabled: !root.circle; value <=> root.radius; }
+                CheckBox { text: @tr("清空图片"); checked <=> root.empty; }
+            }
         }
-        Text { x: preview.x + preview.width + 24px; y: 48px; text: @tr("Gallery 软件图标"); color: Palette.foreground; font-size: 17px * ForgeTypography.scale; }
-        ForgeIconButton { x: preview.x + preview.width + 24px; y: 105px; label: root.circle ? @tr("切换圆角") : @tr("切换圆形"); clicked => { root.circle = !root.circle; } }
-        ComboBox { x: preview.x + preview.width + 24px; y: 160px; model: ["cover", "contain", "fill"]; current-index <=> root.fit-index; }
-        CheckBox { x: preview.x + preview.width + 24px; y: 215px; text: @tr("清空图片"); checked <=> root.empty; }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("同一张图片在宽幅区域中的三种填充方式。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "image-fit: cover"; ForgeRoundImageView { width: 140px; height: 80px; source: @image-url("../assets/brand/slintforge-gallery.png"); image-fit: cover; } }
+                GalleryVariant { caption: "image-fit: contain"; ForgeRoundImageView { width: 140px; height: 80px; source: @image-url("../assets/brand/slintforge-gallery.png"); image-fit: contain; } }
+                GalleryVariant { caption: "image-fit: fill"; ForgeRoundImageView { width: 140px; height: 80px; source: @image-url("../assets/brand/slintforge-gallery.png"); image-fit: fill; } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("用户资料卡");
+            description: @tr("圆形头像配合名称与简介，是资料卡和评论列表的常见写法。");
+            output: root.following ? @tr("已关注") : @tr("未关注");
+            GalleryPreview {
+                Rectangle {
+                    width: 360px * ForgeTypography.scale;
+                    height: profile.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    profile := HorizontalLayout {
+                        padding: 16px; spacing: 14px;
+                        VerticalLayout {
+                            alignment: center;
+                            ForgeRoundImageView {
+                                width: 64px; height: 64px;
+                                corner-radius: 32px;
+                                source: @image-url("../assets/brand/slintforge-gallery.png");
+                            }
+                        }
+                        VerticalLayout {
+                            spacing: 4px; alignment: center;
+                            Text { text: "SlintForge"; color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                            Text { text: @tr("跨平台界面组件库 · 128 位关注者"); color: Palette.foreground.transparentize(0.35); font-size: 12px * ForgeTypography.scale; wrap: word-wrap; }
+                        }
+                        VerticalLayout {
+                            alignment: center;
+                            ForgePillButton { text: root.following ? @tr("已关注") : @tr("关注"); primary: !root.following; clicked => { root.following = !root.following; } }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

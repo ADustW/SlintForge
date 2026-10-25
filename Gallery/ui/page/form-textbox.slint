@@ -1,7 +1,6 @@
-import { LineEdit, Palette } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // Slint 原生示例：TextBox。
 export component GalleryFormTextboxPage inherits Rectangle {
@@ -10,25 +9,120 @@ export component GalleryFormTextboxPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<bool> read-only1: false;
+    private property<bool> disabled1: false;
+    private property<string> profile-name: @tr("林晓");
+    private property<string> profile-email: "lin.xiao@example.com";
+    private property<string> profile-site;
+    private property<bool> name-valid: root.profile-name.character-count >= 2 && root.profile-name.character-count <= 20;
+    private property<string> profile-status: @tr("尚未保存");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-textbox";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
         title: "TextBox";
-        subtitle: @tr("输入、只读和禁用的单行文本框。");
-        example-title: @tr("用法与状态");
-        preview-height: 240px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            LineEdit { text <=> root.draft; placeholder-text: @tr("请输入文本"); }
-Text { text: root.draft; color: Palette.foreground; wrap: word-wrap; }
-    LineEdit { text: @tr("只读文本"); read-only: true; }
-    LineEdit { text: @tr("禁用文本"); enabled: false; }
+        subtitle: @tr("单行文本输入框，对应 Slint 原生 LineEdit。适合姓名、标题、搜索词等短文本，按 Enter 触发提交。");
+        native: true;
+        showcase-route: "form-textbox";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("输入的文本，可双向绑定。") },
+            { name: "placeholder-text", kind: @tr("属性"), type: "string", description: @tr("文本为空时显示的提示。") },
+            { name: "read-only / enabled", kind: @tr("属性"), type: "bool", description: @tr("只读时可选择复制但不能编辑；禁用后不可聚焦。") },
+            { name: "edited(string)", kind: @tr("回调"), type: "", description: @tr("用户每次修改文本后触发。") },
+            { name: "accepted(string)", kind: @tr("回调"), type: "", description: @tr("按 Enter 时触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("输入文字后按 Enter，输出栏显示最近一次回调。");
+            output: root.status;
+            GalleryPreview {
+                LineEdit {
+                    width: 280px * ForgeTypography.scale;
+                    text <=> root.draft; placeholder-text: @tr("输入文本");
+                    read-only: root.read-only1; enabled: !root.disabled1;
+                    edited(value) => { root.status = @tr("edited · {}", value); }
+                    accepted(value) => { root.status = @tr("accepted · {}", value); }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "read-only"; checked <=> root.read-only1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("空文本显示占位提示；只读文本仍可选中复制。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: @tr("默认"); color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        LineEdit { width: 240px * ForgeTypography.scale; placeholder-text: @tr("输入文本"); }
+                    }
+                    Row {
+                        Text { text: "read-only: true"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        LineEdit { width: 240px * ForgeTypography.scale; text: @tr("只读文本"); read-only: true; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        LineEdit { width: 240px * ForgeTypography.scale; text: @tr("禁用文本"); enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("个人资料");
+            description: @tr("姓名需为 2–20 个字符，不符合时显示提示并禁用保存；网站为选填项。");
+            output: root.profile-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 12px;
+                        GridLayout {
+                            spacing-horizontal: 16px; spacing-vertical: 12px;
+                            Row {
+                                Text { text: @tr("姓名"); color: Palette.foreground; vertical-alignment: center; }
+                                LineEdit { text <=> root.profile-name; placeholder-text: @tr("必填"); }
+                            }
+                            Row {
+                                Rectangle { }
+                                Text {
+                                    text: root.name-valid ? "" : @tr("姓名需为 2–20 个字符");
+                                    color: #c42b1c; font-size: 12px * ForgeTypography.scale;
+                                    height: root.name-valid ? 0px : self.preferred-height;
+                                }
+                            }
+                            Row {
+                                Text { text: @tr("邮箱"); color: Palette.foreground; vertical-alignment: center; }
+                                LineEdit { text <=> root.profile-email; placeholder-text: "name@example.com"; }
+                            }
+                            Row {
+                                Text { text: @tr("个人网站"); color: Palette.foreground; vertical-alignment: center; }
+                                LineEdit { text <=> root.profile-site; placeholder-text: @tr("选填，如 https://…"); }
+                            }
+                        }
+                        HorizontalLayout {
+                            alignment: end;
+                            Button {
+                                text: @tr("保存");
+                                primary: true;
+                                enabled: root.name-valid;
+                                clicked => { root.profile-status = @tr("已保存 · {} <{}>", root.profile-name, root.profile-email); }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

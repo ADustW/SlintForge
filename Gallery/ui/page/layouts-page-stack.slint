@@ -1,57 +1,130 @@
-import { Palette, LineEdit } from "std-widgets.slint";
+import { Button, LineEdit, Palette } from "std-widgets.slint";
 import { ForgePageStack, ForgeStackPage, ForgeIconButton, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：PageStack。宿主冒烟测试通过 current-id、draft 与 qa-set-draft 验证隐藏页保留输入。
 export component GalleryPageStackPage inherits Rectangle {
     in-out property<string> current-id: "first";
     out property<string> draft: draft-input.text;
     callback qa-set-draft(string);
     qa-set-draft(value) => { draft-input.text = value; }
-    GalleryPageFrame {
+    private property<int> step: 0;
+
+    GalleryComponentPage {
         width: parent.width; height: parent.height;
+        category: @tr("布局");
         title: "PageStack";
-        subtitle: @tr("按稳定 ID 立即切换预编译页面；隐藏页的输入内容保持不变。");
-        HorizontalLayout {
-            height: 34px; vertical-stretch: 0; spacing: 8px;
-            ForgeIconButton { label: @tr("第一页"); selected: root.current-id == "first"; clicked => { root.current-id = "first"; } }
-            ForgeIconButton { label: @tr("第二页"); selected: root.current-id == "second"; clicked => { root.current-id = "second"; } }
-            ForgeIconButton { label: @tr("第三页"); selected: root.current-id == "third"; clicked => { root.current-id = "third"; } }
-            ForgeIconButton { label: @tr("未知 ID"); selected: root.current-id == "unknown"; clicked => { root.current-id = "unknown"; } }
-        }
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        preview := GalleryDemoCard {
-            preview-height: 350px;
-            stack := ForgePageStack {
-                x: 18px; y: 16px;
-                width: Math.max(0px, preview.width - 36px);
-                height: Math.max(0px, preview.height - 32px);
-                active-id: root.current-id;
-                ForgeStackPage {
-                    page-id: "first"; active-id: stack.active-id;
-                    width: stack.width; height: stack.height;
-                    background: #39305b;
-                    Text {
-                        x: 24px; y: 24px; width: parent.width - 48px;
-                        text: @tr("第一页：输入内容，切走后再返回");
-                        color: white; font-size: 20px * ForgeTypography.scale;
+        subtitle: @tr("多个页面叠放在同一区域，按稳定 ID 显示其中一页。所有页面编译时创建，切换只改变可见性，隐藏页中的输入内容不会丢失。");
+        api: [
+            { name: "ForgePageStack.active-id", kind: @tr("属性"), type: "string", description: @tr("当前显示的页面 ID。") },
+            { name: "ForgeStackPage.page-id", kind: @tr("属性"), type: "string", description: @tr("页面自身的稳定 ID。") },
+            { name: "ForgeStackPage.active-id", kind: @tr("属性"), type: "string", description: @tr("绑定到所属 PageStack 的 active-id；两者相等时页面可见。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("在第一页输入文字，切到其他页再返回，内容保持不变；未知 ID 不显示任何页面。");
+            output: @tr("active-id = {} · draft = {}", root.current-id, root.draft);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                stack := ForgePageStack {
+                    height: 240px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    active-id: root.current-id;
+                    ForgeStackPage {
+                        page-id: "first"; active-id: stack.active-id;
+                        width: stack.width; height: stack.height;
+                        background: #39305b;
+                        border-radius: 6px;
+                        Text {
+                            x: 24px; y: 24px; width: parent.width - 48px;
+                            text: @tr("第一页：输入内容，切走后再返回");
+                            color: white; font-size: 18px * ForgeTypography.scale; wrap: word-wrap;
+                        }
+                        draft-input := LineEdit { x: 24px; y: 78px; width: Math.min(340px, parent.width - 48px); placeholder-text: @tr("输入一些文字"); }
                     }
-                    draft-input := LineEdit { x: 24px; y: 78px; width: Math.min(340px, parent.width - 48px); placeholder-text: @tr("输入一些文字"); }
+                    ForgeStackPage {
+                        page-id: "second"; active-id: stack.active-id;
+                        width: stack.width; height: stack.height;
+                        background: #285872;
+                        border-radius: 6px;
+                        Text { text: @tr("第二页"); color: white; font-size: 24px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+                    }
+                    ForgeStackPage {
+                        page-id: "third"; active-id: stack.active-id;
+                        width: stack.width; height: stack.height;
+                        background: #247b6f;
+                        border-radius: 6px;
+                        Text { text: @tr("第三页"); color: white; font-size: 24px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+                    }
                 }
-                ForgeStackPage {
-                    page-id: "second"; active-id: stack.active-id;
-                    width: stack.width; height: stack.height;
-                    background: #285872;
-                    Text { text: @tr("第二页"); color: white; font-size: 25px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
-                }
-                ForgeStackPage {
-                    page-id: "third"; active-id: stack.active-id;
-                    width: stack.width; height: stack.height;
-                    background: #247b6f;
-                    Text { text: @tr("第三页"); color: white; font-size: 25px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
-                }
+            }
+            GalleryOptions {
+                ForgeIconButton { label: "first"; selected: root.current-id == "first"; clicked => { root.current-id = "first"; } }
+                ForgeIconButton { label: "second"; selected: root.current-id == "second"; clicked => { root.current-id = "second"; } }
+                ForgeIconButton { label: "third"; selected: root.current-id == "third"; clicked => { root.current-id = "third"; } }
+                ForgeIconButton { label: @tr("未知 ID"); selected: root.current-id == "unknown"; clicked => { root.current-id = "unknown"; } }
             }
         }
 
+        GalleryExample {
+            title: @tr("注册向导");
+            description: @tr("每一步是一个 ForgeStackPage。返回上一步时，已填写的内容仍在原处，最后一步直接读取前面各页的输入。");
+            output: @tr("第 {} 步，共 3 步", root.step + 1);
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: wizard.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    wizard := VerticalLayout {
+                        padding: 20px; spacing: 16px;
+                        HorizontalLayout {
+                            spacing: 8px;
+                            for label[index] in [@tr("账号"), @tr("联系方式"), @tr("确认")] : Text {
+                                text: @tr("{}. {}", index + 1, label);
+                                color: index == root.step ? Palette.accent-background : Palette.foreground.transparentize(0.5);
+                                font-size: 13px * ForgeTypography.scale;
+                                font-weight: index == root.step ? 600 : 400;
+                            }
+                        }
+                        wizard-stack := ForgePageStack {
+                            height: 110px * ForgeTypography.scale;
+                            active-id: root.step == 0 ? "account" : root.step == 1 ? "contact" : "confirm";
+                            ForgeStackPage {
+                                page-id: "account"; active-id: wizard-stack.active-id;
+                                VerticalLayout {
+                                    spacing: 8px; alignment: start;
+                                    Text { text: @tr("用户名"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+                                    user-input := LineEdit { placeholder-text: @tr("3 到 16 个字符"); }
+                                }
+                            }
+                            ForgeStackPage {
+                                page-id: "contact"; active-id: wizard-stack.active-id;
+                                VerticalLayout {
+                                    spacing: 8px; alignment: start;
+                                    Text { text: @tr("邮箱"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+                                    mail-input := LineEdit { placeholder-text: "name@example.com"; }
+                                }
+                            }
+                            ForgeStackPage {
+                                page-id: "confirm"; active-id: wizard-stack.active-id;
+                                VerticalLayout {
+                                    spacing: 8px; alignment: start;
+                                    Text { text: @tr("用户名：{}", user-input.text == "" ? @tr("（未填写）") : user-input.text); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+                                    Text { text: @tr("邮箱：{}", mail-input.text == "" ? @tr("（未填写）") : mail-input.text); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+                                }
+                            }
+                        }
+                        HorizontalLayout {
+                            spacing: 8px; alignment: end;
+                            Button { text: @tr("上一步"); enabled: root.step > 0; clicked => { root.step -= 1; } }
+                            Button { text: root.step == 2 ? @tr("完成") : @tr("下一步"); primary: true; clicked => { root.step = root.step == 2 ? 0 : root.step + 1; } }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

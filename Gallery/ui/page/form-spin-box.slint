@@ -1,7 +1,6 @@
-import { SpinBox, Palette } from "std-widgets.slint";
+import { Button, CheckBox, ComboBox, SpinBox, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // Slint 原生示例：SpinBox。
 export component GalleryFormSpinBoxPage inherits Rectangle {
@@ -10,24 +9,113 @@ export component GalleryFormSpinBoxPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<bool> disabled1: false;
+    private property<bool> read-only1: false;
+    private property<[int]> steps: [1, 5, 10];
+    private property<int> step-index: 0;
+    private property<int> adults: 2;
+    private property<int> children: 0;
+    private property<int> nights: 3;
+    private property<string> booking-status: @tr("尚未预订");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-spin-box";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
         title: "SpinBox";
-        subtitle: @tr("使用按钮或键盘调整整数。");
-        example-title: @tr("用法与状态");
-        preview-height: 180px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            SpinBox { minimum: -10; maximum: 100; value <=> root.count; }
-Text { text: @tr("整数：{}", root.count); color: Palette.foreground; }
-SpinBox { value: 42; enabled: false; }
+        subtitle: @tr("整数输入框，对应 Slint 原生 SpinBox。可直接输入，也可用按钮、方向键或滚轮按步长增减；小数改用 NumberBox。");
+        native: true;
+        showcase-route: "form-spin-box";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "value", kind: @tr("属性"), type: "int", description: @tr("当前值，可双向绑定。") },
+            { name: "minimum / maximum", kind: @tr("属性"), type: "int", description: @tr("取值范围，默认为 0 到 100。") },
+            { name: "step-size", kind: @tr("属性"), type: "int", description: @tr("按钮与方向键的步长。") },
+            { name: "read-only / enabled", kind: @tr("属性"), type: "bool", description: @tr("只读时仍可步进但不能输入；禁用后完全不可操作。") },
+            { name: "edited(int)", kind: @tr("回调"), type: "", description: @tr("用户修改数值后触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("范围为 -10 到 100。切换步长后用按钮或方向键试一试。");
+            output: @tr("value · {}", root.count);
+            GalleryPreview {
+                SpinBox {
+                    width: 180px * ForgeTypography.scale;
+                    minimum: -10; maximum: 100; step-size: root.steps[root.step-index];
+                    value <=> root.count;
+                    enabled: !root.disabled1; read-only: root.read-only1;
+                }
+            }
+            GalleryOptions {
+                Text { text: "step-size"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["1", "5", "10"]; current-index <=> root.step-index; }
+                CheckBox { text: "read-only"; checked <=> root.read-only1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("到达范围边界后对应方向不再变化；禁用状态不可输入和步进。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: @tr("默认"); color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        SpinBox { width: 160px * ForgeTypography.scale; value: 42; }
+                    }
+                    Row {
+                        Text { text: "value = maximum"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        SpinBox { width: 160px * ForgeTypography.scale; minimum: 0; maximum: 10; value: 10; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        SpinBox { width: 160px * ForgeTypography.scale; value: 42; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("酒店预订");
+            description: @tr("成人至少 1 位，儿童与入住晚数各有上限。");
+            output: root.booking-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 12px;
+                        GridLayout {
+                            spacing-horizontal: 16px; spacing-vertical: 12px;
+                            Row {
+                                Text { text: @tr("成人"); color: Palette.foreground; vertical-alignment: center; }
+                                SpinBox { minimum: 1; maximum: 8; value <=> root.adults; }
+                            }
+                            Row {
+                                Text { text: @tr("儿童"); color: Palette.foreground; vertical-alignment: center; }
+                                SpinBox { minimum: 0; maximum: 4; value <=> root.children; }
+                            }
+                            Row {
+                                Text { text: @tr("入住晚数"); color: Palette.foreground; vertical-alignment: center; }
+                                SpinBox { minimum: 1; maximum: 30; value <=> root.nights; }
+                            }
+                        }
+                        HorizontalLayout {
+                            alignment: end;
+                            Button {
+                                text: @tr("预订");
+                                primary: true;
+                                clicked => { root.booking-status = @tr("已预订 · {} 位成人、{} 位儿童，共 {} 晚", root.adults, root.children, root.nights); }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

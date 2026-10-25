@@ -5,9 +5,11 @@ import argparse
 import csv
 import re
 from component_catalog import ROOT, rows, DEFERRED, NATIVE
-from gallery_presentation import PRESENTATIONS, preview_height_expression
 
-REFERENCE_PICKERS = {"form-time-picker", "form-date-picker", "form-calendar-picker", "form-color-picker", "form-shortcut-picker"}
+# 非组件页面（首页、关于、设置、生命周期、待实现占位）不使用组件页模板。
+NON_COMPONENT_PAGES = {"home", "about", "settings", "lifecycle", "pending"}
+# 由共享容器页实现模板的路由。
+SHARED_TEMPLATE_PAGES = {"data-grid": "GalleryGridPage", "data-tree-grid": "GalleryGridPage"}
 RESPONSIVE_SHOWCASES = {"inputs-standard-button", "form-textbox", "form-color-picker", "form-auto-suggest", "feedback-result", "feedback-skeleton", "chart-bar", "chart-line", "chart-professional", "data-grid", "data-tree-grid", "popups-content-dialog"}
 SHOWCASES = [line.split('|') for line in (ROOT / 'Gallery/data/showcase-routes.inc').read_text(encoding='utf-8').splitlines() if '|' in line]
 
@@ -24,23 +26,40 @@ def source_check():
     for phrase in ["code-snippet", "复制代码", "Slint 用法"]:
         assert phrase not in sources, f"页面仍有用法代码面板: {phrase}"
     assert "root.height * 0.72" not in sources, "仍有统一大高度预览"
-    assert len(PRESENTATIONS.splitlines()) == 63
-    for line in PRESENTATIONS.splitlines():
-        key,height,description,_ = line.split("|")
-        source=(ROOT / f"Gallery/ui/page/{key}.slint").read_text(encoding="utf-8")
-        if key in REFERENCE_PICKERS:
-            assert "GalleryPickerExample" in source and "GalleryPageFrame" in source, key
+    for phrase in ["GallerySamplePage", "GalleryShowcaseControl", "GalleryDemoCard", "GalleryPickerExample"]:
+        assert phrase not in sources, f"仍在使用旧展示组件: {phrase}"
+    # 每个组件页都使用统一模板，并提供 API 摘要。
+    templated = 0
+    for path in sorted((ROOT / "Gallery/ui/page").glob("*.slint")):
+        key = path.stem
+        if key in NON_COMPONENT_PAGES:
             continue
-        assert f"preview-height: {preview_height_expression(key, height)} * ForgeTypography.scale" in source, key
-        assert description in source, key
-        assert "api-note" not in source, key
+        source = path.read_text(encoding="utf-8")
+        if key in SHARED_TEMPLATE_PAGES:
+            assert SHARED_TEMPLATE_PAGES[key] in source, key
+            continue
+        assert "GalleryComponentPage" in source, f"未使用组件页模板: {key}"
+        assert re.search(r"\bapi:\s*\[", source), f"缺少 API 摘要: {key}"
+        templated += 1
+    for shared in ["grid-page.slint", "chart-page.slint"]:
+        source = (ROOT / "Gallery/ui/component" / shared).read_text(encoding="utf-8")
+        assert "GalleryComponentPage" in source and re.search(r"\bapi:\s*\[", source), shared
     assert "ForgeDataGrid" in sources and "GalleryGridPages" in sources
+    # 截图验收的附加示例数与页面锚点数一致。
     assert len(SHOWCASES) == 50
-    for route, _ in SHOWCASES:
-        if route.startswith(('chart-', 'data-grid', 'data-tree-grid')) or route == 'popups-content-dialog':
+    for route, count in SHOWCASES:
+        if route == "chart-professional":
+            # ForgePlot 页使用自身的标签页切换，由 GalleryShowcaseState.tab 直接选择标签。
+            assert "GalleryShowcaseState" in (ROOT / "Gallery/ui/component/plot-page.slint").read_text(encoding="utf-8")
             continue
-        assert f'showcase-route: "{route}"' in (ROOT / f'Gallery/ui/page/{route}.slint').read_text(encoding='utf-8'), route
-    print(f"GALLERY_PRESENTATION_OK catalog={len(pages)} implemented={len(pages)} native={len(NATIVE)} charts=8 grids=2 deferred=0 code_panels=0")
+        if route.startswith(('chart-', 'data-grid', 'data-tree-grid')):
+            source = (ROOT / "Gallery/ui/component" / ("chart-page.slint" if route.startswith("chart-") else "grid-page.slint")).read_text(encoding="utf-8")
+        else:
+            source = (ROOT / f'Gallery/ui/page/{route}.slint').read_text(encoding='utf-8')
+            assert f'showcase-route: "{route}"' in source, route
+        anchors = re.search(r"qa-anchors:\s*\[([^\]]*)\]", source)
+        assert anchors and len([a for a in anchors.group(1).split(",") if a.strip()]) == int(count), route
+    print(f"GALLERY_PRESENTATION_OK catalog={len(pages)} implemented={len(pages)} native={len(NATIVE)} templated={templated} charts=8 grids=2 deferred=0 code_panels=0")
 
 def geometry_check():
     directory=ROOT / "build/charts-qa"

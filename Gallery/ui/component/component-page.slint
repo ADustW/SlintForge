@@ -1,0 +1,226 @@
+import { Palette, ScrollView } from "std-widgets.slint";
+import { ForgeTypography } from "@slintforge";
+import { GalleryShowcaseState } from "showcase.slint";
+
+// 组件页统一模板：页头（分类、名称、来源标签、说明）、若干示例区与 API 摘要。
+// 示例区由 GalleryExample 承载；其内容通常是 GalleryPreview，可在右侧并排一个 GalleryOptions。
+
+export struct GalleryApiEntry { name: string, kind: string, type: string, description: string }
+
+component GalleryBadge inherits Rectangle {
+    in property<string> text;
+    in property<bool> accent: false;
+    height: label.preferred-height + 6px;
+    width: label.preferred-width + 16px;
+    vertical-stretch: 0; horizontal-stretch: 0;
+    border-radius: self.height / 2;
+    border-width: root.accent ? 0px : 1px;
+    border-color: Palette.border;
+    background: root.accent ? Palette.accent-background.transparentize(0.82) : transparent;
+    label := Text {
+        text: root.text;
+        color: root.accent ? Palette.accent-background : Palette.foreground.transparentize(0.25);
+        font-size: 11px * ForgeTypography.scale;
+        horizontal-alignment: center; vertical-alignment: center;
+    }
+}
+
+// 示例：标题、说明、带边框的示例框，以及可选的输出栏。
+export component GalleryExample inherits Rectangle {
+    in property<string> title;
+    in property<string> description;
+    in property<string> output;
+    in property<string> output-label: @tr("输出");
+    min-height: layout.min-height;
+    preferred-height: layout.preferred-height;
+    vertical-stretch: 0;
+    layout := VerticalLayout {
+        spacing: 6px;
+        Text { text: root.title; color: Palette.foreground; font-size: 16px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
+        if root.description != "" : Text {
+            text: root.description; color: Palette.foreground.transparentize(0.3);
+            font-size: 13px * ForgeTypography.scale; wrap: word-wrap;
+        }
+        Rectangle { height: 4px; }
+        frame := Rectangle {
+            border-radius: 8px; border-width: 1px; border-color: Palette.border;
+            background: Palette.alternate-background;
+            clip: true;
+            min-height: frame-layout.min-height;
+            preferred-height: frame-layout.preferred-height;
+            frame-layout := VerticalLayout {
+                padding: 1px;
+                HorizontalLayout { @children }
+                if root.output != "" : Rectangle {
+                    background: Palette.control-background;
+                    min-height: footer.min-height;
+                    preferred-height: footer.preferred-height;
+                    Rectangle { y: 0px; height: 1px; background: Palette.border; }
+                    footer := HorizontalLayout {
+                        padding-left: 16px; padding-right: 16px; padding-top: 9px; padding-bottom: 9px;
+                        spacing: 10px;
+                        Text {
+                            text: root.output-label; color: Palette.foreground.transparentize(0.45);
+                            font-size: 12px * ForgeTypography.scale; vertical-alignment: center;
+                            width: self.preferred-width; horizontal-stretch: 0;
+                        }
+                        Text {
+                            text: root.output; color: Palette.foreground;
+                            font-size: 12px * ForgeTypography.scale; vertical-alignment: center; wrap: word-wrap;
+                            horizontal-alignment: left; horizontal-stretch: 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// 示例预览区：内容默认按自然尺寸在区域内居中；图表、表格等需要占满宽度的内容设置 stretch。
+export component GalleryPreview inherits Rectangle {
+    in property<length> min-preview-height: 140px * ForgeTypography.scale;
+    in property<length> content-padding: 24px;
+    in property<length> spacing: 12px;
+    in property<bool> stretch: false;
+    horizontal-stretch: 1;
+    min-height: Math.max(root.min-preview-height, layout.min-height);
+    preferred-height: Math.max(root.min-preview-height, layout.preferred-height);
+    layout := VerticalLayout {
+        padding: root.content-padding;
+        alignment: center;
+        HorizontalLayout { alignment: root.stretch ? LayoutAlignment.stretch : LayoutAlignment.center; spacing: root.spacing; @children }
+    }
+}
+
+// 示例右侧的属性面板，用来切换组件属性并即时查看效果。
+export component GalleryOptions inherits Rectangle {
+    in property<string> title: @tr("属性");
+    width: 200px * ForgeTypography.scale;
+    horizontal-stretch: 0;
+    background: Palette.background.transparentize(0.35);
+    min-height: layout.min-height;
+    preferred-height: layout.preferred-height;
+    Rectangle { x: 0px; width: 1px; background: Palette.border; }
+    layout := VerticalLayout {
+        padding: 16px; spacing: 10px; alignment: start;
+        Text { text: root.title; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+        @children
+    }
+}
+
+// 状态对照中的单个格子：组件居中，下方注明对应的属性取值。
+export component GalleryVariant inherits Rectangle {
+    in property<string> caption;
+    horizontal-stretch: 1;
+    border-radius: 6px; border-width: 1px; border-color: Palette.border;
+    background: Palette.background;
+    min-height: layout.min-height;
+    preferred-height: layout.preferred-height;
+    layout := VerticalLayout {
+        padding: 16px; spacing: 12px; alignment: center;
+        HorizontalLayout { alignment: center; @children }
+        Text {
+            text: root.caption; color: Palette.foreground.transparentize(0.45);
+            font-size: 12px * ForgeTypography.scale; horizontal-alignment: center; wrap: word-wrap;
+        }
+    }
+}
+
+component GalleryApiTable inherits Rectangle {
+    in property<[GalleryApiEntry]> entries;
+    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+    background: Palette.alternate-background;
+    clip: true;
+    min-height: layout.min-height;
+    preferred-height: layout.preferred-height;
+    layout := VerticalLayout {
+        padding: 1px;
+        Rectangle {
+            background: Palette.control-background;
+            height: 34px * ForgeTypography.scale;
+            HorizontalLayout {
+                padding-left: 16px; padding-right: 16px; spacing: 12px;
+                Text { width: 180px * ForgeTypography.scale; text: @tr("名称"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                Text { width: 64px * ForgeTypography.scale; text: @tr("类别"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                Text { width: 120px * ForgeTypography.scale; text: @tr("类型"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                Text { text: @tr("说明"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+            }
+        }
+        for entry in root.entries : Rectangle {
+            min-height: row.min-height;
+            preferred-height: row.preferred-height;
+            Rectangle { y: 0px; height: 1px; background: Palette.border; }
+            row := HorizontalLayout {
+                padding-left: 16px; padding-right: 16px; padding-top: 9px; padding-bottom: 9px; spacing: 12px;
+                Text { width: 180px * ForgeTypography.scale; text: entry.name; color: Palette.foreground; font-family: "Consolas"; font-size: 13px * ForgeTypography.scale; vertical-alignment: center; wrap: word-wrap; }
+                Text { width: 64px * ForgeTypography.scale; text: entry.kind; color: Palette.accent-background; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                Text { width: 120px * ForgeTypography.scale; text: entry.type; color: Palette.foreground.transparentize(0.3); font-family: "Consolas"; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; wrap: word-wrap; }
+                Text { text: entry.description; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; vertical-alignment: center; wrap: word-wrap; }
+            }
+        }
+    }
+}
+
+export component GalleryComponentPage inherits Rectangle {
+    in property<string> category;
+    in property<string> title;
+    in property<string> subtitle;
+    in property<bool> native: false;
+    in property<[GalleryApiEntry]> api;
+    // 验收截图的滚动锚点：GalleryShowcaseState.tab = N 时滚动到第 N 个锚点（示例区的 y）。
+    in property<string> showcase-route;
+    in property<[length]> qa-anchors;
+    private property<int> qa-tab: GalleryShowcaseState.route == root.showcase-route && root.showcase-route != "" ? GalleryShowcaseState.tab : -1;
+    private property<length> qa-target: root.qa-tab >= 0 && root.qa-tab < root.qa-anchors.length ? root.qa-anchors[root.qa-tab] : -1px;
+    // 主动赋值而不是绑定 content-y：焦点控件触发的自动滚动会覆盖绑定，导致验收时无法定位。
+    function qa-scroll() {
+        if root.qa-target >= 0px {
+            scroll.content-y = Math.max(scroll.visible-height - scroll.content-height, Math.min(0px, 16px - root.qa-target));
+        }
+    }
+    changed qa-tab => { if root.qa-tab < 0 { scroll.content-y = 0px; } root.qa-scroll(); }
+    changed qa-target => { root.qa-scroll(); }
+    background: Palette.background;
+
+    scroll := ScrollView {
+        width: parent.width;
+        height: parent.height;
+        content-width: root.width;
+        horizontal-scrollbar-policy: always-off;
+        VerticalLayout {
+            alignment: start;
+            width: scroll.visible-width;
+            padding-left: 32px; padding-right: 32px; padding-top: 28px; padding-bottom: 40px;
+            spacing: 32px;
+            VerticalLayout {
+                spacing: 6px;
+                if root.category != "" : Text {
+                    text: root.category; color: Palette.foreground.transparentize(0.45);
+                    font-size: 12px * ForgeTypography.scale;
+                }
+                HorizontalLayout {
+                    spacing: 10px; alignment: start;
+                    Text { text: root.title; color: Palette.foreground; font-size: 28px * ForgeTypography.scale; font-weight: 600; vertical-alignment: center; }
+                    VerticalLayout {
+                        alignment: center;
+                        HorizontalLayout {
+                            spacing: 6px;
+                            GalleryBadge { text: root.native ? @tr("原生控件") : @tr("共享组件"); accent: !root.native; }
+                            GalleryBadge { text: "Rust · C++"; }
+                        }
+                    }
+                }
+                if root.subtitle != "" : Text {
+                    text: root.subtitle; color: Palette.foreground.transparentize(0.25);
+                    font-size: 14px * ForgeTypography.scale; wrap: word-wrap;
+                }
+            }
+            @children
+            if root.api.length > 0 : VerticalLayout {
+                spacing: 10px;
+                Text { text: "API"; color: Palette.foreground; font-size: 16px * ForgeTypography.scale; font-weight: 600; }
+                GalleryApiTable { entries: root.api; }
+            }
+        }
+    }
+}

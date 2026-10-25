@@ -1,7 +1,6 @@
-import { Slider, Switch, ProgressIndicator } from "std-widgets.slint";
-import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { CheckBox, Palette, ProgressIndicator, Slider } from "std-widgets.slint";
+import { ForgePillButton, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // Slint 原生示例：ProgressBar。
 export component GalleryFeedbackProgressBarPage inherits Rectangle {
@@ -12,22 +11,129 @@ export component GalleryFeedbackProgressBarPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "feedback-progress-bar";
-        active: root.visible;
+    // 场景：三个文件的上传进度（0～1）。
+    private property<float> file-a: 1;
+    private property<float> file-b: 0.45;
+    private property<float> file-c: 0;
+    private property<bool> uploading: false;
+    private property<int> finished: (root.file-a >= 1 ? 1 : 0) + (root.file-b >= 1 ? 1 : 0) + (root.file-c >= 1 ? 1 : 0);
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("反馈");
         title: "ProgressBar";
-        subtitle: @tr("确定进度与持续加载两种状态。");
-        example-title: @tr("用法与状态");
-        preview-height: 190px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Slider { minimum: 0; maximum: 100; value <=> root.number; }
-ProgressIndicator { progress: root.number / 100; indeterminate: !root.flag; height: 12px; }
-Switch { text: @tr("确定进度"); checked <=> root.flag; }
+        subtitle: @tr("Slint 原生 ProgressIndicator，以横条显示任务进度。已知进度时显示百分比，未知时切换为持续滚动的加载动画。");
+        native: true;
+        showcase-route: "feedback-progress-bar";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "progress", kind: @tr("属性"), type: "float", description: @tr("进度，取值 0 到 1。") },
+            { name: "indeterminate", kind: @tr("属性"), type: "bool", description: @tr("进度未知时显示循环动画，忽略 progress。") },
+            { name: "width / height", kind: @tr("属性"), type: "length", description: @tr("横条尺寸，宽度通常随布局拉伸。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("拖动滑块修改进度，或切换为未知进度。");
+            output: root.flag ? @tr("progress · {}%", Math.round(root.number)) : "indeterminate";
+            GalleryPreview {
+                stretch: true;
+                VerticalLayout {
+                    spacing: 8px; alignment: center;
+                    Text {
+                        text: root.flag ? @tr("正在安装更新 {}%", Math.round(root.number)) : @tr("正在准备安装…");
+                        color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                    }
+                    ProgressIndicator { progress: root.number / 100; indeterminate: !root.flag; }
+                }
+            }
+            GalleryOptions {
+                Text { text: "progress"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 0; maximum: 100; value <=> root.number; enabled: root.flag; }
+                CheckBox { text: "indeterminate"; checked: !root.flag; toggled => { root.flag = !self.checked; } }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("起始、进行中、完成与未知进度。");
+            GalleryPreview {
+                stretch: true; content-padding: 16px;
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 14px;
+                    Row {
+                        Text { text: "progress: 0"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ProgressIndicator { progress: 0; }
+                    }
+                    Row {
+                        Text { text: "progress: 0.6"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ProgressIndicator { progress: 0.6; }
+                    }
+                    Row {
+                        Text { text: "progress: 1"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ProgressIndicator { progress: 1; }
+                    }
+                    Row {
+                        Text { text: "indeterminate: true"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
+                        ProgressIndicator { indeterminate: true; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("文件上传队列");
+            description: @tr("每个文件一条进度，依次上传；可暂停或重新开始。");
+            output: @tr("已完成 {} / 3", root.finished);
+            GalleryPreview {
+                stretch: true;
+                Rectangle {
+                    height: queue.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    queue := VerticalLayout {
+                        padding: 20px; spacing: 12px;
+                        Text { text: @tr("上传到“设计资料”"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                        HorizontalLayout {
+                            spacing: 12px;
+                            Text { text: "logo.svg"; color: Palette.foreground; width: 120px * ForgeTypography.scale; vertical-alignment: center; }
+                            VerticalLayout { alignment: center; ProgressIndicator { progress: root.file-a; } }
+                            Text { text: root.file-a >= 1 ? @tr("完成") : "\{Math.round(root.file-a * 100)}%"; color: Palette.foreground.transparentize(0.3); width: 48px * ForgeTypography.scale; horizontal-alignment: right; vertical-alignment: center; }
+                        }
+                        HorizontalLayout {
+                            spacing: 12px;
+                            Text { text: "banner.png"; color: Palette.foreground; width: 120px * ForgeTypography.scale; vertical-alignment: center; }
+                            VerticalLayout { alignment: center; ProgressIndicator { progress: root.file-b; } }
+                            Text { text: root.file-b >= 1 ? @tr("完成") : "\{Math.round(root.file-b * 100)}%"; color: Palette.foreground.transparentize(0.3); width: 48px * ForgeTypography.scale; horizontal-alignment: right; vertical-alignment: center; }
+                        }
+                        HorizontalLayout {
+                            spacing: 12px;
+                            Text { text: "manual.pdf"; color: Palette.foreground; width: 120px * ForgeTypography.scale; vertical-alignment: center; }
+                            VerticalLayout { alignment: center; ProgressIndicator { progress: root.file-c; } }
+                            Text { text: root.file-c >= 1 ? @tr("完成") : root.file-c <= 0 ? @tr("等待") : "\{Math.round(root.file-c * 100)}%"; color: Palette.foreground.transparentize(0.3); width: 48px * ForgeTypography.scale; horizontal-alignment: right; vertical-alignment: center; }
+                        }
+                        HorizontalLayout {
+                            spacing: 8px; alignment: end;
+                            ForgePillButton { text: @tr("重新开始"); clicked => { root.file-a = 0; root.file-b = 0; root.file-c = 0; root.uploading = true; } }
+                            ForgePillButton {
+                                text: root.uploading ? @tr("暂停") : @tr("继续上传"); primary: true; enabled: root.finished < 3;
+                                clicked => { root.uploading = !root.uploading; }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
+
+    Timer {
+        interval: 80ms;
+        running: root.uploading && root.visible;
+        triggered => {
+            if root.file-a < 1 { root.file-a = Math.min(1, root.file-a + 0.04); }
+            else if root.file-b < 1 { root.file-b = Math.min(1, root.file-b + 0.03); }
+            else if root.file-c < 1 { root.file-c = Math.min(1, root.file-c + 0.025); }
+            else { root.uploading = false; }
+        }
+    }
 }

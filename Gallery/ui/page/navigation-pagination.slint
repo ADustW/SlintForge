@@ -1,7 +1,6 @@
-import { Palette } from "std-widgets.slint";
+import { CheckBox, ComboBox, Palette } from "std-widgets.slint";
 import { ForgePagination, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // 共享组件演示：Pagination。
 export component GalleryNavigationPaginationPage inherits Rectangle {
@@ -12,21 +11,105 @@ export component GalleryNavigationPaginationPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "navigation-pagination";
-        active: root.visible;
+
+    private property<int> size-index: 0;
+    private property<bool> disabled: false;
+    private property<int> order-page: 1;
+    private property<int> order-total: 23;
+    private property<int> order-size: 5;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("导航");
         title: "Pagination";
-        subtitle: @tr("切换页码，或跳至第一页和最后一页。");
-        example-title: @tr("用法与状态");
-        preview-height: 170px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            pages := ForgePagination { total-items: 237; page-size: 10; page-changed(value) => { root.count = value; } }
-Text { text: @tr("当前页：{}，总页数：{}", pages.current-page, pages.page-count); color: Palette.foreground; }
+        subtitle: @tr("把长列表拆成多页，提供首页、上一页、页码、下一页和末页按钮。总条数与每页条数决定页数，最多同时显示 7 个页码。");
+        showcase-route: "navigation-pagination";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "total-items / page-size", kind: @tr("属性"), type: "int", description: @tr("总条数与每页条数，共同决定页数。") },
+            { name: "current-page", kind: @tr("属性"), type: "int", description: @tr("当前页，从 1 开始；越界时自动收回范围内。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后所有按钮不可操作。") },
+            { name: "page-count", kind: @tr("输出"), type: "int", description: @tr("总页数；没有数据时为 0。") },
+            { name: "page-changed(int)", kind: @tr("回调"), type: "", description: @tr("用户翻页后触发，参数为新页码。") },
+            { name: "go-to(int)", kind: @tr("函数"), type: "", description: @tr("跳到指定页，并触发 page-changed。") },
+            { name: "normalize()", kind: @tr("函数"), type: "", description: @tr("把 current-page 收回到有效范围。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("共 237 条记录。翻页或修改每页条数，页数随之变化。");
+            output: @tr("page-changed · 第 {} 页 / 共 {} 页", pages.current-page, pages.page-count);
+            GalleryPreview {
+                pages := ForgePagination {
+                    total-items: 237;
+                    page-size: root.size-index == 0 ? 10 : root.size-index == 1 ? 20 : 50;
+                    enabled: !root.disabled;
+                    page-changed(value) => { root.count = value; }
+                }
+            }
+            GalleryOptions {
+                Text { text: "page-size"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["10", "20", "50"]; current-index <=> root.size-index; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("页数较少、没有数据与禁用。");
+            GalleryPreview {
+                GridLayout {
+                    spacing: 12px;
+                    Row {
+                        Text { text: "total-items: 30"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgePagination { total-items: 30; page-size: 10; current-page: 2; }
+                    }
+                    Row {
+                        Text { text: "total-items: 0"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgePagination { total-items: 0; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgePagination { total-items: 128; page-size: 10; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("订单列表");
+            description: @tr("表格下方放置分页，每页显示 5 条订单，翻页时列表内容随之更新。");
+            output: @tr("第 {} – {} 条 / 共 {} 条", (root.order-page - 1) * root.order-size + 1, Math.min(root.order-total, root.order-page * root.order-size), root.order-total);
+            GalleryPreview {
+                Rectangle {
+                    width: 460px * ForgeTypography.scale;
+                    height: orders.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    orders := VerticalLayout {
+                        padding: 16px; spacing: 6px;
+                        HorizontalLayout {
+                            Text { text: @tr("订单号"); color: Palette.foreground.transparentize(0.45); horizontal-stretch: 1; }
+                            Text { text: @tr("金额"); color: Palette.foreground.transparentize(0.45); width: 90px * ForgeTypography.scale; horizontal-alignment: right; }
+                        }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        for index in Math.min(root.order-size, root.order-total - (root.order-page - 1) * root.order-size) : row := HorizontalLayout {
+                            property<int> number: (root.order-page - 1) * root.order-size + index + 1;
+                            height: 26px * ForgeTypography.scale;
+                            Text { text: "SO-2026-" + (1000 + row.number); color: Palette.foreground; vertical-alignment: center; horizontal-stretch: 1; }
+                            Text { text: "¥ " + (120 + Math.mod(row.number * 37, 900)); color: Palette.foreground; vertical-alignment: center; width: 90px * ForgeTypography.scale; horizontal-alignment: right; }
+                        }
+                        HorizontalLayout {
+                            padding-top: 8px; alignment: end;
+                            ForgePagination {
+                                total-items: root.order-total; page-size: root.order-size;
+                                current-page: root.order-page;
+                                page-changed(value) => { root.order-page = value; }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

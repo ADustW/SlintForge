@@ -1,31 +1,106 @@
-import { Palette } from "std-widgets.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
-// Slint 原生示例：HyperlinkButton。
+// Slint 原生示例：HyperlinkButton（StyledText 链接 + Platform.open-url）。
 export component GalleryInputsHyperlinkButtonPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
     in-out property<string> draft;
-    in-out property<string> status: @tr("就绪");
+    in-out property<string> status: @tr("尚未点击链接");
+    private property<string> about-status: "SlintForge Gallery";
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-hyperlink-button";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
         title: "HyperlinkButton";
-        subtitle: @tr("点击链接在浏览器打开页面。");
-        example-title: @tr("用法与状态");
-        preview-height: 100px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            StyledText { text: @markdown("[Slint 官方 API](https://docs.slint.dev/latest/docs/slint/)"); default-color: Palette.foreground; link-clicked(url) => { Platform.open-url(url); } }
+        subtitle: @tr("以链接样式显示的文字按钮，由原生 StyledText 渲染 Markdown 链接，在 link-clicked 中用 Platform.open-url 打开浏览器。");
+        native: true;
+        showcase-route: "inputs-hyperlink-button";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "styled-text", description: @tr("用 @markdown 写成 Markdown 链接，可与普通文字混排。") },
+            { name: "link-color", kind: @tr("属性"), type: "color", description: @tr("链接文字的颜色，默认跟随主题。") },
+            { name: "default-color / default-font-size", kind: @tr("属性"), type: "brush / length", description: @tr("非链接文字的颜色与字号。") },
+            { name: "link-clicked(string)", kind: @tr("回调"), type: "", description: @tr("点击链接时触发，参数为链接地址。") },
+            { name: "Platform.open-url(string)", kind: @tr("函数"), type: "", description: @tr("用系统默认浏览器打开地址。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("取消勾选 open-url 后，点击只记录地址而不打开浏览器。");
+            output: root.status;
+            GalleryPreview {
+                StyledText {
+                    text: @markdown("[\{@tr("Slint 文档")}](https://docs.slint.dev/latest/docs/slint/)");
+                    default-color: Palette.foreground; link-color: Palette.accent-background; default-font-size: 14px * ForgeTypography.scale;
+                    link-clicked(url) => {
+                        root.count += 1;
+                        root.status = @tr("link-clicked · {}", url);
+                        if root.flag { Platform.open-url(url); }
+                    }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "open-url"; checked <=> root.flag; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("独立链接、自定义颜色，以及嵌在句子中的链接。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: @tr("默认");
+                    StyledText { text: @markdown("[\{@tr("查看详情")}](https://slint.dev)"); default-color: Palette.foreground; link-color: Palette.accent-background; }
+                }
+                GalleryVariant {
+                    caption: "link-color: #c42b1c";
+                    StyledText { text: @markdown("[\{@tr("取消订阅")}](https://slint.dev)"); default-color: Palette.foreground; link-color: #c42b1c; }
+                }
+                GalleryVariant {
+                    caption: @tr("与文字混排");
+                    StyledText { text: @markdown("\{@tr("遇到问题？")}[\{@tr("提交反馈")}](https://github.com/slint-ui/slint/issues)"); default-color: Palette.foreground; link-color: Palette.accent-background; }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("关于对话框");
+            description: @tr("用一组链接指向官网、文档和开源许可证。");
+            output: root.about-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: about.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    about := VerticalLayout {
+                        padding: 20px; spacing: 10px;
+                        Text { text: "SlintForge Gallery"; color: Palette.foreground; font-size: 16px * ForgeTypography.scale; font-weight: 600; }
+                        Text { text: @tr("版本 0.1.2 · 基于 Slint 1.18"); color: Palette.foreground.transparentize(0.4); font-size: 12px * ForgeTypography.scale; }
+                        HorizontalLayout {
+                            spacing: 16px; alignment: start;
+                            StyledText {
+                                text: @markdown("[\{@tr("Slint 官网")}](https://slint.dev)"); default-color: Palette.foreground; link-color: Palette.accent-background;
+                                link-clicked(url) => { root.about-status = url; Platform.open-url(url); }
+                            }
+                            StyledText {
+                                text: @markdown("[\{@tr("开发文档")}](https://docs.slint.dev/latest/docs/slint/)"); default-color: Palette.foreground; link-color: Palette.accent-background;
+                                link-clicked(url) => { root.about-status = url; Platform.open-url(url); }
+                            }
+                            StyledText {
+                                text: @markdown("[\{@tr("开源许可证")}](https://github.com/slint-ui/slint/blob/master/LICENSE.md)"); default-color: Palette.foreground; link-color: Palette.accent-background;
+                                link-clicked(url) => { root.about-status = url; Platform.open-url(url); }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,69 +1,125 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeFormRow, ForgeIconButton, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { CheckBox, ComboBox, LineEdit, Palette, Slider, SpinBox, Switch } from "std-widgets.slint";
+import { ForgeFormRow, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+// 共享组件演示：FormRow。
 export component GalleryFormRowPage inherits Rectangle {
     in-out property<bool> narrow: false;
-    GalleryPageFrame {
+    private property<float> breakpoint: 560;
+    private property<bool> notify-enabled: true;
+    private property<int> notify-level: 1;
+    private property<int> quiet-hours: 8;
+
+    GalleryComponentPage {
         width: parent.width; height: parent.height;
+        category: @tr("布局");
         title: "FormRow";
-        subtitle: @tr("宽屏时控件靠右；宽度低于断点后，控件移到标题和说明下方。");
-        HorizontalLayout {
-            height: 34px; vertical-stretch: 0; spacing: 8px;
-            ForgeIconButton { label: @tr("宽屏预览"); selected: !root.narrow; clicked => { root.narrow = false; } }
-            ForgeIconButton { label: @tr("窄屏预览"); selected: root.narrow; clicked => { root.narrow = true; } }
-            Rectangle { horizontal-stretch: 1; }
-            Text { text: root.narrow ? @tr("小于 560px") : @tr("不小于 560px"); color: Palette.foreground; vertical-alignment: center; font-size: 13px * ForgeTypography.scale; }
+        subtitle: @tr("设置项的一行：左侧是标题和说明，右侧是控件。宽度低于断点时，控件移到说明下方。多行由 VerticalLayout 排列。");
+        api: [
+            { name: "title / description", kind: @tr("属性"), type: "string", description: @tr("设置项标题与说明文字；说明会自动换行。") },
+            { name: "breakpoint", kind: @tr("属性"), type: "length", description: @tr("宽度低于此值时改为上下排列，默认 560px。") },
+            { name: "label-width", kind: @tr("属性"), type: "length", description: @tr("左右排列时标题区的宽度，默认 220px。") },
+            { name: "spacing", kind: @tr("属性"), type: "length", description: @tr("标题区与控件、控件之间的间距。") },
+            { name: "stacked-layout", kind: @tr("输出"), type: "bool", description: @tr("当前是否为上下排列。") },
+            { name: "control-origin-x / control-origin-y", kind: @tr("输出"), type: "length", description: @tr("控件区域的起点。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("勾选窄屏预览把容器限制为 420px，或拖动断点，观察控件位置的变化。");
+            output: @tr("stacked-layout = {}", basic.stacked-layout ? "true" : "false");
+            GalleryPreview {
+                content-padding: 16px;
+                // 预览区按自然尺寸居中；首选宽度大于可用宽度时被压缩为可用宽度，窄屏预览则固定为 420px。
+                Rectangle {
+                    preferred-width: root.narrow ? 420px : 10000px;
+                    height: basic-layout.preferred-height;
+                    border-radius: 6px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    basic-layout := VerticalLayout {
+                        padding: 16px;
+                        basic := ForgeFormRow {
+                            title: @tr("工作区名称");
+                            description: @tr("用于在设置页和窗口标题中区分工作区。");
+                            breakpoint: root.breakpoint * 1px;
+                            LineEdit { width: 200px; text: @tr("我的工作区"); }
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("窄屏预览"); checked <=> root.narrow; }
+                Text { text: @tr("breakpoint = {}px", Math.round(root.breakpoint)); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 300; maximum: 800; value <=> root.breakpoint; }
+            }
         }
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        preview := GalleryDemoCard {
-            preview-height: 380px;
-            Rectangle {
-                x: 18px; y: 16px;
-                width: root.narrow ? Math.min(430px, preview.width - 36px) : Math.max(0px, preview.width - 36px);
-                height: preview.height - 32px;
-                background: Palette.background;
-                VerticalLayout {
-                    x: 20px; y: 20px;
-                    width: Math.max(0px, parent.width - 40px);
-                    spacing: 16px;
-                    ForgeFormRow {
-                        width: parent.width;
-                        height: self.stacked-layout ? 102px : 76px;
-                        title: @tr("工作区名称");
-                        description: @tr("用于在设置页和窗口标题中区分工作区。");
-                        Rectangle {
-                            width: 190px; height: 34px;
-                            background: #3762a8; border-radius: 5px;
-                            Text { text: @tr("名称控件"); color: white; horizontal-alignment: center; vertical-alignment: center; }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("同样宽度下，断点不同决定了左右排列还是上下排列。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "breakpoint: 200px";
+                    Rectangle {
+                        width: 260px; height: wide-row.min-height;
+                        wide-row := ForgeFormRow {
+                            width: parent.width; height: parent.height;
+                            title: @tr("自动保存"); description: @tr("编辑后立即保存。");
+                            breakpoint: 200px; label-width: 150px;
+                            Switch { checked: true; }
                         }
                     }
-                    ForgeFormRow {
-                        width: parent.width;
-                        height: self.stacked-layout ? 102px : 76px;
-                        title: @tr("同步策略");
-                        description: @tr("调整后台任务的默认运行方式。");
-                        Rectangle {
-                            width: 148px; height: 34px;
-                            background: #247b6f; border-radius: 5px;
-                            Text { text: @tr("策略控件"); color: white; horizontal-alignment: center; vertical-alignment: center; }
-                        }
-                    }
-                    ForgeFormRow {
-                        width: parent.width;
-                        height: self.stacked-layout ? 102px : 76px;
-                        title: @tr("通知级别");
-                        description: @tr("仅显示与当前工作相关的通知。");
-                        Rectangle {
-                            width: 120px; height: 34px;
-                            background: #8756aa; border-radius: 5px;
-                            Text { text: @tr("级别控件"); color: white; horizontal-alignment: center; vertical-alignment: center; }
+                }
+                GalleryVariant {
+                    caption: "breakpoint: 560px";
+                    Rectangle {
+                        width: 260px; height: stacked-row.min-height;
+                        stacked-row := ForgeFormRow {
+                            width: parent.width; height: parent.height;
+                            title: @tr("自动保存"); description: @tr("编辑后立即保存。");
+                            Switch { checked: true; }
                         }
                     }
                 }
             }
         }
 
+        GalleryExample {
+            title: @tr("通知设置");
+            description: @tr("多个 FormRow 纵向排列成设置分组，控件统一靠右对齐。");
+            output: !root.notify-enabled ? @tr("通知已关闭")
+                : @tr("级别：{} · 免打扰 {} 小时", root.notify-level == 0 ? @tr("全部") : root.notify-level == 1 ? @tr("仅提及") : @tr("仅紧急"), root.quiet-hours);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                Rectangle {
+                    horizontal-stretch: 1;
+                    height: settings.preferred-height;
+                    border-radius: 6px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    settings := VerticalLayout {
+                        padding: 16px; spacing: 12px;
+                        ForgeFormRow {
+                            title: @tr("桌面通知");
+                            description: @tr("有新消息时在系统通知区域提示。");
+                            Switch { checked <=> root.notify-enabled; }
+                        }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        ForgeFormRow {
+                            title: @tr("通知级别");
+                            description: @tr("仅显示与当前工作相关的通知。");
+                            ComboBox { width: 160px; enabled: root.notify-enabled; model: [@tr("全部"), @tr("仅提及"), @tr("仅紧急")]; current-index <=> root.notify-level; }
+                        }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        ForgeFormRow {
+                            title: @tr("免打扰时长");
+                            description: @tr("夜间在此时长内不弹出通知，单位为小时。");
+                            SpinBox { width: 120px; enabled: root.notify-enabled; minimum: 0; maximum: 12; value <=> root.quiet-hours; }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

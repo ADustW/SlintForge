@@ -1,24 +1,111 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeShortcutPicker } from "@slintforge";
-import { ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryPickerExample } from "../component/picker-example.slint";
+import { Button, CheckBox, Palette } from "std-widgets.slint";
+import { ForgeShortcutPicker, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：ShortcutPicker。
 export component GalleryFormShortcutPickerPage inherits Rectangle {
     in property<string> language: "zh";
+    private property<bool> dark1: Palette.color-scheme == ColorScheme.dark;
+    private property<bool> disabled1: false;
+    private property<string> status: @tr("尚未修改");
+    private property<string> settings-status: @tr("使用默认快捷键");
     callback prepare-preview(bool);
-    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); third.close(); fourth.close(); } }
-    GalleryPageFrame {
-        width: root.width; height: root.height;
-        title: @tr("快捷键选择器"); subtitle: @tr("按下组合键，使用保存、重置或取消提交快捷键。");
-        sample := GalleryPickerExample {
-            label: @tr("快捷键"); preview-height: 210px * ForgeTypography.scale;
-            VerticalLayout {
-                alignment: start; spacing: 14px * ForgeTypography.scale;
-                HorizontalLayout { alignment: start; spacing: 16px; Text { width: 150px * ForgeTypography.scale; text: @tr("截图"); color: sample.dark ? #fff : #202020; vertical-alignment: center; } first := ForgeShortcutPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; shortcut: "Alt+A"; } }
-                HorizontalLayout { alignment: start; spacing: 16px; Text { width: 150px * ForgeTypography.scale; text: @tr("发送消息"); color: sample.dark ? #fff : #202020; vertical-alignment: center; } second := ForgeShortcutPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; shortcut: "Enter"; } }
-                HorizontalLayout { alignment: start; spacing: 16px; Text { width: 150px * ForgeTypography.scale; text: @tr("打开 Gallery"); color: sample.dark ? #fff : #202020; vertical-alignment: center; } third := ForgeShortcutPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; shortcut: "Ctrl+Alt+W"; } }
-                HorizontalLayout { alignment: start; spacing: 16px; Text { width: 150px * ForgeTypography.scale; text: @tr("锁定 Gallery"); color: sample.dark ? #fff : #202020; vertical-alignment: center; } fourth := ForgeShortcutPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; shortcut: "Ctrl+L"; } }
+    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); third.close(); fourth.close(); empty.close(); filled.close(); } }
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单 / 选择器");
+        title: "ShortcutPicker";
+        subtitle: @tr("录制组合键的按钮。点击后按下新的快捷键，再用保存、重置或取消决定是否提交。");
+        api: [
+            { name: "shortcut", kind: @tr("属性"), type: "string", description: @tr("已提交的快捷键文本，如 Ctrl+S；为空时显示占位文字。") },
+            { name: "recording", kind: @tr("属性"), type: "bool", description: @tr("是否正在录制。") },
+            { name: "language / dark", kind: @tr("属性"), type: "string / bool", description: @tr("显示语言与深浅配色。") },
+            { name: "draft-shortcut", kind: @tr("输出"), type: "string", description: @tr("录制中尚未保存的组合键。") },
+            { name: "shortcut-changed(string) / accepted(string) / canceled()", kind: @tr("回调"), type: "", description: @tr("保存、清除或取消时触发。") },
+            { name: "open() / close() / clear()", kind: @tr("函数"), type: "", description: @tr("开始录制、关闭弹层，或清除快捷键。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击按钮后按下组合键，在弹层中保存。");
+            output: root.status;
+            GalleryPreview {
+                min-preview-height: 120px * ForgeTypography.scale;
+                first := ForgeShortcutPicker {
+                    language: root.language; dark: root.dark1; enabled: !root.disabled1; shortcut: "Alt+A";
+                    shortcut-changed(value) => { root.status = value == "" ? @tr("shortcut-changed · 已清除") : @tr("shortcut-changed · {}", value); }
+                    canceled => { root.status = @tr("canceled · 保持 {}", first.shortcut); }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "dark"; checked <=> root.dark1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+                Button { text: "clear()"; enabled: !root.disabled1 && first.shortcut != ""; clicked => { first.clear(); } }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("未设置时显示占位文字；禁用后不能开始录制。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: "shortcut: \"\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        empty := ForgeShortcutPicker { language: root.language; }
+                    }
+                    Row {
+                        Text { text: "shortcut: \"Ctrl+Shift+S\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        filled := ForgeShortcutPicker { language: root.language; shortcut: "Ctrl+Shift+S"; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeShortcutPicker { language: root.language; shortcut: "Ctrl+P"; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("快捷键设置");
+            description: @tr("每项功能对应一个快捷键，可逐项修改或一键恢复默认。");
+            output: root.settings-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 12px;
+                        GridLayout {
+                            spacing-horizontal: 16px; spacing-vertical: 12px;
+                            Row {
+                                Text { text: @tr("发送消息"); color: Palette.foreground; vertical-alignment: center; }
+                                second := ForgeShortcutPicker { language: root.language; shortcut: "Enter"; shortcut-changed(value) => { root.settings-status = @tr("发送消息 · {}", value); } }
+                            }
+                            Row {
+                                Text { text: @tr("打开 Gallery"); color: Palette.foreground; vertical-alignment: center; }
+                                third := ForgeShortcutPicker { language: root.language; shortcut: "Ctrl+Alt+W"; shortcut-changed(value) => { root.settings-status = @tr("打开 Gallery · {}", value); } }
+                            }
+                            Row {
+                                Text { text: @tr("锁定 Gallery"); color: Palette.foreground; vertical-alignment: center; }
+                                fourth := ForgeShortcutPicker { language: root.language; shortcut: "Ctrl+L"; shortcut-changed(value) => { root.settings-status = @tr("锁定 Gallery · {}", value); } }
+                            }
+                        }
+                        HorizontalLayout {
+                            alignment: end;
+                            Button {
+                                text: @tr("恢复默认");
+                                clicked => {
+                                    second.shortcut = "Enter"; third.shortcut = "Ctrl+Alt+W"; fourth.shortcut = "Ctrl+L";
+                                    root.settings-status = @tr("使用默认快捷键");
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

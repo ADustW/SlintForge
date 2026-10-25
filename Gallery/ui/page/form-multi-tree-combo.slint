@@ -1,6 +1,6 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeMultiTreeSelectComboBox, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
+import { ForgeMultiTreeSelectComboBox, ForgeTreeItem, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 import { GalleryDemoModels } from "../component/demo-models.slint";
 
 // 共享组件演示：MultiTreeSelectComboBox。
@@ -10,23 +10,138 @@ export component GalleryFormMultiTreeComboPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
-    callback prepare-preview(bool);
-    prepare-preview(open) => { if open { control.show(); } else { control.close(); } }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-multi-tree-combo";
-        active: root.visible;
-        title: "MultiTreeSelectComboBox";
-        subtitle: @tr("展开树节点，选择一个或多个子项。");
-        example-title: @tr("用法与状态");
-        preview-height: 160px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            control := ForgeMultiTreeSelectComboBox { items: GalleryDemoModels.tree-items; selection-text: GalleryDemoModels.tree-selection; expansion-changed(id, value) => { GalleryDemoModels.expand-tree(id, value); } selection-changed(id, value) => { GalleryDemoModels.select-tree(id, value, true); } }
-Text { text: GalleryDemoModels.tree-selection; color: Palette.foreground; wrap: word-wrap; }
+    private property<bool> disabled1: false;
+    private property<[ForgeTreeItem]> sample-tree: [
+        { id: "ui", label: "ui", depth: 0, folder: true, expanded: true, visible: true, enabled: true },
+        { id: "ui/form", parent-id: "ui", label: "form", depth: 1, folder: false, visible: true, enabled: true, selected: true },
+        { id: "ui/data", parent-id: "ui", label: "data", depth: 1, folder: false, visible: true, enabled: true },
+    ];
+    // 场景示例的权限树：0 与 4 为分组，其余为叶子权限。
+    private property<[ForgeTreeItem]> permissions: [
+        { id: "docs", label: @tr("文档"), depth: 0, folder: true, expanded: true, visible: true, enabled: true },
+        { id: "docs-view", parent-id: "docs", label: @tr("查看文档"), depth: 1, visible: true, enabled: true, selected: true },
+        { id: "docs-edit", parent-id: "docs", label: @tr("编辑文档"), depth: 1, visible: true, enabled: true },
+        { id: "docs-share", parent-id: "docs", label: @tr("分享文档"), depth: 1, visible: true, enabled: true },
+        { id: "proj", label: @tr("项目"), depth: 0, folder: true, expanded: false, visible: true, enabled: true },
+        { id: "proj-create", parent-id: "proj", label: @tr("创建项目"), depth: 1, visible: false, enabled: true },
+        { id: "proj-archive", parent-id: "proj", label: @tr("归档项目"), depth: 1, visible: false, enabled: false },
+    ];
+    private property<string> permission-text: root.join(root.join(root.join(root.join(root.pick(1), root.pick(2)), root.pick(3)), root.pick(5)), root.pick(6));
+    pure function pick(index: int) -> string { return root.permissions[index].selected ? root.permissions[index].label : ""; }
+    pure function join(left: string, right: string) -> string { return left == "" ? right : right == "" ? left : left + ", " + right; }
+    pure function index-of(id: string) -> int {
+        return id == "docs" ? 0 : id == "docs-view" ? 1 : id == "docs-edit" ? 2 : id == "docs-share" ? 3
+            : id == "proj" ? 4 : id == "proj-create" ? 5 : id == "proj-archive" ? 6 : -1;
+    }
+    function expand-permission(id: string, value: bool) {
+        if id == "docs" {
+            root.permissions[0].expanded = value; root.permissions[1].visible = value; root.permissions[2].visible = value; root.permissions[3].visible = value;
+        } else if id == "proj" {
+            root.permissions[4].expanded = value; root.permissions[5].visible = value; root.permissions[6].visible = value;
         }
     }
-    
+    function select-permission(id: string, value: bool) {
+        if id == "docs" {
+            root.permissions[0].selected = value; root.permissions[1].selected = value; root.permissions[2].selected = value; root.permissions[3].selected = value;
+        } else if id == "proj" {
+            // 归档项目未开通，分组勾选只影响可用的子项。
+            root.permissions[4].selected = value; root.permissions[5].selected = value;
+        } else {
+            let index = root.index-of(id);
+            if index >= 0 { root.permissions[index].selected = value; }
+            root.permissions[0].selected = root.permissions[1].selected && root.permissions[2].selected && root.permissions[3].selected;
+            root.permissions[4].selected = root.permissions[5].selected;
+        }
+    }
+    callback prepare-preview(bool);
+    prepare-preview(open) => { if open { control.show(); } else { control.close(); permission-select.close(); } }
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
+        title: "MultiTreeSelectComboBox";
+        subtitle: @tr("以树形列表展开的多选下拉框，适合按层级选择目录、部门或权限。树的展开与选中状态由宿主维护。");
+        showcase-route: "form-multi-tree-combo";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "items", kind: @tr("属性"), type: "[ForgeTreeItem]", description: @tr("扁平化的树节点，含 parent-id、depth、folder、expanded、selected、visible。") },
+            { name: "selection-text", kind: @tr("属性"), type: "string", description: @tr("按钮上显示的选择摘要，由宿主生成。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后不能展开。") },
+            { name: "expansion-changed(string, bool)", kind: @tr("回调"), type: "", description: @tr("展开或折叠节点时触发；宿主据此更新 expanded 与子项 visible。") },
+            { name: "selection-changed(string, bool)", kind: @tr("回调"), type: "", description: @tr("勾选或取消节点时触发；宿主据此更新 selected。") },
+            { name: "show() / close()", kind: @tr("函数"), type: "", description: @tr("以编程方式展开或收起树形列表。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("树数据来自宿主的 GalleryDemoModels；勾选文件夹会同时选中其子项。");
+            output: GalleryDemoModels.tree-selection == "" ? @tr("尚未选择") : @tr("已选 · {}", GalleryDemoModels.tree-selection);
+            GalleryPreview {
+                min-preview-height: 120px * ForgeTypography.scale;
+                control := ForgeMultiTreeSelectComboBox {
+                    width: 300px * ForgeTypography.scale;
+                    items: GalleryDemoModels.tree-items;
+                    selection-text: GalleryDemoModels.tree-selection;
+                    enabled: !root.disabled1;
+                    expansion-changed(id, value) => { GalleryDemoModels.expand-tree(id, value); }
+                    selection-changed(id, value) => { GalleryDemoModels.select-tree(id, value, true); }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("selection-text 为空时显示默认提示；禁用后不能展开。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: "selection-text: \"\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeMultiTreeSelectComboBox { width: 240px * ForgeTypography.scale; items: root.sample-tree; }
+                    }
+                    Row {
+                        Text { text: "selection-text: \"form\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeMultiTreeSelectComboBox { width: 240px * ForgeTypography.scale; items: root.sample-tree; selection-text: "form"; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeMultiTreeSelectComboBox { width: 240px * ForgeTypography.scale; items: root.sample-tree; selection-text: "form"; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("角色权限");
+            description: @tr("为“编辑者”角色分配权限；勾选分组即选中组内全部可用权限，未开通的权限不可选。");
+            output: root.permission-text == "" ? @tr("未分配任何权限") : @tr("编辑者 · {}", root.permission-text);
+            GalleryPreview {
+                Rectangle {
+                    width: 440px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := GridLayout {
+                        padding: 20px; spacing-horizontal: 16px; spacing-vertical: 12px;
+                        Row {
+                            Text { text: @tr("角色"); color: Palette.foreground; vertical-alignment: center; }
+                            Text { text: @tr("编辑者"); color: Palette.foreground; font-weight: 600; vertical-alignment: center; }
+                        }
+                        Row {
+                            Text { text: @tr("权限"); color: Palette.foreground; vertical-alignment: center; }
+                            permission-select := ForgeMultiTreeSelectComboBox {
+                                items: root.permissions;
+                                selection-text: root.permission-text;
+                                expansion-changed(id, value) => { root.expand-permission(id, value); }
+                                selection-changed(id, value) => { root.select-permission(id, value); }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

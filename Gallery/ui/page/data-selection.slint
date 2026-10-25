@@ -1,7 +1,6 @@
-import { Button, LineEdit, TextEdit } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, Palette, TextEdit } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // Slint 原生示例：SelectionArea。
 export component GalleryDataSelectionPage inherits Rectangle {
@@ -12,22 +11,100 @@ export component GalleryDataSelectionPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "data-selection";
-        active: root.visible;
+
+    private property<bool> read-only: true;
+    private property<bool> disabled: false;
+    private property<string> last-action: "-";
+    private property<bool> copied: false;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("数据展示");
         title: "SelectionArea";
-        subtitle: @tr("使用鼠标和键盘选择、复制文本。");
-        example-title: @tr("用法与状态");
-        preview-height: 340px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            selectable := TextEdit { text: @tr("可选择、复制的文本。\n使用鼠标选择，或按 Ctrl+A、Ctrl+C。\n选中内容可复制到其他应用。"); read-only: true; height: 160px; }
-Button { text: @tr("复制全部"); clicked => { selectable.select-all(); selectable.copy(); } }
-LineEdit { placeholder-text: @tr("在此粘贴以验证复制"); }
+        subtitle: @tr("用只读的原生 TextEdit 展示可选择、可复制的文本：用户可以拖选、Ctrl+A 全选和 Ctrl+C 复制，但不能修改内容。");
+        native: true;
+        showcase-route: "data-selection";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("显示的文本。") },
+            { name: "read-only", kind: @tr("属性"), type: "bool", description: @tr("为 true 时只能选择和复制，不能编辑。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后不能选择文本。") },
+            { name: "wrap", kind: @tr("属性"), type: "TextWrap", description: @tr("换行方式，默认按单词换行。") },
+            { name: "select-all() / clear-selection()", kind: @tr("函数"), type: "", description: @tr("全选或取消选择。") },
+            { name: "set-selection-offsets(int, int)", kind: @tr("函数"), type: "", description: @tr("按字节偏移设置选区。") },
+            { name: "copy()", kind: @tr("函数"), type: "", description: @tr("把选中内容复制到系统剪贴板。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("拖选文本或使用右侧按钮；取消 read-only 后可直接编辑。");
+            output: @tr("最近操作 · {}", root.last-action);
+            GalleryPreview {
+                selectable := TextEdit {
+                    width: 340px * ForgeTypography.scale;
+                    height: 130px * ForgeTypography.scale;
+                    text: @tr("可选择、复制的文本。\n使用鼠标选择，或按 Ctrl+A、Ctrl+C。\n选中内容可复制到其他应用。");
+                    read-only: root.read-only;
+                    enabled: !root.disabled;
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "read-only"; checked <=> root.read-only; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Button { text: "select-all()"; clicked => { selectable.select-all(); root.last-action = "select-all()"; } }
+                Button { text: "clear-selection()"; clicked => { selectable.clear-selection(); root.last-action = "clear-selection()"; } }
+                Button { text: @tr("复制全部"); clicked => { selectable.select-all(); selectable.copy(); root.last-action = "copy()"; } }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("只读可选择、可编辑与禁用。");
+            GalleryPreview {
+                GridLayout {
+                    spacing: 12px;
+                    Row {
+                        Text { text: "read-only: true"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 260px * ForgeTypography.scale; height: 56px * ForgeTypography.scale; read-only: true; text: @tr("只能选择和复制"); }
+                    }
+                    Row {
+                        Text { text: "read-only: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 260px * ForgeTypography.scale; height: 56px * ForgeTypography.scale; text: @tr("可以修改这段文字"); }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 260px * ForgeTypography.scale; height: 56px * ForgeTypography.scale; read-only: true; enabled: false; text: @tr("不可选择"); }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("复制错误详情");
+            description: @tr("出错时展示可复制的错误信息，便于粘贴到工单；下方输入框用来验证粘贴结果。");
+            output: root.copied ? @tr("已复制到剪贴板") : @tr("尚未复制");
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: report.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    report := VerticalLayout {
+                        padding: 16px; spacing: 10px;
+                        Text { text: @tr("同步失败"); color: #d13b3b; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                        details := TextEdit {
+                            height: 96px * ForgeTypography.scale;
+                            read-only: true;
+                            text: "Error: E_SYNC_TIMEOUT\nRequest: PUT /api/v2/projects/42\nTrace-Id: 7f3c-91ab-2d40\nTime: 2026-10-25 10:24:18";
+                        }
+                        HorizontalLayout {
+                            spacing: 8px;
+                            LineEdit { placeholder-text: @tr("在此粘贴以验证复制"); horizontal-stretch: 1; }
+                            Button { text: @tr("复制错误信息"); clicked => { details.select-all(); details.copy(); details.clear-selection(); root.copied = true; } }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

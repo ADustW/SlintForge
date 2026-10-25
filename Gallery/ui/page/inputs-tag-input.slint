@@ -1,6 +1,6 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeTagInputBox, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { CheckBox, Palette, SpinBox } from "std-widgets.slint";
+import { ForgeChip, ForgeTagInputBox, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 import { GalleryDemoModels } from "../component/demo-models.slint";
 
 // 共享组件演示：TagInputBox。
@@ -10,23 +10,98 @@ export component GalleryInputsTagInputPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<int> max-tags: 8;
+    private property<bool> disabled: false;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-tag-input";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
         title: "TagInputBox";
-        subtitle: @tr("输入标签并按回车添加，点击叉号移除。");
-        example-title: @tr("用法与状态");
-        preview-height: 170px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeTagInputBox { tags: GalleryDemoModels.tags; add-requested(value) => { GalleryDemoModels.add-tag(value); } remove-requested(index) => { GalleryDemoModels.remove-tag(index); } }
-Text { text: @tr("标签数量：{}", GalleryDemoModels.tags.length); color: Palette.foreground; }
+        subtitle: @tr("输入文字后按 Enter 生成标签，点击标签上的 × 移除。标签数据由应用持有，组件只发出增删请求。");
+        showcase-route: "inputs-tag-input";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "tags", kind: @tr("属性"), type: "[string]", description: @tr("当前标签列表，由应用提供。") },
+            { name: "maximum-tags", kind: @tr("属性"), type: "int", description: @tr("标签数量上限，达到后不能再添加，默认 20。") },
+            { name: "draft", kind: @tr("属性"), type: "string", description: @tr("输入框中尚未提交的文字。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用输入、添加与移除。") },
+            { name: "add-requested(string)", kind: @tr("回调"), type: "", description: @tr("按 Enter 或点击“添加”时触发，参数为输入文字。") },
+            { name: "remove-requested(int)", kind: @tr("回调"), type: "", description: @tr("点击标签的 × 时触发，参数为标签下标。") },
+            { name: "submit()", kind: @tr("函数"), type: "", description: @tr("以代码提交当前输入。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("标签由宿主程序维护，重复或空白内容会被忽略。");
+            output: @tr("tags · {} / {}", GalleryDemoModels.tags.length, root.max-tags);
+            GalleryPreview {
+                ForgeTagInputBox {
+                    width: 360px * ForgeTypography.scale;
+                    tags: GalleryDemoModels.tags; maximum-tags: root.max-tags; enabled: !root.disabled;
+                    add-requested(value) => { GalleryDemoModels.add-tag(value); }
+                    remove-requested(index) => { GalleryDemoModels.remove-tag(index); }
+                }
+            }
+            GalleryOptions {
+                Text { text: "maximum-tags"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 1; maximum: 20; value <=> root.max-tags; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("没有标签时只显示输入框；达到上限后“添加”按钮禁用。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 14px;
+                    Row {
+                        Text { text: "tags: []"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeTagInputBox { width: 320px * ForgeTypography.scale; tags: []; }
+                    }
+                    Row {
+                        Text { text: "maximum-tags: 2"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeTagInputBox { width: 320px * ForgeTypography.scale; tags: ["Rust", "C++"]; maximum-tags: 2; draft: "Slint"; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeTagInputBox { width: 320px * ForgeTypography.scale; tags: ["Rust", "C++"]; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("文章关键词");
+            description: @tr("最多 5 个关键词，可手动输入或点击推荐词添加。与基本用法共用宿主提供的标签数据。");
+            output: GalleryDemoModels.tags.length >= 5 ? @tr("关键词已满") : @tr("还可添加 {} 个关键词", 5 - GalleryDemoModels.tags.length);
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 12px;
+                        Text { text: @tr("关键词"); color: Palette.foreground; font-weight: 600; }
+                        ForgeTagInputBox {
+                            tags: GalleryDemoModels.tags; maximum-tags: 5;
+                            add-requested(value) => { GalleryDemoModels.add-tag(value); }
+                            remove-requested(index) => { GalleryDemoModels.remove-tag(index); }
+                        }
+                        Text { text: @tr("推荐"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                        HorizontalLayout {
+                            spacing: 6px; alignment: start;
+                            for word in [@tr("跨平台"), @tr("嵌入式"), "GUI", @tr("性能")] : ForgeChip {
+                                text: word; removable: false; enabled: GalleryDemoModels.tags.length < 5;
+                                toggled => { self.selected = false; GalleryDemoModels.add-tag(word); }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

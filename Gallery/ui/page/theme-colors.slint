@@ -1,30 +1,145 @@
-import { Palette } from "std-widgets.slint";
+import { Button, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryVariant } from "../component/component-page.slint";
 
-// Slint 原生示例：Colors。
+// 色板中的一格：上方用背景色绘制并以对应前景色写示例文字，下方注明属性名。
+component GalleryColorSwatch inherits Rectangle {
+    in property<brush> fill;
+    in property<brush> ink;
+    in property<string> name;
+    in property<bool> selected;
+    callback clicked();
+    width: 132px * ForgeTypography.scale;
+    height: layout.preferred-height;
+    border-radius: 6px;
+    border-width: root.selected ? 2px : 1px;
+    border-color: root.selected ? Palette.accent-background : Palette.border;
+    background: Palette.background;
+    layout := VerticalLayout {
+        padding: 6px; spacing: 6px;
+        Rectangle {
+            height: 52px * ForgeTypography.scale;
+            border-radius: 4px; border-width: 1px; border-color: Palette.border;
+            background: root.fill;
+            Text { text: "Aa"; color: root.ink; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+        }
+        Text { text: root.name; color: Palette.foreground; font-family: "Consolas"; font-size: 11px * ForgeTypography.scale; wrap: word-wrap; horizontal-alignment: center; }
+    }
+    TouchArea { clicked => { root.clicked(); } }
+}
+
+component GalleryTaskRow inherits Rectangle {
+    in property<string> text;
+    in property<string> tag;
+    in property<bool> selected;
+    callback clicked();
+    height: 36px * ForgeTypography.scale;
+    border-radius: 4px;
+    background: root.selected ? Palette.selection-background : touch.has-hover ? Palette.control-background : transparent;
+    HorizontalLayout {
+        padding-left: 10px; padding-right: 10px; spacing: 8px;
+        Text { text: root.text; color: root.selected ? Palette.selection-foreground : Palette.foreground; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
+        if root.tag != "" : VerticalLayout {
+            alignment: center;
+            Rectangle {
+                height: tag-text.preferred-height + 4px; width: tag-text.preferred-width + 12px;
+                border-radius: self.height / 2;
+                background: Palette.accent-background;
+                tag-text := Text { text: root.tag; color: Palette.accent-foreground; font-size: 11px * ForgeTypography.scale; }
+            }
+        }
+    }
+    touch := TouchArea { clicked => { root.clicked(); } }
+}
+
+// Slint 原生示例：Colors（Palette）。
 export component GalleryThemeColorsPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<string> picked: "accent-background";
+    private property<int> task: 1;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("主题");
         title: "Colors";
-        subtitle: @tr("在明暗主题中比较前景、背景和主色。");
-        example-title: @tr("用法与状态");
-        preview-height: 190px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            HorizontalLayout { spacing: 12px; Rectangle { height: 90px; background: Palette.accent-background; } Rectangle { height: 90px; background: Palette.background; border-width: 1px; border-color: Palette.border; } Rectangle { height: 90px; background: Palette.control-background; } Rectangle { height: 90px; background: Palette.foreground; } }
-Text { text: @tr("主色 · 背景 · 控件背景 · 前景"); color: Palette.foreground; }
+        subtitle: @tr("std-widgets 的 Palette 全局对象提供当前样式与明暗主题下的语义颜色。自绘组件取色时使用它，切换主题时自动更新。");
+        native: true;
+        api: [
+            { name: "background / foreground", kind: @tr("属性"), type: "brush", description: @tr("窗口与页面的背景色和正文颜色。") },
+            { name: "alternate-background / alternate-foreground", kind: @tr("属性"), type: "brush", description: @tr("区分区域的次级背景及其文字颜色。") },
+            { name: "control-background / control-foreground", kind: @tr("属性"), type: "brush", description: @tr("按钮、输入框等控件的底色和文字颜色。") },
+            { name: "accent-background / accent-foreground", kind: @tr("属性"), type: "brush", description: @tr("主色及主色上的文字颜色。") },
+            { name: "selection-background / selection-foreground", kind: @tr("属性"), type: "brush", description: @tr("选中项的背景和文字颜色。") },
+            { name: "border", kind: @tr("属性"), type: "brush", description: @tr("边框与分隔线颜色。") },
+            { name: "color-scheme", kind: @tr("属性"), type: "ColorScheme", description: @tr("当前明暗模式，可读写。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("每格用背景色绘制，并以对应的前景色书写示例文字。随应用的明暗主题切换。");
+            output: @tr("selected · Palette.{}", root.picked);
+            GalleryPreview {
+                GridLayout {
+                    spacing: 10px;
+                    Row {
+                        GalleryColorSwatch { name: "background"; fill: Palette.background; ink: Palette.foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                        GalleryColorSwatch { name: "alternate-background"; fill: Palette.alternate-background; ink: Palette.alternate-foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                        GalleryColorSwatch { name: "control-background"; fill: Palette.control-background; ink: Palette.control-foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                    }
+                    Row {
+                        GalleryColorSwatch { name: "accent-background"; fill: Palette.accent-background; ink: Palette.accent-foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                        GalleryColorSwatch { name: "selection-background"; fill: Palette.selection-background; ink: Palette.selection-foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                        GalleryColorSwatch { name: "border"; fill: Palette.border; ink: Palette.foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                    }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("文字层级");
+            description: @tr("在 foreground 上叠加透明度得到主要、次要和辅助文字，三者始终与背景保持同一色相。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "foreground"; Text { text: @tr("主要文字"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; } }
+                GalleryVariant { caption: "transparentize(0.3)"; Text { text: @tr("次要文字"); color: Palette.foreground.transparentize(0.3); font-size: 15px * ForgeTypography.scale; } }
+                GalleryVariant { caption: "transparentize(0.45)"; Text { text: @tr("辅助文字"); color: Palette.foreground.transparentize(0.45); font-size: 15px * ForgeTypography.scale; } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("任务列表卡片");
+            description: @tr("卡片只使用 Palette 取色：选中行用 selection 颜色，标签用 accent 颜色，切换明暗主题无需另写样式。");
+            output: @tr("选中 · 第 {} 项", root.task + 1);
+            GalleryPreview {
+                Rectangle {
+                    width: 340px * ForgeTypography.scale;
+                    height: card.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    card := VerticalLayout {
+                        padding: 14px; spacing: 4px;
+                        HorizontalLayout {
+                            padding-bottom: 6px;
+                            Text { text: @tr("今日任务"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; vertical-alignment: center; }
+                            Text { text: @tr("3 项"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; horizontal-alignment: right; vertical-alignment: center; }
+                        }
+                        GalleryTaskRow { text: @tr("整理需求文档"); selected: root.task == 0; clicked => { root.task = 0; } }
+                        GalleryTaskRow { text: @tr("评审登录页设计"); tag: @tr("今天"); selected: root.task == 1; clicked => { root.task = 1; } }
+                        GalleryTaskRow { text: @tr("回复客户邮件"); selected: root.task == 2; clicked => { root.task = 2; } }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        HorizontalLayout {
+                            padding-top: 6px; alignment: end;
+                            Button { text: @tr("新建任务"); primary: true; }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,30 +1,122 @@
-import { Button, LineEdit } from "std-widgets.slint";
+import { Button, CheckBox, ComboBox, LineEdit, Palette, Slider } from "std-widgets.slint";
 import { ForgeAcrylic, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 import { GalleryDemoModels } from "../component/demo-models.slint";
 
-// 共享组件演示：Acrylic。
+// 共享组件演示：Acrylic。背景处理由宿主通过 ForgeWidgetServices.backdrop 提供。
 export component GalleryThemeAcrylicPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<int> blur: 10;
+    private property<bool> refraction: false;
+    private property<int> tint-index: 0;
+    private property<color> tint: root.tint-index == 1 ? #a0704040 : root.tint-index == 2 ? #10182080 : #7080a04c;
+    private property<bool> playing: false;
+    private property<float> progress: 38;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("主题");
         title: "Acrylic";
-        subtitle: @tr("在彩色背景上比较半透明材质。");
-        example-title: @tr("用法与状态");
-        preview-height: 420px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Image { source: GalleryDemoModels.backdrop-image; height: 90px; image-fit: cover; }
-ForgeAcrylic { height: 260px; source: GalleryDemoModels.backdrop-image; VerticalLayout { spacing: 18px; Text { text: @tr("背景图上的材质效果"); color: white; font-size: 24px; font-weight: 600; } LineEdit { placeholder-text: @tr("内容仍可交互"); } Button { text: @tr("点击按钮"); clicked => { root.count += 1; } } Text { text: @tr("点击次数：{}", root.count); color: white; } } }
+        subtitle: @tr("半透明的磨砂材质面板，将背景模糊并叠加色调。用于浮层、侧栏或悬浮在图片上的内容区。");
+        api: [
+            { name: "source", kind: @tr("属性"), type: "image", description: @tr("面板背后的背景图，通常由应用采样得到。") },
+            { name: "blur-radius", kind: @tr("属性"), type: "int", description: @tr("模糊半径，默认 10。") },
+            { name: "refraction", kind: @tr("属性"), type: "bool", description: @tr("叠加折射扭曲效果。") },
+            { name: "tint", kind: @tr("属性"), type: "color", description: @tr("覆盖在模糊背景上的半透明色调。") },
+            { name: "content-padding", kind: @tr("属性"), type: "length", description: @tr("内容区与面板边缘的距离，默认 18px。") },
+            { name: "processed", kind: @tr("输出"), type: "image", description: @tr("处理后的背景图；未绑定服务时等于 source。") },
+            { name: "refresh()", kind: @tr("函数"), type: "", description: @tr("重新处理背景；source 或参数变化时自动调用。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("面板悬浮在背景图上，调整模糊半径、折射与色调。面板内的控件照常响应输入。");
+            output: @tr("blur-radius · {} · 点击 {} 次", root.blur, root.count);
+            GalleryPreview {
+                Rectangle {
+                    preferred-width: 440px * ForgeTypography.scale; min-width: 260px;
+                    height: 260px * ForgeTypography.scale;
+                    border-radius: 8px; clip: true;
+                    Image { width: parent.width; height: parent.height; source: GalleryDemoModels.backdrop-image; image-fit: cover; }
+                    ForgeAcrylic {
+                        x: 32px; y: 28px; width: parent.width - 64px; height: parent.height - 56px;
+                        source: GalleryDemoModels.backdrop-image;
+                        blur-radius: root.blur; refraction: root.refraction; tint: root.tint;
+                        VerticalLayout {
+                            spacing: 12px; alignment: center;
+                            Text { text: @tr("背景图上的材质效果"); color: white; font-size: 20px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
+                            LineEdit { placeholder-text: @tr("内容仍可交互"); }
+                            HorizontalLayout {
+                                alignment: start;
+                                Button { text: @tr("点击按钮"); clicked => { root.count += 1; } }
+                            }
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: "blur-radius"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 0; maximum: 30; value: root.blur; changed(value) => { root.blur = Math.round(value); } }
+                CheckBox { text: "refraction"; checked <=> root.refraction; }
+                Text { text: "tint"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox {
+                    model: [@tr("冷灰"), @tr("暖红"), @tr("深色")];
+                    current-index: root.tint-index;
+                    selected => { root.tint-index = self.current-index; }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("不模糊、默认模糊与开启折射的效果。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "blur-radius: 0";
+                    ForgeAcrylic { width: 140px; height: 90px; source: GalleryDemoModels.backdrop-image; blur-radius: 0; }
+                }
+                GalleryVariant {
+                    caption: "blur-radius: 10";
+                    ForgeAcrylic { width: 140px; height: 90px; source: GalleryDemoModels.backdrop-image; }
+                }
+                GalleryVariant {
+                    caption: "refraction: true";
+                    ForgeAcrylic { width: 140px; height: 90px; source: GalleryDemoModels.backdrop-image; refraction: true; }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("音乐播放卡片");
+            description: @tr("以专辑背景作为材质来源，播放信息和控制按钮放在磨砂面板上。");
+            output: root.playing ? @tr("正在播放 · 进度 {}%", Math.round(root.progress)) : @tr("已暂停 · 进度 {}%", Math.round(root.progress));
+            GalleryPreview {
+                ForgeAcrylic {
+                    preferred-width: 360px * ForgeTypography.scale; min-width: 260px;
+                    height: player.preferred-height + 36px;
+                    source: GalleryDemoModels.backdrop-image;
+                    tint: #20202860;
+                    player := VerticalLayout {
+                        spacing: 10px;
+                        Text { text: @tr("夜航星"); color: white; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+                        Text { text: @tr("城市灯火乐队 · 第 3 首"); color: #ffffffc0; font-size: 12px * ForgeTypography.scale; }
+                        Slider { minimum: 0; maximum: 100; value <=> root.progress; }
+                        HorizontalLayout {
+                            spacing: 8px; alignment: center;
+                            Button { text: @tr("上一首"); clicked => { root.progress = 0; } }
+                            Button { text: root.playing ? @tr("暂停") : @tr("播放"); primary: true; clicked => { root.playing = !root.playing; } }
+                            Button { text: @tr("下一首"); clicked => { root.progress = 0; root.playing = true; } }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

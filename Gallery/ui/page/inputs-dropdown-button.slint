@@ -1,32 +1,108 @@
-import { Palette } from "std-widgets.slint";
+import { CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeDropDownButton, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：DropDownButton。
 export component GalleryInputsDropdownButtonPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
-    in-out property<string> draft;
-    in-out property<string> status: @tr("就绪");
+    in-out property<string> draft: @tr("操作菜单");
+    in-out property<string> status: @tr("尚未选择");
+    private property<bool> disabled: false;
+    private property<string> report-status: @tr("销售月报 · 2026 年 9 月");
     callback prepare-preview(bool);
     prepare-preview(open) => { if open { control.show(); } else { control.close(); } }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-dropdown-button";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
         title: "DropDownButton";
-        subtitle: @tr("从按钮下拉菜单中选择操作。");
-        example-title: @tr("用法与状态");
-        preview-height: 160px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            control := ForgeDropDownButton { text: @tr("操作菜单"); items: [{id: "open", label: @tr("打开"), enabled: true}, {id: "save", label: @tr("保存"), enabled: true}, {id: "disabled", label: @tr("禁用操作"), enabled: false}]; selected(id) => { root.status = id; } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("点击后弹出操作菜单的按钮，把一组相关操作收进一个入口，适合导出、更多操作等场景。");
+        showcase-route: "inputs-dropdown-button";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("按钮文字，右侧自动显示下拉箭头。") },
+            { name: "items", kind: @tr("属性"), type: "[ForgeChoiceItem]", description: @tr("菜单项，每项包含 id、label 与 enabled。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用时关闭已打开的菜单。") },
+            { name: "open", kind: @tr("输出"), type: "bool", description: @tr("菜单是否处于打开状态。") },
+            { name: "selected(string)", kind: @tr("回调"), type: "", description: @tr("选中菜单项后触发，参数为该项的 id，随后菜单关闭。") },
+            { name: "show() / close()", kind: @tr("函数"), type: "", description: @tr("以代码打开或关闭菜单。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("菜单中禁用的项显示为灰色，不可选择。");
+            output: @tr("selected · {}", root.status);
+            GalleryPreview {
+                min-preview-height: 180px * ForgeTypography.scale;
+                control := ForgeDropDownButton {
+                    text: root.draft; enabled: !root.disabled;
+                    items: [
+                        { id: "open", label: @tr("打开"), enabled: true },
+                        { id: "save", label: @tr("保存"), enabled: true },
+                        { id: "delete", label: @tr("删除"), enabled: root.flag },
+                    ];
+                    selected(id) => { root.count += 1; root.status = id; }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("“删除”可用"); checked <=> root.flag; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Text { text: "text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.draft; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("可用与禁用状态；禁用后点击不会弹出菜单。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: @tr("默认");
+                    ForgeDropDownButton { text: @tr("排序方式"); items: [{ id: "name", label: @tr("按名称"), enabled: true }, { id: "date", label: @tr("按日期"), enabled: true }]; }
+                }
+                GalleryVariant {
+                    caption: "enabled: false";
+                    ForgeDropDownButton { text: @tr("排序方式"); enabled: false; items: [{ id: "name", label: @tr("按名称"), enabled: true }]; }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("报表导出");
+            description: @tr("“导出”和“更多”分别收纳格式选择与次要操作，Excel 格式暂不可用。");
+            output: root.report-status;
+            GalleryPreview {
+                min-preview-height: 200px * ForgeTypography.scale;
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: bar.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    bar := HorizontalLayout {
+                        padding: 16px; spacing: 8px;
+                        VerticalLayout {
+                            alignment: center; horizontal-stretch: 1;
+                            Text { text: @tr("销售月报"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                            Text { text: @tr("2026 年 9 月 · 1,284 条记录"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                        }
+                        ForgeDropDownButton {
+                            text: @tr("导出");
+                            items: [{ id: "pdf", label: "PDF", enabled: true }, { id: "csv", label: "CSV", enabled: true }, { id: "xlsx", label: "Excel", enabled: false }];
+                            selected(id) => { root.report-status = @tr("已导出为 {}", id); }
+                        }
+                        ForgeDropDownButton {
+                            text: @tr("更多");
+                            items: [{ id: "rename", label: @tr("重命名"), enabled: true }, { id: "duplicate", label: @tr("创建副本"), enabled: true }, { id: "share", label: @tr("共享链接"), enabled: true }];
+                            selected(id) => {
+                                root.report-status = id == "rename" ? @tr("进入重命名") : id == "duplicate" ? @tr("已创建副本") : @tr("已复制共享链接");
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

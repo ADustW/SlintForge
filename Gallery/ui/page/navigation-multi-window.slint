@@ -1,6 +1,6 @@
-import { Button } from "std-widgets.slint";
+import { Button, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview } from "../component/component-page.slint";
 import { GalleryDemoModels } from "../component/demo-models.slint";
 
 // Slint 原生示例：MultiWindow。
@@ -12,19 +12,57 @@ export component GalleryNavigationMultiWindowPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    private property<string> last-action: "-";
+    private property<string> export-step: @tr("未开始");
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("导航");
         title: "MultiWindow";
-        subtitle: @tr("打开独立窗口，再隐藏或重新显示。");
-        example-title: @tr("用法与状态");
-        preview-height: 150px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Button { text: @tr("打开原生窗口"); clicked => { GalleryDemoModels.show-window(false); } }
-Button { text: @tr("隐藏示例窗口"); clicked => { GalleryDemoModels.close-windows(); } }
+        subtitle: @tr("每个继承 Window 的组件都是一个独立的顶层窗口。界面通过回调请求，由宿主创建窗口实例并调用 show() 或 hide()。");
+        native: true;
+        api: [
+            { name: "Window", kind: @tr("属性"), type: "component", description: @tr("顶层窗口组件；可设置 title、icon、no-frame、always-on-top 等。") },
+            { name: "Dialog", kind: @tr("属性"), type: "component", description: @tr("带标准按钮的对话框窗口，按钮回调如 ok-clicked。") },
+            { name: "show() / hide()", kind: @tr("函数"), type: "", description: @tr("宿主侧 ComponentHandle 方法，显示或隐藏窗口，实例可重复使用。") },
+            { name: "show-window(bool)", kind: @tr("回调"), type: "", description: @tr("本示例的宿主接口：false 打开普通窗口，true 打开对话框。") },
+            { name: "close-windows()", kind: @tr("回调"), type: "", description: @tr("本示例的宿主接口：隐藏所有示例窗口。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("打开一个普通窗口或对话框；再次打开会复用同一个实例。");
+            output: @tr("最近操作 · {}", root.last-action);
+            GalleryPreview {
+                Button { text: @tr("打开窗口"); clicked => { GalleryDemoModels.show-window(false); root.last-action = "show-window(false)"; } }
+                Button { text: @tr("打开对话框"); clicked => { GalleryDemoModels.show-window(true); root.last-action = "show-window(true)"; } }
+                Button { text: @tr("全部隐藏"); clicked => { GalleryDemoModels.close-windows(); root.last-action = "close-windows()"; } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("导出确认");
+            description: @tr("主窗口发起导出前弹出确认对话框，预览可放到独立窗口中对照查看。窗口内容由宿主提供，这里沿用通用示例窗口。");
+            output: @tr("导出状态 · {}", root.export-step);
+            GalleryPreview {
+                Rectangle {
+                    width: 400px * ForgeTypography.scale;
+                    height: editor.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    editor := VerticalLayout {
+                        padding: 16px; spacing: 12px;
+                        Text { text: @tr("季度报告.slint"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                        Text { text: @tr("12 页 · 最后修改于 10:24"); color: Palette.foreground.transparentize(0.35); }
+                        HorizontalLayout {
+                            spacing: 8px; alignment: end;
+                            Button { text: @tr("在新窗口中预览"); clicked => { GalleryDemoModels.show-window(false); root.export-step = @tr("预览窗口已打开"); } }
+                            Button { text: @tr("导出 PDF"); primary: true; clicked => { GalleryDemoModels.show-window(true); root.export-step = @tr("等待确认"); } }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

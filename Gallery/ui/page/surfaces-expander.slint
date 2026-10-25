@@ -1,24 +1,98 @@
-import { Palette, LineEdit } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeExpander, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+// 共享组件演示：Expander。
 export component GalleryExpanderPage inherits Rectangle {
-    sample-page := GallerySamplePage {
-        width: parent.width; height: parent.height;
-        title: "Expander";
-        subtitle: @tr("展开或折叠内容，输入状态在折叠后保留。");
-        preview-height: 255px;
+    private property<bool> disabled: false;
+    private property<string> last-toggle: @tr("尚未切换");
+    private property<int> open-count: 1;
 
-        expander := ForgeExpander {
-            x: 18px; y: 18px; width: sample-page.preview-width - 36px;
-            title: @tr("高级选项");
-            expanded: true;
-            VerticalLayout {
-                spacing: 16px;
-                LineEdit { text: ""; placeholder-text: @tr("输入文字后折叠并重新展开"); }
-                Text { text: @tr("这里还可以放置任意业务组件。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("容器");
+        title: "Expander";
+        subtitle: @tr("可展开、折叠的内容面板。单击标题栏或聚焦后按 Enter / Space 切换；折叠只隐藏内容，内部控件状态保留。");
+        api: [
+            { name: "title", kind: @tr("属性"), type: "string", description: @tr("标题栏文字。") },
+            { name: "expanded", kind: @tr("属性"), type: "bool", description: @tr("是否展开，可双向绑定。") },
+            { name: "content-height", kind: @tr("属性"), type: "length", description: @tr("内容区高度；0 或负值时使用内容的自然高度。") },
+            { name: "content-padding / enabled", kind: @tr("属性"), type: "length / bool", description: @tr("内容内边距；禁用后不响应切换。") },
+            { name: "natural-content-height", kind: @tr("输出"), type: "length", description: @tr("内容的自然高度（含内边距）。") },
+            { name: "toggled(bool)", kind: @tr("回调"), type: "", description: @tr("用户切换后触发，参数为新的展开状态。") },
+            { name: "toggle()", kind: @tr("函数"), type: "", description: @tr("在启用状态下切换展开与折叠。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("在输入框中输入文字后折叠再展开，内容仍然保留。");
+            output: root.last-toggle;
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                expander := ForgeExpander {
+                    horizontal-stretch: 1;
+                    title: @tr("高级选项");
+                    expanded: true;
+                    enabled: !root.disabled;
+                    toggled(value) => { root.last-toggle = @tr("toggled · {}", value ? "true" : "false"); }
+                    VerticalLayout {
+                        spacing: 12px;
+                        LineEdit { placeholder-text: @tr("输入文字后折叠并重新展开"); }
+                        Text { text: @tr("这里可以放置任意组件。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                    }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Button { text: "toggle()"; enabled: !root.disabled; clicked => { expander.toggle(); } }
             }
         }
-        Text { x: 18px; y: sample-page.preview-area-height - 42px; text: expander.expanded ? @tr("当前：已展开") : @tr("当前：已折叠"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("折叠、展开与禁用三种状态。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                // 变体组件较宽，纵向排列以适应窄窗口。
+                VerticalLayout {
+                    spacing: 10px; horizontal-stretch: 1;
+                    GalleryVariant { caption: "expanded: false"; ForgeExpander { width: 180px; title: @tr("详细信息"); VerticalLayout { Text { text: @tr("隐藏的内容"); color: Palette.foreground; } } } }
+                    GalleryVariant { caption: "expanded: true"; ForgeExpander { width: 180px; title: @tr("详细信息"); expanded: true; VerticalLayout { Text { text: @tr("展开后的内容"); color: Palette.foreground; } } } }
+                    GalleryVariant { caption: "enabled: false"; ForgeExpander { width: 180px; title: @tr("详细信息"); enabled: false; VerticalLayout { Text { text: @tr("隐藏的内容"); color: Palette.foreground; } } } }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("常见问题");
+            description: @tr("问答列表中每个问题是一个 Expander，用户只展开关心的条目。");
+            output: @tr("已展开 {} 项", root.open-count);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 8px;
+                    ForgeExpander {
+                        title: @tr("如何在 C++ 项目中使用组件？");
+                        expanded: true;
+                        toggled(value) => { root.open-count += value ? 1 : -1; }
+                        VerticalLayout { Text { text: @tr("通过 CMake 引入 SDK，并在 .slint 文件中导入 @slintforge 即可。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; } }
+                    }
+                    ForgeExpander {
+                        title: @tr("是否支持深色主题？");
+                        toggled(value) => { root.open-count += value ? 1 : -1; }
+                        VerticalLayout { Text { text: @tr("支持。所有组件使用 Palette 配色，随应用主题自动切换。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; } }
+                    }
+                    ForgeExpander {
+                        title: @tr("界面文字可以翻译吗？");
+                        toggled(value) => { root.open-count += value ? 1 : -1; }
+                        VerticalLayout { Text { text: @tr("可以。文字使用 @tr 标记，运行时按所选语言加载译文。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; } }
+                    }
+                }
+            }
+        }
     }
 }

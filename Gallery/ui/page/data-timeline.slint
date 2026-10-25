@@ -1,6 +1,6 @@
+import { Palette, SpinBox } from "std-widgets.slint";
 import { ForgeTimeline, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：Timeline。
 export component GalleryDataTimelinePage inherits Rectangle {
@@ -11,20 +11,91 @@ export component GalleryDataTimelinePage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "data-timeline";
-        active: root.visible;
+
+    private property<int> done: 2;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("数据展示");
         title: "Timeline";
-        subtitle: @tr("沿时间顺序查看已完成和待完成的步骤。");
-        example-title: @tr("用法与状态");
-        preview-height: 330px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeTimeline { items: [{title: @tr("创建工程"), description: @tr("共享 Slint 契约"), time: "09:00", completed: true}, {title: @tr("完成组件"), description: @tr("Rust 与 C++ 使用同一套界面"), time: "10:00", completed: true}, {title: @tr("执行验证"), description: @tr("构建、行为测试与页面截图"), time: "11:00", completed: false}]; }
+        subtitle: @tr("按时间顺序纵向排列事件，圆点区分已完成与未完成。适合展示流程进度、操作记录与物流轨迹。");
+        showcase-route: "data-timeline";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "items", kind: @tr("属性"), type: "[ForgeTimelineItem]", description: @tr("事件列表，按给定顺序从上到下排列。") },
+            { name: "ForgeTimelineItem.title", kind: @tr("属性"), type: "string", description: @tr("事件标题，显示在时间之后。") },
+            { name: "ForgeTimelineItem.time", kind: @tr("属性"), type: "string", description: @tr("已格式化的时间文本。") },
+            { name: "ForgeTimelineItem.description", kind: @tr("属性"), type: "string", description: @tr("标题下方的说明，过长时自动换行。") },
+            { name: "ForgeTimelineItem.completed", kind: @tr("属性"), type: "bool", description: @tr("为 true 时圆点使用强调色。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("调整已完成的步骤数，圆点颜色随之变化。");
+            output: @tr("已完成 {} / 4", root.done);
+            GalleryPreview {
+                ForgeTimeline {
+                    width: 340px * ForgeTypography.scale;
+                    items: [
+                        { title: @tr("创建工程"), description: @tr("初始化仓库与界面契约"), time: "09:00", completed: root.done >= 1 },
+                        { title: @tr("完成组件"), description: @tr("Rust 与 C++ 使用同一套界面"), time: "10:00", completed: root.done >= 2 },
+                        { title: @tr("执行验证"), description: @tr("构建、行为测试与页面截图"), time: "11:00", completed: root.done >= 3 },
+                        { title: @tr("发布版本"), description: @tr("生成安装包并更新文档"), time: "14:00", completed: root.done >= 4 },
+                    ];
+                }
+            }
+            GalleryOptions {
+                Text { text: @tr("已完成步骤"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 0; maximum: 4; value <=> root.done; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("已完成、未完成，以及没有说明文字的事件。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "completed: true";
+                    ForgeTimeline { width: 150px * ForgeTypography.scale; items: [{ title: @tr("已提交"), description: @tr("等待审核"), time: "09:12", completed: true }]; }
+                }
+                GalleryVariant {
+                    caption: "completed: false";
+                    ForgeTimeline { width: 150px * ForgeTypography.scale; items: [{ title: @tr("待审核"), description: @tr("预计今天完成"), time: "--:--", completed: false }]; }
+                }
+                GalleryVariant {
+                    caption: "description: \"\"";
+                    ForgeTimeline { width: 150px * ForgeTypography.scale; items: [{ title: @tr("已归档"), time: "18:00", completed: true }]; }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("物流跟踪");
+            description: @tr("包裹从揽收到派送的轨迹，最新状态在最上方，尚未发生的节点显示为灰色。");
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: tracking.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    tracking := VerticalLayout {
+                        padding: 16px; spacing: 12px;
+                        HorizontalLayout {
+                            Text { text: @tr("顺丰速运 SF1024886"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; horizontal-stretch: 1; }
+                            Text { text: @tr("运输中"); color: Palette.accent-background; }
+                        }
+                        ForgeTimeline {
+                            items: [
+                                { title: @tr("待派送"), description: @tr("预计明天 12:00 前送达"), time: "10-26", completed: false },
+                                { title: @tr("到达转运中心"), description: @tr("上海浦东转运中心"), time: "10-25 21:40", completed: true },
+                                { title: @tr("运输中"), description: @tr("已从杭州发出，下一站上海"), time: "10-25 15:08", completed: true },
+                                { title: @tr("已揽收"), description: @tr("杭州西湖区营业点"), time: "10-25 09:30", completed: true },
+                            ];
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

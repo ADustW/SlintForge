@@ -1,7 +1,6 @@
-import { TextEdit } from "std-widgets.slint";
+import { Button, CheckBox, ComboBox, Palette, TextEdit } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // Slint 原生示例：ScrollableTextBox。
 export component GalleryFormScrollableTextboxPage inherits Rectangle {
@@ -10,22 +9,107 @@ export component GalleryFormScrollableTextboxPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<string> log-text: "[09:00:01] INFO  service started on port 8080\n[09:00:02] INFO  loaded 42 components from slintforge.slint\n[09:00:05] WARN  font fallback used for glyph U+1F600 in gallery window\n[09:00:07] INFO  connected to database primary-01\n[09:01:12] INFO  user admin signed in\n[09:02:30] ERROR request /api/export timed out after 30000 ms\n[09:02:31] INFO  retrying export job #1182\n[09:02:40] INFO  export job #1182 finished\n[09:05:00] INFO  scheduled backup started\n[09:06:45] INFO  scheduled backup finished, 1.2 GB written\n[09:10:00] INFO  health check ok";
+    private property<int> wrap-index: 1;
+    private property<bool> read-only1: true;
+    private property<bool> agreed: false;
+    private property<bool> terms-read: terms.content-y <= terms.visible-height - terms.content-height + 2px;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-scrollable-textbox";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
         title: "ScrollableTextBox";
-        subtitle: @tr("滚动查看长文本，内容仍可编辑。");
-        example-title: @tr("用法与状态");
-        preview-height: 250px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            TextEdit { text: @tr("第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行"); height: 170px; }
+        subtitle: @tr("带滚动视口的多行文本框，基于原生 TextEdit。通过 content-x / content-y 读取或设置滚动位置，适合日志、协议等长文本。");
+        native: true;
+        showcase-route: "form-scrollable-textbox";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("文本内容；只读时仍可滚动和选择。") },
+            { name: "content-x / content-y", kind: @tr("属性"), type: "length", description: @tr("内容相对视口的偏移，向下或向右滚动时为负值。") },
+            { name: "content-width / content-height", kind: @tr("属性"), type: "length", description: @tr("全部内容的尺寸。") },
+            { name: "visible-width / visible-height", kind: @tr("输出"), type: "length", description: @tr("视口的可见尺寸。") },
+            { name: "wrap / read-only", kind: @tr("属性"), type: "TextWrap / bool", description: @tr("换行方式与是否只读。") },
+            { name: "edited(string)", kind: @tr("回调"), type: "", description: @tr("用户修改文本后触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("滚动查看日志，或用按钮直接设置 content-y 跳到开头和结尾。");
+            output: @tr("content-y · {}px / {}px", Math.round(-log.content-y / 1px), Math.round(Math.max(0px, log.content-height - log.visible-height) / 1px));
+            GalleryPreview {
+                VerticalLayout {
+                    spacing: 8px;
+                    log := TextEdit {
+                        width: 380px * ForgeTypography.scale; height: 150px * ForgeTypography.scale;
+                        text <=> root.log-text; font-family: "Consolas";
+                        wrap: root.wrap-index == 0 ? TextWrap.word-wrap : TextWrap.no-wrap;
+                        read-only: root.read-only1;
+                    }
+                    HorizontalLayout {
+                        spacing: 8px; alignment: start;
+                        Button { text: @tr("回到开头"); clicked => { log.content-y = 0px; log.content-x = 0px; } }
+                        Button { text: @tr("跳到结尾"); clicked => { log.content-y = Math.min(0px, log.visible-height - log.content-height); } }
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: "wrap"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["word-wrap", "no-wrap"]; current-index <=> root.wrap-index; }
+                CheckBox { text: "read-only"; checked <=> root.read-only1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("no-wrap 时长行可横向滚动；word-wrap 时只有纵向滚动。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: "wrap: word-wrap"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 280px * ForgeTypography.scale; height: 72px * ForgeTypography.scale; text: root.log-text; read-only: true; wrap: word-wrap; }
+                    }
+                    Row {
+                        Text { text: "wrap: no-wrap"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 280px * ForgeTypography.scale; height: 72px * ForgeTypography.scale; text: root.log-text; read-only: true; wrap: no-wrap; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 280px * ForgeTypography.scale; height: 72px * ForgeTypography.scale; text: root.log-text; enabled: false; wrap: no-wrap; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("用户协议");
+            description: @tr("根据 content-y 判断是否已滚动到底部，读完后才能勾选同意。");
+            output: root.agreed ? @tr("已同意协议") : root.terms-read ? @tr("已读完，可以勾选同意") : @tr("尚未读完");
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 10px;
+                        Text { text: @tr("SlintForge 软件许可协议"); color: Palette.foreground; font-weight: 600; }
+                        terms := TextEdit {
+                            height: 120px * ForgeTypography.scale;
+                            read-only: true;
+                            text: @tr("1. 本软件按“现状”提供，不附带任何明示或暗示的担保。\n2. 你可以在遵守本协议的前提下使用、复制和修改本软件。\n3. 再分发时须保留原有的版权声明和本协议全文。\n4. 不得使用作者姓名为衍生产品背书或推广。\n5. 因使用本软件造成的任何损失，作者不承担责任。\n6. 本协议的最新版本以项目主页公布为准。\n7. 如对条款有疑问，可在使用前联系作者。");
+                        }
+                        HorizontalLayout {
+                            spacing: 8px;
+                            CheckBox { text: @tr("我已阅读并同意"); enabled: root.terms-read; checked <=> root.agreed; }
+                            Rectangle { }
+                            Button { text: @tr("继续"); primary: true; enabled: root.agreed; }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

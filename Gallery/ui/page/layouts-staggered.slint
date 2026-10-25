@@ -1,44 +1,85 @@
-import { Palette } from "std-widgets.slint";
+import { Palette, Slider, SpinBox } from "std-widgets.slint";
 import { ForgeStaggeredGridView, ForgeStaggeredItem, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：StaggeredGridView。基本用法中的卡片位置由宿主按列数计算后回填。
 export component GalleryStaggeredGridPage inherits Rectangle {
     in property<[ForgeStaggeredItem]> items;
     in property<length> layout-content-height;
     out property<int> column-count: grid.column-count;
     callback layout-requested(int);
     property<string> selected-title: @tr("尚未选择卡片");
+    private property<int> max-columns: 4;
+    private property<float> min-column-width: 220;
+    private property<string> board-status: @tr("尚未打开图板");
 
-    GalleryPageFrame {
-        width: parent.width;
-        height: parent.height;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("布局");
         title: "StaggeredGridView";
-        subtitle: @tr("卡片自动进入当前最短列；缩放窗口可观察列数和位置变化。");
+        subtitle: @tr("瀑布流布局：等宽列、不等高卡片，每张卡片放进当前最短的一列。适合图片墙、灵感板等高度不一的内容。");
+        api: [
+            { name: "items", kind: @tr("属性"), type: "[ForgeStaggeredItem]", description: @tr("卡片数据；column 与 top 由宿主计算。") },
+            { name: "min-column-width / max-columns", kind: @tr("属性"), type: "length / int", description: @tr("决定列数：按最小列宽能放下几列，且不超过最大列数。") },
+            { name: "gap / content-padding", kind: @tr("属性"), type: "length", description: @tr("卡片间距与内容内边距，需与宿主布局算法使用的值一致。") },
+            { name: "content-height", kind: @tr("属性"), type: "length", description: @tr("宿主算出的内容总高度，用于滚动范围。") },
+            { name: "column-count / column-width", kind: @tr("输出"), type: "int / length", description: @tr("当前列数与列宽。") },
+            { name: "layout-requested(int)", kind: @tr("回调"), type: "", description: @tr("列数变化时触发，宿主据此重新计算卡片位置。") },
+            { name: "selected(string)", kind: @tr("回调"), type: "", description: @tr("单击卡片时触发，参数为卡片 id。") },
+        ];
 
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        preview := GalleryDemoCard {
-            preview-height: 360px;
-            grid := ForgeStaggeredGridView {
-                x: 18px;
-                y: 16px;
-                width: Math.max(0px, preview.width - 38px);
-                height: Math.max(0px, preview.height - 70px);
-                gap: 12px;
-                items: root.items;
-                content-height: root.layout-content-height;
-                layout-requested(columns) => { root.layout-requested(columns); }
-                selected(id) => { root.selected-title = @tr("已选择卡片 {}", id); }
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("调整最小列宽或最大列数，列数变化后宿主（Rust / C++）用同一算法重新排布卡片。");
+            output: @tr("column-count = {} · {}", grid.column-count, root.selected-title);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                grid := ForgeStaggeredGridView {
+                    height: 340px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    gap: 12px;
+                    max-columns: root.max-columns;
+                    min-column-width: root.min-column-width * 1px;
+                    items: root.items;
+                    content-height: root.layout-content-height;
+                    layout-requested(columns) => { root.layout-requested(columns); }
+                    selected(id) => { root.selected-title = @tr("已选择卡片 {}", id); }
+                }
             }
-            Text {
-                x: 18px;
-                y: preview.height - 41px;
-                width: Math.max(0px, preview.width - 36px);
-                text: root.selected-title;
-                color: Palette.foreground;
-                font-size: 13px * ForgeTypography.scale;
+            GalleryOptions {
+                Text { text: "max-columns"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 1; maximum: 6; value <=> root.max-columns; }
+                Text { text: @tr("min-column-width = {}px", Math.round(root.min-column-width)); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 120; maximum: 320; value <=> root.min-column-width; }
             }
         }
 
+        GalleryExample {
+            title: @tr("灵感图板");
+            description: @tr("固定两列的图板，卡片高度随内容而定；示例中的位置按同一规则预先算好。");
+            output: root.board-status;
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                ForgeStaggeredGridView {
+                    height: 360px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    max-columns: 2;
+                    min-column-width: 100px;
+                    gap: 12px;
+                    content-height: 488px;
+                    items: [
+                        { id: @tr("海边日落"), title: @tr("海边日落"), description: @tr("摄影 · 12 张"), tile-height: 150px, accent: #a05332, column: 0, top: 12px },
+                        { id: @tr("配色方案"), title: @tr("配色方案"), description: @tr("色板 · 6 组"), tile-height: 100px, accent: #8756aa, column: 1, top: 12px },
+                        { id: @tr("字体搭配"), title: @tr("字体搭配"), description: @tr("排版 · 4 套"), tile-height: 120px, accent: #3762a8, column: 1, top: 124px },
+                        { id: @tr("城市夜景"), title: @tr("城市夜景"), description: @tr("摄影 · 20 张"), tile-height: 160px, accent: #2c7994, column: 0, top: 174px },
+                        { id: @tr("图标草稿"), title: @tr("图标草稿"), description: @tr("插画 · 9 个"), tile-height: 90px, accent: #247b6f, column: 1, top: 256px },
+                        { id: @tr("界面参考"), title: @tr("界面参考"), description: @tr("截图 · 15 张"), tile-height: 130px, accent: #a24d70, column: 0, top: 346px },
+                    ];
+                    selected(id) => { root.board-status = @tr("selected · {}", id); }
+                }
+            }
+        }
     }
 }

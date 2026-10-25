@@ -1,43 +1,109 @@
-import { ForgeTypography } from "@slintforge";
-import { Palette } from "std-widgets.slint";
-import { ForgeCard, ForgeIconButton } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { LineEdit, Palette, Slider } from "std-widgets.slint";
+import { ForgeCard, ForgeIconButton, ForgePillButton, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+component GalleryCardMetric inherits VerticalLayout {
+    in property<string> label;
+    in property<string> value;
+    in property<color> tint: Palette.foreground;
+    spacing: 2px;
+    Text { text: root.label; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+    Text { text: root.value; color: root.tint; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+}
+
+// 共享组件演示：Card。
 export component GalleryCardPage inherits Rectangle {
     in-out property<int> action-count: 0;
+    private property<string> card-title: @tr("设备状态");
+    private property<float> padding-value: 12;
+    private property<string> restart-status: @tr("服务运行中");
     background: transparent;
 
-    GalleryPageFrame {
-        width: parent.width;
-        height: parent.height;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("容器");
         title: "Card";
-        subtitle: @tr("带标题的内容容器 · ForgeCard");
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        GalleryDemoCard {
-            preview-height: 185px;
-            ForgeCard {
-                x: 20px; y: 18px; width: parent.width - 40px; height: parent.height - 36px;
-                title: @tr("设备状态");
-                VerticalLayout {
-                    spacing: 8px;
-                    Text { text: @tr("将状态、操作和内容放在同一卡片中。"); color: Palette.foreground; }
+        subtitle: @tr("带边框与圆角的内容容器，可选标题，内容纵向排列。卡片尺寸由放置它的页面决定。");
+        api: [
+            { name: "title", kind: @tr("属性"), type: "string", description: @tr("卡片标题；为空时不显示标题行。") },
+            { name: "content-padding", kind: @tr("属性"), type: "length", description: @tr("内容内边距，默认取样式的 layout-padding。") },
+            { name: "spacing", kind: @tr("属性"), type: "length", description: @tr("标题与子元素之间的纵向间距，默认 8px。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改标题和内边距；卡片内的按钮与普通控件一样响应操作。");
+            output: @tr("clicked · 已操作 {} 次", root.action-count);
+            GalleryPreview {
+                ForgeCard {
+                    width: 320px * ForgeTypography.scale;
+                    title: root.card-title;
+                    content-padding: root.padding-value * 1px;
+                    Text { text: @tr("将状态、操作和内容放在同一卡片中。"); color: Palette.foreground; wrap: word-wrap; }
                     HorizontalLayout {
-                        spacing: 10px;
+                        alignment: start;
                         ForgeIconButton { icon: "+"; label: @tr("卡片内操作"); clicked => { root.action-count += 1; } }
-                        Text { text: @tr("已操作 {} 次", root.action-count); color: Palette.foreground; vertical-alignment: center; }
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: "title"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.card-title; }
+                Text { text: @tr("content-padding = {}px", Math.round(root.padding-value)); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 0; maximum: 32; value <=> root.padding-value; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("带标题与不带标题的卡片。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "title: \"概览\""; ForgeCard { width: 200px; title: @tr("概览"); Text { text: @tr("卡片尺寸由页面控制。"); color: Palette.foreground; wrap: word-wrap; } } }
+                GalleryVariant { caption: "title: \"\""; ForgeCard { width: 200px; Text { text: @tr("没有标题时，内容从顶部开始。"); color: Palette.foreground; wrap: word-wrap; } } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("服务器监控");
+            description: @tr("监控面板中每台服务器一张卡片，卡片内放指标和操作。");
+            output: root.restart-status;
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                HorizontalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 12px;
+                    ForgeCard {
+                        horizontal-stretch: 1;
+                        title: "web-01";
+                        HorizontalLayout {
+                            spacing: 24px;
+                            GalleryCardMetric { label: "CPU"; value: "42%"; }
+                            GalleryCardMetric { label: @tr("内存"); value: "6.1 GB"; }
+                            GalleryCardMetric { label: @tr("状态"); value: @tr("正常"); tint: #2e9e5b; }
+                        }
+                        HorizontalLayout {
+                            alignment: start;
+                            ForgePillButton { text: @tr("重启服务"); clicked => { root.restart-status = @tr("web-01 已重启"); } }
+                        }
+                    }
+                    ForgeCard {
+                        horizontal-stretch: 1;
+                        title: "db-01";
+                        HorizontalLayout {
+                            spacing: 24px;
+                            GalleryCardMetric { label: "CPU"; value: "91%"; tint: #d05030; }
+                            GalleryCardMetric { label: @tr("内存"); value: "14.8 GB"; }
+                            GalleryCardMetric { label: @tr("状态"); value: @tr("高负载"); tint: #d05030; }
+                        }
+                        HorizontalLayout {
+                            alignment: start;
+                            ForgePillButton { text: @tr("重启服务"); primary: true; clicked => { root.restart-status = @tr("db-01 已重启"); } }
+                        }
                     }
                 }
             }
         }
-        Text { text: @tr("内容组合"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        GalleryDemoCard {
-            preview-height: 110px;
-            ForgeCard {
-                x: 20px; y: 13px; width: parent.width - 40px; height: parent.height - 26px;
-                title: @tr("概览");
-                Text { text: @tr("卡片尺寸由页面控制。"); color: Palette.foreground; }
-            }
-        }
-}
+    }
 }

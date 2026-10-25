@@ -1,7 +1,6 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeNavItemKind, ForgeNavigationView, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { CheckBox, ComboBox, Palette } from "std-widgets.slint";
+import { ForgeIcons, ForgeNavItemKind, ForgeNavPlacement, ForgeNavigationView, ForgePaneState, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：NavigationView。
 export component GalleryNavigationPage inherits Rectangle {
@@ -12,19 +11,167 @@ export component GalleryNavigationPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    private property<string> route: "home";
+    private property<string> route-title: @tr("首页");
+    private property<bool> group-open: true;
+    private property<int> pane-index: 0;
+    private property<int> placement-index: 0;
+    private property<bool> app-bar: true;
+    private property<string> admin-route: "dashboard";
+    private property<string> admin-title: @tr("仪表盘");
+    private property<string> admin-previous;
+    private property<string> query;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("导航");
         title: "NavigationView";
-        subtitle: @tr("展开分组、搜索并选择导航项。");
-        example-title: @tr("用法与状态");
-        preview-height: 370px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeNavigationView { height: 280px; show-app-bar: false; active-route-id: root.draft == "" ? "demo-home" : root.draft; items: [{id: "demo-home", title: @tr("首页"), kind: ForgeNavItemKind.page, enabled: true}, {id: "demo-project", title: @tr("工程"), kind: ForgeNavItemKind.page, enabled: true}]; navigate-requested(id, params) => { root.draft = id; root.status = id; } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("应用级导航框架：侧栏或顶栏列出页面，右侧区域承载当前页面内容。导航项由应用提供，选择与展开通过回调交给应用处理。");
+        api: [
+            { name: "items / footer-items", kind: @tr("属性"), type: "[ForgeNavigationItem]", description: @tr("主列表与底部固定项；分组的展开由应用改写列表实现。") },
+            { name: "active-route-id", kind: @tr("属性"), type: "string", description: @tr("当前页面的 id，对应项显示选中指示。") },
+            { name: "placement / pane-state", kind: @tr("属性"), type: "ForgeNavPlacement / ForgePaneState", description: @tr("导航位置（左、右、顶部）与侧栏状态（展开、紧凑、隐藏）。") },
+            { name: "show-app-bar / brand / can-go-back", kind: @tr("属性"), type: "bool / string / bool", description: @tr("顶部应用栏、品牌名称与返回按钮是否可用。") },
+            { name: "navigate-requested(string, [ForgeRouteParam])", kind: @tr("回调"), type: "", description: @tr("选择页面项时触发。") },
+            { name: "group-toggle-requested(string)", kind: @tr("回调"), type: "", description: @tr("点击分组时触发，由应用切换展开状态。") },
+            { name: "pane-state-requested(ForgePaneState)", kind: @tr("回调"), type: "", description: @tr("点击菜单按钮时触发，请求切换侧栏状态。") },
+            { name: "search-requested(string) / back-requested()", kind: @tr("回调"), type: "", description: @tr("搜索框输入与返回按钮。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("选择页面或展开“工程”分组；右侧切换导航位置、侧栏状态和应用栏。");
+            output: @tr("navigate-requested · {}", root.route);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                // 导航视图的宽度约束依赖自身宽度，放进布局会形成绑定环，因此按页面宽度直接计算。
+                basic-frame := Rectangle {
+                    height: 300px * ForgeTypography.scale;
+                    width: Math.max(240px * ForgeTypography.scale, root.width - 120px - 200px * ForgeTypography.scale);
+                    clip: true;
+                    ForgeNavigationView {
+                        width: parent.width; height: parent.height;
+                        brand: "SlintForge";
+                        show-app-bar: root.app-bar;
+                        active-route-id: root.route;
+                        placement: root.placement-index == 1 ? ForgeNavPlacement.top : root.placement-index == 2 ? ForgeNavPlacement.right : ForgeNavPlacement.left;
+                        // 展开的侧栏固定 320px；可用宽度不足时改用仅图标侧栏，给内容区留出空间。
+                        pane-state: root.pane-index == 1 ? ForgePaneState.compact : root.pane-index == 2 ? ForgePaneState.hidden
+                            : basic-frame.width < 520px ? ForgePaneState.compact : ForgePaneState.expanded;
+                        items: root.group-open ? [
+                            { id: "home", title: @tr("首页"), icon: ForgeIcons.home, kind: ForgeNavItemKind.page, enabled: true },
+                            { id: "projects", title: @tr("工程"), icon: ForgeIcons.apps, kind: ForgeNavItemKind.group, expanded: true, has-children: true, child-count: 2, enabled: true },
+                            { id: "portal", parent-id: "projects", title: @tr("客户门户"), kind: ForgeNavItemKind.page, depth: 1, enabled: true },
+                            { id: "mobile", parent-id: "projects", title: @tr("移动端"), kind: ForgeNavItemKind.page, depth: 1, enabled: true },
+                            { id: "about", title: @tr("关于"), icon: ForgeIcons.info, kind: ForgeNavItemKind.page, enabled: true },
+                        ] : [
+                            { id: "home", title: @tr("首页"), icon: ForgeIcons.home, kind: ForgeNavItemKind.page, enabled: true },
+                            { id: "projects", title: @tr("工程"), icon: ForgeIcons.apps, kind: ForgeNavItemKind.group, expanded: false, has-children: true, child-count: 2, enabled: true },
+                            { id: "about", title: @tr("关于"), icon: ForgeIcons.info, kind: ForgeNavItemKind.page, enabled: true },
+                        ];
+                        footer-items: [{ id: "settings", title: @tr("设置"), icon: ForgeIcons.settings, kind: ForgeNavItemKind.page, enabled: true }];
+                        navigate-requested(id, params) => {
+                            root.route = id;
+                            root.route-title = id == "home" ? @tr("首页") : id == "portal" ? @tr("客户门户") : id == "mobile" ? @tr("移动端") : id == "about" ? @tr("关于") : @tr("设置");
+                        }
+                        group-toggle-requested(id) => { root.group-open = !root.group-open; }
+                        pane-state-requested(state) => { root.pane-index = state == ForgePaneState.compact ? 1 : state == ForgePaneState.hidden ? 2 : 0; }
+                        Text {
+                            text: root.route-title; color: Palette.foreground;
+                            font-size: 18px * ForgeTypography.scale; font-weight: 600;
+                            horizontal-alignment: center; vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: "placement"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["left", "top", "right"]; current-index <=> root.placement-index; }
+                Text { text: "pane-state"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["expanded", "compact", "hidden"]; current-index <=> root.pane-index; }
+                CheckBox { text: "show-app-bar"; checked <=> root.app-bar; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("紧凑侧栏只显示图标；顶部导航把一级页面排成一行。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "pane-state: compact";
+                    ForgeNavigationView {
+                        width: 240px * ForgeTypography.scale; height: 170px * ForgeTypography.scale;
+                        show-app-bar: false; pane-state: ForgePaneState.compact; active-route-id: "home";
+                        items: [
+                            { id: "home", title: @tr("首页"), icon: ForgeIcons.home, kind: ForgeNavItemKind.page, enabled: true },
+                            { id: "search", title: @tr("搜索"), icon: ForgeIcons.search, kind: ForgeNavItemKind.page, enabled: true },
+                            { id: "settings", title: @tr("设置"), icon: ForgeIcons.settings, kind: ForgeNavItemKind.page, enabled: true },
+                        ];
+                        Text { text: @tr("首页"); color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; }
+                    }
+                }
+                GalleryVariant {
+                    caption: "placement: top";
+                    ForgeNavigationView {
+                        width: 240px * ForgeTypography.scale; height: 170px * ForgeTypography.scale;
+                        show-app-bar: false; placement: ForgeNavPlacement.top; active-route-id: "home";
+                        items: [
+                            { id: "home", title: @tr("首页"), kind: ForgeNavItemKind.page, enabled: true },
+                            { id: "docs", title: @tr("文档"), kind: ForgeNavItemKind.page, enabled: true },
+                        ];
+                        Text { text: @tr("首页"); color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; }
+                    }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("运营后台框架");
+            description: @tr("应用栏、分组标题、分隔线与底部设置项组成完整的后台导航；返回按钮回到上一个页面。");
+            output: @tr("当前页面 {} · 搜索 “{}”", root.admin-title, root.query);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                Rectangle {
+                    height: 360px * ForgeTypography.scale;
+                    width: Math.max(240px * ForgeTypography.scale, root.width - 120px);
+                    ForgeNavigationView {
+                        width: parent.width; height: parent.height;
+                        brand: @tr("运营后台");
+                        active-route-id: root.admin-route;
+                        can-go-back: root.admin-previous != "";
+                        search-query: root.query;
+                        items: [
+                            { id: "dashboard", title: @tr("仪表盘"), icon: ForgeIcons.home, kind: ForgeNavItemKind.page, enabled: true },
+                            { id: "sales-header", title: @tr("销售"), kind: ForgeNavItemKind.header, enabled: true },
+                            { id: "orders", title: @tr("订单"), icon: ForgeIcons.apps, kind: ForgeNavItemKind.page, enabled: true },
+                            { id: "customers", title: @tr("客户"), icon: ForgeIcons.globe, kind: ForgeNavItemKind.page, enabled: true },
+                            { id: "line", kind: ForgeNavItemKind.separator, enabled: true },
+                            { id: "reports", title: @tr("报表"), icon: ForgeIcons.calendar, kind: ForgeNavItemKind.page, enabled: true },
+                        ];
+                        footer-items: [{ id: "admin-settings", title: @tr("设置"), icon: ForgeIcons.settings, kind: ForgeNavItemKind.page, enabled: true }];
+                        navigate-requested(id, params) => {
+                            if id != root.admin-route { root.admin-previous = root.admin-route; }
+                            root.admin-route = id;
+                            root.admin-title = id == "dashboard" ? @tr("仪表盘") : id == "orders" ? @tr("订单") : id == "customers" ? @tr("客户") : id == "reports" ? @tr("报表") : @tr("设置");
+                        }
+                        back-requested => {
+                            root.admin-route = root.admin-previous;
+                            root.admin-previous = "";
+                            root.admin-title = root.admin-route == "dashboard" ? @tr("仪表盘") : root.admin-route == "orders" ? @tr("订单") : root.admin-route == "customers" ? @tr("客户") : root.admin-route == "reports" ? @tr("报表") : @tr("设置");
+                        }
+                        search-requested(value) => { root.query = value; }
+                        VerticalLayout {
+                            padding: 24px; spacing: 8px; alignment: start;
+                            Text { text: root.admin-title; color: Palette.foreground; font-size: 20px * ForgeTypography.scale; font-weight: 600; }
+                            Text { text: @tr("页面内容区域，由应用根据 active-route-id 切换。"); color: Palette.foreground.transparentize(0.35); wrap: word-wrap; }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

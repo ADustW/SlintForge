@@ -1,29 +1,111 @@
-import { Button, Palette } from "std-widgets.slint";
-import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { Button, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeIconButton, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // Slint 原生示例：ToolTip。
 export component GalleryPopupsTooltipPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
-    in-out property<string> draft;
+    in-out property<string> draft: @tr("Slint 原生 Tooltip，支持自定义内容。");
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+    private property<string> format-status: @tr("将鼠标停在工具栏按钮上");
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("弹出层");
         title: "ToolTip";
-        subtitle: @tr("将鼠标停在按钮上查看提示。");
-        example-title: @tr("用法与状态");
-        preview-height: 100px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Button { text: @tr("悬停查看提示"); Tooltip { Text { text: @tr("Slint 原生 Tooltip，支持自定义内容。"); color: Palette.foreground; } } }
+        subtitle: @tr("Slint 原生 Tooltip，指针在元素上停留片刻后在附近显示说明，移开即隐藏。可以是纯文字，也可以是自定义布局。");
+        native: true;
+        api: [
+            { name: "text", kind: @tr("属性"), type: "styled-text", description: @tr("简单提示文字，字符串需用 @markdown 转换；使用自定义内容时不要设置。") },
+            { name: "@children", kind: @tr("属性"), type: "element", description: @tr("省略 text 时，放入一个子元素作为自定义内容。") },
+            { name: "Tooltip", kind: @tr("属性"), type: "", description: @tr("放在任意元素内部，每个元素最多一个。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("将鼠标停在按钮上查看提示，在右侧修改提示内容。");
+            GalleryPreview {
+                Button {
+                    text: @tr("悬停查看提示");
+                    Tooltip { Text { text: root.draft; color: Palette.foreground; wrap: word-wrap; } }
+                }
+            }
+            GalleryOptions {
+                Text { text: @tr("提示内容"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.draft; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("内容形式");
+            description: @tr("纯文字、自定义布局，以及附在非按钮元素上的提示。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "text";
+                    Button { text: @tr("文字"); Tooltip { text: @markdown("\{@tr("复制到剪贴板")}"); } }
+                }
+                GalleryVariant {
+                    caption: @tr("自定义布局");
+                    Button {
+                        text: @tr("布局");
+                        Tooltip {
+                            VerticalLayout {
+                                padding: 8px; spacing: 4px;
+                                Text { text: @tr("同步状态"); color: Palette.foreground; font-weight: 600; }
+                                Text { text: @tr("上次同步：今天 09:41"); color: Palette.foreground.transparentize(0.3); font-size: 12px * ForgeTypography.scale; }
+                            }
+                        }
+                    }
+                }
+                GalleryVariant {
+                    caption: @tr("非按钮元素");
+                    Rectangle {
+                        width: 28px; height: 28px; border-radius: 14px;
+                        border-width: 1px; border-color: Palette.border;
+                        Text { text: "?"; color: Palette.foreground; font-weight: 600; }
+                        Tooltip { text: @markdown("\{@tr("密码至少 8 位，需包含字母和数字。")}"); }
+                    }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("编辑器工具栏");
+            description: @tr("图标按钮空间有限，用提示说明功能与快捷键。");
+            output: root.format-status;
+            GalleryPreview {
+                Rectangle {
+                    height: toolbar.preferred-height;
+                    width: toolbar.preferred-width;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    toolbar := HorizontalLayout {
+                        padding: 6px; spacing: 4px;
+                        ForgeIconButton {
+                            label: "B"; clicked => { root.format-status = @tr("已应用{}", @tr("粗体")); }
+                            Tooltip { HorizontalLayout { padding: 6px; spacing: 10px; Text { text: @tr("粗体"); color: Palette.foreground; } Text { text: "Ctrl+B"; color: Palette.foreground.transparentize(0.45); } } }
+                        }
+                        ForgeIconButton {
+                            label: "I"; clicked => { root.format-status = @tr("已应用{}", @tr("斜体")); }
+                            Tooltip { HorizontalLayout { padding: 6px; spacing: 10px; Text { text: @tr("斜体"); color: Palette.foreground; } Text { text: "Ctrl+I"; color: Palette.foreground.transparentize(0.45); } } }
+                        }
+                        ForgeIconButton {
+                            label: "U"; clicked => { root.format-status = @tr("已应用{}", @tr("下划线")); }
+                            Tooltip { HorizontalLayout { padding: 6px; spacing: 10px; Text { text: @tr("下划线"); color: Palette.foreground; } Text { text: "Ctrl+U"; color: Palette.foreground.transparentize(0.45); } } }
+                        }
+                        Rectangle { width: 1px; background: Palette.border; }
+                        ForgeIconButton {
+                            label: @tr("链接"); clicked => { root.format-status = @tr("已插入链接"); }
+                            Tooltip { HorizontalLayout { padding: 6px; spacing: 10px; Text { text: @tr("插入链接"); color: Palette.foreground; } Text { text: "Ctrl+K"; color: Palette.foreground.transparentize(0.45); } } }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,24 +1,126 @@
-import { Palette } from "std-widgets.slint";
+import { Button, CheckBox, ComboBox, Palette, Slider } from "std-widgets.slint";
 import { ForgeDelayButton, ForgeDelayButtonMode, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：DelayButton。
 export component GalleryInputsDelayButtonPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<string> status: @tr("就绪");
+    private property<int> mode-index: 1;
+    private property<float> delay-ms: 1200;
+    private property<bool> pill: false;
+    private property<bool> primary: false;
+    private property<bool> disabled: false;
+    private property<int> trash-items: 12;
+    private property<string> trash-status: @tr("回收站中有 12 个项目");
     callback prepare-preview(bool);
-    prepare-preview(open) => { if open { hold.begin(); } else { hold.cancel(); release.cancel(); countdown.cancel(); } }
-    sample := GallerySamplePage {
-        showcase-route: "inputs-delay-button"; active: root.visible;
-        title: @tr("延时按钮"); subtitle: @tr("按钮内部显示填色进度，支持按住完成、松开确认与点击倒计时。");
-        example-title: @tr("确认模式"); preview-height: 310px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: max(0px, min(620px, sample.preview-width - 40px));
-            height: max(0px, sample.preview-area-height - 40px); spacing: 14px; alignment: start;
-            hold := ForgeDelayButton { mode: ForgeDelayButtonMode.hold; text: @tr("按住 1.2 秒直接确认"); delay: 1200ms; clicked => { root.count += 1; root.status = @tr("按住确认完成"); } }
-            release := ForgeDelayButton { mode: hold-release; pill: true; text: @tr("按住 1.2 秒，松开确认"); delay: 1200ms; clicked => { root.count += 1; root.status = @tr("松开确认完成"); } }
-            countdown := ForgeDelayButton { mode: click; primary: true; text: @tr("点击启动倒计时，再次点击取消"); delay: 1800ms; clicked => { root.count += 1; root.status = @tr("倒计时完成"); } }
-            ForgeDelayButton { text: @tr("禁用"); enabled: false; }
-            Text { text: @tr("确认次数：{}", root.count) + " · " + root.status; color: Palette.foreground; wrap: word-wrap; }
+    prepare-preview(open) => { if open { hold.begin(); } else { hold.cancel(); purge.cancel(); } }
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
+        title: "DelayButton";
+        subtitle: @tr("需要持续按住或等待倒计时才会确认的按钮，按钮内部以填色显示进度，用来防止误触删除、发布等不可撤销的操作。");
+        showcase-route: "inputs-delay-button";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "mode", kind: @tr("属性"), type: "ForgeDelayButtonMode", description: @tr("hold：按满即确认；hold-release：按满后松开确认；click：点击开始倒计时，再次点击取消。") },
+            { name: "delay", kind: @tr("属性"), type: "duration", description: @tr("确认所需时间，默认 1200ms。") },
+            { name: "text / primary / pill", kind: @tr("属性"), type: "string / bool", description: @tr("文字、主色填充与胶囊外形。") },
+            { name: "show-progress", kind: @tr("属性"), type: "bool", description: @tr("进行中在文字后显示百分比。") },
+            { name: "running / progress", kind: @tr("输出"), type: "bool / float", description: @tr("是否正在计时，以及 0～1 的进度。") },
+            { name: "clicked() / canceled()", kind: @tr("回调"), type: "", description: @tr("完成确认时触发；中途松开、移出、失焦或按 Esc 时触发 canceled。") },
+            { name: "begin() / finish() / cancel()", kind: @tr("函数"), type: "", description: @tr("以代码开始、结束或取消一次确认。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("切换 mode 体验三种确认方式；键盘上按住 Enter 或 Space 效果相同。");
+            output: root.status;
+            GalleryPreview {
+                hold := ForgeDelayButton {
+                    text: root.mode-index == 2 ? @tr("点击开始倒计时") : @tr("按住确认");
+                    mode: root.mode-index == 0 ? ForgeDelayButtonMode.hold : root.mode-index == 1 ? ForgeDelayButtonMode.hold-release : ForgeDelayButtonMode.click;
+                    delay: root.delay-ms * 1ms;
+                    pill: root.pill; primary: root.primary; enabled: !root.disabled;
+                    clicked => { root.count += 1; root.status = @tr("clicked · 第 {} 次确认", root.count); }
+                    canceled => { root.status = @tr("canceled · 未完成"); }
+                }
+            }
+            GalleryOptions {
+                Text { text: "mode"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["hold", "hold-release", "click"]; current-index <=> root.mode-index; }
+                Text { text: @tr("delay · {}ms", round(root.delay-ms)); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 500; maximum: 3000; step: 100; value <=> root.delay-ms; }
+                CheckBox { text: "primary"; checked <=> root.primary; }
+                CheckBox { text: "pill"; checked <=> root.pill; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("外观属性互相独立，可任意组合；禁用时会立即取消进行中的确认。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: @tr("默认"); color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeDelayButton { text: @tr("按住确认"); }
+                    }
+                    Row {
+                        Text { text: "primary: true"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeDelayButton { text: @tr("按住发布"); primary: true; }
+                    }
+                    Row {
+                        Text { text: "pill: true"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeDelayButton { text: @tr("按住确认"); pill: true; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeDelayButton { text: @tr("按住确认"); enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("清空回收站");
+            description: @tr("清空后无法恢复，因此要求按住 2 秒再松开；中途松开不会执行。");
+            output: root.trash-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 400px * ForgeTypography.scale;
+                    height: card.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    card := VerticalLayout {
+                        padding: 20px; spacing: 14px;
+                        Text { text: @tr("回收站"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                        Text {
+                            text: root.trash-items > 0 ? @tr("共 {} 个项目，清空后将永久删除。", root.trash-items) : @tr("回收站已清空。");
+                            color: Palette.foreground.transparentize(0.3); font-size: 13px * ForgeTypography.scale; wrap: word-wrap;
+                        }
+                        HorizontalLayout {
+                            spacing: 8px; alignment: end;
+                            if root.trash-items == 0 : Button {
+                                text: @tr("重置示例");
+                                clicked => { root.trash-items = 12; root.trash-status = @tr("回收站中有 12 个项目"); }
+                            }
+                            Button {
+                                text: @tr("恢复全部"); enabled: root.trash-items > 0;
+                                clicked => { root.trash-items = 0; root.trash-status = @tr("已恢复全部项目"); }
+                            }
+                            purge := ForgeDelayButton {
+                                text: @tr("按住清空"); mode: hold-release; delay: 2000ms; primary: true;
+                                enabled: root.trash-items > 0;
+                                clicked => { root.trash-status = @tr("已永久删除 {} 个项目", root.trash-items); root.trash-items = 0; }
+                                canceled => { root.trash-status = @tr("已松开，未清空"); }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

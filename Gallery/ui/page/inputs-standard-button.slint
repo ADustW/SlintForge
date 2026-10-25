@@ -1,36 +1,84 @@
-import { Button, Palette } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // Slint 原生示例：Button。
 export component GalleryInputsStandardButtonPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
-    in-out property<string> draft;
+    in-out property<string> draft: @tr("按钮");
     in-out property<string> status: @tr("就绪");
+    private property<bool> disabled: false;
+    private property<bool> dirty: false;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-standard-button";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
         title: "Button";
-        subtitle: @tr("普通、带图标和禁用按钮，点击查看反馈。");
-        example-title: @tr("用法与状态");
-        preview-height: 150px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            HorizontalLayout { spacing: 12px; alignment: start;
-            Button { text: @tr("点击按钮"); primary: false; clicked => { root.count += 1; } }
-            Button { text: @tr("带图标") + " ↗"; primary: false; clicked => { root.count += 1; } }
-            Button { text: @tr("禁用"); primary: false; enabled: false; }
+        subtitle: @tr("Slint 原生按钮，用于触发一次性操作。默认样式适合大多数次要操作，主要操作见 FilledButton。");
+        native: true;
+        showcase-route: "inputs-standard-button";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("按钮文字。") },
+            { name: "icon", kind: @tr("属性"), type: "image", description: @tr("显示在文字前的图标。") },
+            { name: "primary", kind: @tr("属性"), type: "bool", description: @tr("使用主色填充。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后不响应鼠标与键盘。") },
+            { name: "pressed / has-focus", kind: @tr("输出"), type: "bool", description: @tr("按下与焦点状态。") },
+            { name: "clicked()", kind: @tr("回调"), type: "", description: @tr("鼠标单击，或聚焦时按 Enter / Space 触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("在右侧修改文字或禁用按钮，预览即时更新。");
+            output: @tr("clicked · 已点击 {} 次", root.count);
+            GalleryPreview {
+                Button { text: root.draft; enabled: !root.disabled; clicked => { root.count += 1; } }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Text { text: "text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.draft; }
+            }
         }
-        Text { text: @tr("点击次数：{}", root.count); color: Palette.foreground; }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("默认、禁用与主色按钮并排比较。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: @tr("默认"); Button { text: @tr("取消"); } }
+                GalleryVariant { caption: "enabled: false"; Button { text: @tr("不可用"); enabled: false; } }
+                GalleryVariant { caption: "primary: true"; Button { text: @tr("确认"); primary: true; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("文档工具栏");
+            description: @tr("“保存”只在文档有未保存的修改时可用。");
+            output: root.status;
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: bar.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    bar := HorizontalLayout {
+                        padding: 12px; spacing: 8px;
+                        Button { text: @tr("新建"); clicked => { root.dirty = true; root.status = @tr("已新建“未命名文档”"); } }
+                        Button { text: @tr("打开"); clicked => { root.dirty = false; root.status = @tr("已打开“季度报告”"); } }
+                        Button { text: @tr("保存"); enabled: root.dirty; clicked => { root.dirty = false; root.status = @tr("已保存"); } }
+                        Text {
+                            text: root.dirty ? @tr("有未保存的修改") : @tr("无修改");
+                            color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale;
+                            horizontal-alignment: right; vertical-alignment: center; horizontal-stretch: 1;
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

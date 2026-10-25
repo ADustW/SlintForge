@@ -1,6 +1,6 @@
-import { Palette } from "std-widgets.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
 import { ForgeFileTree, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 import { GalleryDemoModels } from "../component/demo-models.slint";
 
 // 共享组件演示：FileTreeData。
@@ -12,19 +12,119 @@ export component GalleryDataFileTreePage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    private property<bool> multi: false;
+    private property<bool> disabled: false;
+    private property<bool> src-open: true;
+    private property<bool> assets-open: false;
+    private property<string> picked: "src/main.rs";
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("数据展示");
         title: "FileTreeData";
-        subtitle: @tr("展开目录，选择文件和子节点。");
-        example-title: @tr("用法与状态");
-        preview-height: 370px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeFileTree { height: 300px; items: GalleryDemoModels.tree-items; expansion-changed(id, value) => { GalleryDemoModels.expand-tree(id, value); } selection-changed(id, value) => { GalleryDemoModels.select-tree(id, value, false); } }
-Text { text: GalleryDemoModels.tree-selection; color: Palette.foreground; wrap: word-wrap; }
+        subtitle: @tr("以缩进列表显示目录与文件，支持展开、单选和多选。数据是扁平的可见列表，展开与选择由应用更新后回传。");
+        api: [
+            { name: "items", kind: @tr("属性"), type: "[ForgeTreeItem]", description: @tr("扁平节点列表，含 id、parent-id、label、depth、folder、expanded、selected、visible、enabled。") },
+            { name: "multi-select", kind: @tr("属性"), type: "bool", description: @tr("为 true 时每个节点显示复选框。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用后整棵树不可操作。") },
+            { name: "expansion-changed(string, bool)", kind: @tr("回调"), type: "", description: @tr("点击目录前的展开按钮时触发，参数为 id 与目标状态。") },
+            { name: "selection-changed(string, bool)", kind: @tr("回调"), type: "", description: @tr("选择或取消选择节点时触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("节点数据由宿主模型提供。展开目录、选择文件，或切换多选。");
+            output: GalleryDemoModels.tree-selection;
+            GalleryPreview {
+                ForgeFileTree {
+                    width: 300px * ForgeTypography.scale;
+                    height: 260px * ForgeTypography.scale;
+                    items: GalleryDemoModels.tree-items;
+                    multi-select: root.multi;
+                    enabled: !root.disabled;
+                    expansion-changed(id, value) => { GalleryDemoModels.expand-tree(id, value); }
+                    selection-changed(id, value) => { GalleryDemoModels.select-tree(id, value, root.multi); }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "multi-select"; checked <=> root.multi; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("多选模式显示复选框；禁用后节点不可操作。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "multi-select: true";
+                    ForgeFileTree {
+                        width: 220px * ForgeTypography.scale; height: 112px;
+                        multi-select: true;
+                        items: [
+                            { id: "docs", label: @tr("文档"), folder: true, expanded: true, visible: true, enabled: true },
+                            { id: "a", parent-id: "docs", label: "a.md", depth: 1, selected: true, visible: true, enabled: true },
+                            { id: "b", parent-id: "docs", label: "b.md", depth: 1, visible: true, enabled: true },
+                        ];
+                    }
+                }
+                GalleryVariant {
+                    caption: "enabled: false";
+                    ForgeFileTree {
+                        width: 220px * ForgeTypography.scale; height: 112px;
+                        enabled: false;
+                        items: [
+                            { id: "docs", label: @tr("文档"), folder: true, expanded: true, visible: true, enabled: true },
+                            { id: "a", parent-id: "docs", label: "a.md", depth: 1, selected: true, visible: true, enabled: true },
+                            { id: "b", parent-id: "docs", label: "b.md", depth: 1, visible: true, enabled: true },
+                        ];
+                    }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("项目资源管理器");
+            description: @tr("左侧文件树，右侧显示所选节点的信息；折叠目录时隐藏其子节点。");
+            output: @tr("selection-changed · {}", root.picked);
+            GalleryPreview {
+                Rectangle {
+                    width: 460px * ForgeTypography.scale;
+                    height: 250px * ForgeTypography.scale;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    clip: true;
+                    HorizontalLayout {
+                        padding: 1px;
+                        ForgeFileTree {
+                            width: 240px * ForgeTypography.scale;
+                            items: [
+                                { id: "src", label: "src", folder: true, expanded: root.src-open, visible: true, enabled: true, selected: root.picked == "src" },
+                                { id: "src/main.rs", parent-id: "src", label: "main.rs", depth: 1, visible: root.src-open, enabled: true, selected: root.picked == "src/main.rs" },
+                                { id: "src/app.slint", parent-id: "src", label: "app.slint", depth: 1, visible: root.src-open, enabled: true, selected: root.picked == "src/app.slint" },
+                                { id: "assets", label: "assets", folder: true, expanded: root.assets-open, visible: true, enabled: true, selected: root.picked == "assets" },
+                                { id: "assets/logo.png", parent-id: "assets", label: "logo.png", depth: 1, visible: root.assets-open, enabled: true, selected: root.picked == "assets/logo.png" },
+                                { id: "Cargo.toml", label: "Cargo.toml", visible: true, enabled: true, selected: root.picked == "Cargo.toml" },
+                            ];
+                            expansion-changed(id, value) => {
+                                if id == "src" { root.src-open = value; } else if id == "assets" { root.assets-open = value; }
+                            }
+                            selection-changed(id, value) => { root.picked = id; }
+                        }
+                        Rectangle { width: 1px; background: Palette.border; }
+                        VerticalLayout {
+                            padding: 16px; spacing: 8px; alignment: start;
+                            Text { text: root.picked; color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
+                            Text {
+                                text: root.picked == "src" || root.picked == "assets" ? @tr("文件夹") : root.picked == "assets/logo.png" ? @tr("PNG 图像 · 24 KB") : root.picked == "Cargo.toml" ? @tr("TOML 配置 · 1 KB") : @tr("源代码 · 4 KB");
+                                color: Palette.foreground.transparentize(0.35); wrap: word-wrap;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

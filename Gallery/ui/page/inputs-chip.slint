@@ -1,33 +1,103 @@
-import { Button, Palette } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeChip, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：Chip。
 export component GalleryInputsChipPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
-    in-out property<string> draft;
+    in-out property<string> draft: "Slint";
     in-out property<string> status: @tr("就绪");
+    in-out property<bool> removed: false;
+    private property<bool> removable: true;
+    private property<bool> disabled: false;
+    private property<bool> in-stock: true;
+    private property<bool> free-shipping: false;
+    private property<bool> on-sale: false;
+    private property<bool> new-arrival: false;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    in-out property<bool> removed: false;
-    sample := GallerySamplePage {
-        showcase-route: "inputs-chip";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
         title: "Chip";
-        subtitle: @tr("选择、移除和恢复标签。");
-        example-title: @tr("用法与状态");
-        preview-height: 190px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            HorizontalLayout { spacing: 8px; ForgeChip { text: "Slint"; selected <=> root.flag; toggled(value) => { root.status = value ? @tr("已选中") : @tr("未选中"); } removable: false; } ForgeChip { text: @tr("可移除标签"); visible: !root.removed; removed => { root.removed = true; } } ForgeChip { text: @tr("禁用标签"); enabled: false; } }
-Button { text: @tr("恢复标签"); clicked => { root.removed = false; } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("可选中、可移除的紧凑标签，用于筛选条件、已选项和关键词。");
+        showcase-route: "inputs-chip";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("标签文字。") },
+            { name: "selected", kind: @tr("属性"), type: "bool", description: @tr("是否选中，点击标签切换，可双向绑定。") },
+            { name: "removable", kind: @tr("属性"), type: "bool", description: @tr("显示右侧的移除按钮，默认 true。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用选中与移除。") },
+            { name: "toggled(bool)", kind: @tr("回调"), type: "", description: @tr("选中状态改变时触发，参数为新状态。") },
+            { name: "removed()", kind: @tr("回调"), type: "", description: @tr("点击移除按钮时触发；组件本身不会隐藏，由外部移除数据。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击文字切换选中，点击 × 移除；移除后可恢复。");
+            output: root.status;
+            GalleryPreview {
+                if !root.removed : ForgeChip {
+                    text: root.draft; selected <=> root.flag; removable: root.removable; enabled: !root.disabled;
+                    toggled(value) => { root.status = @tr("toggled · {}", value ? "true" : "false"); }
+                    removed => { root.removed = true; root.status = "removed()"; }
+                }
+                if root.removed : Button { text: @tr("恢复标签"); clicked => { root.removed = false; root.status = @tr("已恢复"); } }
+            }
+            GalleryOptions {
+                CheckBox { text: "selected"; checked <=> root.flag; }
+                CheckBox { text: "removable"; checked <=> root.removable; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Text { text: "text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.draft; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("未选中、选中且不可移除，以及禁用。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "selected: false"; ForgeChip { text: "Rust"; } }
+                GalleryVariant { caption: "selected: true · removable: false"; ForgeChip { text: "C++"; selected: true; removable: false; } }
+                GalleryVariant { caption: "enabled: false"; ForgeChip { text: "Slint"; enabled: false; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("商品筛选");
+            description: @tr("筛选条件可以多选，结果数量随选择即时更新。");
+            output: @tr("找到 {} 件商品", 480 - (root.in-stock ? 120 : 0) - (root.free-shipping ? 150 : 0) - (root.on-sale ? 90 : 0) - (root.new-arrival ? 70 : 0));
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: filters.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    filters := VerticalLayout {
+                        padding: 16px; spacing: 10px;
+                        Text { text: @tr("筛选条件"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                        HorizontalLayout {
+                            spacing: 6px; alignment: start;
+                            ForgeChip { text: @tr("有货"); removable: false; selected <=> root.in-stock; }
+                            ForgeChip { text: @tr("包邮"); removable: false; selected <=> root.free-shipping; }
+                            ForgeChip { text: @tr("折扣"); removable: false; selected <=> root.on-sale; }
+                            ForgeChip { text: @tr("新品"); removable: false; selected <=> root.new-arrival; }
+                        }
+                        HorizontalLayout {
+                            alignment: end;
+                            Button {
+                                text: @tr("清除筛选");
+                                enabled: root.in-stock || root.free-shipping || root.on-sale || root.new-arrival;
+                                clicked => { root.in-stock = false; root.free-shipping = false; root.on-sale = false; root.new-arrival = false; }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

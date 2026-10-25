@@ -1,6 +1,6 @@
-import { Button } from "std-widgets.slint";
+import { Button, Palette, StandardButton } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryVariant } from "../component/component-page.slint";
 import { GalleryDemoModels } from "../component/demo-models.slint";
 
 // Slint 原生示例：DialogWindow。
@@ -12,19 +12,68 @@ export component GalleryPopupsDialogWindowPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+    private property<string> button-status: @tr("尚未点击");
+    private property<string> window-status: @tr("尚未打开窗口");
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("弹出层");
         title: "DialogWindow";
-        subtitle: @tr("打开对话窗口，确认或取消操作。");
-        example-title: @tr("用法与状态");
-        preview-height: 150px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Button { text: @tr("打开原生对话窗口"); clicked => { GalleryDemoModels.show-window(true); } }
-Button { text: @tr("隐藏示例窗口"); clicked => { GalleryDemoModels.close-windows(); } }
+        subtitle: @tr("Slint 原生 Dialog，作为独立的系统窗口弹出，并按平台习惯自动排列 StandardButton。窗口由 Rust/C++ 宿主创建和显示。");
+        native: true;
+        api: [
+            { name: "title / icon", kind: @tr("属性"), type: "string / image", description: @tr("对话窗口标题与图标。") },
+            { name: "StandardButton.kind", kind: @tr("属性"), type: "StandardButtonKind", description: @tr("ok、cancel、apply、close、yes、no 等标准按钮，文字随系统语言。") },
+            { name: "ok-clicked() / cancel-clicked()", kind: @tr("回调"), type: "", description: @tr("每种标准按钮自动生成对应的 <kind>-clicked 回调。") },
+            { name: "dialog-button-role", kind: @tr("属性"), type: "DialogButtonRole", description: @tr("让普通 Button 参与对话框按钮排列。") },
+            { name: "show() / hide()", kind: @tr("函数"), type: "", description: @tr("宿主通过窗口句柄显示或隐藏对话窗口。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("宿主创建并显示一个原生 Dialog；点击 OK 或 Cancel 后隐藏。");
+            output: root.status;
+            GalleryPreview {
+                Button { text: @tr("打开对话窗口"); primary: true; clicked => { GalleryDemoModels.show-window(true); root.status = @tr("已打开对话窗口"); } }
+                Button { text: @tr("隐藏示例窗口"); clicked => { GalleryDemoModels.close-windows(); root.status = @tr("已隐藏示例窗口"); } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("标准按钮");
+            description: @tr("StandardButton 的文字和排列顺序由平台决定，也可以单独放在普通界面中使用。");
+            output: root.button-status;
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "kind: ok"; StandardButton { kind: ok; clicked => { root.button-status = "ok-clicked"; } } }
+                GalleryVariant { caption: "kind: cancel"; StandardButton { kind: cancel; clicked => { root.button-status = "cancel-clicked"; } } }
+                GalleryVariant { caption: "kind: apply"; StandardButton { kind: apply; clicked => { root.button-status = "apply-clicked"; } } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("多窗口工具");
+            description: @tr("同一应用中同时打开普通窗口与对话窗口；隐藏后再次打开，窗口内的输入仍然保留。");
+            output: root.window-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: tools.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    tools := VerticalLayout {
+                        padding: 20px; spacing: 12px;
+                        Text { text: @tr("窗口"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                        Text { text: @tr("窗口对象由宿主持有，页面只发出打开或关闭请求。"); color: Palette.foreground.transparentize(0.3); font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                        HorizontalLayout {
+                            spacing: 8px; alignment: end;
+                            Button { text: @tr("普通窗口"); clicked => { GalleryDemoModels.show-window(false); root.window-status = @tr("已打开普通窗口"); } }
+                            Button { text: @tr("对话窗口"); clicked => { GalleryDemoModels.show-window(true); root.window-status = @tr("已打开对话窗口"); } }
+                            Button { text: @tr("全部隐藏"); clicked => { GalleryDemoModels.close-windows(); root.window-status = @tr("已隐藏全部窗口"); } }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -3,6 +3,7 @@ import { Palette } from "std-widgets.slint";
 import { ForgeNavPlacement, ForgePaneState, ForgeRouteParam, ForgeNavigationItem } from "../types/navigation.slint";
 import { ForgeNavigationPane } from "internal/navigation-pane.slint";
 import { ForgeTopNavigation } from "internal/top-navigation.slint";
+import { ForgeIcon, ForgeIcons } from "../icons/icon.slint";
 
 export component ForgeNavigationView inherits Rectangle {
     in property<[ForgeNavigationItem]> items;
@@ -43,14 +44,15 @@ export component ForgeNavigationView inherits Rectangle {
                     width: 38px; height: 36px;
                     border-radius: 4px;
                     background: back-touch.has-hover && root.can-go-back ? Palette.control-background : transparent;
-                    Text { text: "‹"; font-size: 27px * ForgeTypography.scale; color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; opacity: root.can-go-back ? 1 : 0.35; }
+                    // 应用栏按钮使用图标字体，系统 UI 字体缺少 ☰、☼ 等符号。
+                    ForgeIcon { glyph: ForgeIcons.arrow-left; font-size: 16px * ForgeTypography.scale; opacity: root.can-go-back ? 1 : 0.35; }
                     back-touch := TouchArea { enabled: root.can-go-back; clicked => { root.back-requested(); } }
                 }
                 Rectangle {
                     width: 36px; height: 36px;
                     border-radius: 4px;
                     background: menu-touch.has-hover ? Palette.control-background : transparent;
-                    Text { text: "☰"; font-size: 16px * ForgeTypography.scale; color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; }
+                    ForgeIcon { glyph: ForgeIcons.navigation; font-size: 16px * ForgeTypography.scale; }
                     menu-touch := TouchArea { clicked => { root.pane-state-requested(root.pane-state == ForgePaneState.expanded ? ForgePaneState.compact : root.pane-state == ForgePaneState.compact ? ForgePaneState.hidden : ForgePaneState.expanded); } }
                 }
                 Rectangle {
@@ -61,7 +63,7 @@ export component ForgeNavigationView inherits Rectangle {
                 Rectangle {
                     width: 38px; height: 36px; border-radius: 4px;
                     background: theme-touch.has-hover ? Palette.control-background : transparent;
-                    Text { text: root.dark-mode ? "☼" : "☾"; color: Palette.foreground; font-size: 17px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+                    ForgeIcon { glyph: root.dark-mode ? ForgeIcons.sun : ForgeIcons.moon; font-size: 16px * ForgeTypography.scale; }
                     theme-touch := TouchArea { clicked => { root.theme-toggle-requested(); } }
                 }
                 Text { text: "v0.1.2"; color: Palette.foreground; font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }

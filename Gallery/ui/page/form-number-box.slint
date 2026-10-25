@@ -1,32 +1,106 @@
-import { Palette } from "std-widgets.slint";
+import { CheckBox, ComboBox, Palette } from "std-widgets.slint";
 import { ForgeNumberBox, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // 共享组件演示：NumberBox。
 export component GalleryFormNumberBoxPage inherits Rectangle {
     in-out property<int> count: 0;
-    in-out property<bool> flag: true;
-    in-out property<float> number: 30;
+    in-out property<bool> flag: false;
+    in-out property<float> number: 12.5;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<[float]> steps: [0.1, 0.25, 1, 5];
+    private property<int> step-index: 1;
+    private property<float> scale-value: 100;
+    private property<float> margin-value: 12.7;
+    private property<float> copies: 2;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-number-box";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
         title: "NumberBox";
-        subtitle: @tr("输入浮点数，或按设定步长增减。");
-        example-title: @tr("用法与状态");
-        preview-height: 180px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            field := ForgeNumberBox { value: 12.5; minimum: -100; maximum: 100; step: 0.25; value-changed(value) => { root.number = value; } }
-Text { text: @tr("当前值：{}", field.value); color: Palette.foreground; }
+        subtitle: @tr("浮点数输入框。可直接输入，也可用按钮或上下方向键按步长调整；整数场景请使用原生 SpinBox。");
+        showcase-route: "form-number-box";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "value", kind: @tr("属性"), type: "float", description: @tr("当前值；外部赋值同样限制在范围内。") },
+            { name: "minimum / maximum", kind: @tr("属性"), type: "float", description: @tr("取值范围。") },
+            { name: "step", kind: @tr("属性"), type: "float", description: @tr("按钮与方向键的步长。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用输入与步进。") },
+            { name: "input-valid", kind: @tr("输出"), type: "bool", description: @tr("当前文本能否解析为数字。") },
+            { name: "value-changed(float)", kind: @tr("回调"), type: "", description: @tr("用户修改后触发；回车或失焦时提交输入。") },
+            { name: "set-value(float) / commit()", kind: @tr("函数"), type: "", description: @tr("设置值，或立即提交当前文本。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("范围为 -100 到 100。切换步长后用按钮或方向键试一试。");
+            output: @tr("value-changed · {}", root.number);
+            GalleryPreview {
+                ForgeNumberBox {
+                    width: 240px * ForgeTypography.scale;
+                    value: root.number; minimum: -100; maximum: 100; step: root.steps[root.step-index]; enabled: !root.flag;
+                    value-changed(value) => { root.number = value; }
+                }
+            }
+            GalleryOptions {
+                Text { text: "step"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["0.1", "0.25", "1", "5"]; current-index <=> root.step-index; }
+                CheckBox { text: @tr("禁用"); checked <=> root.flag; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("到达上限时增加按钮自动禁用；禁用状态不可输入。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: @tr("默认"); color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeNumberBox { value: 2.5; minimum: 0; maximum: 10; step: 0.5; }
+                    }
+                    Row {
+                        Text { text: "value = maximum"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeNumberBox { value: 10; minimum: 0; maximum: 10; step: 0.5; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeNumberBox { value: 2.5; minimum: 0; maximum: 10; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("打印设置");
+            description: @tr("不同字段使用不同的范围和步长。");
+            output: @tr("缩放 {}% · 页边距 {} mm · {} 份", root.scale-value, root.margin-value, root.copies);
+            GalleryPreview {
+                Rectangle {
+                    width: 380px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := GridLayout {
+                        padding: 20px; spacing-horizontal: 16px; spacing-vertical: 12px;
+                        Row {
+                            Text { text: @tr("缩放比例 (%)"); color: Palette.foreground; vertical-alignment: center; }
+                            ForgeNumberBox { value: root.scale-value; minimum: 25; maximum: 400; step: 5; value-changed(value) => { root.scale-value = value; } }
+                        }
+                        Row {
+                            Text { text: @tr("页边距 (mm)"); color: Palette.foreground; vertical-alignment: center; }
+                            ForgeNumberBox { value: root.margin-value; minimum: 0; maximum: 50; step: 0.1; value-changed(value) => { root.margin-value = value; } }
+                        }
+                        Row {
+                            Text { text: @tr("份数"); color: Palette.foreground; vertical-alignment: center; }
+                            ForgeNumberBox { value: root.copies; minimum: 1; maximum: 99; step: 1; value-changed(value) => { root.copies = value; } }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

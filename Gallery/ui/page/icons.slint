@@ -1,9 +1,49 @@
-import { LineEdit, Palette } from "std-widgets.slint";
-import { ForgeIconEntry, ForgeIconButton, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { CheckBox, LineEdit, Palette, SpinBox } from "std-widgets.slint";
+import { ForgeIcon, ForgeIconEntry, ForgeIconButton, ForgeIcons, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 import { GalleryIconResultRow } from "../component/icon-result-row.slint";
 
+// 可点击的图标格：图标下方注明 ForgeIcons 中的名称。
+component GalleryIconTile inherits Rectangle {
+    in property<string> glyph;
+    in property<string> name;
+    in property<length> icon-size;
+    in property<brush> icon-color;
+    in property<bool> selected;
+    callback clicked();
+    width: Math.max(72px * ForgeTypography.scale, root.icon-size + 24px);
+    height: layout.preferred-height;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: root.selected ? Palette.accent-background : touch.has-hover ? Palette.border : transparent;
+    background: root.selected ? Palette.accent-background.transparentize(0.88) : transparent;
+    layout := VerticalLayout {
+        padding: 8px; spacing: 6px;
+        ForgeIcon { glyph: root.glyph; font-size: root.icon-size; color: root.icon-color; height: root.icon-size + 4px; }
+        Text { text: root.name; color: Palette.foreground.transparentize(0.3); font-size: 11px * ForgeTypography.scale; horizontal-alignment: center; }
+    }
+    touch := TouchArea { clicked => { root.clicked(); } }
+}
+
+// 工具栏按钮：图标用 ForgeIcon 绘制（ForgeIconButton 的 icon 使用界面字体，只适合普通字符）。
+component GalleryToolButton inherits Rectangle {
+    in property<string> glyph;
+    in property<string> label;
+    in property<bool> selected;
+    callback clicked();
+    height: 34px * ForgeTypography.scale;
+    width: row.preferred-width;
+    border-radius: 6px;
+    background: root.selected ? Palette.accent-background : touch.has-hover ? Palette.control-background : transparent;
+    row := HorizontalLayout {
+        padding-left: 9px; padding-right: 9px; spacing: 6px;
+        ForgeIcon { glyph: root.glyph; font-size: 16px * ForgeTypography.scale; color: root.selected ? Palette.accent-foreground : Palette.foreground; }
+        if root.label != "" : Text { text: root.label; vertical-alignment: center; color: root.selected ? Palette.accent-foreground : Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+    }
+    touch := TouchArea { clicked => { root.clicked(); } }
+}
+
+// 图标页：常用图标的用法示例，以及由宿主提供搜索和分页的完整图标目录。
 export component GalleryIconsPage inherits Rectangle {
     in property<[ForgeIconEntry]> entries;
     in property<string> query;
@@ -12,58 +52,114 @@ export component GalleryIconsPage inherits Rectangle {
     in property<int> page-count;
     callback search-requested(string);
     callback page-requested(int);
+    private property<int> icon-size: 28;
+    private property<bool> accent: true;
+    private property<string> picked: "home";
+    private property<string> tool: "";
     background: Palette.background;
-    GalleryPageFrame {
+
+    GalleryComponentPage {
         width: parent.width; height: parent.height;
-        title: @tr("图标字体");
-        subtitle: @tr("浏览 Fluent System Icons Regular 的完整图标目录，按名称搜索并查看码位。");
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        GalleryDemoCard {
-            preview-height: 76px;
-            Text {
-                x: 18px; y: 18px; width: parent.width - 36px;
-                text: @tr("搜索图标名称，查看图形和对应码位。");
-                color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
-                wrap: word-wrap;
+        category: @tr("主题");
+        title: "Icons";
+        subtitle: @tr("基于 Fluent System Icons Regular 字体的图标。常用图标通过 ForgeIcons 按名称引用，其余图标可在下方目录中按名称搜索并查看码位。");
+        api: [
+            { name: "ForgeIcon.glyph", kind: @tr("属性"), type: "string", description: @tr("要显示的图标字符。") },
+            { name: "ForgeIcon.font-size / color", kind: @tr("属性"), type: "length / brush", description: @tr("图标尺寸与颜色，继承自 Text，默认 20px 乘以字号比例。") },
+            { name: "ForgeIcons.<name>", kind: @tr("输出"), type: "string", description: @tr("常用图标的字符常量，如 home、settings、search。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("ForgeIcon 显示 ForgeIcons 中的常用图标。调整尺寸与颜色，点击图标查看引用名称。");
+            output: @tr("glyph · ForgeIcons.{}", root.picked);
+            GalleryPreview {
+                spacing: 4px;
+                GalleryIconTile { name: "home"; glyph: ForgeIcons.home; icon-size: root.icon-size * 1px; icon-color: root.accent ? Palette.accent-background : Palette.foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                GalleryIconTile { name: "search"; glyph: ForgeIcons.search; icon-size: root.icon-size * 1px; icon-color: root.accent ? Palette.accent-background : Palette.foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                GalleryIconTile { name: "settings"; glyph: ForgeIcons.settings; icon-size: root.icon-size * 1px; icon-color: root.accent ? Palette.accent-background : Palette.foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                GalleryIconTile { name: "calendar"; glyph: ForgeIcons.calendar; icon-size: root.icon-size * 1px; icon-color: root.accent ? Palette.accent-background : Palette.foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
+                GalleryIconTile { name: "warning"; glyph: ForgeIcons.warning; icon-size: root.icon-size * 1px; icon-color: root.accent ? Palette.accent-background : Palette.foreground; selected: root.picked == self.name; clicked => { root.picked = self.name; } }
             }
-        }
-        HorizontalLayout {
-            height: 38px; spacing: 12px;
-            LineEdit {
-                horizontal-stretch: 1;
-                text: root.query;
-                placeholder-text: @tr("按名称搜索，例如 home、settings、arrow");
-                edited(value) => { root.search-requested(value); }
-            }
-            Text {
-                text: @tr("匹配图标") + ": " + root.total;
-                color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
-                vertical-alignment: center;
-            }
-        }
-        HorizontalLayout {
-            height: 36px; spacing: 10px;
-            ForgeIconButton {
-                label: @tr("上一页"); enabled: root.page-index > 0;
-                clicked => { root.page-requested(root.page-index - 1); }
-            }
-            Text {
-                text: (root.total == 0 ? 0 : root.page-index + 1) + " / " + root.page-count;
-                color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
-                vertical-alignment: center;
-            }
-            ForgeIconButton {
-                label: @tr("下一页"); enabled: root.page-index + 1 < root.page-count;
-                clicked => { root.page-requested(root.page-index + 1); }
-            }
-        }
-        VerticalLayout {
-            width: Math.max(0px, root.width - 48px); spacing: 4px;
-            for item in root.entries : GalleryIconResultRow {
-                width: parent.width;
-                name: item.name; glyph: item.glyph; codepoint: item.codepoint;
+            GalleryOptions {
+                Text { text: "font-size (px)"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 16; maximum: 48; step-size: 4; value <=> root.icon-size; }
+                CheckBox { text: "color: accent"; checked <=> root.accent; }
             }
         }
 
+        GalleryExample {
+            title: @tr("编辑器工具栏");
+            description: @tr("图标按钮组成工具栏，选中的工具高亮显示；常用操作带文字标签。");
+            output: root.tool == "" ? @tr("未选择工具") : @tr("clicked · {}", root.tool);
+            GalleryPreview {
+                Rectangle {
+                    height: bar.preferred-height;
+                    width: bar.preferred-width;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    bar := HorizontalLayout {
+                        padding: 6px; spacing: 4px;
+                        GalleryToolButton { glyph: ForgeIcons.add; label: @tr("新建"); clicked => { root.tool = "add"; } }
+                        Rectangle { width: 1px; background: Palette.border; }
+                        GalleryToolButton { glyph: ForgeIcons.search; selected: root.tool == "search"; clicked => { root.tool = "search"; } }
+                        GalleryToolButton { glyph: ForgeIcons.text-font; selected: root.tool == "text-font"; clicked => { root.tool = "text-font"; } }
+                        GalleryToolButton { glyph: ForgeIcons.eyedropper; selected: root.tool == "eyedropper"; clicked => { root.tool = "eyedropper"; } }
+                        GalleryToolButton { glyph: ForgeIcons.pin; selected: root.tool == "pin"; clicked => { root.tool = "pin"; } }
+                        Rectangle { width: 1px; background: Palette.border; }
+                        GalleryToolButton { glyph: ForgeIcons.settings; clicked => { root.tool = "settings"; } }
+                    }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("完整图标目录");
+            description: @tr("按名称搜索 Fluent System Icons Regular 的全部图标，查看图形和对应码位。搜索与分页由宿主处理。");
+            output: @tr("匹配图标 {} 个 · 第 {} / {} 页", root.total, root.total == 0 ? 0 : root.page-index + 1, root.page-count);
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                VerticalLayout {
+                    spacing: 10px;
+                    HorizontalLayout {
+                        spacing: 12px;
+                        LineEdit {
+                            horizontal-stretch: 1;
+                            text: root.query;
+                            placeholder-text: @tr("按名称搜索，例如 home、settings、arrow");
+                            edited(value) => { root.search-requested(value); }
+                        }
+                        Text {
+                            text: @tr("匹配图标") + ": " + root.total;
+                            color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                            vertical-alignment: center;
+                        }
+                    }
+                    HorizontalLayout {
+                        spacing: 10px; alignment: start;
+                        ForgeIconButton {
+                            label: @tr("上一页"); enabled: root.page-index > 0;
+                            clicked => { root.page-requested(root.page-index - 1); }
+                        }
+                        Text {
+                            text: (root.total == 0 ? 0 : root.page-index + 1) + " / " + root.page-count;
+                            color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                            vertical-alignment: center;
+                        }
+                        ForgeIconButton {
+                            label: @tr("下一页"); enabled: root.page-index + 1 < root.page-count;
+                            clicked => { root.page-requested(root.page-index + 1); }
+                        }
+                    }
+                    VerticalLayout {
+                        spacing: 4px;
+                        for item in root.entries : GalleryIconResultRow {
+                            name: item.name; glyph: item.glyph; codepoint: item.codepoint;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

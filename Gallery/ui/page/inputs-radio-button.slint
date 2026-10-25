@@ -1,32 +1,116 @@
-import { RadioGroup, Palette } from "std-widgets.slint";
+import { CheckBox, Palette, RadioGroup } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
-// Slint 原生示例：RadioButton。
+// Slint 原生示例：RadioButton（RadioGroup）。
 export component GalleryInputsRadioButtonPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
     in-out property<string> draft;
-    in-out property<string> status: @tr("就绪");
+    in-out property<string> status: @tr("个人版");
+    private property<int> plan-index: 0;
+    private property<bool> horizontal-layout: false;
+    private property<bool> disabled: false;
+    private property<int> shipping: 0;
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-radio-button";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
         title: "RadioButton";
-        subtitle: @tr("同组内只能选择一个选项。");
-        example-title: @tr("用法与状态");
-        preview-height: 190px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            RadioGroup { RadioButton { text: @tr("方案一"); } RadioButton { text: @tr("方案二"); } RadioButton { text: @tr("方案三"); enabled: false; } selected(value) => { root.status = value; } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("原生单选按钮，放在 RadioGroup 中使用，同组内只能选中一项。选项少且需要全部可见时使用，选项较多时改用 ComboBox。");
+        native: true;
+        showcase-route: "inputs-radio-button";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "RadioButton.text / enabled", kind: @tr("属性"), type: "string / bool", description: @tr("选项文字，以及该选项是否可选。") },
+            { name: "title", kind: @tr("属性"), type: "string", description: @tr("显示在选项上方的分组标题。") },
+            { name: "RadioButton.checked", kind: @tr("属性"), type: "bool", description: @tr("初始选中项；都不设置时整组未选择。") },
+            { name: "orientation", kind: @tr("属性"), type: "Orientation", description: @tr("纵向（默认）或横向排列。") },
+            { name: "enabled", kind: @tr("属性"), type: "bool", description: @tr("禁用整组选项。") },
+            { name: "current-value", kind: @tr("输出"), type: "string", description: @tr("最近一次由用户选中的选项文字。") },
+            { name: "selected(string)", kind: @tr("回调"), type: "", description: @tr("用户选中新选项时触发，参数为选项文字。") },
+            { name: "RadioButton.toggled()", kind: @tr("回调"), type: "", description: @tr("该选项被选中时触发，适合按下标记录选择。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("“企业版”单独禁用；可切换横向排列或禁用整组。");
+            output: @tr("selected · {}", root.status);
+            GalleryPreview {
+                // Slint 1.18 的 Rust 生成代码不支持动态绑定 RadioGroup.orientation，按方向分别创建，选中项由 plan-index 保持。
+                if !root.horizontal-layout : RadioGroup {
+                    title: @tr("订阅方案");
+                    enabled: !root.disabled;
+                    selected(value) => { root.count += 1; root.status = value; }
+                    RadioButton { text: @tr("个人版"); checked: root.plan-index == 0; toggled => { root.plan-index = 0; } }
+                    RadioButton { text: @tr("团队版"); checked: root.plan-index == 1; toggled => { root.plan-index = 1; } }
+                    RadioButton { text: @tr("企业版"); enabled: false; }
+                }
+                if root.horizontal-layout : RadioGroup {
+                    title: @tr("订阅方案");
+                    orientation: horizontal;
+                    enabled: !root.disabled;
+                    selected(value) => { root.count += 1; root.status = value; }
+                    RadioButton { text: @tr("个人版"); checked: root.plan-index == 0; toggled => { root.plan-index = 0; } }
+                    RadioButton { text: @tr("团队版"); checked: root.plan-index == 1; toggled => { root.plan-index = 1; } }
+                    RadioButton { text: @tr("企业版"); enabled: false; }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "orientation: horizontal"; checked <=> root.horizontal-layout; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("未选择、横向排列与整组禁用。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "checked: false";
+                    RadioGroup { RadioButton { text: @tr("是"); } RadioButton { text: @tr("否"); } }
+                }
+                GalleryVariant {
+                    caption: "orientation: horizontal";
+                    RadioGroup { orientation: horizontal; RadioButton { text: @tr("是"); checked: true; } RadioButton { text: @tr("否"); } }
+                }
+                GalleryVariant {
+                    caption: "enabled: false";
+                    RadioGroup { enabled: false; RadioButton { text: @tr("是"); } RadioButton { text: @tr("否"); checked: true; } }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("配送方式");
+            description: @tr("每个选项对应不同运费，所选方式即时计入订单合计；当日达在当前地址不可用。");
+            output: @tr("订单合计 ¥{}", 199 + (root.shipping == 1 ? 12 : root.shipping == 2 ? 25 : 0));
+            GalleryPreview {
+                Rectangle {
+                    width: 360px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := HorizontalLayout {
+                        padding: 20px; spacing: 16px;
+                        RadioGroup {
+                            title: @tr("选择配送方式");
+                            RadioButton { text: @tr("标准配送（3～5 天）"); checked: true; toggled => { root.shipping = 0; } }
+                            RadioButton { text: @tr("次日达"); toggled => { root.shipping = 1; } }
+                            RadioButton { text: @tr("当日达"); enabled: false; }
+                        }
+                        VerticalLayout {
+                            alignment: end; spacing: 4px;
+                            Text { text: root.shipping == 0 ? @tr("免运费") : @tr("运费 ¥{}", root.shipping == 1 ? 12 : 25); color: Palette.foreground; horizontal-alignment: right; }
+                            Text { text: @tr("商品 ¥199"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; horizontal-alignment: right; }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

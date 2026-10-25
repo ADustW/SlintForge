@@ -1,21 +1,112 @@
-import { ForgeTimePicker } from "@slintforge";
-import { ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryPickerExample } from "../component/picker-example.slint";
+import { CheckBox, Palette, Time } from "std-widgets.slint";
+import { ForgeTimePicker, ForgeDateTime, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
+// 共享组件演示：TimePicker。
 export component GalleryFormTimePickerPage inherits Rectangle {
     in property<string> language: "zh";
     in-out property<bool> use-24-hour-format: false;
     in-out property<bool> clock-mode: true;
+    private property<bool> dark1: Palette.color-scheme == ColorScheme.dark;
+    private property<bool> disabled1: false;
+    private property<bool> seconds1: false;
+    private property<Time> meeting-start: { hour: 14, minute: 0, second: 0 };
+    private property<Time> meeting-end: { hour: 15, minute: 30, second: 0 };
     callback prepare-preview(bool);
     callback configure-preview(bool, bool);
     configure-preview(use-24-hour, clock) => { root.use-24-hour-format = use-24-hour; root.clock-mode = clock; }
-    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); third.close(); } }
-    GalleryPageFrame {
-        width: root.width; height: root.height;
-        title: @tr("时间选择器"); subtitle: @tr("分栏选择时间，支持区域语言、12/24 小时制和分钟步长。");
-        sample1 := GalleryPickerExample { label: @tr("12 小时制"); first := ForgeTimePicker { x: 0px; y: 0px; language: root.language; dark: sample1.dark; enabled: !sample1.disabled; use-24-hour-format: root.use-24-hour-format; clock-mode: root.clock-mode; } }
-        sample2 := GalleryPickerExample { label: @tr("英文区域"); second := ForgeTimePicker { x: 0px; y: 0px; language: "en"; dark: sample2.dark; enabled: !sample2.disabled; } }
-        sample3 := GalleryPickerExample { label: @tr("24 小时制，5 分钟步长"); third := ForgeTimePicker { x: 0px; y: 0px; language: root.language; dark: sample3.dark; enabled: !sample3.disabled; use-24-hour-format: true; minute-increment: 5; } }
+    prepare-preview(open) => { if open { first.open(); } else { first.close(); second.close(); third.close(); start.close(); end.close(); } }
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单 / 选择器");
+        title: "TimePicker";
+        subtitle: @tr("分栏滚轮选择时、分（可选秒）的时间按钮，支持区域语言、12/24 小时制和分钟步长。");
+        api: [
+            { name: "time / has-value", kind: @tr("属性"), type: "Time / bool", description: @tr("已提交的时间，以及是否已选择。") },
+            { name: "use-24-hour-format", kind: @tr("属性"), type: "bool", description: @tr("使用 24 小时制；默认显示上午/下午。") },
+            { name: "minute-increment / show-seconds", kind: @tr("属性"), type: "int / bool", description: @tr("分钟步长与是否显示秒字段。") },
+            { name: "clock-mode", kind: @tr("属性"), type: "bool", description: @tr("true 为滚轮选择，false 为数字输入。") },
+            { name: "language / dark", kind: @tr("属性"), type: "string / bool", description: @tr("显示语言与深浅配色。") },
+            { name: "accepted(Time) / canceled()", kind: @tr("回调"), type: "", description: @tr("确认或取消弹层时触发。") },
+            { name: "open() / close()", kind: @tr("函数"), type: "", description: @tr("以编程方式打开或关闭弹层。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击按钮打开时间弹层，滚动或点击各栏后确认。");
+            output: first.has-value ? @tr("accepted · {}", ForgeDateTime.format-time(first.time, root.language, root.use-24-hour-format)) : @tr("尚未选择");
+            GalleryPreview {
+                min-preview-height: 120px * ForgeTypography.scale;
+                first := ForgeTimePicker {
+                    language: root.language; dark: root.dark1; enabled: !root.disabled1;
+                    use-24-hour-format: root.use-24-hour-format; clock-mode: root.clock-mode; show-seconds: root.seconds1;
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "use-24-hour-format"; checked <=> root.use-24-hour-format; }
+                CheckBox { text: "clock-mode"; checked <=> root.clock-mode; }
+                CheckBox { text: "show-seconds"; checked <=> root.seconds1; }
+                CheckBox { text: "dark"; checked <=> root.dark1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("区域语言决定字段顺序与上午/下午文字；步长限制可选的分钟值。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: "language: \"en\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        second := ForgeTimePicker { language: "en"; time: { hour: 9, minute: 15, second: 0 }; has-value: true; }
+                    }
+                    Row {
+                        Text { text: "minute-increment: 5"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        third := ForgeTimePicker { language: root.language; use-24-hour-format: true; minute-increment: 5; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeTimePicker { language: root.language; enabled: false; time: { hour: 18, minute: 0, second: 0 }; has-value: true; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("会议预约");
+            description: @tr("开始与结束时间以 15 分钟为步长，确认后更新会议时段。");
+            output: root.meeting-end.hour * 60 + root.meeting-end.minute > root.meeting-start.hour * 60 + root.meeting-start.minute
+                ? @tr("会议时间 {} – {}", ForgeDateTime.format-time(root.meeting-start, root.language, true), ForgeDateTime.format-time(root.meeting-end, root.language, true))
+                : @tr("结束时间需晚于开始时间");
+            GalleryPreview {
+                Rectangle {
+                    width: 400px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := GridLayout {
+                        padding: 20px; spacing-horizontal: 16px; spacing-vertical: 12px;
+                        Row {
+                            Text { text: @tr("开始时间"); color: Palette.foreground; vertical-alignment: center; }
+                            start := ForgeTimePicker {
+                                language: root.language; use-24-hour-format: true; minute-increment: 15;
+                                time: root.meeting-start; has-value: true;
+                                accepted(value) => { root.meeting-start = value; }
+                            }
+                        }
+                        Row {
+                            Text { text: @tr("结束时间"); color: Palette.foreground; vertical-alignment: center; }
+                            end := ForgeTimePicker {
+                                language: root.language; use-24-hour-format: true; minute-increment: 15;
+                                time: root.meeting-end; has-value: true;
+                                accepted(value) => { root.meeting-end = value; }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

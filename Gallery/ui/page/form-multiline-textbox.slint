@@ -1,7 +1,6 @@
-import { TextEdit } from "std-widgets.slint";
+import { Button, CheckBox, ComboBox, Palette, TextEdit } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // Slint 原生示例：MultiLineTextBox。
 export component GalleryFormMultilineTextboxPage inherits Rectangle {
@@ -10,22 +9,110 @@ export component GalleryFormMultilineTextboxPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<string> note: @tr("会议纪要\n1. 确认下周发布范围\n2. 补充 C++ 示例与文档\n3. 周五前完成截图验收");
+    private property<bool> read-only1: false;
+    private property<bool> disabled1: false;
+    private property<int> wrap-index: 0;
+    private property<int> feedback-limit: 200;
+    private property<string> feedback-status: @tr("尚未提交");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-multiline-textbox";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
         title: "MultiLineTextBox";
-        subtitle: @tr("编辑多行文字，输入框内可滚动。");
-        example-title: @tr("用法与状态");
-        preview-height: 250px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            TextEdit { text: @tr("第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行"); height: 170px; }
+        subtitle: @tr("多行文本编辑框，对应 Slint 原生 TextEdit。Enter 换行，内容超出时在框内滚动，适合备注、描述和反馈。");
+        native: true;
+        showcase-route: "form-multiline-textbox";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("编辑的文本，可双向绑定。") },
+            { name: "wrap", kind: @tr("属性"), type: "TextWrap", description: @tr("word-wrap 按宽度换行，no-wrap 只在换行符处换行。") },
+            { name: "placeholder-text", kind: @tr("属性"), type: "string", description: @tr("文本为空时显示的提示。") },
+            { name: "read-only / enabled", kind: @tr("属性"), type: "bool", description: @tr("只读或禁用编辑。") },
+            { name: "edited(string)", kind: @tr("回调"), type: "", description: @tr("用户每次修改文本后触发。") },
+            { name: "select-all() / copy() / paste()", kind: @tr("函数"), type: "", description: @tr("全选、复制与粘贴。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("在框内输入多行文字；切换 wrap 比较长行的显示方式。");
+            output: @tr("{} 个字符", root.note.character-count);
+            GalleryPreview {
+                TextEdit {
+                    width: 360px * ForgeTypography.scale; height: 150px * ForgeTypography.scale;
+                    text <=> root.note;
+                    wrap: root.wrap-index == 0 ? TextWrap.word-wrap : TextWrap.no-wrap;
+                    read-only: root.read-only1; enabled: !root.disabled1;
+                }
+            }
+            GalleryOptions {
+                Text { text: "wrap"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                ComboBox { model: ["word-wrap", "no-wrap"]; current-index <=> root.wrap-index; }
+                CheckBox { text: "read-only"; checked <=> root.read-only1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("空内容显示占位提示；只读与禁用都不能编辑，禁用时文字变淡。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: @tr("默认"); color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 280px * ForgeTypography.scale; height: 64px * ForgeTypography.scale; placeholder-text: @tr("添加备注"); }
+                    }
+                    Row {
+                        Text { text: "read-only: true"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 280px * ForgeTypography.scale; height: 64px * ForgeTypography.scale; text: @tr("只读文本\n第二行"); read-only: true; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        TextEdit { width: 280px * ForgeTypography.scale; height: 64px * ForgeTypography.scale; text: @tr("禁用文本\n第二行"); enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("意见反馈");
+            description: @tr("实时统计字数，超过 200 字时提示并禁用提交。");
+            output: root.feedback-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := VerticalLayout {
+                        padding: 20px; spacing: 10px;
+                        Text { text: @tr("你对新版本有什么建议？"); color: Palette.foreground; font-weight: 600; }
+                        feedback := TextEdit {
+                            height: 110px * ForgeTypography.scale;
+                            placeholder-text: @tr("描述遇到的问题或希望增加的功能");
+                        }
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Text {
+                                text: @tr("{}/{} 字", feedback.text.character-count, root.feedback-limit);
+                                color: feedback.text.character-count > root.feedback-limit ? #c42b1c : Palette.foreground.transparentize(0.45);
+                                font-size: 12px * ForgeTypography.scale; vertical-alignment: center;
+                            }
+                            Rectangle { }
+                            Button { text: @tr("清空"); enabled: feedback.text != ""; clicked => { feedback.text = ""; } }
+                            Button {
+                                text: @tr("提交");
+                                primary: true;
+                                enabled: feedback.text.character-count > 0 && feedback.text.character-count <= root.feedback-limit;
+                                clicked => { root.feedback-status = @tr("已提交 {} 字", feedback.text.character-count); feedback.text = ""; }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

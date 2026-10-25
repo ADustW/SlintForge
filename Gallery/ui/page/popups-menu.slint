@@ -1,7 +1,6 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
+import { ForgePillButton, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // Slint 原生示例：Menu。
 export component GalleryPopupsMenuPage inherits Rectangle {
@@ -12,19 +11,132 @@ export component GalleryPopupsMenuPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+    private property<bool> save-enabled: true;
+    private property<bool> wrap-lines: true;
+    private property<bool> line-numbers: false;
+    private property<string> view-status: @tr("尚未选择");
+    private property<string> file-status: @tr("在文件上右击");
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("弹出层");
         title: "Menu";
-        subtitle: @tr("在演示区右击，选择菜单中的操作。");
-        example-title: @tr("用法与状态");
-        preview-height: 280px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Rectangle { height: 170px; background: Palette.control-background; border-radius: 8px; Text { text: @tr("在此区域右击打开原生菜单"); color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; } ContextMenuArea { Menu { MenuItem { title: @tr("打开"); activated => { root.status = @tr("已打开"); } } MenuItem { title: @tr("保存"); activated => { root.status = @tr("已保存"); } } MenuItem { title: @tr("禁用操作"); enabled: false; } } } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("Slint 原生 ContextMenuArea 与 Menu，在右击或按菜单键时弹出操作列表。支持分隔线、禁用项、勾选项与子菜单。");
+        native: true;
+        api: [
+            { name: "ContextMenuArea", kind: @tr("属性"), type: "enabled: bool", description: @tr("右击区域，内含一个 Menu；禁用后不再弹出。") },
+            { name: "show(Point) / close()", kind: @tr("函数"), type: "", description: @tr("在指定位置以编程方式打开菜单，或关闭菜单。") },
+            { name: "MenuItem.title / enabled", kind: @tr("属性"), type: "string / bool", description: @tr("菜单项文字与可用状态。") },
+            { name: "checkable / checked", kind: @tr("属性"), type: "bool", description: @tr("勾选项；激活时自动切换 checked。") },
+            { name: "activated()", kind: @tr("回调"), type: "", description: @tr("菜单项被选中时触发。") },
+            { name: "Menu / MenuSeparator", kind: @tr("属性"), type: "", description: @tr("嵌套 Menu 生成子菜单，MenuSeparator 生成分隔线。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("在灰色区域右击，或用按钮在固定位置打开菜单。");
+            output: @tr("activated · {}", root.status);
+            GalleryPreview {
+                stretch: true;
+                VerticalLayout {
+                    spacing: 12px;
+                    Rectangle {
+                        height: 120px * ForgeTypography.scale;
+                        border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                        background: Palette.control-background;
+                        Text {
+                            text: area.enabled ? @tr("在此区域右击打开菜单") : @tr("菜单已禁用");
+                            color: Palette.foreground.transparentize(0.3); horizontal-alignment: center; vertical-alignment: center;
+                        }
+                        area := ContextMenuArea {
+                            enabled: root.flag;
+                            Menu {
+                                MenuItem { title: @tr("打开"); activated => { root.status = @tr("已打开"); } }
+                                MenuItem { title: @tr("保存"); enabled: root.save-enabled; activated => { root.status = @tr("已保存"); } }
+                                MenuSeparator { }
+                                MenuItem { title: @tr("禁用操作"); enabled: false; }
+                            }
+                        }
+                    }
+                    HorizontalLayout {
+                        alignment: center;
+                        ForgePillButton { text: @tr("显示菜单"); enabled: root.flag; clicked => { area.show({ x: 16px, y: 16px }); } }
+                    }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "enabled"; checked <=> root.flag; }
+                CheckBox { text: @tr("“保存”可用"); checked <=> root.save-enabled; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("菜单项类型");
+            description: @tr("勾选项会自动切换状态；子菜单在悬停或方向键展开。");
+            output: @tr("{} · 自动换行 {} · 行号 {}", root.view-status, root.wrap-lines ? "on" : "off", root.line-numbers ? "on" : "off");
+            GalleryPreview {
+                stretch: true;
+                Rectangle {
+                    height: 120px * ForgeTypography.scale;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    Text { text: @tr("右击查看“视图”菜单"); color: Palette.foreground.transparentize(0.3); horizontal-alignment: center; vertical-alignment: center; }
+                    ContextMenuArea {
+                        Menu {
+                            MenuItem { title: @tr("自动换行"); checkable: true; checked <=> root.wrap-lines; }
+                            MenuItem { title: @tr("显示行号"); checkable: true; checked <=> root.line-numbers; }
+                            MenuSeparator { }
+                            Menu {
+                                title: @tr("缩放");
+                                MenuItem { title: "50%"; activated => { root.view-status = @tr("缩放 {}", "50%"); } }
+                                MenuItem { title: "100%"; activated => { root.view-status = @tr("缩放 {}", "100%"); } }
+                                MenuItem { title: "200%"; activated => { root.view-status = @tr("缩放 {}", "200%"); } }
+                            }
+                            Menu {
+                                title: @tr("导出为");
+                                enabled: false;
+                                MenuItem { title: "PDF"; }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("文件列表右键菜单");
+            description: @tr("每一行有自己的菜单，操作作用于被右击的文件。");
+            output: root.file-status;
+            GalleryPreview {
+                Rectangle {
+                    width: 320px * ForgeTypography.scale;
+                    height: files.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    files := VerticalLayout {
+                        padding: 6px;
+                        for file in ["report-2025.xlsx", "design-v3.fig", "notes.md"] : Rectangle {
+                            height: 34px * ForgeTypography.scale;
+                            border-radius: 6px;
+                            background: row-touch.has-hover ? Palette.control-background : transparent;
+                            row-touch := TouchArea { }
+                            HorizontalLayout {
+                                padding-left: 12px; padding-right: 12px;
+                                Text { text: file; color: Palette.foreground; vertical-alignment: center; }
+                            }
+                            ContextMenuArea {
+                                Menu {
+                                    MenuItem { title: @tr("打开"); activated => { root.file-status = @tr("已打开 {}", file); } }
+                                    MenuItem { title: @tr("重命名"); activated => { root.file-status = @tr("重命名 {}", file); } }
+                                    MenuItem { title: @tr("复制路径"); activated => { root.file-status = @tr("已复制 {} 的路径", file); } }
+                                    MenuSeparator { }
+                                    MenuItem { title: @tr("移到回收站"); activated => { root.file-status = @tr("已将 {} 移到回收站", file); } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

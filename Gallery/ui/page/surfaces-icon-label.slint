@@ -1,22 +1,81 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeIconButton, ForgeIconLabel, ForgeIcons, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { CheckBox, LineEdit, Palette } from "std-widgets.slint";
+import { ForgeIconLabel, ForgeIcons, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+// 共享组件演示：IconLabel。
 export component GalleryIconLabelPage inherits Rectangle {
     in-out property<bool> vertical: false;
-    sample-page := GallerySamplePage {
-        width: parent.width; height: parent.height;
-        title: "IconLabel";
-        subtitle: @tr("图标、标题与说明组合显示，可切换排列方向。");
-        preview-height: 250px;
+    private property<string> label-text: @tr("状态提示");
+    private property<string> description-text: @tr("图标与文字保持一致的字体和间距。");
 
-        ForgeIconLabel {
-            x: 18px; y: 16px; width: sample-page.preview-width - 36px; height: self.preferred-height;
-            icon: ForgeIcons.info;
-            label: @tr("状态提示");
-            description: @tr("图标与文字保持一致的字体和间距。");
-            vertical: root.vertical;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("容器");
+        title: "IconLabel";
+        subtitle: @tr("图标、标题与说明的组合。水平排列时图标在左，垂直排列时图标在上并居中，适合功能列表、空状态和快捷入口。");
+        api: [
+            { name: "icon", kind: @tr("属性"), type: "string", description: @tr("图标字形，通常取自 ForgeIcons。") },
+            { name: "label", kind: @tr("属性"), type: "string", description: @tr("标题文字。") },
+            { name: "description", kind: @tr("属性"), type: "string", description: @tr("说明文字；为空时不显示。") },
+            { name: "vertical", kind: @tr("属性"), type: "bool", description: @tr("为 true 时图标在上、文字居中。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改标题和说明，或切换排列方向。");
+            GalleryPreview {
+                ForgeIconLabel {
+                    width: 300px * ForgeTypography.scale;
+                    icon: ForgeIcons.info;
+                    label: root.label-text;
+                    description: root.description-text;
+                    vertical: root.vertical;
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "vertical"; checked <=> root.vertical; }
+                Text { text: "label"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.label-text; }
+                Text { text: "description"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.description-text; }
+            }
         }
-        ForgeIconButton { x: 18px; y: sample-page.preview-area-height - 52px; label: root.vertical ? @tr("水平排列") : @tr("垂直排列"); clicked => { root.vertical = !root.vertical; } }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("水平、垂直与不带说明三种形态。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                // 变体组件较宽，纵向排列以适应窄窗口。
+                VerticalLayout {
+                    spacing: 10px; horizontal-stretch: 1;
+                    GalleryVariant { caption: "vertical: false"; ForgeIconLabel { width: 170px; icon: ForgeIcons.checkmark; label: @tr("已同步"); description: @tr("2 分钟前"); } }
+                    GalleryVariant { caption: "vertical: true"; ForgeIconLabel { width: 170px; icon: ForgeIcons.checkmark; label: @tr("已同步"); description: @tr("2 分钟前"); vertical: true; } }
+                    GalleryVariant { caption: "description: \"\""; ForgeIconLabel { width: 170px; icon: ForgeIcons.warning; label: @tr("存储空间不足"); } }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("功能特性列表");
+            description: @tr("产品介绍页常用的特性网格，每一项都是一个 IconLabel。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                GridLayout {
+                    horizontal-stretch: 1;
+                    spacing: 16px;
+                    Row {
+                        ForgeIconLabel { icon: ForgeIcons.globe; label: @tr("跨平台"); description: @tr("同一份界面运行在 Windows、Linux 和 macOS 上。"); }
+                        ForgeIconLabel { icon: ForgeIcons.brightness; label: @tr("深浅主题"); description: @tr("跟随系统切换，也可在设置中手动选择。"); }
+                    }
+                    Row {
+                        ForgeIconLabel { icon: ForgeIcons.text-font; label: @tr("字体缩放"); description: @tr("所有组件按全局缩放比例调整字号。"); }
+                        ForgeIconLabel { icon: ForgeIcons.settings; label: @tr("可配置"); description: @tr("组件属性均可在 Rust 或 C++ 中绑定。"); }
+                    }
+                }
+            }
+        }
     }
 }

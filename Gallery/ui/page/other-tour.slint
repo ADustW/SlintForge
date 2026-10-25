@@ -1,30 +1,109 @@
 import { Button, LineEdit, Palette } from "std-widgets.slint";
-import { ForgeTour, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { ForgeIcon, ForgeIcons, ForgeTour, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview } from "../component/component-page.slint";
 
-// 共享组件演示：Tour。
+// 共享组件演示：Tour。prepare-preview(true) 启动基本用法中的引导，供验收截图的打开状态使用。
 export component GalleryOtherTourPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<string> onboarding: @tr("尚未开始");
     callback prepare-preview(bool);
     prepare-preview(open) => { if open { guide.start(); } else { guide.dismiss(); } }
-    
-    sample := GallerySamplePage {
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("其他");
         title: "Tour";
-        subtitle: @tr("逐步浏览功能提示，支持返回、继续和关闭。");
-        example-title: @tr("用法与状态");
-        preview-height: 460px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            Rectangle { height: 370px; Button { x: 30px; y: 12px; text: @tr("开始引导"); clicked => { guide.start(); } } LineEdit { x: 30px; y: 100px; width: 260px; placeholder-text: @tr("目标一：输入"); } Button { x: 30px; y: 210px; width: 180px; text: @tr("目标二：执行"); } guide := ForgeTour { steps: [{title: @tr("输入参数"), description: @tr("此处输入工程参数。"), x: 30px, y: 100px, width: 260px, height: 36px}, {title: @tr("执行任务"), description: @tr("确认后执行下一步。"), x: 30px, y: 210px, width: 180px, height: 36px}]; finished => { root.status = @tr("引导已完成"); } dismissed => { root.status = @tr("引导已跳过"); } } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("遮罩并高亮界面中的目标区域，按步骤显示说明气泡。用于新功能介绍或首次使用引导。");
+        api: [
+            { name: "steps", kind: @tr("属性"), type: "[ForgeTourStep]", description: @tr("每步的标题、说明和目标区域（x、y、width、height，相对于引导组件）。") },
+            { name: "active / current-step", kind: @tr("属性"), type: "bool / int", description: @tr("是否正在引导，以及当前步骤序号。") },
+            { name: "start() / dismiss()", kind: @tr("函数"), type: "", description: @tr("从第一步开始引导，或中途关闭。") },
+            { name: "next() / previous()", kind: @tr("函数"), type: "", description: @tr("前进或后退一步；最后一步前进即完成。") },
+            { name: "step-changed(int)", kind: @tr("回调"), type: "", description: @tr("步骤切换后触发，参数为新的步骤序号。") },
+            { name: "finished() / dismissed()", kind: @tr("回调"), type: "", description: @tr("走完全部步骤或被跳过、按 Esc 关闭时触发。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("引导覆盖示例区域，逐个高亮两个目标。方向键切换步骤，Esc 关闭。");
+            output: root.status;
+            GalleryPreview {
+                Rectangle {
+                    width: 400px; height: 300px;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    clip: true;
+                    Button { x: 20px; y: 16px; text: @tr("开始引导"); primary: true; clicked => { guide.start(); } }
+                    LineEdit { x: 20px; y: 72px; width: 240px; height: 34px; placeholder-text: @tr("目标一：输入"); }
+                    Button { x: 276px; y: 72px; width: 104px; height: 34px; text: @tr("目标二：执行"); }
+                    guide := ForgeTour {
+                        steps: [
+                            { title: @tr("输入参数"), description: @tr("在这里输入要处理的内容。"), x: 20px, y: 72px, width: 240px, height: 34px },
+                            { title: @tr("执行任务"), description: @tr("确认后执行下一步。"), x: 276px, y: 72px, width: 104px, height: 34px },
+                        ];
+                        step-changed(index) => { root.status = @tr("step-changed · {}", index); }
+                        finished => { root.status = @tr("引导已完成"); }
+                        dismissed => { root.status = @tr("引导已跳过"); }
+                    }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("首次使用引导");
+            description: @tr("用户第一次进入报表应用时，依次介绍导航、搜索和新建报表三个入口。");
+            output: root.onboarding;
+            GalleryPreview {
+                Rectangle {
+                    width: 420px; height: 320px;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    clip: true;
+                    Rectangle {
+                        x: 0px; y: 0px; width: 104px; height: parent.height;
+                        background: Palette.alternate-background;
+                        VerticalLayout {
+                            padding: 12px; spacing: 10px; alignment: start;
+                            Text { text: @tr("报表中心"); color: Palette.foreground; font-weight: 600; }
+                            Text { text: @tr("概览"); color: Palette.accent-background; }
+                            Text { text: @tr("我的报表"); color: Palette.foreground; }
+                            Text { text: @tr("数据源"); color: Palette.foreground; }
+                        }
+                    }
+                    LineEdit { x: 120px; y: 14px; width: 284px; height: 34px; placeholder-text: @tr("搜索报表"); }
+                    Rectangle {
+                        x: 120px; y: 64px; width: 284px; height: 96px;
+                        border-radius: 6px; border-width: 1px; border-color: Palette.border;
+                        VerticalLayout {
+                            padding: 12px; spacing: 8px; alignment: center;
+                            HorizontalLayout {
+                                spacing: 6px; alignment: center;
+                                ForgeIcon { glyph: ForgeIcons.apps; color: Palette.foreground.transparentize(0.45); }
+                                Text { text: @tr("还没有报表"); color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                            }
+                            HorizontalLayout {
+                                alignment: center;
+                                Button { text: @tr("新建报表"); primary: true; height: 34px; }
+                            }
+                        }
+                    }
+                    Button { x: 120px; y: 176px; text: @tr("开始引导"); clicked => { onboarding-tour.start(); root.onboarding = @tr("第 {} / 3 步", 1); } }
+                    onboarding-tour := ForgeTour {
+                        steps: [
+                            { title: @tr("导航"), description: @tr("在左侧切换概览、报表和数据源。"), x: 0px, y: 0px, width: 104px, height: 140px },
+                            { title: @tr("搜索"), description: @tr("按名称或标签快速找到报表。"), x: 120px, y: 14px, width: 284px, height: 34px },
+                            { title: @tr("新建报表"), description: @tr("从模板或空白页创建第一份报表。"), x: 120px, y: 64px, width: 284px, height: 96px },
+                        ];
+                        step-changed(index) => { root.onboarding = @tr("第 {} / 3 步", index + 1); }
+                        finished => { root.onboarding = @tr("引导已完成"); }
+                        dismissed => { root.onboarding = @tr("引导已跳过"); }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,7 +1,6 @@
-import { SpinBox } from "std-widgets.slint";
+import { CheckBox, Palette, SpinBox } from "std-widgets.slint";
 import { ForgeInfoBadge, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：InfoBadge。
 export component GalleryFeedbackInfoBadgePage inherits Rectangle {
@@ -13,20 +12,124 @@ export component GalleryFeedbackInfoBadgePage inherits Rectangle {
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
     in-out property<int> badge-value: 120;
-    sample := GallerySamplePage {
-        showcase-route: "feedback-info-badge";
-        active: root.visible;
+    private property<int> badge-maximum: 99;
+    private property<bool> dot: false;
+    private property<bool> show-zero: false;
+    private property<int> inbox: 12;
+    private property<int> approvals: 3;
+    private property<bool> notice: true;
+    private property<int> archived: 0;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("反馈");
         title: "InfoBadge";
-        subtitle: @tr("数字、提示点和状态徽标。");
-        example-title: @tr("用法与状态");
-        preview-height: 150px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            SpinBox { minimum: 0; maximum: 200; value <=> root.badge-value; }
-HorizontalLayout { spacing: 20px; ForgeInfoBadge { value: root.badge-value; } ForgeInfoBadge { dot: true; } ForgeInfoBadge { value: 0; show-zero: true; } }
+        subtitle: @tr("附在图标或文字旁的小徽标，显示未读数量或一个提示点。数值为 0 时默认隐藏。");
+        showcase-route: "feedback-info-badge";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "value", kind: @tr("属性"), type: "int", description: @tr("显示的数字；小于等于 0 时默认隐藏。") },
+            { name: "maximum", kind: @tr("属性"), type: "int", description: @tr("显示上限，超过时显示为“99+”形式，默认 99。") },
+            { name: "dot", kind: @tr("属性"), type: "bool", description: @tr("只显示圆点，不显示数字。") },
+            { name: "show-zero", kind: @tr("属性"), type: "bool", description: @tr("数值为 0 时仍然显示。") },
+            { name: "display-text", kind: @tr("输出"), type: "string", description: @tr("实际显示的文字，已按上限截断。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改数值和上限，观察超出上限时的显示。");
+            output: "display-text · " + badge.display-text;
+            GalleryPreview {
+                Rectangle {
+                    width: 120px * ForgeTypography.scale; height: 56px * ForgeTypography.scale;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    Text { text: @tr("消息"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; }
+                    badge := ForgeInfoBadge {
+                        x: parent.width - self.width / 2 - 6px; y: -self.height / 2 + 6px;
+                        width: self.preferred-width; height: self.preferred-height;
+                        value: root.badge-value; maximum: root.badge-maximum; dot: root.dot; show-zero: root.show-zero;
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: "value"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 0; maximum: 999; value <=> root.badge-value; }
+                Text { text: "maximum"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 9; maximum: 999; value <=> root.badge-maximum; }
+                CheckBox { text: "dot"; checked <=> root.dot; }
+                CheckBox { text: "show-zero"; checked <=> root.show-zero; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("普通数字、超出上限与提示点。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "value: 8"; ForgeInfoBadge { value: 8; } }
+                GalleryVariant { caption: "value: 120"; ForgeInfoBadge { value: 120; } }
+                GalleryVariant { caption: "dot: true"; ForgeInfoBadge { dot: true; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("导航未读数");
+            description: @tr("侧边导航中每项显示未读数，点击后标记为已读。");
+            output: @tr("未读合计 {}", root.inbox + root.approvals + root.archived);
+            GalleryPreview {
+                Rectangle {
+                    width: 260px * ForgeTypography.scale;
+                    height: nav.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    nav := VerticalLayout {
+                        padding: 8px; spacing: 2px;
+                        Rectangle {
+                            height: 36px * ForgeTypography.scale;
+                            border-radius: 6px;
+                            background: inbox-touch.has-hover ? Palette.control-background : transparent;
+                            HorizontalLayout {
+                                padding-left: 12px; padding-right: 12px; spacing: 8px;
+                                Text { text: @tr("收件箱"); color: Palette.foreground; vertical-alignment: center; horizontal-stretch: 1; }
+                                VerticalLayout { alignment: center; ForgeInfoBadge { value: root.inbox; } }
+                            }
+                            inbox-touch := TouchArea { clicked => { root.inbox = 0; } }
+                        }
+                        Rectangle {
+                            height: 36px * ForgeTypography.scale;
+                            border-radius: 6px;
+                            background: approvals-touch.has-hover ? Palette.control-background : transparent;
+                            HorizontalLayout {
+                                padding-left: 12px; padding-right: 12px; spacing: 8px;
+                                Text { text: @tr("待审批"); color: Palette.foreground; vertical-alignment: center; horizontal-stretch: 1; }
+                                VerticalLayout { alignment: center; ForgeInfoBadge { value: root.approvals; } }
+                            }
+                            approvals-touch := TouchArea { clicked => { root.approvals = 0; } }
+                        }
+                        Rectangle {
+                            height: 36px * ForgeTypography.scale;
+                            border-radius: 6px;
+                            background: notice-touch.has-hover ? Palette.control-background : transparent;
+                            HorizontalLayout {
+                                padding-left: 12px; padding-right: 12px; spacing: 8px;
+                                Text { text: @tr("系统通知"); color: Palette.foreground; vertical-alignment: center; horizontal-stretch: 1; }
+                                VerticalLayout { alignment: center; ForgeInfoBadge { dot: root.notice; } }
+                            }
+                            notice-touch := TouchArea { clicked => { root.notice = false; } }
+                        }
+                        Rectangle {
+                            height: 36px * ForgeTypography.scale;
+                            border-radius: 6px;
+                            HorizontalLayout {
+                                padding-left: 12px; padding-right: 12px; spacing: 8px;
+                                Text { text: @tr("已归档"); color: Palette.foreground.transparentize(0.4); vertical-alignment: center; horizontal-stretch: 1; }
+                                VerticalLayout { alignment: center; ForgeInfoBadge { value: root.archived; } }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,6 +1,6 @@
-import { ForgeMultiSelectComboBox, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
+import { ForgeMultiSelectComboBox, ForgeChoiceItem, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // 共享组件演示：MultiSelectComboBox。
 export component GalleryFormMultiSelectComboPage inherits Rectangle {
@@ -9,22 +9,110 @@ export component GalleryFormMultiSelectComboPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<bool> disabled1: false;
+    private property<int> selected-count: 1;
+    private property<[ForgeChoiceItem]> languages: [
+        { id: "rust", label: "Rust", enabled: true, selected: true },
+        { id: "cpp", label: "C++", enabled: true },
+        { id: "slint", label: "Slint", enabled: true },
+        { id: "python", label: "Python", enabled: true },
+        { id: "disabled", label: @tr("禁用选项"), enabled: false },
+    ];
+    private property<[ForgeChoiceItem]> channels: [
+        { id: "email", label: @tr("邮件"), enabled: true, selected: true },
+        { id: "sms", label: @tr("短信"), enabled: true },
+        { id: "app", label: @tr("站内消息"), enabled: true, selected: true },
+        { id: "phone", label: @tr("电话（仅紧急事件）"), enabled: false },
+    ];
+    private property<string> channel-text: root.join(root.join(root.join(root.pick(0), root.pick(1)), root.pick(2)), root.pick(3));
+    pure function pick(index: int) -> string { return root.channels[index].selected ? root.channels[index].label : ""; }
+    pure function join(left: string, right: string) -> string { return left == "" ? right : right == "" ? left : left + ", " + right; }
     callback prepare-preview(bool);
-    prepare-preview(open) => { if open { control.show(); } else { control.close(); } }
-    
-    sample := GallerySamplePage {
-        showcase-route: "form-multi-select-combo";
-        active: root.visible;
+    prepare-preview(open) => { if open { control.show(); } else { control.close(); channel-select.close(); } }
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单");
         title: "MultiSelectComboBox";
-        subtitle: @tr("展开列表，选中多个选项。");
-        example-title: @tr("用法与状态");
-        preview-height: 120px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            control := ForgeMultiSelectComboBox { items: [{id: "rust", label: "Rust", enabled: true, selected: true}, {id: "cpp", label: "C++", enabled: true}, {id: "slint", label: "Slint", enabled: true}, {id: "disabled", label: @tr("禁用选项"), enabled: false}]; selection-text: root.draft; selection-changed(id, selected) => { root.draft = id + (selected ? " +" : " −"); } }
+        subtitle: @tr("可多选的下拉框。展开后逐项勾选，按钮上显示宿主提供的选择摘要；单选场景改用 ComboBox。");
+        showcase-route: "form-multi-select-combo";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "items", kind: @tr("属性"), type: "[ForgeChoiceItem]", description: @tr("选项列表，含 id、label、enabled、selected；勾选时写回 selected。") },
+            { name: "selection-text", kind: @tr("属性"), type: "string", description: @tr("按钮上显示的选择摘要，由宿主生成。") },
+            { name: "placeholder-text / enabled", kind: @tr("属性"), type: "string / bool", description: @tr("未选择时的提示与是否可用。") },
+            { name: "open", kind: @tr("输出"), type: "bool", description: @tr("列表是否展开。") },
+            { name: "selection-changed(string, bool)", kind: @tr("回调"), type: "", description: @tr("勾选或取消某一项时触发，参数为 id 与新状态。") },
+            { name: "show() / close()", kind: @tr("函数"), type: "", description: @tr("以编程方式展开或收起列表。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("展开列表勾选多项，点“完成”或列表外任意位置收起。");
+            output: root.draft == "" ? @tr("尚未修改") : @tr("selection-changed · {}", root.draft);
+            GalleryPreview {
+                min-preview-height: 120px * ForgeTypography.scale;
+                control := ForgeMultiSelectComboBox {
+                    width: 260px * ForgeTypography.scale;
+                    items <=> root.languages;
+                    enabled: !root.disabled1;
+                    selection-text: root.selected-count == 0 ? "" : @tr("已选 {} 项", root.selected-count);
+                    selection-changed(id, selected) => {
+                        root.selected-count += selected ? 1 : -1;
+                        root.draft = id + (selected ? " · true" : " · false");
+                    }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("selection-text 为空时显示占位提示；禁用后不能展开。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 10px;
+                    Row {
+                        Text { text: "selection-text: \"\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeMultiSelectComboBox { width: 240px * ForgeTypography.scale; items: [{ id: "a", label: "Rust", enabled: true }]; }
+                    }
+                    Row {
+                        Text { text: "selection-text: \"Rust, C++\""; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeMultiSelectComboBox { width: 240px * ForgeTypography.scale; selection-text: "Rust, C++"; items: [{ id: "a", label: "Rust", enabled: true, selected: true }, { id: "b", label: "C++", enabled: true, selected: true }]; }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeMultiSelectComboBox { width: 240px * ForgeTypography.scale; selection-text: "Rust"; enabled: false; items: [{ id: "a", label: "Rust", enabled: true, selected: true }]; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("通知渠道");
+            description: @tr("选择接收告警的渠道；未开通的渠道以禁用项列出。");
+            output: root.channel-text == "" ? @tr("未选择任何渠道，将不会收到通知") : @tr("将通过 {} 发送通知", root.channel-text);
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := GridLayout {
+                        padding: 20px; spacing-horizontal: 16px; spacing-vertical: 12px;
+                        Row {
+                            Text { text: @tr("告警通知"); color: Palette.foreground; vertical-alignment: center; }
+                            channel-select := ForgeMultiSelectComboBox {
+                                items <=> root.channels;
+                                placeholder-text: @tr("选择渠道");
+                                selection-text: root.channel-text;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

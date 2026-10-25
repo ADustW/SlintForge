@@ -24,10 +24,15 @@ export component ForgeSkeletonView inherits Rectangle {
         visible: root.loading;
         VerticalLayout {
             spacing: 12px;
-            ForgeShimmer { width: 64px; height: 64px; border-radius: 32px; running: root.animate && root.loading; }
-            for index in Math.max(0, Math.min(30, root.rows)) : ForgeShimmer {
-                height: 24px; width: index == root.rows - 1 ? parent.width * 0.65 : parent.width;
-                running: root.animate && root.loading;
+            // 头像放在左对齐的行内：定宽元素直接放进纵向布局会把整个骨架的最大宽度限制为 64px。
+            HorizontalLayout {
+                alignment: start;
+                ForgeShimmer { width: 64px; height: 64px; border-radius: 32px; running: root.animate && root.loading; }
+            }
+            // 行宽用伸缩比例分配，末行留出 35% 空白；显式引用宽度会在可拉伸布局中形成绑定环。
+            for index in Math.max(0, Math.min(30, root.rows)) : HorizontalLayout {
+                ForgeShimmer { height: 24px; horizontal-stretch: 0.65; running: root.animate && root.loading; }
+                Rectangle { horizontal-stretch: index == Math.min(30, root.rows) - 1 ? 0.35 : 0; }
             }
         }
     }

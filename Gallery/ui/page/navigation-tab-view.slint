@@ -1,7 +1,6 @@
-import { LineEdit, TabWidget, Palette } from "std-widgets.slint";
+import { ComboBox, LineEdit, Palette, SpinBox, Switch, TabWidget } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // Slint 原生示例：TabView。
 export component GalleryNavigationTabViewPage inherits Rectangle {
@@ -12,18 +11,124 @@ export component GalleryNavigationTabViewPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    private property<int> tab-index: 0;
+    private property<int> theme-index: 0;
+    private property<bool> auto-save: true;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("导航");
         title: "TabView";
-        subtitle: @tr("切换标签页，输入内容会保留。");
-        example-title: @tr("用法与状态");
-        preview-height: 310px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            TabWidget { height: 260px; Tab { title: @tr("概览"); VerticalLayout { padding: 20px; Text { text: @tr("原生标签内容"); color: Palette.foreground; } LineEdit { placeholder-text: @tr("切换标签保留输入"); } } } Tab { title: @tr("详情"); VerticalLayout { padding: 20px; Text { text: @tr("第二个标签页"); color: Palette.foreground; } } } }
+        subtitle: @tr("Slint 原生 TabWidget：标签栏与内容区一体，每个 Tab 承载一页内容。切换标签时各页的控件状态会保留。");
+        native: true;
+        api: [
+            { name: "TabWidget.current-index", kind: @tr("属性"), type: "int", description: @tr("当前标签序号，可读写。") },
+            { name: "Tab.title", kind: @tr("属性"), type: "string", description: @tr("标签文字。") },
+            { name: "TabWidget.orientation", kind: @tr("属性"), type: "Orientation", description: @tr("标签栏位置：horizontal 在上方，vertical 在左侧；只接受常量。") },
+            { name: "Tab { ... }", kind: @tr("属性"), type: "element", description: @tr("子元素即该页内容，未显示时仍保留状态。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击标签或在右侧修改 current-index；在“概览”中输入的内容切换后仍在。");
+            output: @tr("current-index = {}", root.tab-index);
+            GalleryPreview {
+                TabWidget {
+                    width: 380px * ForgeTypography.scale;
+                    height: 200px * ForgeTypography.scale;
+                    current-index <=> root.tab-index;
+                    Tab {
+                        title: @tr("概览");
+                        VerticalLayout {
+                            padding: 16px; spacing: 8px; alignment: start;
+                            Text { text: @tr("备注"); color: Palette.foreground; }
+                            LineEdit { placeholder-text: @tr("输入后切换标签再回来"); }
+                        }
+                    }
+                    Tab {
+                        title: @tr("详情");
+                        VerticalLayout {
+                            padding: 16px; alignment: start;
+                            Text { text: @tr("第二页内容。"); color: Palette.foreground; }
+                        }
+                    }
+                    Tab {
+                        title: @tr("历史");
+                        VerticalLayout {
+                            padding: 16px; alignment: start;
+                            Text { text: @tr("第三页内容。"); color: Palette.foreground; }
+                        }
+                    }
+                }
+            }
+            GalleryOptions {
+                Text { text: "current-index"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 0; maximum: 2; value <=> root.tab-index; }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("指定当前页，以及标签栏竖排在左侧。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "current-index: 1";
+                    TabWidget {
+                        width: 220px * ForgeTypography.scale; height: 110px * ForgeTypography.scale;
+                        current-index: 1;
+                        Tab { title: @tr("常规"); Text { text: @tr("常规"); color: Palette.foreground; } }
+                        Tab { title: @tr("高级"); Text { text: @tr("高级选项"); color: Palette.foreground; } }
+                    }
+                }
+                GalleryVariant {
+                    caption: "orientation: vertical";
+                    TabWidget {
+                        orientation: Orientation.vertical;
+                        width: 220px * ForgeTypography.scale; height: 110px * ForgeTypography.scale;
+                        Tab { title: @tr("常规"); Text { text: @tr("常规"); color: Palette.foreground; } }
+                        Tab { title: @tr("高级"); Text { text: @tr("高级选项"); color: Palette.foreground; } }
+                    }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("偏好设置");
+            description: @tr("按类别把设置项分到不同标签页，修改在各页之间保留。");
+            output: @tr("主题 {} · 自动保存 {}", root.theme-index == 0 ? @tr("跟随系统") : root.theme-index == 1 ? @tr("浅色") : @tr("深色"), root.auto-save ? @tr("开") : @tr("关"));
+            GalleryPreview {
+                TabWidget {
+                    width: 420px * ForgeTypography.scale;
+                    height: 220px * ForgeTypography.scale;
+                    Tab {
+                        title: @tr("常规");
+                        VerticalLayout {
+                            padding: 16px; spacing: 12px; alignment: start;
+                            Switch { text: @tr("自动保存"); checked <=> root.auto-save; }
+                            Switch { text: @tr("启动时打开上次的工程"); checked: true; }
+                        }
+                    }
+                    Tab {
+                        title: @tr("外观");
+                        VerticalLayout {
+                            padding: 16px; spacing: 8px; alignment: start;
+                            Text { text: @tr("主题"); color: Palette.foreground; }
+                            ComboBox { model: [@tr("跟随系统"), @tr("浅色"), @tr("深色")]; current-index <=> root.theme-index; }
+                        }
+                    }
+                    Tab {
+                        title: @tr("快捷键");
+                        VerticalLayout {
+                            padding: 16px; spacing: 6px; alignment: start;
+                            Text { text: @tr("保存　Ctrl+S"); color: Palette.foreground; }
+                            Text { text: @tr("查找　Ctrl+F"); color: Palette.foreground; }
+                            Text { text: @tr("命令面板　Ctrl+Shift+P"); color: Palette.foreground; }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

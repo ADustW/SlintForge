@@ -1,31 +1,77 @@
+import { CheckBox, LineEdit, Palette, Slider } from "std-widgets.slint";
 import { ForgeStatistic, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：Statistic。
 export component GalleryDataStatisticPage inherits Rectangle {
     in-out property<int> count: 0;
     in-out property<bool> flag: true;
-    in-out property<float> number: 30;
-    in-out property<string> draft;
+    in-out property<float> number: 12.8;
+    in-out property<string> draft: @tr("项");
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "data-statistic";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("数据展示");
         title: "Statistic";
-        subtitle: @tr("展示数值、单位、精度和趋势。");
-        example-title: @tr("用法与状态");
-        preview-height: 230px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeStatistic { title: @tr("已完成任务"); value: "1,280"; suffix: @tr("项"); trend: 12.8; }
-ForgeStatistic { title: @tr("错误数量"); value: "3"; trend: -25; }
+        subtitle: @tr("突出显示一个关键数值，可附带单位与涨跌趋势。数值格式由应用提供。");
+        showcase-route: "data-statistic";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "title", kind: @tr("属性"), type: "string", description: @tr("数值上方的标题。") },
+            { name: "value", kind: @tr("属性"), type: "string", description: @tr("已格式化的数值文本。") },
+            { name: "suffix", kind: @tr("属性"), type: "string", description: @tr("数值后的单位。") },
+            { name: "trend", kind: @tr("属性"), type: "float", description: @tr("涨跌百分比；正数上升、负数下降。") },
+            { name: "show-trend", kind: @tr("属性"), type: "bool", description: @tr("是否显示趋势行。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("拖动滑块修改趋势，正负值分别显示为上升和下降。");
+            output: @tr("trend = {}%", Math.round(root.number * 10) / 10);
+            GalleryPreview {
+                ForgeStatistic { title: @tr("已完成任务"); value: "1,280"; suffix: root.draft; trend: Math.round(root.number * 10) / 10; show-trend: root.flag; }
+            }
+            GalleryOptions {
+                Text { text: "trend"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: -50; maximum: 50; value <=> root.number; }
+                CheckBox { text: "show-trend"; checked <=> root.flag; }
+                Text { text: "suffix"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.draft; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("上升、下降与不显示趋势。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "trend: 12.8"; ForgeStatistic { title: @tr("访问量"); value: "8,846"; trend: 12.8; } }
+                GalleryVariant { caption: "trend: -6.4"; ForgeStatistic { title: @tr("待处理"); value: "32"; suffix: @tr("项"); trend: -6.4; } }
+                GalleryVariant { caption: "show-trend: false"; ForgeStatistic { title: @tr("在线设备"); value: "128"; show-trend: false; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("运营看板");
+            description: @tr("多个指标横向排列，构成看板的概览行。");
+            GalleryPreview {
+                Rectangle {
+                    height: board.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    board := HorizontalLayout {
+                        padding: 20px; spacing: 32px;
+                        ForgeStatistic { title: @tr("本月收入"); value: "¥ 284,600"; trend: 8.2; }
+                        Rectangle { width: 1px; background: Palette.border; }
+                        ForgeStatistic { title: @tr("新增用户"); value: "1,932"; suffix: @tr("人"); trend: 15.4; }
+                        Rectangle { width: 1px; background: Palette.border; }
+                        ForgeStatistic { title: @tr("退款率"); value: "1.8"; suffix: "%"; trend: -0.6; }
+                    }
+                }
+            }
         }
     }
-    
 }

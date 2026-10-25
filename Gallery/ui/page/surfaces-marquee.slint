@@ -1,22 +1,103 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeIconButton, ForgeMarquee, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
+import { CheckBox, LineEdit, Palette, Slider } from "std-widgets.slint";
+import { ForgeIcon, ForgeIcons, ForgeMarquee, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+// 共享组件演示：Marquee。
 export component GalleryMarqueePage inherits Rectangle {
     in-out property<bool> running: true;
-    sample-page := GallerySamplePage {
-        width: parent.width; height: parent.height;
-        title: "Marquee";
-        subtitle: @tr("长文本在固定区域内连续滚动，可暂停和继续。");
-        preview-height: 190px;
+    private property<float> seconds: 8;
+    private property<string> message: @tr("SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例，每个组件页都提供基本用法、状态对照与场景演示。");
+    private property<bool> notice-closed: false;
 
-        marquee := ForgeMarquee {
-            x: 18px; y: Math.max(28px, (sample-page.preview-area-height - 120px) / 2); width: Math.min(420px, sample-page.preview-width - 36px); height: 54px;
-            text: @tr("SlintForge 通知：布局组件和容器组件现已加入 Gallery 示例。");
-            cycle-duration: 8s;
-            running: root.running;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("容器");
+        title: "Marquee";
+        subtitle: @tr("文字超出宽度时在固定区域内循环滚动，未超出时静止显示。适合公告栏、状态栏中的长消息。");
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("滚动的文字。") },
+            { name: "cycle-duration", kind: @tr("属性"), type: "duration", description: @tr("滚动一轮所需时间，默认 8s。") },
+            { name: "running", kind: @tr("属性"), type: "bool", description: @tr("是否滚动；暂停后从原位置继续。") },
+            { name: "overflowing", kind: @tr("输出"), type: "bool", description: @tr("文字是否超出可视宽度；只有超出时才滚动。") },
+            { name: "text-width / text-position", kind: @tr("输出"), type: "length", description: @tr("文字宽度与当前水平位置。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("修改文字或滚动速度，可随时暂停。");
+            output: @tr("overflowing = {} · running = {}", basic.overflowing ? "true" : "false", root.running ? "true" : "false");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                basic := ForgeMarquee {
+                    height: 48px * ForgeTypography.scale;
+                    horizontal-stretch: 1;
+                    text: root.message;
+                    cycle-duration: root.seconds * 1s;
+                    running <=> root.running;
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "running"; checked <=> root.running; }
+                Text { text: @tr("cycle-duration = {}s", Math.round(root.seconds)); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Slider { minimum: 3; maximum: 20; value <=> root.seconds; }
+                Text { text: "text"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                LineEdit { text <=> root.message; }
+            }
         }
-        ForgeIconButton { x: 18px; y: marquee.y + 76px; label: root.running ? @tr("暂停滚动") : @tr("继续滚动"); clicked => { root.running = !root.running; } }
-        Text { x: 145px; y: marquee.y + 82px; text: root.running ? @tr("正在滚动") : @tr("已暂停"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("短文字静止显示，长文字滚动，暂停后停在当前位置。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                // 变体组件较宽，纵向排列以适应窄窗口。
+                VerticalLayout {
+                    spacing: 10px; horizontal-stretch: 1;
+                    GalleryVariant { caption: "overflowing: false"; ForgeMarquee { width: 170px; height: 40px; text: @tr("已连接"); } }
+                    GalleryVariant { caption: "overflowing: true"; ForgeMarquee { width: 170px; height: 40px; text: @tr("正在下载更新包，完成后将提示重启。"); } }
+                    GalleryVariant { caption: "running: false"; ForgeMarquee { width: 170px; height: 40px; running: false; text: @tr("正在下载更新包，完成后将提示重启。"); } }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("系统公告栏");
+            description: @tr("页面顶部的公告条：左侧图标，中间滚动消息，右侧可关闭。");
+            output: root.notice-closed ? @tr("公告已关闭") : @tr("公告显示中");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                Rectangle {
+                    horizontal-stretch: 1;
+                    height: 44px * ForgeTypography.scale;
+                    border-radius: 6px;
+                    background: #f0a020.transparentize(0.82);
+                    border-width: 1px; border-color: #f0a020.transparentize(0.4);
+                    HorizontalLayout {
+                        padding-left: 12px; padding-right: 8px; spacing: 8px;
+                        ForgeIcon { width: 24px; glyph: ForgeIcons.warning; color: #d08000; }
+                        if !root.notice-closed : ForgeMarquee {
+                            horizontal-stretch: 1;
+                            border-width: 0px;
+                            background: transparent;
+                            text: @tr("系统将于今晚 23:00 至次日 01:00 进行维护升级，届时部分功能暂停使用。");
+                            cycle-duration: 14s;
+                        }
+                        if root.notice-closed : Text {
+                            horizontal-stretch: 1;
+                            text: @tr("公告已关闭"); color: Palette.foreground.transparentize(0.4);
+                            font-size: 13px * ForgeTypography.scale; vertical-alignment: center;
+                        }
+                        Rectangle {
+                            width: 28px;
+                            ForgeIcon { glyph: root.notice-closed ? ForgeIcons.arrow-clockwise : ForgeIcons.dismiss; font-size: 14px * ForgeTypography.scale; }
+                            TouchArea { mouse-cursor: pointer; clicked => { root.notice-closed = !root.notice-closed; } }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

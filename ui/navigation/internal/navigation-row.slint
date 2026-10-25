@@ -1,7 +1,7 @@
 import { ForgeTypography } from "../../typography/typography.slint";
 import { Palette } from "std-widgets.slint";
 import { ForgeNavigationItem, ForgeNavItemKind } from "../../types/navigation.slint";
-import { ForgeIcon } from "../../icons/icon.slint";
+import { ForgeIcon, ForgeIcons } from "../../icons/icon.slint";
 
 // 导航行只供导航视图使用，不从 @slintforge 导出。
 export component ForgeNavigationRow inherits Rectangle {
@@ -60,14 +60,13 @@ export component ForgeNavigationRow inherits Rectangle {
             horizontal-stretch: 1;
             font-size: 14px * ForgeTypography.scale;
         }
-        Text {
+        // 使用图标字体：系统 UI 字体缺少“⌄”等符号，会显示为方框。
+        ForgeIcon {
             visible: !root.compact && item.has-children;
-            text: item.expanded ? "⌄" : "›";
+            glyph: item.expanded ? ForgeIcons.chevron-down : ForgeIcons.chevron-right;
             width: 18px;
-            vertical-alignment: center;
-            horizontal-alignment: center;
             color: Palette.foreground;
-            font-size: 17px * ForgeTypography.scale;
+            font-size: 12px * ForgeTypography.scale;
         }
     }
     touch := TouchArea {

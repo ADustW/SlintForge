@@ -1,7 +1,6 @@
-import { Button, Palette } from "std-widgets.slint";
+import { Button, CheckBox, Palette, SpinBox } from "std-widgets.slint";
 import { ForgeInputValidation, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 
 // 共享组件演示：InputValidation。
 export component GalleryInputsValidationPage inherits Rectangle {
@@ -10,24 +9,129 @@ export component GalleryInputsValidationPage inherits Rectangle {
     in-out property<float> number: 30;
     in-out property<string> draft;
     in-out property<string> status: @tr("就绪");
+    private property<int> min-length: 3;
+    private property<int> max-length: 24;
+    private property<bool> disabled: false;
+    private property<string> account;
+    private property<string> display-name;
+    private property<string> invite;
+    private property<string> result: @tr("尚未提交");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
-        showcase-route: "inputs-validation";
-        active: root.visible;
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("输入 / 按钮");
         title: "InputValidation";
-        subtitle: @tr("输入文字后验证长度与必填规则。");
-        example-title: @tr("用法与状态");
-        preview-height: 210px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            validated := ForgeInputValidation { minimum-length: 3; maximum-length: 24; placeholder-text: @tr("请输入 3～24 个字符"); touched: true; accepted(value) => { root.status = value; } }
-Button { text: @tr("验证"); clicked => { validated.touched = true; root.status = validated.valid ? @tr("验证通过") : validated.validation-message; } }
-Text { text: root.status; color: Palette.foreground; wrap: word-wrap; }
+        subtitle: @tr("带校验提示的单行输入框，按必填和长度规则检查内容，用户编辑后在下方显示错误信息。");
+        showcase-route: "inputs-validation";
+        qa-anchors: [states.y, scenario.y];
+        api: [
+            { name: "text", kind: @tr("属性"), type: "string", description: @tr("输入内容，双向绑定。") },
+            { name: "required", kind: @tr("属性"), type: "bool", description: @tr("是否必填，默认 true。") },
+            { name: "minimum-length / maximum-length", kind: @tr("属性"), type: "int", description: @tr("字符数范围；maximum-length 为 0 时不限上限。") },
+            { name: "error-message", kind: @tr("属性"), type: "string", description: @tr("外部校验错误；非空时视为无效并显示该文字。") },
+            { name: "touched", kind: @tr("属性"), type: "bool", description: @tr("为 true 后才显示错误提示，编辑时自动置位。") },
+            { name: "valid / validation-message", kind: @tr("输出"), type: "bool / string", description: @tr("当前是否有效，以及无效时的提示文字。") },
+            { name: "edited(string) / accepted(string)", kind: @tr("回调"), type: "", description: @tr("内容修改时触发；按 Enter 且内容有效时触发 accepted。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("输入文字后按 Enter 提交；调整右侧的长度范围查看提示变化。");
+            output: root.status;
+            GalleryPreview {
+                field := ForgeInputValidation {
+                    width: 280px * ForgeTypography.scale;
+                    text <=> root.draft;
+                    placeholder-text: @tr("{}～{} 个字符", root.min-length, root.max-length);
+                    required: root.flag; minimum-length: root.min-length; maximum-length: root.max-length;
+                    enabled: !root.disabled;
+                    edited(value) => { root.status = @tr("edited · {} 个字符", value.character-count); }
+                    accepted(value) => { root.count += 1; root.status = @tr("accepted · {}", value); }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "required"; checked <=> root.flag; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled; }
+                Text { text: "minimum-length"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 0; maximum: 20; value <=> root.min-length; }
+                Text { text: "maximum-length"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                SpinBox { minimum: 0; maximum: 40; value <=> root.max-length; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("touched 为 true 时才显示错误；外部传入 error-message 可覆盖内置提示。");
+            GalleryPreview {
+                GridLayout {
+                    spacing-horizontal: 16px; spacing-vertical: 12px;
+                    Row {
+                        Text { text: "touched: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeInputValidation { width: 240px * ForgeTypography.scale; placeholder-text: @tr("尚未编辑"); }
+                    }
+                    Row {
+                        Text { text: "touched: true"; color: Palette.foreground.transparentize(0.45); vertical-alignment: top; }
+                        ForgeInputValidation { width: 240px * ForgeTypography.scale; text: "ab"; minimum-length: 3; touched: true; }
+                    }
+                    Row {
+                        Text { text: "error-message"; color: Palette.foreground.transparentize(0.45); vertical-alignment: top; }
+                        ForgeInputValidation { width: 240px * ForgeTypography.scale; text: "admin"; touched: true; error-message: @tr("该用户名已被占用"); }
+                    }
+                    Row {
+                        Text { text: "enabled: false"; color: Palette.foreground.transparentize(0.45); vertical-alignment: center; }
+                        ForgeInputValidation { width: 240px * ForgeTypography.scale; text: "slintforge"; enabled: false; }
+                    }
+                }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("注册表单");
+            description: @tr("提交时把所有字段标记为 touched，一次性显示全部错误；全部有效才允许注册。");
+            output: root.result;
+            GalleryPreview {
+                Rectangle {
+                    width: 420px * ForgeTypography.scale;
+                    height: form.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    form := GridLayout {
+                        padding: 20px; spacing-horizontal: 16px; spacing-vertical: 12px;
+                        Row {
+                            Text { text: @tr("用户名"); color: Palette.foreground; vertical-alignment: top; }
+                            account-field := ForgeInputValidation {
+                                text <=> root.account; minimum-length: 4; maximum-length: 16;
+                                placeholder-text: @tr("4～16 个字符");
+                                error-message: root.account == "admin" ? @tr("该用户名已被占用") : "";
+                            }
+                        }
+                        Row {
+                            Text { text: @tr("显示名称"); color: Palette.foreground; vertical-alignment: top; }
+                            name-field := ForgeInputValidation { text <=> root.display-name; maximum-length: 20; placeholder-text: @tr("最多 20 个字符"); }
+                        }
+                        Row {
+                            Text { text: @tr("邀请码"); color: Palette.foreground; vertical-alignment: top; }
+                            invite-field := ForgeInputValidation { text <=> root.invite; required: false; minimum-length: 0; maximum-length: 8; placeholder-text: @tr("选填，最多 8 位"); }
+                        }
+                        Row {
+                            Rectangle { }
+                            HorizontalLayout {
+                                alignment: end;
+                                Button {
+                                    text: @tr("注册"); primary: true;
+                                    clicked => {
+                                        account-field.touched = true; name-field.touched = true; invite-field.touched = true;
+                                        root.result = account-field.valid && name-field.valid && invite-field.valid
+                                            ? @tr("注册成功：{}", root.account) : @tr("有字段未通过校验");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

@@ -1,22 +1,94 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeColorPicker } from "@slintforge";
-import { ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryPickerExample } from "../component/picker-example.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
+import { ForgeColorPicker, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+// 共享组件演示：ColorPicker。
 export component GalleryFormColorPickerPage inherits Rectangle {
     in property<string> language: "zh";
+    private property<bool> dark1: Palette.color-scheme == ColorScheme.dark;
+    private property<bool> disabled1: false;
+    private property<int> accepted-count: 0;
     callback prepare-preview(bool);
-    prepare-preview(open) => { if open { picker.open(); } else { picker.close(); } }
-    GalleryPageFrame {
-        width: root.width; height: root.height;
-        title: @tr("颜色选择器"); subtitle: @tr("通过色谱、调色板、十六进制和颜色通道选择颜色，确认后提交。");
-        sample := GalleryPickerExample {
-            label: @tr("颜色与屏幕取色");
-            HorizontalLayout {
-                alignment: start; spacing: 12px;
-                Text { text: @tr("选择颜色"); color: sample.dark ? #fff : #202020; vertical-alignment: center; }
-                picker := ForgeColorPicker { language: root.language; dark: sample.dark; enabled: !sample.disabled; }
+    prepare-preview(open) => { if open { picker.open(); } else { picker.close(); accent.close(); } }
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("表单 / 选择器");
+        title: "ColorPicker";
+        subtitle: @tr("色块按钮，点击后通过色谱、调色板、十六进制或 RGBA 通道选色，也可从屏幕取色，确认后提交。");
+        api: [
+            { name: "red / green / blue / alpha", kind: @tr("属性"), type: "int", description: @tr("已提交颜色的通道值，范围 0–255。") },
+            { name: "language / dark", kind: @tr("属性"), type: "string / bool", description: @tr("显示语言与深浅配色。") },
+            { name: "value / draft-value", kind: @tr("输出"), type: "color", description: @tr("已提交的颜色，以及弹层中正在调整的颜色。") },
+            { name: "is-open / picking-screen", kind: @tr("输出"), type: "bool", description: @tr("弹层是否打开、是否正在屏幕取色。") },
+            { name: "color-changed(color) / accepted(color) / canceled()", kind: @tr("回调"), type: "", description: @tr("调整、确认或取消时触发。") },
+            { name: "open() / close() / set-draft(color)", kind: @tr("函数"), type: "", description: @tr("打开或关闭弹层，或预设弹层中的颜色。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击色块打开选色弹层；吸管图标表示支持屏幕取色。");
+            output: root.accepted-count > 0
+                ? @tr("accepted · rgba({}, {}, {}, {})", picker.red, picker.green, picker.blue, picker.alpha)
+                : @tr("尚未确认");
+            GalleryPreview {
+                min-preview-height: 120px * ForgeTypography.scale;
+                picker := ForgeColorPicker {
+                    language: root.language; dark: root.dark1; enabled: !root.disabled1;
+                    accepted => { root.accepted-count += 1; }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "dark"; checked <=> root.dark1; }
+                CheckBox { text: @tr("禁用"); checked <=> root.disabled1; }
+            }
+        }
+
+        states := GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("色块直接显示已提交的颜色，半透明颜色叠加在棋盘格背景上。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: @tr("默认"); ForgeColorPicker { language: root.language; } }
+                GalleryVariant { caption: "alpha: 128"; ForgeColorPicker { language: root.language; red: 255; green: 99; blue: 132; alpha: 128; } }
+                GalleryVariant { caption: "enabled: false"; ForgeColorPicker { language: root.language; red: 54; green: 162; blue: 235; enabled: false; } }
+            }
+        }
+
+        scenario := GalleryExample {
+            title: @tr("主题强调色");
+            description: @tr("确认新颜色后，右侧的标题栏与按钮立即使用该颜色。");
+            output: @tr("强调色 rgb({}, {}, {})", accent.red, accent.green, accent.blue);
+            GalleryPreview {
+                spacing: 24px;
+                VerticalLayout {
+                    alignment: center; spacing: 8px;
+                    Text { text: @tr("强调色"); color: Palette.foreground; }
+                    accent := ForgeColorPicker { language: root.language; red: 16; green: 124; blue: 16; }
+                }
+                Rectangle {
+                    width: 260px * ForgeTypography.scale;
+                    height: card.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    clip: true;
+                    card := VerticalLayout {
+                        Rectangle {
+                            height: 36px * ForgeTypography.scale;
+                            background: accent.value;
+                            Text { x: 14px; text: @tr("项目概览"); color: #fff; font-weight: 600; vertical-alignment: center; }
+                        }
+                        VerticalLayout {
+                            padding: 14px; spacing: 10px;
+                            Text { text: @tr("本周完成 12 项任务"); color: Palette.foreground; }
+                            Rectangle {
+                                height: 28px * ForgeTypography.scale; width: 96px * ForgeTypography.scale;
+                                border-radius: 4px; background: accent.value;
+                                Text { text: @tr("查看详情"); color: #fff; }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

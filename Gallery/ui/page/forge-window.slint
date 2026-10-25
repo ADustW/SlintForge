@@ -1,11 +1,16 @@
-import { ForgeTypography, ForgeCaptureResult } from "@slintforge";
-import { Palette } from "std-widgets.slint";
-import { ForgeIconButton } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
+import { ForgeCaptureResult, ForgeIcon, ForgeIconButton, ForgeIcons, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
 import { GalleryCapturePreview } from "../component/capture-preview.slint";
 
-// 此页操作外层 GalleryWindow；Window 类型不能作为普通页面嵌入。
+component GalleryTitleGlyph inherits Rectangle {
+    in property<string> glyph;
+    width: 36px; height: 30px;
+    border-radius: 4px;
+    ForgeIcon { glyph: root.glyph; font-size: 14px * ForgeTypography.scale; }
+}
+
+// 共享组件演示：ForgeWindow。此页操作外层 GalleryWindow；Window 类型不能作为普通页面嵌入。
 export component GalleryForgeWindowPage inherits Rectangle {
     in property<bool> window-maximized;
     in property<bool> window-pinned;
@@ -18,39 +23,110 @@ export component GalleryForgeWindowPage inherits Rectangle {
     callback export-capture(image) -> string;
     in-out property<ForgeCaptureResult> capture-result;
     in-out property<string> export-message;
+    private property<bool> show-menu: true;
+    private property<bool> show-theme: true;
+    private property<bool> show-pin: true;
+    private property<bool> show-settings: true;
+    private property<bool> show-maximize: true;
     background: transparent;
 
-    GalleryPageFrame {
-        width: parent.width;
-        height: parent.height;
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("容器");
         title: "ForgeWindow";
-        subtitle: @tr("无边框窗口与自定义标题栏");
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        GalleryDemoCard {
-            preview-height: 170px;
-            VerticalLayout {
-                x: 20px; y: Math.max(18px, (parent.height - 134px) / 2); width: parent.width - 40px; height: 134px;
-                spacing: 12px;
-                Text { text: @tr("当前 Gallery 主窗口就是 ForgeWindow 实例。"); height: 22px; color: Palette.foreground; }
+        subtitle: @tr("无边框窗口：自绘标题栏，原生窗口负责拖动和缩放。当前 Gallery 主窗口就是一个 ForgeWindow 实例，本页的操作直接作用于它。");
+        api: [
+            { name: "brand-symbol / brand-icon", kind: @tr("属性"), type: "string / image", description: @tr("标题栏左侧的品牌字符或图标。") },
+            { name: "show-*-button", kind: @tr("属性"), type: "bool", description: @tr("分别控制菜单、主题、置顶、设置与最大化按钮是否显示。") },
+            { name: "pinned / rounded-corners", kind: @tr("属性"), type: "bool", description: @tr("窗口置顶与圆角，可双向绑定。") },
+            { name: "dark-mode", kind: @tr("属性"), type: "bool", description: @tr("主题按钮显示的明暗状态。") },
+            { name: "title-bar-height", kind: @tr("输出"), type: "length", description: @tr("标题栏高度，内容区从其下方开始。") },
+            { name: "menu-requested() / settings-requested()", kind: @tr("回调"), type: "", description: @tr("单击菜单或设置按钮时触发。") },
+            { name: "pin-state-changed(bool)", kind: @tr("回调"), type: "", description: @tr("单击置顶按钮后触发，参数为新的置顶状态。") },
+            { name: "capture()", kind: @tr("函数"), type: "ForgeCaptureResult", description: @tr("截取整个窗口；截图服务未接入时返回错误。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("以下按钮直接操作当前窗口。拖动标题栏可移动窗口，双击标题栏切换最大化，拖动窗口边缘调整大小。");
+            output: @tr("maximized = {} · pinned = {} · rounded-corners = {}", root.window-maximized ? "true" : "false", root.window-pinned ? "true" : "false", root.window-rounded ? "true" : "false");
+            GalleryPreview {
                 HorizontalLayout {
-                    height: 34px;
                     spacing: 10px;
                     ForgeIconButton { label: root.window-maximized ? @tr("还原") : @tr("最大化"); clicked => { root.toggle-maximize-requested(); } }
                     ForgeIconButton { label: @tr("最小化"); clicked => { root.minimize-requested(); } }
-                    ForgeIconButton { label: root.window-pinned ? @tr("取消置顶") : @tr("窗口置顶"); clicked => { root.pin-requested(!root.window-pinned); } }
+                    ForgeIconButton { label: root.window-pinned ? @tr("取消置顶") : @tr("窗口置顶"); selected: root.window-pinned; clicked => { root.pin-requested(!root.window-pinned); } }
                     ForgeIconButton { label: root.window-rounded ? @tr("切换直角") : @tr("切换圆角"); clicked => { root.corner-style-requested(!root.window-rounded); } }
                 }
-                Text { text: @tr("拖动标题栏可移动窗口；双击标题栏切换最大化；拖动窗口边缘可调整大小。"); height: 38px; color: Palette.foreground; wrap: word-wrap; }
             }
         }
 
-
-        GalleryCapturePreview {
-            result: root.capture-result;
-            export-message: root.export-message;
-            capture-requested => { root.capture-result = root.capture-requested(); root.export-message = ""; }
-            export-requested => { root.export-message = root.export-capture(root.capture-result.image); }
+        GalleryExample {
+            title: @tr("窗口截图");
+            description: @tr("调用 capture() 获取整个窗口的画面，并导出为 PNG。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                GalleryCapturePreview {
+                    horizontal-stretch: 1;
+                    result: root.capture-result;
+                    export-message: root.export-message;
+                    capture-requested => { root.capture-result = root.capture-requested(); root.export-message = ""; }
+                    export-requested => { root.export-message = root.export-capture(root.capture-result.image); }
+                }
+            }
         }
 
+        GalleryExample {
+            title: @tr("标题栏按钮配置");
+            description: @tr("工具类窗口通常只保留关闭和最小化，主窗口再加上菜单、主题和设置。勾选右侧选项预览标题栏的组成。");
+            GalleryPreview {
+                stretch: true;
+                content-padding: 16px;
+                Rectangle {
+                    horizontal-stretch: 1;
+                    height: 120px * ForgeTypography.scale;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    clip: true;
+                    Rectangle {
+                        y: 0px; height: 40px;
+                        background: Palette.alternate-background;
+                        HorizontalLayout {
+                            padding-left: 8px; padding-right: 4px; spacing: 2px;
+                            if root.show-menu : VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.panel-left; } }
+                            VerticalLayout {
+                                alignment: center;
+                                Rectangle {
+                                    width: 22px; height: 22px; border-radius: 5px; background: Palette.accent-background;
+                                    Text { text: "S"; color: Palette.accent-foreground; font-size: 13px * ForgeTypography.scale; font-weight: 700; }
+                                }
+                            }
+                            Text { text: @tr("我的应用"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
+                            if root.show-theme : VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.brightness; } }
+                            if root.show-pin : VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.pin; } }
+                            if root.show-settings : VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.settings; } }
+                            VerticalLayout { alignment: center; Rectangle { width: 36px; height: 30px; Rectangle { width: 10px; height: 1px; background: Palette.foreground; } } }
+                            if root.show-maximize : VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.panel-top-expand; } }
+                            VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.dismiss; } }
+                        }
+                    }
+                    Text {
+                        y: 40px; height: parent.height - 40px;
+                        text: @tr("内容区（title-bar-height 之下）");
+                        color: Palette.foreground.transparentize(0.5);
+                        font-size: 12px * ForgeTypography.scale;
+                        horizontal-alignment: center; vertical-alignment: center;
+                    }
+                }
+            }
+            GalleryOptions {
+                CheckBox { text: "show-menu-button"; checked <=> root.show-menu; }
+                CheckBox { text: "show-theme-button"; checked <=> root.show-theme; }
+                CheckBox { text: "show-pin-button"; checked <=> root.show-pin; }
+                CheckBox { text: "show-settings-button"; checked <=> root.show-settings; }
+                CheckBox { text: "show-maximize-button"; checked <=> root.show-maximize; }
+            }
+        }
     }
 }

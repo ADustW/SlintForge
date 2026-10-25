@@ -1,7 +1,6 @@
-import { Palette } from "std-widgets.slint";
+import { CheckBox, Palette } from "std-widgets.slint";
 import { ForgeTabBar, ForgeTypography } from "@slintforge";
-import { GallerySamplePage } from "../component/sample-page.slint";
-import { GalleryDemoModels } from "../component/demo-models.slint";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
 // 共享组件演示：TabBar。
 export component GalleryTabbarPage inherits Rectangle {
@@ -12,19 +11,96 @@ export component GalleryTabbarPage inherits Rectangle {
     in-out property<string> status: @tr("就绪");
     callback prepare-preview(bool);
     prepare-preview(open) => {  }
-    
-    sample := GallerySamplePage {
+
+    private property<string> active: "overview";
+    private property<bool> show-log: false;
+    private property<string> order-tab: "items";
+
+    GalleryComponentPage {
+        width: parent.width; height: parent.height;
+        category: @tr("导航");
         title: "TabBar";
-        subtitle: @tr("切换标签，关闭可移除的标签。");
-        example-title: @tr("用法与状态");
-        preview-height: 150px * ForgeTypography.scale;
-        VerticalLayout {
-            x: 20px; y: 20px; width: Math.max(0px, Math.min(620px, sample.preview-width - 40px));
-            height: Math.max(0px, sample.preview-area-height - 40px);
-            spacing: 16px; alignment: start;
-            ForgeTabBar { items: [{id: "a", title: @tr("概览")}, {id: "b", title: @tr("详情")}, {id: "c", title: @tr("设置")}]; active-id: root.draft == "" ? "a" : root.draft; selected(id) => { root.draft = id; root.status = id; } }
-Text { text: root.status; color: Palette.foreground; }
+        subtitle: @tr("一行轻量标签，用于在同一页面的几个视图间切换。只负责标签本身，内容区域由应用根据 active-id 切换。");
+        api: [
+            { name: "items", kind: @tr("属性"), type: "[ForgeTabItem]", description: @tr("标签列表，每项包含 id 与 title。") },
+            { name: "active-id", kind: @tr("属性"), type: "string", description: @tr("当前标签的 id，对应标签显示背景。") },
+            { name: "selected(string)", kind: @tr("回调"), type: "", description: @tr("点击标签时触发；组件不改写 active-id，由应用更新。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("点击标签切换；右侧可追加一个标签。");
+            output: @tr("selected · {}", root.active);
+            GalleryPreview {
+                ForgeTabBar {
+                    items: root.show-log
+                        ? [{ id: "overview", title: @tr("概览") }, { id: "details", title: @tr("详情") }, { id: "settings", title: @tr("设置") }, { id: "log", title: @tr("日志") }]
+                        : [{ id: "overview", title: @tr("概览") }, { id: "details", title: @tr("详情") }, { id: "settings", title: @tr("设置") }];
+                    active-id: root.active;
+                    selected(id) => { root.active = id; }
+                }
+            }
+            GalleryOptions {
+                CheckBox {
+                    text: @tr("显示“日志”标签"); checked <=> root.show-log;
+                    toggled => { if !self.checked && root.active == "log" { root.active = "overview"; } }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("有选中项时显示背景；active-id 不匹配任何标签时全部为普通样式。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant {
+                    caption: "active-id: \"week\"";
+                    ForgeTabBar { items: [{ id: "day", title: @tr("日") }, { id: "week", title: @tr("周") }, { id: "month", title: @tr("月") }]; active-id: "week"; }
+                }
+                GalleryVariant {
+                    caption: "active-id: \"\"";
+                    ForgeTabBar { items: [{ id: "day", title: @tr("日") }, { id: "week", title: @tr("周") }, { id: "month", title: @tr("月") }]; active-id: ""; }
+                }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("订单详情");
+            description: @tr("标签切换下方的内容区域，内容由应用按 active-id 显示。");
+            output: @tr("active-id = {}", root.order-tab);
+            GalleryPreview {
+                Rectangle {
+                    width: 400px * ForgeTypography.scale;
+                    height: order.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    order := VerticalLayout {
+                        padding: 16px; spacing: 12px;
+                        Text { text: @tr("订单 #20261025-018"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
+                        ForgeTabBar {
+                            items: [{ id: "items", title: @tr("商品") }, { id: "shipping", title: @tr("物流") }, { id: "invoice", title: @tr("发票") }];
+                            active-id: root.order-tab;
+                            selected(id) => { root.order-tab = id; }
+                        }
+                        Rectangle { height: 1px; background: Palette.border; }
+                        if root.order-tab == "items" : VerticalLayout {
+                            spacing: 6px;
+                            Text { text: @tr("机械键盘 × 1　¥ 499"); color: Palette.foreground; }
+                            Text { text: @tr("鼠标垫 × 2　¥ 58"); color: Palette.foreground; }
+                        }
+                        if root.order-tab == "shipping" : VerticalLayout {
+                            spacing: 6px;
+                            Text { text: @tr("顺丰速运 SF1024886"); color: Palette.foreground; }
+                            Text { text: @tr("已到达上海转运中心"); color: Palette.foreground.transparentize(0.35); }
+                        }
+                        if root.order-tab == "invoice" : VerticalLayout {
+                            spacing: 6px;
+                            Text { text: @tr("电子普通发票 · 个人"); color: Palette.foreground; }
+                            Text { text: @tr("订单完成后开具"); color: Palette.foreground.transparentize(0.35); }
+                        }
+                    }
+                }
+            }
         }
     }
-    
 }

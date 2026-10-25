@@ -1,27 +1,80 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeIconButton, ForgeTypography } from "@slintforge";
-import { GalleryPageFrame } from "../component/page-frame.slint";
-import { GalleryDemoCard } from "../component/demo-card.slint";
+import { Button, Palette } from "std-widgets.slint";
+import { ForgeIconButton, ForgeIcons, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
 
+// 全局字体设置演示：ForgeTypography。字体与字号比例由宿主在设置页修改，本页只读取并展示效果。
 export component GalleryTypographyPage inherits Rectangle {
     callback open-settings-requested();
     background: Palette.background;
-    GalleryPageFrame {
+
+    GalleryComponentPage {
         width: parent.width; height: parent.height;
-        title: @tr("字体排版");
-        subtitle: @tr("使用 ForgeTypography 统一控制文字字体和字号比例。");
-        Text { text: @tr("用法与状态"); height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-weight: 600; }
-        GalleryDemoCard {
-            preview-height: 270px;
-            VerticalLayout {
-                x: 20px; y: Math.max(20px, (parent.height - 232px) / 2); width: parent.width - 40px; height: 232px;
-                spacing: 12px;
-                Text { text: @tr("展示标题 · Display"); color: Palette.foreground; font-size: 30px * ForgeTypography.scale; font-weight: 700; }
-                Text { text: @tr("页面标题 · Title"); color: Palette.foreground; font-size: 22px * ForgeTypography.scale; font-weight: 600; }
-                Text { text: @tr("正文 · Body：你好 SlintForge，Hello World!"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; }
-                Text { text: @tr("辅助文字 · Caption"); color: Palette.foreground; font-size: 12px * ForgeTypography.scale; }
-                ForgeIconButton { label: @tr("前往设置调整字体"); clicked => { root.open-settings-requested(); } }
+        category: @tr("主题");
+        title: "Typography";
+        subtitle: @tr("ForgeTypography 全局对象统一控制文字字体和字号比例。组件的字号都乘以 scale，修改后整个界面同步缩放。");
+        api: [
+            { name: "family", kind: @tr("属性"), type: "string", description: @tr("界面字体名称；为空时使用平台默认字体。") },
+            { name: "scale", kind: @tr("属性"), type: "float", description: @tr("字号比例，默认 1.0；写法如 font-size: 14px * ForgeTypography.scale。") },
+        ];
+
+        GalleryExample {
+            title: @tr("基本用法");
+            description: @tr("常用的字号层级。字体和比例在设置页调整，本页随之更新。");
+            output: @tr("family · {} · scale · {}", ForgeTypography.family == "" ? @tr("平台默认") : ForgeTypography.family, Math.round(ForgeTypography.scale * 100) / 100);
+            GalleryPreview {
+                VerticalLayout {
+                    spacing: 10px;
+                    Text { text: @tr("展示标题 · Display"); color: Palette.foreground; font-size: 30px * ForgeTypography.scale; font-weight: 700; }
+                    Text { text: @tr("页面标题 · Title"); color: Palette.foreground; font-size: 22px * ForgeTypography.scale; font-weight: 600; }
+                    Text { text: @tr("小节标题 · Subtitle"); color: Palette.foreground; font-size: 16px * ForgeTypography.scale; font-weight: 600; }
+                    Text { text: @tr("正文 · Body：你好 SlintForge，Hello World!"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; }
+                    Text { text: @tr("辅助文字 · Caption"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                }
+            }
+            GalleryOptions {
+                Text { text: "family"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Text { text: ForgeTypography.family == "" ? @tr("平台默认") : ForgeTypography.family; color: Palette.foreground; wrap: word-wrap; }
+                Text { text: "scale"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                Text { text: Math.round(ForgeTypography.scale * 100) + "%"; color: Palette.foreground; }
+                ForgeIconButton { icon: ForgeIcons.settings; label: @tr("前往设置调整字体"); clicked => { root.open-settings-requested(); } }
             }
         }
-}
+
+        GalleryExample {
+            title: @tr("状态对照");
+            description: @tr("同一段正文在不同 scale 下的效果，这里只在本例内模拟，不修改全局设置。");
+            GalleryPreview {
+                content-padding: 16px;
+                GalleryVariant { caption: "scale: 0.85"; Text { text: @tr("正文 Body"); color: Palette.foreground; font-size: 14px * 0.85 * ForgeTypography.scale; } }
+                GalleryVariant { caption: "scale: 1.0"; Text { text: @tr("正文 Body"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; } }
+                GalleryVariant { caption: "scale: 1.25"; Text { text: @tr("正文 Body"); color: Palette.foreground; font-size: 14px * 1.25 * ForgeTypography.scale; } }
+            }
+        }
+
+        GalleryExample {
+            title: @tr("文章排版");
+            description: @tr("标题、元信息和正文段落都按 scale 计算字号，放大字号后行宽内自动换行。");
+            GalleryPreview {
+                Rectangle {
+                    preferred-width: 440px * ForgeTypography.scale; min-width: 260px;
+                    height: article.preferred-height;
+                    border-radius: 8px; border-width: 1px; border-color: Palette.border;
+                    background: Palette.background;
+                    article := VerticalLayout {
+                        padding: 20px; spacing: 8px;
+                        Text { text: @tr("用一套界面同时支持 Rust 与 C++"); color: Palette.foreground; font-size: 20px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
+                        Text { text: @tr("工程笔记 · 5 分钟阅读"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
+                        Text {
+                            text: @tr("界面写在 .slint 文件中，两种宿主语言绑定同一套属性和回调。业务逻辑留在宿主一侧，界面只负责展示与交互。");
+                            color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap;
+                        }
+                        HorizontalLayout {
+                            alignment: start; padding-top: 4px;
+                            Button { text: @tr("继续阅读"); }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
