@@ -1,15 +1,27 @@
-export struct ForgeFlowPortData { id: string, direction: int, side: int, offset: float }
+export struct ForgeFlowPointData { x: float, y: float }
+export struct ForgeFlowPortData { id: string, direction: int, side: int, offset: float, connectable: bool, max-connections: int }
 export struct ForgeFlowNodeData {
     id: string, kind: string, title: string, data-json: string,
     x: float, y: float, width: float, height: float,
+    local-x: float, local-y: float, depth: int, is-group: bool, constrain-parent: bool, layout-fixed: bool,
     ports: [ForgeFlowPortData], parent: string, side: int, order: int,
     collapsed: bool, selected: bool, hidden: bool,
+    draggable: bool, selectable: bool, connectable: bool, deletable: bool, resizable: bool,
+    header-visible: bool, header-height: float, min-width: float, min-height: float,
+    max-width: float, max-height: float, aspect-ratio: float,
 }
 export struct ForgeFlowEdgeData {
     id: string, path: string, arrow-path: string, label: string,
     style: int, arrow: bool, stroke-width: float,
+    stroke-color: string, color-red: int, color-green: int, color-blue: int, dashed: bool,
     label-x: float, label-y: float, source-x: float, source-y: float, target-x: float, target-y: float,
     min-x: float, min-y: float, max-x: float, max-y: float, selected: bool, hidden: bool,
+    source-node: string, source-port: string, target-node: string, target-port: string,
+    kind: string, data-json: string, path-kind: string, control-points: [ForgeFlowPointData],
+    selectable: bool, deletable: bool, reconnectable: bool,
+    start-marker: string, end-marker: string, marker-stroke-path: string,
+    animated: bool, animation-speed: float, path-length: float, motion-points: [ForgeFlowPointData],
+    curvature: float, layer: int, parallel-offset: float,
 }
 export struct ForgeFlowViewport { x: float, y: float, zoom: float }
 export struct ForgeFlowRect { x: float, y: float, width: float, height: float }
@@ -20,19 +32,32 @@ export struct ForgeFlowAction {
 }
 export struct ForgeFlowState {
     token: int, revision: int, ok: bool, error: string, mode: string,
+    dirty: bool, schema-version: int, loaded-version: int, save-serial: int,
     nodes: [ForgeFlowNodeData], edges: [ForgeFlowEdgeData], viewport: ForgeFlowViewport,
+    min-zoom: float, max-zoom: float, wheel-mode: string, wheel-zoom-step: float, wheel-zoom-requires-control: bool,
+    auto-pan: bool, auto-pan-margin: float, auto-pan-speed: float, touch-enabled: bool,
+    guides: [ForgeFlowRect], grid-size: float, selected-node-count: int,
     bounds: ForgeFlowRect, can-undo: bool, can-redo: bool, selected-id: string, selected-title: string,
     selected-edge: ForgeFlowEdgeData, selected-edge-count: int,
-    node-count: int, edge-count: int,
+    node-count: int, edge-count: int, selected-is-group: bool,
+    connection-mode: string, connection-radius: float, allow-self-connections: bool, click-to-connect: bool,
 }
 export global ForgeFlowServices {
     in-out property<bool> connected: false;
     callback create(string) -> ForgeFlowState;
     callback execute(int, ForgeFlowAction) -> ForgeFlowState;
     callback resolve(int, ForgeFlowAction) -> ForgeFlowAction;
+    callback preview(int, ForgeFlowAction) -> ForgeFlowEdgeData;
+    callback query(int, string) -> string;
+    callback bounds(int, bool, string) -> ForgeFlowRect;
+    callback search(int, string) -> [string];
     callback release(int);
+    callback active-documents() -> int;
     callback export-json(int) -> string;
     pure callback field(string, string) -> string;
     callback save-file(int, string) -> string;
     callback load-file(int, string) -> ForgeFlowState;
+    callback export-image(int, string, bool, string) -> string;
+    // 宿主适配卡片正文：输入世界坐标节点 JSON，返回图元数组 JSON；空字符串使用默认文本。
+    callback export-card(string) -> string;
 }

@@ -1,5 +1,6 @@
 #include "gallery.h"
 #include "ForgeFlowBindings.hpp"
+#include "../../examples/flow-cpp/FlowCardExport.hpp"
 #include <cstdlib>
 #include "ForgeSdk.hpp"
 #include "ForgeStaggeredLayout.hpp"
@@ -239,7 +240,8 @@ int main(int argc, char** argv) {
     if (!std::getenv("SLINT_BACKEND")) _putenv_s("SLINT_BACKEND", "winit-skia");
     if (!std::getenv("WGPU_BACKEND")) _putenv_s("WGPU_BACKEND", "dx12");
     auto ui = GalleryWindow::create();
-    forge_bind_flow_services<ForgeFlowPortData, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport, ForgeFlowRect, ForgeFlowAction, ForgeFlowState, ForgeFlowServices>(ui);
+    forge_bind_flow_services<ForgeFlowPointData, ForgeFlowPortData, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport, ForgeFlowRect, ForgeFlowAction, ForgeFlowState, ForgeFlowServices>(ui);
+    ui->global<ForgeFlowServices>().on_export_card([](slint::SharedString node){return slint::SharedString(forge_flow_demo_export_card(std::string(node)).c_str());});
     const bool smoke = argc > 1 && std::string_view(argv[1]) == "--smoke";
     const bool capture_smoke = std::any_of(argv + 1, argv + argc, [](const char* arg) { return std::string_view(arg) == "--capture-smoke"; });
     const bool capture_preview = std::any_of(argv + 1, argv + argc, [](const char* arg) { return std::string_view(arg) == "--capture-preview"; });

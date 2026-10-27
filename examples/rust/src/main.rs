@@ -1,15 +1,23 @@
 slint::include_modules!();
 use slint::ComponentHandle;
 
+mod business;
 #[cfg(test)]
 mod business_tests;
-mod business;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    if std::env::args().any(|arg| arg == "--suggestion-demo" || arg == "--suggestion-smoke") { return business::suggestion(std::env::args().any(|arg| arg == "--suggestion-smoke")); }
-    if std::env::args().any(|arg| arg == "--dialog-demo" || arg == "--dialog-smoke") { return business::dialog(std::env::args().any(|arg| arg == "--dialog-smoke")); }
-    if std::env::args().any(|arg| arg == "--grids-smoke") { return grids_smoke(); }
-    if std::env::args().any(|arg| arg == "--charts-smoke") { return charts_smoke(); }
+    if std::env::args().any(|arg| arg == "--suggestion-demo" || arg == "--suggestion-smoke") {
+        return business::suggestion(std::env::args().any(|arg| arg == "--suggestion-smoke"));
+    }
+    if std::env::args().any(|arg| arg == "--dialog-demo" || arg == "--dialog-smoke") {
+        return business::dialog(std::env::args().any(|arg| arg == "--dialog-smoke"));
+    }
+    if std::env::args().any(|arg| arg == "--grids-smoke") {
+        return grids_smoke();
+    }
+    if std::env::args().any(|arg| arg == "--charts-smoke") {
+        return charts_smoke();
+    }
     if std::env::args().any(|arg| arg == "--widgets-smoke") {
         return widgets_smoke();
     }
@@ -53,51 +61,115 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn charts_smoke() -> Result<(), Box<dyn std::error::Error>> {
     let ui = ChartsWindow::new()?;
-    slintforge::bind_chart_services!(ui, ForgeChartServices, ForgeChartScene, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel);
+    slintforge::bind_chart_services!(
+        ui,
+        ForgeChartServices,
+        ForgeChartScene,
+        ForgeChartMark,
+        ForgeChartLine,
+        ForgeChartTick,
+        ForgeChartLabel
+    );
     let directory = std::path::Path::new("build/charts-qa");
     std::fs::create_dir_all(directory)?;
     let timer = slint::Timer::default();
     let weak = ui.as_weak();
     let phase = std::rc::Rc::new(std::cell::Cell::new(0));
-    timer.start(slint::TimerMode::Repeated, std::time::Duration::from_millis(120), move || {
-        let ui = weak.upgrade().unwrap();
-        let index = phase.get();
-        if index % 2 == 0 { ui.set_kind(index / 2); }
-        else {
-            let kind = index / 2;
-            assert_eq!(ui.get_status(), 0);
-            assert_eq!(ui.get_mark_count(), if kind == 2 || kind == 3 { 2 } else { 6 });
-            slintforge::save_capture_png(&slintforge::capture_window(ui.window()).unwrap(), directory.join(format!("consumer-rust-{kind}.png"))).unwrap();
-            if kind == 6 { println!("CONSUMER_CHARTS_OK host=rust kinds=7"); slint::quit_event_loop().unwrap(); }
-        }
-        phase.set(index + 1);
-    });
+    timer.start(
+        slint::TimerMode::Repeated,
+        std::time::Duration::from_millis(120),
+        move || {
+            let ui = weak.upgrade().unwrap();
+            let index = phase.get();
+            if index % 2 == 0 {
+                ui.set_kind(index / 2);
+            } else {
+                let kind = index / 2;
+                assert_eq!(ui.get_status(), 0);
+                assert_eq!(
+                    ui.get_mark_count(),
+                    if kind == 2 || kind == 3 { 2 } else { 6 }
+                );
+                slintforge::save_capture_png(
+                    &slintforge::capture_window(ui.window()).unwrap(),
+                    directory.join(format!("consumer-rust-{kind}.png")),
+                )
+                .unwrap();
+                if kind == 6 {
+                    println!("CONSUMER_CHARTS_OK host=rust kinds=7");
+                    slint::quit_event_loop().unwrap();
+                }
+            }
+            phase.set(index + 1);
+        },
+    );
     ui.run()?;
     Ok(())
 }
 
 fn grids_smoke() -> Result<(), Box<dyn std::error::Error>> {
     let ui = GridsWindow::new()?;
-    slintforge::bind_grid_services!(ui, ForgeGridServices, ForgeGridScene, ForgeGridViewRow,
-        ForgeGridViewColumn, ForgeGridRow, ForgeGridCell, ForgeGridColumn, ForgeGridEditResult);
-    let directory = std::path::Path::new("build/grids-qa"); std::fs::create_dir_all(directory)?;
-    let timer = slint::Timer::default(); let weak = ui.as_weak();
+    slintforge::bind_grid_services!(
+        ui,
+        ForgeGridServices,
+        ForgeGridScene,
+        ForgeGridViewRow,
+        ForgeGridViewColumn,
+        ForgeGridRow,
+        ForgeGridCell,
+        ForgeGridColumn,
+        ForgeGridEditResult
+    );
+    let directory = std::path::Path::new("build/grids-qa");
+    std::fs::create_dir_all(directory)?;
+    let timer = slint::Timer::default();
+    let weak = ui.as_weak();
     let phase = std::rc::Rc::new(std::cell::Cell::new(0));
-    timer.start(slint::TimerMode::Repeated, std::time::Duration::from_millis(140), move || {
-        let ui = weak.upgrade().unwrap(); let index = phase.get(); let mode = index / 2;
-        if index % 2 == 0 { ui.invoke_prepare(mode); }
-        else {
-            assert_eq!(ui.get_status(), if mode == 2 { 1 } else { 0 });
-            assert_eq!(ui.get_visible_count(), if mode == 2 { 0 } else if mode == 6 { 2 } else { 3 });
-            if mode == 3 { assert_eq!(ui.get_selected_count(), 0); }
-            if mode == 4 { assert_eq!(ui.get_selected_count(), 1); }
-            if mode == 5 { assert!(ui.get_editing()); }
-            slintforge::save_capture_png(&slintforge::capture_window(ui.window()).unwrap(), directory.join(format!("consumer-rust-{mode}.png"))).unwrap();
-            if mode == 6 { println!("CONSUMER_GRIDS_OK host=rust states=7"); slint::quit_event_loop().unwrap(); }
-        }
-        phase.set(index + 1);
-    });
-    ui.run()?; Ok(())
+    timer.start(
+        slint::TimerMode::Repeated,
+        std::time::Duration::from_millis(140),
+        move || {
+            let ui = weak.upgrade().unwrap();
+            let index = phase.get();
+            let mode = index / 2;
+            if index % 2 == 0 {
+                ui.invoke_prepare(mode);
+            } else {
+                assert_eq!(ui.get_status(), if mode == 2 { 1 } else { 0 });
+                assert_eq!(
+                    ui.get_visible_count(),
+                    if mode == 2 {
+                        0
+                    } else if mode == 6 {
+                        2
+                    } else {
+                        3
+                    }
+                );
+                if mode == 3 {
+                    assert_eq!(ui.get_selected_count(), 0);
+                }
+                if mode == 4 {
+                    assert_eq!(ui.get_selected_count(), 1);
+                }
+                if mode == 5 {
+                    assert!(ui.get_editing());
+                }
+                slintforge::save_capture_png(
+                    &slintforge::capture_window(ui.window()).unwrap(),
+                    directory.join(format!("consumer-rust-{mode}.png")),
+                )
+                .unwrap();
+                if mode == 6 {
+                    println!("CONSUMER_GRIDS_OK host=rust states=7");
+                    slint::quit_event_loop().unwrap();
+                }
+            }
+            phase.set(index + 1);
+        },
+    );
+    ui.run()?;
+    Ok(())
 }
 
 fn widgets_smoke() -> Result<(), Box<dyn std::error::Error>> {

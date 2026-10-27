@@ -1,0 +1,451 @@
+{
+  "version": 1,
+  "objective": "依次实现并验证三批 ForgeFlow 能力；前一批通过后再进入后一批",
+  "architecture": "共享 Slint 契约、C++ 共用核心、Rust DLL 适配；保留现有操作编号和历史文档兼容",
+  "batches": [
+    {
+      "id": 1,
+      "status": "verified",
+      "requirements": [
+        {
+          "id": "connection-geometry",
+          "description": "实际线型预览、反向和密集场景路由、可编辑折点、路径箭头标签命中一致",
+          "status": "verified"
+        },
+        {
+          "id": "port-policy",
+          "description": "可配置连接半径、严格与宽松方向、端口容量、点击连接、可选自连接",
+          "status": "verified"
+        },
+        {
+          "id": "custom-edges",
+          "description": "完整类型和业务数据、端点信息、自定义路径与统一几何命中及重连",
+          "status": "verified"
+        },
+        {
+          "id": "edit-events",
+          "description": "节点和连线鼠标事件、拖动阶段、修改前审核与拒绝、修改后通知",
+          "status": "verified"
+        },
+        {
+          "id": "element-policy",
+          "description": "分别控制拖动选择连接删除尺寸和业务隐藏",
+          "status": "verified"
+        },
+        {
+          "id": "card-container",
+          "description": "可配置标题与拖动区域、内容尺寸变化、尺寸范围与比例、正文输入焦点",
+          "status": "verified"
+        },
+        {
+          "id": "public-sdk",
+          "description": "双端一致的图查询、原子批量事务和单步历史、错误处理及外部消费示例",
+          "status": "verified"
+        }
+      ],
+      "gate": "核心与双端 SDK 测试、真实窗口交互、受影响 Gallery 页面、外部 SDK 消费验证",
+      "evidence": [
+        "build/flow-batch1-final-core-20261014/result.json",
+        "build/flow-batch1-final-rust-sdk-20261014/result.json",
+        "build/flow-batch1-final-window-matrix-20261014/result.json",
+        "build/flow-batch1-final-gallery-20261014/result.json",
+        "build/flow-batch1-final-consumers-20261014/result.json",
+        "build/flow-footer-fix-20261014/result.json"
+      ],
+      "verification": {
+        "scope": "verified 仅表示已记录的功能场景通过，不表示后两批能力、全部平台或所有性能目标通过",
+        "tested_source_fingerprint": "8f7ea47d5cfdf5e51f07730721b811d1b7f9d819d35633c7121d5b9ca00cc5b4",
+        "catalog_updated_after_validation": true,
+        "window_combinations": 38,
+        "gallery_states_per_host": 15,
+        "performance_passed": false,
+        "performance_reports": [
+          "build/flow-batch1-perf-loop3-20261014/result.json",
+          "build/flow-batch1-perf-loop3-remaining-20261014/result.json"
+        ],
+        "automatic_fix_retest_count": 3,
+        "awaiting_user_direction": false,
+        "awaiting_user_direction_scope": "第一批功能门禁已完成；同一性能问题的授权续修及新的待决定事项统一记录于第三批",
+        "gate_scope": "第一批原定门禁为功能验证；500 节点性能与长期运行属于第三批，目标和未通过记录保留",
+        "remaining_issue": "Rust Skia/DX12 的标准及混合卡片帧 P95 分别为 34.8802/34.8465ms，未达到 33ms；C++ Skia/OpenGL 两个场景达标"
+      }
+    },
+    {
+      "id": 2,
+      "status": "verified",
+      "requirements": [
+        {
+          "id": "groups",
+          "description": "嵌套容器、局部坐标、整体移动、折叠、拖入移出和父级边界",
+          "status": "verified"
+        },
+        {
+          "id": "layouts",
+          "description": "流程分层与树布局、方向间距、实际尺寸、固定节点和撤销",
+          "status": "verified"
+        },
+        {
+          "id": "alignment",
+          "description": "拖动辅助线、边缘中心吸附、等距排列、统一可配置网格",
+          "status": "verified"
+        },
+        {
+          "id": "clipboard",
+          "description": "剪切复制粘贴、跨画布、重建 ID 与端口引用、保留内部连线",
+          "status": "verified"
+        },
+        {
+          "id": "navigation",
+          "description": "边缘自动平移、适应选中、搜索定位、缩放与滚轮配置、触摸操作",
+          "status": "verified"
+        },
+        {
+          "id": "editor-components",
+          "description": "公共节点库、右键菜单、批量属性、自定义工具栏与小地图",
+          "status": "verified"
+        }
+      ],
+      "gate": "第一批通过；新增能力双端核心和真实交互验证、外部 SDK 消费与相关回归",
+      "evidence": [
+        "build/flow-batch2-groups-20261014-023409/result.json",
+        "build/flow-batch2-clipboard-rust-fix1-20261014-024511/result.json",
+        "build/flow-batch2-20261014-025054/result.json",
+        "build/flow-batch2-20261014-030137/result.json",
+        "build/flow-batch2-navigation-rust-20261014-031941/result.json",
+        "build/flow-batch2-final-window-matrix2-20261014/result.json",
+        "build/flow-batch2-acceptance-20261014-040420/result.json"
+      ],
+      "verification": {
+        "scope": "六类第二批能力通过当前源码的完整双端功能门禁；不代表实体触摸、系统 DPI 或第三批性能验收",
+        "tested_source_fingerprint": "37ec7061eec9dc29e664c1111246914cd4b2d5fc7d27515adaffd422a29799b2",
+        "catalog_updated_after_validation": true,
+        "window_steps": 302,
+        "window_combinations": 12,
+        "regression_steps": [
+          114,
+          52,
+          75,
+          120
+        ],
+        "gallery_states_per_host": 15,
+        "external_consumer_checks": 18,
+        "physical_touch_checked": false,
+        "system_dpi_switch_checked": false,
+        "performance_repair_reopened": false,
+        "remaining": []
+      }
+    },
+    {
+      "id": 3,
+      "status": "in_progress",
+      "requirements": [
+        {
+          "id": "edge-presentation",
+          "description": "双端和自定义标记、流动动画、曲率、层级与并行边间距",
+          "status": "verified"
+        },
+        {
+          "id": "export-documents",
+          "description": "整图和选区图片导出、自定义卡片适配、脏状态、保存通知与版本迁移",
+          "status": "verified"
+        },
+        {
+          "id": "accessibility",
+          "description": "键盘选择移动、焦点导航、可访问名称、一致的悬停选中禁用错误状态",
+          "status": "verified"
+        },
+        {
+          "id": "performance-lifecycle",
+          "description": "500 节点与 1000 连线、复杂卡片分组布局、长期编辑历史内存、页面切换和多实例销毁",
+          "status": "in_progress"
+        },
+        {
+          "id": "incremental-history-budget",
+          "description": "稳定 ID 双向字段差量、撤销重做共用字节和步数预算、超大编辑边界及公开用量查询",
+          "status": "verified"
+        }
+      ],
+      "gate": "第二批通过；双端功能与外部 SDK 验证、深浅主题和缩放窗口验证、Release 性能和生命周期记录",
+      "evidence": [
+        "build/flow-batch3-20261014-042223/result.json",
+        "build/flow-batch3-20261014-042415/result.json",
+        "build/flow-batch3-20261014-044904/result.json",
+        "build/flow-batch3-20261014-050019/result.json",
+        "build/flow-batch3-final-window-matrix-20261014/result.json",
+        "build/flow-batch3-acceptance-20261014-052944/result.json",
+        "build/flow-lifecycle-20261014-052022/result.json",
+        "build/flow-batch3-performance-20261014-051905/result.json",
+        "build/flow-batch3-legacy-software-20261014-053531/result.json",
+        "build/flow-performance-resumed-20261014/loop3-windows/result.json",
+        "build/flow-performance-resumed-20261014/loop3-render-cache-final/result.json",
+        "build/flow-performance-resumed-20261014/loop3-lifecycle/result.json",
+        "build/flow-performance-resumed-20261014/loop3-performance/result.json",
+        "build/flow-performance-resumed-20261014/loop3-acceptance/result.json",
+        "build/flow-performance-resumed-20261014/final-result.json",
+        "build/flow-performance-resumed2-20261014/result.json",
+        "build/flow-performance-resumed2-20261014/performance-final.json",
+        "build/flow-performance-resumed2-20261014/lifecycle/result.json",
+        "build/flow-performance-resumed2-20261014/cache-comparison-analysis.json",
+        "build/flow-routing-review-20261014/result.json"
+      ],
+      "verification": {
+        "scope": "增量历史和预算完成；双端同规模持续编辑采样峰值降低约 48%/49%；三轮 12/12 有效性能场景达标。多小时耐久及堆分配分析仍未完成。",
+        "tested_source_fingerprint": "f12550be90eb64a847ff8a1dbf4e626f466bb604faccf2403560d5a2a748cd5c",
+        "catalog_updated_after_validation": true,
+        "functional_passed": true,
+        "window_steps": 234,
+        "window_combinations": 4,
+        "regression_steps": [
+          114,
+          52,
+          75,
+          120,
+          302
+        ],
+        "gallery_states_per_host": 15,
+        "external_consumer_checks": 19,
+        "external_animation_and_exports_passed": true,
+        "lifecycle_passed": true,
+        "lifecycle_steps": 1379,
+        "edits_per_host": 900,
+        "history_limit": 100,
+        "canvas_recreations_per_host": 60,
+        "service_releases_per_host": 64,
+        "performance_passed": true,
+        "performance_measurement_complete": true,
+        "performance_repair_reopened": false,
+        "automatic_fix_retest_count": 1,
+        "awaiting_user_direction": false,
+        "physical_touch_checked": false,
+        "system_dpi_switch_checked": false,
+        "screen_reader_checked": false,
+        "multi_hour_endurance_checked": false,
+        "clean_machine_sdk_checked": false,
+        "remaining": [
+          "多小时编辑、反复加载释放和堆分配验证尚未完成",
+          "性能基准偶发初始拖动未触发，原因未确认；脚本拒收无效结果，本轮随后三次完整复测有效且通过"
+        ],
+        "verification_limits": [
+          "历史预算不包括活动文档、临时差量、分配器及界面/GPU 内存",
+          "C++ 性能使用 OpenGL，不能代表默认 DX12",
+          "实体触摸、系统 DPI、屏幕阅读器尚未人工验证",
+          "持续编辑记录约两分半，不能替代多小时运行或堆泄漏分析",
+          "外部 SDK 接入复用了依赖缓存，不是全新机器验收"
+        ],
+        "prior_automatic_fix_retest_count": 6,
+        "performance_repetitions": 3,
+        "performance_cases_passed": 12,
+        "performance_cases_total": 12,
+        "performance_evidence": "build/flow-history-memory-20261014/performance-final.json",
+        "lifecycle_peak_private_mib": {
+          "cpp": 471.83984375,
+          "rust": 458.484375
+        },
+        "functional_evidence": "build/flow-history-memory-20261014/batch3-window/result.json",
+        "production_logic_changed_in_this_evaluation": true,
+        "performance_worst_frame_p95_ms": 26.8031,
+        "performance_worst_zoom_frame_p95_ms": 28.2044,
+        "performance_worst_feedback_p95_ms": 26.6954,
+        "performance_environment": "普通桌面后台进程保留，构建、游戏和其他 Flow 测试窗口退出；C++ Skia OpenGL，Rust Skia DX12",
+        "lifecycle_evidence": "build/flow-history-memory-20261014/lifecycle/result.json",
+        "cache_rollback_retained": true,
+        "memory_improvement_proven": true,
+        "external_consumer_current_source_rebuilt": true,
+        "external_consumer_evidence_scope": "本轮从已安装 C++ SDK 和独立 Rust 接口/DLL 重新构建，两端新预算接口及所有 Flow 场景通过；依赖缓存复用。",
+        "history_window_combinations": 4,
+        "history_window_steps": 51,
+        "history_memory_evidence": "build/flow-history-memory-20261014/result.json",
+        "history_budget_bytes": 33554432,
+        "history_incremental": true,
+        "history_budget_passed": true,
+        "history_counter_bytes_for_100_edits": 15880,
+        "flow_contract": 14,
+        "memory_peak_reduction_percent": {
+          "cpp": 47.653097928069656,
+          "rust": 49.16496309899172
+        },
+        "external_consumer_evidence": "build/flow-history-memory-20261014/consumers/result.json",
+        "legacy_software_current_source_checked": false,
+        "initial_invalid_performance": {
+          "evidence": "performance-01/result.json",
+          "invalid_cases": 3,
+          "reason": "node_dragged=false",
+          "cause_confirmed": false,
+          "production_or_workload_changed_for_retest": false
+        }
+      },
+      "verification_history": [
+        {
+          "scope": "三批功能及第三批持续编辑和释放场景通过；第三批整体因 Rust 帧耗时未达标保持未完成，设备和长期运行边界另列",
+          "tested_source_fingerprint": "42f22d21acc5e0c188d446c4740852e7a4f0ec58be285f4861bd1c28ab1a8953",
+          "catalog_updated_after_validation": true,
+          "functional_passed": true,
+          "window_steps": 234,
+          "window_combinations": 12,
+          "regression_steps": [
+            114,
+            52,
+            75,
+            120,
+            302
+          ],
+          "gallery_states_per_host": 15,
+          "external_consumer_checks": 19,
+          "external_animation_and_exports_passed": true,
+          "lifecycle_passed": true,
+          "lifecycle_steps": 1379,
+          "edits_per_host": 900,
+          "history_limit": 100,
+          "canvas_recreations_per_host": 60,
+          "service_releases_per_host": 64,
+          "legacy_software_states_per_host": 14,
+          "performance_passed": false,
+          "performance_measurement_complete": true,
+          "performance_repair_reopened": false,
+          "automatic_fix_retest_count": 3,
+          "awaiting_user_direction": true,
+          "awaiting_user_direction_scope": "同一 Rust 帧耗时问题超过三次自动修复复测后，继续修复需要用户明确决定",
+          "physical_touch_checked": false,
+          "system_dpi_switch_checked": false,
+          "screen_reader_checked": false,
+          "multi_hour_endurance_checked": false,
+          "clean_machine_sdk_checked": false,
+          "remaining": [
+            "Rust Skia/DX12 标准和混合卡片帧 P95 为 33.7813/35.0485ms，未达到 33ms，需授权继续定位修复"
+          ],
+          "verification_limits": [
+            "C++ 性能使用 OpenGL，不能代表默认 DX12",
+            "实体触摸、系统 DPI、屏幕阅读器尚未人工验证",
+            "持续编辑记录约两分半，不能替代多小时运行或堆泄漏分析",
+            "外部 SDK 接入复用了依赖缓存，不是全新机器验收"
+          ]
+        },
+        {
+          "scope": "授权续修后三轮已完成；当前源码的双端功能、Gallery、SDK 和生命周期场景通过，帧耗时仍不稳定达标，且本次私有内存峰值上升",
+          "tested_source_fingerprint": "4a47e176ff431834612539aa98ce551cd648eac6bd88f088354d6fcd10c7cc2d",
+          "catalog_updated_after_validation": true,
+          "functional_passed": true,
+          "window_steps": 234,
+          "window_combinations": 12,
+          "regression_steps": [
+            114,
+            52,
+            75,
+            120,
+            302
+          ],
+          "gallery_states_per_host": 15,
+          "external_consumer_checks": 19,
+          "external_animation_and_exports_passed": true,
+          "lifecycle_passed": true,
+          "lifecycle_steps": 1379,
+          "edits_per_host": 900,
+          "history_limit": 100,
+          "canvas_recreations_per_host": 60,
+          "service_releases_per_host": 64,
+          "legacy_software_states_per_host": 14,
+          "performance_passed": false,
+          "performance_measurement_complete": true,
+          "performance_repair_reopened": true,
+          "automatic_fix_retest_count": 3,
+          "awaiting_user_direction": true,
+          "awaiting_user_direction_scope": "本次授权后的三轮自动修复已耗尽，需要用户决定是否继续以及是否回退或调整缓存策略",
+          "physical_touch_checked": false,
+          "system_dpi_switch_checked": false,
+          "screen_reader_checked": false,
+          "multi_hour_endurance_checked": false,
+          "clean_machine_sdk_checked": false,
+          "remaining": [
+            "Rust 混合卡片三次帧 P95 为 29.5820/33.0212/35.6633ms，缩放阶段最高 42.4509ms，未稳定达到 33ms",
+            "本次 C++/Rust 私有内存峰值约 908.82/866.77MiB，高于授权前约 751/744MiB，需评估缓存代价"
+          ],
+          "verification_limits": [
+            "C++ 性能使用 OpenGL，不能代表默认 DX12",
+            "实体触摸、系统 DPI、屏幕阅读器尚未人工验证",
+            "持续编辑记录约两分半，不能替代多小时运行或堆泄漏分析",
+            "外部 SDK 接入复用了依赖缓存，不是全新机器验收"
+          ],
+          "prior_automatic_fix_retest_count": 3,
+          "performance_repetitions": 3,
+          "performance_cases_passed": 10,
+          "performance_cases_total": 12,
+          "performance_evidence": "build/flow-performance-resumed-20261014/loop3-performance/result.json",
+          "render_cache_combinations": 12,
+          "background_comparison_cases": 144,
+          "lifecycle_peak_private_mib": {
+            "cpp": 908.8203125,
+            "rust": 866.765625
+          }
+        },
+        {
+          "scope": "正文缓存保持回退；同一生产产物完成双端各三次正式性能复测，12/12 达标。持续编辑及释放场景通过，内存峰值仍偏高，长期内存优化未完成。",
+          "tested_source_fingerprint": "3b7e48e9c449309f8ac2ac1fc841ac16117796add7a75c89a25e5c07265a6a69",
+          "catalog_updated_after_validation": true,
+          "functional_passed": true,
+          "window_steps": 234,
+          "window_combinations": 12,
+          "regression_steps": [
+            114,
+            52,
+            75,
+            120,
+            302
+          ],
+          "gallery_states_per_host": 15,
+          "external_consumer_checks": 19,
+          "external_animation_and_exports_passed": true,
+          "lifecycle_passed": true,
+          "lifecycle_steps": 1379,
+          "edits_per_host": 900,
+          "history_limit": 100,
+          "canvas_recreations_per_host": 60,
+          "service_releases_per_host": 64,
+          "legacy_software_states_per_host": 14,
+          "performance_passed": true,
+          "performance_measurement_complete": true,
+          "performance_repair_reopened": true,
+          "automatic_fix_retest_count": 0,
+          "awaiting_user_direction": false,
+          "physical_touch_checked": false,
+          "system_dpi_switch_checked": false,
+          "screen_reader_checked": false,
+          "multi_hour_endurance_checked": false,
+          "clean_machine_sdk_checked": false,
+          "remaining": [
+            "持续编辑时 C++／Rust 私有内存峰值仍为 901.37／901.91MiB；增量历史及内存预算需专项完善",
+            "多小时编辑、反复加载释放和堆分配验证尚未完成"
+          ],
+          "verification_limits": [
+            "C++ 性能使用 OpenGL，不能代表默认 DX12",
+            "实体触摸、系统 DPI、屏幕阅读器尚未人工验证",
+            "持续编辑记录约两分半，不能替代多小时运行或堆泄漏分析",
+            "外部 SDK 接入复用了依赖缓存，不是全新机器验收"
+          ],
+          "prior_automatic_fix_retest_count": 6,
+          "performance_repetitions": 3,
+          "performance_cases_passed": 12,
+          "performance_cases_total": 12,
+          "performance_evidence": "build/flow-performance-resumed2-20261014/performance-final.json",
+          "render_cache_combinations": 12,
+          "background_comparison_cases": 144,
+          "lifecycle_peak_private_mib": {
+            "cpp": 901.37109375,
+            "rust": 901.90625
+          },
+          "functional_evidence": "build/flow-routing-review-20261014/result.json",
+          "production_logic_changed_in_this_evaluation": false,
+          "performance_worst_frame_p95_ms": 20.9805,
+          "performance_worst_zoom_frame_p95_ms": 19.6368,
+          "performance_worst_feedback_p95_ms": 21.1419,
+          "performance_environment": "普通桌面后台进程保留，构建、游戏和其他 Flow 测试窗口退出；C++ Skia OpenGL，Rust Skia DX12",
+          "lifecycle_evidence": "build/flow-performance-resumed2-20261014/lifecycle/result.json",
+          "cache_rollback_retained": true,
+          "cache_isolation_cases": 6,
+          "memory_improvement_proven": false,
+          "external_consumer_current_source_rebuilt": false,
+          "external_consumer_evidence_scope": "19 项外部消费检查为前一轮已记录功能证据；本轮沿用当前生产产物已通过的 SDK 契约检查，没有重新构建消费项目。"
+        }
+      ]
+    }
+  ]
+}

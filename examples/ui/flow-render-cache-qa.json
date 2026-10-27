@@ -1,0 +1,143 @@
+[
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 1
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "cache-initial"
+  },
+  {
+    "kind": "edit",
+    "op": "field",
+    "id": "node-1",
+    "target": "text",
+    "text": "缓存正文更新 · 中文"
+  },
+  {
+    "kind": "edit",
+    "op": "field",
+    "id": "node-2",
+    "target": "status",
+    "text": "stopped"
+  },
+  {
+    "kind": "snapshot",
+    "name": "cache-data-updated"
+  },
+  {
+    "kind": "click",
+    "x": 150,
+    "y": 264
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "输入与缓存一致"
+  },
+  {
+    "kind": "snapshot",
+    "name": "cache-typing"
+  },
+  {
+    "kind": "click",
+    "x": 135,
+    "y": 304
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/data/text",
+    "value": "输入与缓存一致"
+  },
+  {
+    "kind": "click",
+    "x": 500,
+    "y": 296
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/1/data/status",
+    "value": "running"
+  },
+  {
+    "kind": "snapshot",
+    "name": "cache-submitted"
+  },
+  {
+    "kind": "click",
+    "x": 250,
+    "y": 304
+  },
+  {
+    "kind": "snapshot",
+    "name": "cache-popup"
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "view",
+    "x": 17.25,
+    "y": -11.5,
+    "zoom": 0.75
+  },
+  {
+    "kind": "snapshot",
+    "name": "cache-zoom-075"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "cache-zoom-150"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "snapshot",
+    "name": "cache-dark"
+  },
+  {
+    "kind": "finish"
+  }
+]

@@ -1,0 +1,572 @@
+[
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\":1,\"mode\":\"graph\",\"nodes\":[{\"id\":\"a\",\"kind\":\"form\",\"title\":\"输入卡片\",\"x\":60,\"y\":60,\"data\":{\"text\":\"保留输入\"}},{\"id\":\"b\",\"kind\":\"device\",\"title\":\"设备卡片\",\"x\":420,\"y\":60,\"data\":{\"status\":\"running\"}},{\"id\":\"c\",\"kind\":\"image\",\"title\":\"整卡拖动\",\"x\":60,\"y\":300}],\"edges\":[],\"viewport\":{\"x\":40,\"y\":40,\"zoom\":1}}"
+  },
+  {
+    "kind": "press",
+    "x": 320,
+    "y": 266
+  },
+  {
+    "kind": "move",
+    "x": 410,
+    "y": 260
+  },
+  {
+    "kind": "preview",
+    "contains": " C "
+  },
+  {
+    "kind": "snapshot",
+    "name": "preview-bezier"
+  },
+  {
+    "kind": "release",
+    "x": 460,
+    "y": 266
+  },
+  {
+    "kind": "count",
+    "nodes": 3,
+    "edges": 1
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/target_node",
+    "value": "b"
+  },
+  {
+    "kind": "edit",
+    "op": "select",
+    "id": "edge-1"
+  },
+  {
+    "kind": "click",
+    "x": 912,
+    "y": 392
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/path_kind",
+    "value": "polyline"
+  },
+  {
+    "kind": "press",
+    "x": 390,
+    "y": 266
+  },
+  {
+    "kind": "move",
+    "x": 370,
+    "y": 306
+  },
+  {
+    "kind": "move",
+    "x": 380,
+    "y": 346
+  },
+  {
+    "kind": "move",
+    "x": 390,
+    "y": 386
+  },
+  {
+    "kind": "release",
+    "x": 390,
+    "y": 386
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/control_points/0/y",
+    "value": 246
+  },
+  {
+    "kind": "snapshot",
+    "name": "manual-bend"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/control_points/0/y",
+    "value": 126
+  },
+  {
+    "kind": "edit",
+    "op": "redo"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"click_to_connect\":true,\"connection_radius\":28}"
+  },
+  {
+    "kind": "click",
+    "x": 680,
+    "y": 266
+  },
+  {
+    "kind": "move",
+    "x": 540,
+    "y": 400
+  },
+  {
+    "kind": "snapshot",
+    "name": "click-connection-preview"
+  },
+  {
+    "kind": "click",
+    "x": 100,
+    "y": 506
+  },
+  {
+    "kind": "count",
+    "nodes": 3,
+    "edges": 2
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"allow_self_connections\":true}"
+  },
+  {
+    "kind": "click",
+    "x": 680,
+    "y": 266
+  },
+  {
+    "kind": "click",
+    "x": 460,
+    "y": 266
+  },
+  {
+    "kind": "count",
+    "nodes": 3,
+    "edges": 3
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/2/source_node",
+    "value": "b"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/2/target_node",
+    "value": "b"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"connection_mode\":\"loose\"}"
+  },
+  {
+    "kind": "click",
+    "x": 100,
+    "y": 506
+  },
+  {
+    "kind": "click",
+    "x": 680,
+    "y": 266
+  },
+  {
+    "kind": "count",
+    "nodes": 3,
+    "edges": 4
+  },
+  {
+    "kind": "edit",
+    "op": "node-patch",
+    "id": "c",
+    "text": "{\"ports\":[{\"id\":\"in\",\"direction\":0,\"side\":0,\"offset\":0.5},{\"id\":\"out\",\"direction\":1,\"side\":1,\"offset\":0.5,\"max_connections\":1}]}"
+  },
+  {
+    "kind": "click",
+    "x": 320,
+    "y": 506
+  },
+  {
+    "kind": "click",
+    "x": 100,
+    "y": 266
+  },
+  {
+    "kind": "count",
+    "nodes": 3,
+    "edges": 5
+  },
+  {
+    "kind": "click",
+    "x": 320,
+    "y": 506
+  },
+  {
+    "kind": "click",
+    "x": 460,
+    "y": 266
+  },
+  {
+    "kind": "count",
+    "nodes": 3,
+    "edges": 5
+  },
+  {
+    "kind": "error",
+    "contains": "有效端口"
+  },
+  {
+    "kind": "edit",
+    "op": "node-patch",
+    "id": "a",
+    "text": "{\"draggable\":false,\"deletable\":false}"
+  },
+  {
+    "kind": "press",
+    "x": 200,
+    "y": 218
+  },
+  {
+    "kind": "move",
+    "x": 240,
+    "y": 258
+  },
+  {
+    "kind": "release",
+    "x": 240,
+    "y": 258
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 60
+  },
+  {
+    "kind": "click",
+    "button": "right",
+    "x": 200,
+    "y": 218
+  },
+  {
+    "kind": "observed-event",
+    "value": "node-context-menu",
+    "id": "a"
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "block-edit",
+    "op": "title"
+  },
+  {
+    "kind": "edit",
+    "op": "title",
+    "id": "a",
+    "text": "应当拒绝"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/title",
+    "value": "输入卡片"
+  },
+  {
+    "kind": "error",
+    "contains": "业务规则"
+  },
+  {
+    "kind": "block-edit",
+    "op": ""
+  },
+  {
+    "kind": "edit",
+    "op": "node-patch",
+    "id": "c",
+    "text": "{\"width\":240,\"height\":120,\"min_width\":160,\"min_height\":80,\"max_width\":320,\"max_height\":160,\"aspect_ratio\":2}"
+  },
+  {
+    "kind": "edit",
+    "op": "select",
+    "id": "c"
+  },
+  {
+    "kind": "press",
+    "x": 340,
+    "y": 560
+  },
+  {
+    "kind": "move",
+    "x": 400,
+    "y": 590
+  },
+  {
+    "kind": "move",
+    "x": 500,
+    "y": 620
+  },
+  {
+    "kind": "move",
+    "x": 600,
+    "y": 660
+  },
+  {
+    "kind": "release",
+    "x": 600,
+    "y": 660
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/2/width",
+    "value": 320
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/2/height",
+    "value": 160
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/2/width",
+    "value": 240
+  },
+  {
+    "kind": "press",
+    "x": 210,
+    "y": 500
+  },
+  {
+    "kind": "move",
+    "x": 250,
+    "y": 540
+  },
+  {
+    "kind": "release",
+    "x": 250,
+    "y": 540
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/2/x",
+    "value": 100
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/2/y",
+    "value": 340
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "edit",
+    "op": "insert",
+    "text": "{\"id\":\"auto\",\"kind\":\"auto-form\",\"title\":\"自适应内容\",\"x\":700,\"y\":300,\"width\":220,\"height\":172,\"data\":{\"text\":\"可操作输入\",\"expanded\":\"no\"}}"
+  },
+  {
+    "kind": "click",
+    "x": 830,
+    "y": 542
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/3/data/expanded",
+    "value": "yes"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/3/height",
+    "value": 240
+  },
+  {
+    "kind": "snapshot",
+    "name": "content-auto-size"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/3/data/expanded",
+    "value": "no"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/3/height",
+    "value": 172
+  },
+  {
+    "kind": "edit",
+    "op": "node-patch",
+    "id": "a",
+    "text": "{\"header_visible\":false}"
+  },
+  {
+    "kind": "click",
+    "x": 170,
+    "y": 225
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "无标题输入"
+  },
+  {
+    "kind": "click",
+    "x": 135,
+    "y": 295
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/data/text",
+    "value": "无标题输入"
+  },
+  {
+    "kind": "snapshot",
+    "name": "node-policies-light"
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "snapshot",
+    "name": "node-policies-dark"
+  },
+  {
+    "kind": "size",
+    "width": 640,
+    "height": 520
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "node-policies-narrow"
+  },
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"a\", \"title\": \"事件节点\", \"x\": 60, \"y\": 60}, {\"id\": \"b\", \"title\": \"目标节点\", \"x\": 420, \"y\": 60}], \"edges\": [{\"id\": \"events-edge\", \"source_node\": \"a\", \"source_port\": \"out\", \"target_node\": \"b\", \"target_port\": \"in\", \"kind\": \"business-path\", \"data\": {\"weight\": 2}, \"path_kind\": \"cubic\", \"control_points\": [{\"x\": 330, \"y\": 46}, {\"x\": 370, \"y\": 206}], \"style\": 1}], \"viewport\": {\"x\": 40, \"y\": 40, \"zoom\": 1}}"
+  },
+  {
+    "kind": "clear-events"
+  },
+  {
+    "kind": "move",
+    "x": 390,
+    "y": 266
+  },
+  {
+    "kind": "observed-event",
+    "value": "edge-enter",
+    "id": "events-edge"
+  },
+  {
+    "kind": "double-click",
+    "x": 390,
+    "y": 266
+  },
+  {
+    "kind": "observed-event",
+    "value": "edge-click",
+    "id": "events-edge"
+  },
+  {
+    "kind": "observed-event",
+    "value": "edge-double-click",
+    "id": "events-edge"
+  },
+  {
+    "kind": "click",
+    "button": "right",
+    "x": 390,
+    "y": 266
+  },
+  {
+    "kind": "observed-event",
+    "value": "edge-context-menu",
+    "id": "events-edge"
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "move",
+    "x": 400,
+    "y": 360
+  },
+  {
+    "kind": "observed-event",
+    "value": "edge-leave",
+    "id": "events-edge"
+  },
+  {
+    "kind": "double-click",
+    "x": 160,
+    "y": 215
+  },
+  {
+    "kind": "observed-event",
+    "value": "node-click",
+    "id": "a"
+  },
+  {
+    "kind": "observed-event",
+    "value": "node-double-click",
+    "id": "a"
+  },
+  {
+    "kind": "snapshot",
+    "name": "custom-cubic-events"
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "finish"
+  }
+]

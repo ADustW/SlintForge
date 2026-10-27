@@ -1,0 +1,36 @@
+import { ComboBox, SpinBox } from "std-widgets.slint";
+import { ForgeFlowAction } from "../types/flow.slint";
+import { ForgeFlowTheme, ForgeFlowToolButton } from "theme.slint";
+
+// 可独立放入业务工具栏或面板，布局由文档控制器完成并进入一次撤销历史。
+export component ForgeFlowLayoutControls inherits Rectangle {
+    in property<bool> chinese: true;
+    in property<bool> read-only: false;
+    in property<bool> tree-mode: false;
+    in-out property<int> algorithm: 0;
+    in-out property<int> direction: 0;
+    in-out property<int> node-gap: 32;
+    in-out property<int> rank-gap: 80;
+    callback action(ForgeFlowAction);
+    preferred-width: 288px; preferred-height: 224px;
+    background: ForgeFlowTheme.surface; border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 8px;
+    drop-shadow-color: #10233c20; drop-shadow-blur: 14px; drop-shadow-offset-y: 3px;
+    VerticalLayout { padding: 14px; spacing: 8px;
+        Text { text: root.chinese ? "自动布局" : "Automatic layout"; color: ForgeFlowTheme.text; font-size: 13px; font-weight: 600; }
+        HorizontalLayout { spacing: 8px;
+            ComboBox { min-width: 0px; horizontal-stretch: 1; enabled: !root.read-only && !root.tree-mode; model: root.chinese ? ["分层布局", "树布局"] : ["Layered", "Tree"]; current-index <=> root.algorithm; }
+            ComboBox { min-width: 0px; horizontal-stretch: 1; enabled: !root.read-only && !root.tree-mode; model: root.chinese ? ["向右", "向左", "向下", "向上"] : ["Right", "Left", "Down", "Up"]; current-index <=> root.direction; }
+        }
+        HorizontalLayout { spacing: 8px;
+            Text { text: root.chinese ? "层间距" : "Rank gap"; color: ForgeFlowTheme.muted; vertical-alignment: center; }
+            SpinBox { enabled: !root.read-only && !root.tree-mode; minimum: 0; maximum: 2000; value <=> root.rank-gap; }
+        }
+        HorizontalLayout { spacing: 8px;
+            Text { text: root.chinese ? "节点间距" : "Node gap"; color: ForgeFlowTheme.muted; vertical-alignment: center; }
+            SpinBox { enabled: !root.read-only && !root.tree-mode; minimum: 0; maximum: 2000; value <=> root.node-gap; }
+        }
+        ForgeFlowToolButton { text: root.chinese ? "应用布局" : "Apply layout"; primary: true; enabled: !root.read-only; horizontal-stretch: 1;
+            clicked => { root.action({op: "layout", target: root.algorithm == 0 ? "layered" : "tree", number: root.direction, text: "{\"rank_gap\":" + root.rank-gap + ",\"node_gap\":" + root.node-gap + "}"}); }
+        }
+    }
+}

@@ -1,12 +1,18 @@
-use crate::{ForgePlotPoint,ForgePlotServices,ProfessionalPlotWindow};
+use crate::{ForgePlotPoint, ForgePlotServices, ProfessionalPlotWindow};
 use slint::ComponentHandle;
-use std::time::{Duration,Instant};
+use std::time::{Duration, Instant};
 
 // 实际窗口验证八种图例、真实定时采样跨越旧缓冲边界、暂停恢复和历史滚动。
-pub fn start(ui:&ProfessionalPlotWindow,timer:&slint::Timer){
-    let directory=crate::performance::directory();std::fs::create_dir_all(&directory).unwrap();
-    let weak=ui.as_weak();let mut phase=0;let mut frames=0;let mut previous_count=0;let mut paused_count=0;let started=Instant::now();
-    let mut csv=String::from("elapsed_s,history_points,rendered_points,prepare_ms,capture_ms\n");
+pub fn start(ui: &ProfessionalPlotWindow, timer: &slint::Timer) {
+    let directory = crate::performance::directory();
+    std::fs::create_dir_all(&directory).unwrap();
+    let weak = ui.as_weak();
+    let mut phase = 0;
+    let mut frames = 0;
+    let mut previous_count = 0;
+    let mut paused_count = 0;
+    let started = Instant::now();
+    let mut csv = String::from("elapsed_s,history_points,rendered_points,prepare_ms,capture_ms\n");
     timer.start(slint::TimerMode::Repeated,Duration::from_millis(500),move ||{
         let ui=weak.upgrade().unwrap();
         if phase==0{
@@ -38,14 +44,56 @@ pub fn start(ui:&ProfessionalPlotWindow,timer:&slint::Timer){
         }
     });
 }
-pub(crate) fn performance(ui:&ProfessionalPlotWindow,directory:&std::path::Path){
-    ui.set_streaming(true);ui.set_window_mode(1);let _=ui.get_scene();
-    let points=(0..1000000).map(|i|ForgePlotPoint{x:i as f32*0.001,y:(i as f32*0.003).sin()*2.+5.,..Default::default()}).collect::<Vec<_>>();
-    assert!(ui.invoke_append_points(0,slint::ModelRc::new(slint::VecModel::from(points))));ui.invoke_flush();let scene=ui.get_scene();assert_eq!(scene.input_points,1000000);
-    let _=slintforge::capture_window(ui.window()).unwrap();let mut csv=String::from("history_points,append_ms,prepare_ms,capture_ms,total_ms,rendered_points\n");
-    for batch in 0..64{let points=(0..32).map(|i|{let x=(1000000+batch*32+i) as f32*0.001;ForgePlotPoint{x,y:(x*3.).sin()*2.+5.,..Default::default()}}).collect::<Vec<_>>();
-        let start=Instant::now();assert!(ui.invoke_append_points(0,slint::ModelRc::new(slint::VecModel::from(points))));let append_ms=start.elapsed().as_secs_f64()*1000.;let prepared=Instant::now();ui.invoke_flush();let scene=ui.get_scene();let prepare_ms=prepared.elapsed().as_secs_f64()*1000.;let captured=Instant::now();let _=slintforge::capture_window(ui.window()).unwrap();let capture_ms=captured.elapsed().as_secs_f64()*1000.;
-        assert!(scene.rendered_points<5000);assert_eq!(scene.input_points,1000000+(batch+1)*32);csv+=&format!("{},{append_ms:.3},{prepare_ms:.3},{capture_ms:.3},{:.3},{}\n",scene.input_points,start.elapsed().as_secs_f64()*1000.,scene.rendered_points);
+pub(crate) fn performance(ui: &ProfessionalPlotWindow, directory: &std::path::Path) {
+    ui.set_streaming(true);
+    ui.set_window_mode(1);
+    let _ = ui.get_scene();
+    let points = (0..1000000)
+        .map(|i| ForgePlotPoint {
+            x: i as f32 * 0.001,
+            y: (i as f32 * 0.003).sin() * 2. + 5.,
+            ..Default::default()
+        })
+        .collect::<Vec<_>>();
+    assert!(ui.invoke_append_points(0, slint::ModelRc::new(slint::VecModel::from(points))));
+    ui.invoke_flush();
+    let scene = ui.get_scene();
+    assert_eq!(scene.input_points, 1000000);
+    let _ = slintforge::capture_window(ui.window()).unwrap();
+    let mut csv =
+        String::from("history_points,append_ms,prepare_ms,capture_ms,total_ms,rendered_points\n");
+    for batch in 0..64 {
+        let points = (0..32)
+            .map(|i| {
+                let x = (1000000 + batch * 32 + i) as f32 * 0.001;
+                ForgePlotPoint {
+                    x,
+                    y: (x * 3.).sin() * 2. + 5.,
+                    ..Default::default()
+                }
+            })
+            .collect::<Vec<_>>();
+        let start = Instant::now();
+        assert!(ui.invoke_append_points(0, slint::ModelRc::new(slint::VecModel::from(points))));
+        let append_ms = start.elapsed().as_secs_f64() * 1000.;
+        let prepared = Instant::now();
+        ui.invoke_flush();
+        let scene = ui.get_scene();
+        let prepare_ms = prepared.elapsed().as_secs_f64() * 1000.;
+        let captured = Instant::now();
+        let _ = slintforge::capture_window(ui.window()).unwrap();
+        let capture_ms = captured.elapsed().as_secs_f64() * 1000.;
+        assert!(scene.rendered_points < 5000);
+        assert_eq!(scene.input_points, 1000000 + (batch + 1) * 32);
+        csv += &format!(
+            "{},{append_ms:.3},{prepare_ms:.3},{capture_ms:.3},{:.3},{}\n",
+            scene.input_points,
+            start.elapsed().as_secs_f64() * 1000.,
+            scene.rendered_points
+        );
     }
-    std::fs::write(directory.join("incremental-frame-performance.csv"),csv).unwrap();ui.set_streaming(false);ui.invoke_reset();let _=ui.get_scene();
+    std::fs::write(directory.join("incremental-frame-performance.csv"), csv).unwrap();
+    ui.set_streaming(false);
+    ui.invoke_reset();
+    let _ = ui.get_scene();
 }

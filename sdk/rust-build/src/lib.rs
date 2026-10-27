@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 pub type BuildError = Box<dyn std::error::Error + Send + Sync>;
 
 pub fn ui_library_path() -> PathBuf {
+    println!("cargo:rerun-if-env-changed=SLINTFORGE_UI_LIBRARY");
     if let Some(path) = std::env::var_os("SLINTFORGE_UI_LIBRARY") {
         return PathBuf::from(path);
     }
@@ -15,6 +16,7 @@ pub fn ui_library_path() -> PathBuf {
     }
 }
 pub fn runtime_library_path() -> Result<PathBuf, BuildError> {
+    println!("cargo:rerun-if-env-changed=SLINTFORGE_RUNTIME_LIBRARY");
     if let Some(path) = std::env::var_os("SLINTFORGE_RUNTIME_LIBRARY") {
         let path = PathBuf::from(path);
         if path.is_file() {

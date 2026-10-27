@@ -19,7 +19,11 @@ component GalleryFlowPage inherits Rectangle {
 export component GalleryFlowPages inherits Rectangle {
     in property<string> active-route-id;
     private property<bool> mindmap-visited: false;
+    private property<bool> flowchart-visited: false;
+    private property<bool> topology-visited: false;
     changed active-route-id => {
+        if root.active-route-id == "flow-flowchart" && !root.flowchart-visited { flowchart.fit(); root.flowchart-visited = true; }
+        if root.active-route-id == "flow-topology" && !root.topology-visited { topology.fit(); root.topology-visited = true; }
         if root.active-route-id == "flow-mindmap" && !root.mindmap-visited {
             mindmap.fit(); root.mindmap-visited = true;
         }
@@ -48,7 +52,7 @@ export component GalleryFlowPages inherits Rectangle {
     custom := GalleryFlowPage { visible: root.active-route-id == "flow-custom"; variant: 1; title: root.zh ? "自定义卡片" : "Custom cards";
         subtitle: root.zh ? "输入表单、设备按钮、图片与状态内容，共享同一画布。" : "Forms, device actions, images and status content on one canvas."; }
     flowchart := GalleryFlowPage { visible: root.active-route-id == "flow-flowchart"; variant: 2; title: root.zh ? "流程图" : "Flowchart";
-        subtitle: root.zh ? "通过端口组织流程，支持箭头、标签和三种连线样式。" : "Arrange process steps with ports, arrows, labels and three edge styles."; }
+        subtitle: root.zh ? "通过端口组织流程，支持箭头、标签和四种连线样式。" : "Arrange process steps with ports, arrows, labels and four edge styles."; }
     topology := GalleryFlowPage { visible: root.active-route-id == "flow-topology"; variant: 3; title: root.zh ? "拓扑图" : "Topology";
         subtitle: root.zh ? "手动布局设备关系，使用小地图导航较大的拓扑。" : "Arrange device relationships and navigate large graphs with the minimap."; }
     mindmap := GalleryFlowPage { visible: root.active-route-id == "flow-mindmap"; variant: 4; title: root.zh ? "思维导图" : "Mind map";

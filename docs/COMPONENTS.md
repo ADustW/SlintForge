@@ -2,6 +2,10 @@
 
 基线为 Slint 1.18.0、fluent 样式，所有视觉实现位于 `ui/`，Rust/C++ 使用同一个 `@slintforge` 入口。导航页面均已有演示，数量由 `Gallery/data/navigation.txt` 统计。DataGrid 和 TreeDataGrid 的模型、编辑、选择及服务绑定见 [表格组件](GRIDS.md)。7 类基础图表见 [基础图表组件](CHARTS.md)，专业二维图表 ForgePlot 见 [专业图表组件](PLOT.md)，卡片节点编辑与思维导图见 [ForgeFlow](FLOW.md)。原生替代清单见 [组件审查](COMPONENT_AUDIT.md)，逐项机器可读状态见 `Gallery/data/component-status.txt`。
 
+ForgeFlow 另导出 `ForgeFlowTheme`、`ForgeFlowBackground`、`ForgeFlowEdge`、`ForgeFlowEdgeEditor` 和 `ForgeFlowNodeToolbar`，供业务组合背景、自定义连线内容和节点操作。默认节点支持四角调整尺寸，连线支持四种路径、颜色与虚线；[Vue Flow 对比审查](FLOW_VUEFLOW_REVIEW.md) 列出了本轮改进、验证结果和剩余差距。
+
+第二批新增 `ForgeFlowLayoutControls`、`ForgeFlowAlignmentControls`、`ForgeFlowNodePalette`、`ForgeFlowContextMenu`、`ForgeFlowNodeProperties`、`ForgeFlowPanel`，提供可组合的布局、对齐、节点库、菜单、批量属性和业务面板。分组、片段剪贴板、网格及导航选项见 [Flow 扩展接口](FLOW.md)。第二批仍在验证，阶段测试记录不代表整批验收完成。
+
 ## 输入与表单
 
 | 组件 | 主要属性、函数与回调 |

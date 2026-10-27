@@ -1,12 +1,18 @@
-use crate::{ForgePlotPoint,ForgePlotServices,ProfessionalPlotWindow};
-use slint::{ComponentHandle,Model};
-use slint::platform::{WindowEvent,PointerEventButton};
+use crate::{ForgePlotPoint, ForgePlotServices, ProfessionalPlotWindow};
+use slint::platform::{PointerEventButton, WindowEvent};
+use slint::{ComponentHandle, Model};
 use std::time::Duration;
 
 // 每个拖动步骤之间追加数据，覆盖场景重建、顶部标签与两条光标交叉。
-pub fn start(ui:&ProfessionalPlotWindow,timer:&slint::Timer) {
-    let directory=crate::performance::directory();std::fs::create_dir_all(&directory).unwrap();
-    let weak=ui.as_weak();let mut phase=0;let mut start_x=0.;let mut y=0.;let mut csv=String::from("cursor,step,maximum,target_pixel,actual_pixel,actual_value,other_pixel\n");
+pub fn start(ui: &ProfessionalPlotWindow, timer: &slint::Timer) {
+    let directory = crate::performance::directory();
+    std::fs::create_dir_all(&directory).unwrap();
+    let weak = ui.as_weak();
+    let mut phase = 0;
+    let mut start_x = 0.;
+    let mut y = 0.;
+    let mut csv =
+        String::from("cursor,step,maximum,target_pixel,actual_pixel,actual_value,other_pixel\n");
     timer.start(slint::TimerMode::Repeated,Duration::from_millis(100),move||{
         let ui=weak.upgrade().unwrap();let save=|name:&str|{let image=slintforge::capture_window(ui.window()).unwrap();slintforge::save_capture_png(&image,&directory.join(format!("{name}.png"))).unwrap();};
         if phase==0 {ui.set_dark_mode(true);ui.set_mode(0);ui.set_streaming(true);ui.set_window_mode(2);ui.set_measure(false);ui.set_measurement_placement_index(0);ui.set_measurement_position_index(5);}

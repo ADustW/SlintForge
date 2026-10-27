@@ -1,0 +1,31 @@
+import { ForgeFlowCanvas, ForgeFlowNode, ForgeFlowNodePalette, ForgeFlowPanel, ForgeFlowToolButton, ForgeFlowMiniMap, ForgeFlowNodeProperties, ForgeFlowContextMenu } from "@slintforge";
+
+export component FlowEditorUsage inherits Window {
+    width: 1100px; height: 700px;
+    graph := ForgeFlowCanvas {
+        demo: 2; show-controls: false; show-minimap: false; show-context-menu: false;
+        for n in graph.state.nodes : ForgeFlowNode { node: n; visible: graph.node-visible(n); zoom: graph.viewport.zoom; pan-mode: graph.pan-mode; action(a) => { graph.act(a); } }
+        interaction(name,a) => { if name == "canvas-context-menu" { menu.open-at(a.x * graph.viewport.zoom + graph.viewport.x, a.y * graph.viewport.zoom + graph.viewport.y); } }
+    }
+    ForgeFlowNodePalette {
+        x: 12px; y: 60px;
+        gesture(index,phase,x,y) => { if phase == "end" { graph.act({op: "add",target: self.kinds[index],text: self.labels[index],x:400,y:180}); } }
+    }
+    ForgeFlowPanel {
+        canvas-width: graph.width; canvas-height: graph.height; horizontal-anchor: 1;
+        HorizontalLayout { padding: 6px;
+            ForgeFlowToolButton { text: "业务工具栏"; clicked => { graph.fit(); } }
+            ForgeFlowToolButton { text: "适应选中"; clicked => { graph.fit-selected(); } }
+        }
+    }
+    ForgeFlowMiniMap {
+        x: parent.width - self.width - 12px; y: parent.height - self.height - 12px;
+        width: 220px; height: 140px; nodes: graph.state.nodes; bounds: graph.state.bounds; viewport: graph.viewport;
+        viewport-color: #11998a; node-radius: 3px; node-color(n) => { return n.selected ? #11998a : #94a3b8; }
+        canvas-width: graph.width / 1px; canvas-height: graph.height / 1px;
+        navigate(x,y) => { graph.viewport = {x: graph.width / 2px - x * graph.viewport.zoom,y:graph.height / 2px - y * graph.viewport.zoom,zoom:graph.viewport.zoom}; graph.commit-view(); }
+        zoom-by(factor) => { graph.zoom-at(graph.viewport.zoom * factor,graph.width / 2px,graph.height / 2px); }
+    }
+    ForgeFlowNodeProperties { x: parent.width - self.width - 12px; y: 12px; count: graph.state.selected-node-count; action(a) => { graph.act(a); } }
+    menu := ForgeFlowContextMenu { commands: ["fit","select-all"]; labels: ["适应画布","选择全部"]; command(op) => { if op == "fit" { graph.fit(); } else { graph.act({op:op}); } } }
+}

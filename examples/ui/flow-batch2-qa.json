@@ -1,0 +1,1620 @@
+[
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"viewport\": {\"x\": 40, \"y\": 40, \"zoom\": 1}, \"nodes\": [{\"id\": \"g\", \"kind\": \"group\", \"title\": \"设备分组\", \"x\": 60, \"y\": 40, \"width\": 640, \"height\": 360}, {\"id\": \"a\", \"kind\": \"form\", \"title\": \"组内表单\", \"parent\": \"g\", \"x\": 20, \"y\": 70, \"width\": 220, \"height\": 132, \"constrain_parent\": true, \"data\": {\"text\": \"初始输入\"}}, {\"id\": \"h\", \"kind\": \"group\", \"title\": \"嵌套设备\", \"parent\": \"g\", \"x\": 340, \"y\": 60, \"width\": 240, \"height\": 240, \"constrain_parent\": true}, {\"id\": \"b\", \"kind\": \"device\", \"title\": \"设备控制\", \"parent\": \"h\", \"x\": 20, \"y\": 60, \"width\": 200, \"height\": 120, \"constrain_parent\": true, \"data\": {\"status\": \"running\"}}, {\"id\": \"c\", \"kind\": \"text\", \"title\": \"组外节点\", \"x\": 800, \"y\": 140, \"width\": 180, \"height\": 100}], \"edges\": [{\"id\": \"ba\", \"source_node\": \"b\", \"source_port\": \"out\", \"target_node\": \"a\", \"target_port\": \"in\", \"style\": 3, \"label\": \"反馈\"}]}"
+  },
+  {
+    "kind": "snapshot",
+    "name": "groups-initial"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node-world",
+      "id": "b"
+    },
+    "path": "/result/x",
+    "value": 420
+  },
+  {
+    "kind": "click",
+    "x": 180,
+    "y": 310
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "分组后草稿"
+  },
+  {
+    "kind": "press",
+    "x": 170,
+    "y": 195
+  },
+  {
+    "kind": "move",
+    "x": 220,
+    "y": 235
+  },
+  {
+    "kind": "release",
+    "x": 220,
+    "y": 235
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "g"
+    },
+    "path": "/result/x",
+    "value": 110
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "a"
+    },
+    "path": "/result/x",
+    "value": 20
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node-world",
+      "id": "a"
+    },
+    "path": "/result/x",
+    "value": 130
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node-world",
+      "id": "b"
+    },
+    "path": "/result/x",
+    "value": 470
+  },
+  {
+    "kind": "click",
+    "x": 205,
+    "y": 392
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "a"
+    },
+    "path": "/result/data/text",
+    "value": "分组后草稿"
+  },
+  {
+    "kind": "snapshot",
+    "name": "groups-moved-input"
+  },
+  {
+    "kind": "click",
+    "x": 710,
+    "y": 299
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "h"
+    },
+    "path": "/result/collapsed",
+    "value": true
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "ports",
+      "id": "b"
+    },
+    "path": "/result/0/available",
+    "value": false
+  },
+  {
+    "kind": "snapshot",
+    "name": "groups-collapsed"
+  },
+  {
+    "kind": "click",
+    "x": 710,
+    "y": 299
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "h"
+    },
+    "path": "/result/collapsed",
+    "value": false
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "ports",
+      "id": "b"
+    },
+    "path": "/result/0/available",
+    "value": true
+  },
+  {
+    "kind": "click",
+    "x": 560,
+    "y": 429
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "b"
+    },
+    "path": "/result/data/status",
+    "value": "stopped"
+  },
+  {
+    "kind": "press",
+    "x": 390,
+    "y": 356
+  },
+  {
+    "kind": "move",
+    "x": 840,
+    "y": 330
+  },
+  {
+    "kind": "release",
+    "x": 840,
+    "y": 330
+  },
+  {
+    "kind": "count",
+    "nodes": 5,
+    "edges": 2
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "connected-edges",
+      "id": "c"
+    },
+    "path": "/result/0/source_node",
+    "value": "a"
+  },
+  {
+    "kind": "press",
+    "x": 890,
+    "y": 295
+  },
+  {
+    "kind": "move",
+    "x": 250,
+    "y": 475
+  },
+  {
+    "kind": "release",
+    "x": 250,
+    "y": 475
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "c"
+    },
+    "path": "/result/parent",
+    "value": "g"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node-world",
+      "id": "c"
+    },
+    "path": "/result/x",
+    "value": 160
+  },
+  {
+    "kind": "press",
+    "x": 250,
+    "y": 475
+  },
+  {
+    "kind": "move",
+    "x": 910,
+    "y": 495
+  },
+  {
+    "kind": "release",
+    "x": 910,
+    "y": 495
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "c"
+    },
+    "path": "/result/parent",
+    "value": ""
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node-world",
+      "id": "c"
+    },
+    "path": "/result/x",
+    "value": 820
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "z"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "c"
+    },
+    "path": "/result/parent",
+    "value": "g"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "z"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "c"
+    },
+    "path": "/result/parent",
+    "value": ""
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "click",
+    "x": 240,
+    "y": 237
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "c"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 5,
+    "edges": 2
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "v"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 9,
+    "edges": 3
+  },
+  {
+    "kind": "snapshot",
+    "name": "clipboard-group-paste"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "x"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 5,
+    "edges": 2
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "z"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 9,
+    "edges": 3
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "z"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 5,
+    "edges": 2
+  },
+  {
+    "kind": "click",
+    "x": 250,
+    "y": 350
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "c"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "v"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 5,
+    "edges": 2
+  },
+  {
+    "kind": "click",
+    "x": 205,
+    "y": 392
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "a"
+    },
+    "path": "/result/data/text",
+    "value": "分组后草稿"
+  },
+  {
+    "kind": "click",
+    "x": 240,
+    "y": 237
+  },
+  {
+    "kind": "readonly",
+    "value": true
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "c"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "x"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "v"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 5,
+    "edges": 2
+  },
+  {
+    "kind": "readonly",
+    "value": false
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "snapshot",
+    "name": "groups-dark"
+  },
+  {
+    "kind": "view",
+    "x": 20,
+    "y": 25,
+    "zoom": 1.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "groups-zoomed"
+  },
+  {
+    "kind": "size",
+    "width": 680,
+    "height": 540
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "groups-narrow"
+  },
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"layout-a\", \"title\": \"入口\", \"x\": 30, \"y\": 40, \"width\": 200, \"height\": 100}, {\"id\": \"layout-b\", \"kind\": \"form\", \"title\": \"参数\", \"x\": 500, \"y\": 10, \"width\": 160, \"height\": 132}, {\"id\": \"layout-c\", \"title\": \"输出\", \"x\": 200, \"y\": 500, \"width\": 240, \"height\": 90}], \"edges\": [{\"id\": \"layout-ab\", \"source_node\": \"layout-a\", \"source_port\": \"out\", \"target_node\": \"layout-b\", \"target_port\": \"in\"}, {\"id\": \"layout-bc\", \"source_node\": \"layout-b\", \"source_port\": \"out\", \"target_node\": \"layout-c\", \"target_port\": \"in\"}]}"
+  },
+  {
+    "kind": "click",
+    "x": 328,
+    "y": 74
+  },
+  {
+    "kind": "snapshot",
+    "name": "layout-controls"
+  },
+  {
+    "kind": "click",
+    "x": 340,
+    "y": 306
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "layout-a"
+    },
+    "path": "/result/x",
+    "value": 30
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "layout-b"
+    },
+    "path": "/result/x",
+    "value": 310
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "layout-c"
+    },
+    "path": "/result/x",
+    "value": 550
+  },
+  {
+    "kind": "snapshot",
+    "name": "layout-layered-right"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "layout-b"
+    },
+    "path": "/result/x",
+    "value": 500
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "layout-c"
+    },
+    "path": "/result/y",
+    "value": 500
+  },
+  {
+    "kind": "edit",
+    "op": "layout",
+    "target": "tree",
+    "number": 2,
+    "width": 90,
+    "height": 40
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "layout-a"
+    },
+    "path": "/result/y",
+    "value": 10
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "layout-b"
+    },
+    "path": "/result/y",
+    "value": 200
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "layout-c"
+    },
+    "path": "/result/y",
+    "value": 422
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "layout-tree-down"
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"align-a\", \"title\": \"A\", \"x\": 103, \"y\": 127, \"width\": 100, \"height\": 80}, {\"id\": \"align-b\", \"title\": \"B\", \"x\": 300, \"y\": 100, \"width\": 160, \"height\": 100}, {\"id\": \"align-c\", \"title\": \"C\", \"x\": 700, \"y\": 220, \"width\": 120, \"height\": 60}], \"edges\": []}"
+  },
+  {
+    "kind": "edit",
+    "op": "select-all"
+  },
+  {
+    "kind": "snapshot",
+    "name": "alignment-controls"
+  },
+  {
+    "kind": "click",
+    "x": 644,
+    "y": 698
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "align-a"
+    },
+    "path": "/result/x",
+    "value": 103
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "align-b"
+    },
+    "path": "/result/x",
+    "value": 103
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "align-c"
+    },
+    "path": "/result/x",
+    "value": 103
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "edit",
+    "op": "select-all"
+  },
+  {
+    "kind": "edit",
+    "op": "align",
+    "target": "distribute-x"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "align-b"
+    },
+    "path": "/result/x",
+    "value": 371.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "alignment-distributed"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "click",
+    "x": 950,
+    "y": 200
+  },
+  {
+    "kind": "click",
+    "x": 190,
+    "y": 281
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "selection"
+    },
+    "path": "/result/nodes",
+    "value": [
+      "align-a"
+    ]
+  },
+  {
+    "kind": "press",
+    "x": 190,
+    "y": 281
+  },
+  {
+    "kind": "move",
+    "x": 287,
+    "y": 254
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "guides",
+      "id": ""
+    },
+    "path": "/result/0/x",
+    "value": 300
+  },
+  {
+    "kind": "snapshot",
+    "name": "alignment-guide-drag"
+  },
+  {
+    "kind": "release",
+    "x": 287,
+    "y": 254
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "guides",
+      "id": ""
+    },
+    "path": "/result",
+    "value": []
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\":32,\"guides_enabled\":false}"
+  },
+  {
+    "kind": "view",
+    "x": 0,
+    "y": 0,
+    "zoom": 2
+  },
+  {
+    "kind": "click",
+    "x": 920,
+    "y": 74
+  },
+  {
+    "kind": "press",
+    "x": 250,
+    "y": 375
+  },
+  {
+    "kind": "move",
+    "x": 314,
+    "y": 443
+  },
+  {
+    "kind": "release",
+    "x": 314,
+    "y": 443
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "align-a"
+    },
+    "path": "/result/x",
+    "value": 128
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "align-a"
+    },
+    "path": "/result/y",
+    "value": 160
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-32-zoom-200"
+  },
+  {
+    "kind": "click",
+    "x": 920,
+    "y": 74
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"nav-a\", \"kind\": \"form\", \"title\": \"导航表单\", \"x\": 140, \"y\": 160, \"width\": 220, \"height\": 132, \"data\": {\"text\": \"输入保持\"}}, {\"id\": \"nav-b\", \"x\": 720, \"y\": 180, \"width\": 220, \"height\": 132}, {\"id\": \"nav-group\", \"kind\": \"group\", \"x\": 600, \"y\": 400, \"width\": 440, \"height\": 300, \"collapsed\": true}, {\"id\": \"nav-child\", \"parent\": \"nav-group\", \"title\": \"温度 Sensor\", \"x\": 24, \"y\": 60, \"width\": 220, \"height\": 132}], \"edges\": []}"
+  },
+  {
+    "kind": "view",
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"min_zoom\": 0.5, \"max_zoom\": 2, \"wheel_zoom_step\": 1.5, \"auto_pan\": false}"
+  },
+  {
+    "kind": "wheel",
+    "x": 550,
+    "y": 500,
+    "delta": 120
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 1.5
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": -275
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/y",
+    "value": -200
+  },
+  {
+    "kind": "wheel",
+    "x": 550,
+    "y": 500,
+    "delta": 120
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 2
+  },
+  {
+    "kind": "wheel",
+    "x": 550,
+    "y": 500,
+    "delta": 0
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 2
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"wheel_mode\": \"none\"}"
+  },
+  {
+    "kind": "wheel",
+    "x": 550,
+    "y": 500,
+    "delta": -120
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 2
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"wheel_mode\": \"pan\"}"
+  },
+  {
+    "kind": "view",
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  {
+    "kind": "wheel",
+    "x": 550,
+    "y": 500,
+    "delta": -80,
+    "delta_x": -40
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": -40
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/y",
+    "value": -80
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 1
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"wheel_mode\": \"zoom\", \"wheel_zoom_requires_control\": true}"
+  },
+  {
+    "kind": "wheel",
+    "x": 550,
+    "y": 500,
+    "delta": 120
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 1
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "wheel",
+    "x": 550,
+    "y": 500,
+    "delta": 120
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 1.5
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"wheel_zoom_requires_control\": false}"
+  },
+  {
+    "kind": "click",
+    "x": 34,
+    "y": 128
+  },
+  {
+    "kind": "key",
+    "text": "SENSOR"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "search",
+      "text": "SENSOR"
+    },
+    "path": "/result",
+    "value": [
+      "nav-child"
+    ]
+  },
+  {
+    "kind": "snapshot",
+    "name": "navigation-search"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "selection"
+    },
+    "path": "/result/nodes",
+    "value": [
+      "nav-child"
+    ]
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "nav-group"
+    },
+    "path": "/result/collapsed",
+    "value": false
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 2
+  },
+  {
+    "kind": "key",
+    "text": "f"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0010"
+  },
+  {
+    "kind": "key",
+    "text": "f"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0010"
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 2
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "nav-group"
+    },
+    "path": "/result/collapsed",
+    "value": true
+  },
+  {
+    "kind": "view",
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  {
+    "kind": "pinch",
+    "phase": "start",
+    "x": 550,
+    "y": 500
+  },
+  {
+    "kind": "pinch",
+    "phase": "move",
+    "x": 580,
+    "y": 520,
+    "delta": 0.5
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 1.5
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": -245
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/y",
+    "value": -180
+  },
+  {
+    "kind": "pinch",
+    "phase": "end",
+    "x": 580,
+    "y": 520
+  },
+  {
+    "kind": "pinch",
+    "phase": "start",
+    "x": 550,
+    "y": 500
+  },
+  {
+    "kind": "pinch",
+    "phase": "move",
+    "x": 550,
+    "y": 500,
+    "delta": 0.2
+  },
+  {
+    "kind": "pinch",
+    "phase": "cancel",
+    "x": 550,
+    "y": 500
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 1.5
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": -245
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"touch_enabled\": false}"
+  },
+  {
+    "kind": "pinch",
+    "phase": "start",
+    "x": 550,
+    "y": 500
+  },
+  {
+    "kind": "pinch",
+    "phase": "move",
+    "x": 550,
+    "y": 500,
+    "delta": 0.5
+  },
+  {
+    "kind": "pinch",
+    "phase": "end",
+    "x": 550,
+    "y": 500
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/zoom",
+    "value": 1.5
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"touch_enabled\": true}"
+  },
+  {
+    "kind": "view",
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"auto_pan\": true, \"auto_pan_speed\": 4}"
+  },
+  {
+    "kind": "press",
+    "x": 180,
+    "y": 278
+  },
+  {
+    "kind": "move",
+    "x": 1084,
+    "y": 278
+  },
+  {
+    "kind": "expect-range",
+    "path": "/viewport/x",
+    "min": -300,
+    "max": -4
+  },
+  {
+    "kind": "release",
+    "x": 1084,
+    "y": 278
+  },
+  {
+    "kind": "expect-range",
+    "path": "/nodes/0/x",
+    "min": 1050,
+    "max": 1500
+  },
+  {
+    "kind": "snapshot",
+    "name": "navigation-auto-pan"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 140
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"auto_pan\": false}"
+  },
+  {
+    "kind": "view",
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  {
+    "kind": "view",
+    "x": 0,
+    "y": 0,
+    "zoom": 1.5
+  },
+  {
+    "kind": "click",
+    "x": 310,
+    "y": 433
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "缩放后输入"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "nav-a"
+    },
+    "path": "/result/data/text",
+    "value": "缩放后输入"
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"editor-a\", \"title\": \"批量节点 A\", \"kind\": \"text\", \"x\": 140, \"y\": 160, \"width\": 220, \"height\": 132, \"draggable\": false}, {\"id\": \"editor-b\", \"title\": \"批量节点 B\", \"kind\": \"text\", \"x\": 500, \"y\": 160, \"width\": 220, \"height\": 132, \"draggable\": false}], \"edges\": []}"
+  },
+  {
+    "kind": "view",
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  {
+    "kind": "click",
+    "x": 180,
+    "y": 278
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "click",
+    "x": 550,
+    "y": 278
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "selection"
+    },
+    "path": "/result/nodes",
+    "value": [
+      "editor-a",
+      "editor-b"
+    ]
+  },
+  {
+    "kind": "click",
+    "button": "right",
+    "x": 180,
+    "y": 278
+  },
+  {
+    "kind": "snapshot",
+    "name": "editor-context-multiple"
+  },
+  {
+    "kind": "click",
+    "x": 260,
+    "y": 538
+  },
+  {
+    "kind": "snapshot",
+    "name": "editor-bulk-properties"
+  },
+  {
+    "kind": "click",
+    "x": 1050,
+    "y": 203
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "editor-a"
+    },
+    "path": "/result/draggable",
+    "value": true
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "editor-b"
+    },
+    "path": "/result/draggable",
+    "value": true
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "editor-a"
+    },
+    "path": "/result/draggable",
+    "value": false
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "node",
+      "id": "editor-b"
+    },
+    "path": "/result/draggable",
+    "value": false
+  },
+  {
+    "kind": "click",
+    "x": 1060,
+    "y": 139
+  },
+  {
+    "kind": "snapshot",
+    "name": "editor-properties-closed"
+  },
+  {
+    "kind": "click",
+    "button": "right",
+    "x": 180,
+    "y": 278
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "click",
+    "button": "right",
+    "x": 850,
+    "y": 400
+  },
+  {
+    "kind": "click",
+    "x": 900,
+    "y": 422
+  },
+  {
+    "kind": "count",
+    "nodes": 4,
+    "edges": 0
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "count",
+    "nodes": 2,
+    "edges": 0
+  },
+  {
+    "kind": "click",
+    "x": 180,
+    "y": 278
+  },
+  {
+    "kind": "click",
+    "button": "right",
+    "x": 180,
+    "y": 278
+  },
+  {
+    "kind": "click",
+    "x": 260,
+    "y": 402
+  },
+  {
+    "kind": "count",
+    "nodes": 1,
+    "edges": 0
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "count",
+    "nodes": 2,
+    "edges": 0
+  },
+  {
+    "kind": "readonly",
+    "value": true
+  },
+  {
+    "kind": "click",
+    "button": "right",
+    "x": 180,
+    "y": 278
+  },
+  {
+    "kind": "snapshot",
+    "name": "editor-context-readonly"
+  },
+  {
+    "kind": "click",
+    "x": 260,
+    "y": 402
+  },
+  {
+    "kind": "count",
+    "nodes": 2,
+    "edges": 0
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "readonly",
+    "value": false
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "size",
+    "width": 650,
+    "height": 450
+  },
+  {
+    "kind": "click",
+    "button": "right",
+    "x": 620,
+    "y": 410
+  },
+  {
+    "kind": "snapshot",
+    "name": "editor-context-narrow-dark"
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"replacement\", \"x\": 100, \"y\": 100}], \"edges\": [], \"viewport\": {\"x\": 40, \"y\": 40, \"zoom\": 1}}"
+  },
+  {
+    "kind": "press",
+    "x": 180,
+    "y": 258
+  },
+  {
+    "kind": "move",
+    "x": 1084,
+    "y": 258
+  },
+  {
+    "kind": "expect-range",
+    "path": "/viewport/x",
+    "min": -250,
+    "max": 36
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"replacement\", \"x\": 100, \"y\": 100}], \"edges\": [], \"viewport\": {\"x\": 40, \"y\": 40, \"zoom\": 1}}"
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": 40
+  },
+  {
+    "kind": "release",
+    "x": 1084,
+    "y": 258
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": 40
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "finish"
+  }
+]

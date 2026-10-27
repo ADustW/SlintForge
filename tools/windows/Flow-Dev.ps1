@@ -4,6 +4,8 @@ param([Parameter(Mandatory)][string]$Task, [string]$Renderer = 'winit-skia', [st
 Initialize-ForgeEnvironment (Join-Path $PSScriptRoot '../../../slint-sdk-1.18.0') 'C:/Users/wzp/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe' 'C:/Program Files/JetBrains/CLion 2026.1.1/bin/cmake/win/x64/bin/cmake.exe' 'D:/.clion-env/qt-6.8.3-msvc.bat'
 $env:SLINT_BACKEND = $Renderer
 Set-Location -LiteralPath $script:ForgeRoot
+$env:SLINTFORGE_UI_LIBRARY = Join-Path $script:ForgeRoot 'ui/slintforge.slint'
+$env:SLINTFORGE_RUNTIME_LIBRARY = Join-Path $script:ForgeRoot ("target/" + $Config.ToLowerInvariant() + '/slintforge_runtime.dll')
 switch ($Task) {
     'configure' { & $script:ForgeCMake -S . -B build/cpp -G 'Visual Studio 18 2026' -A x64 "-DSlint_DIR=$script:ForgeSdk/lib/cmake/Slint" }
     'cpp' { & $script:ForgeCMake --build build/cpp --config $Config --parallel 2 --target slintforge_flow_tests slintforge_flow_example }

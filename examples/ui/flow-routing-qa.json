@@ -1,0 +1,265 @@
+[
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"A\", \"x\": 20, \"y\": 80, \"width\": 180, \"height\": 130, \"title\": \"A\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"B\", \"x\": 800, \"y\": 80, \"width\": 180, \"height\": 130, \"title\": \"B\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"C\", \"x\": 20, \"y\": 320, \"width\": 180, \"height\": 130, \"title\": \"C\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"D\", \"x\": 800, \"y\": 320, \"width\": 180, \"height\": 130, \"title\": \"D\", \"data\": {\"text\": \"连接检查\"}}], \"edges\": [{\"id\": \"thick\", \"source_node\": \"A\", \"target_node\": \"B\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 0}, {\"id\": \"thin\", \"source_node\": \"C\", \"target_node\": \"D\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 2, \"style\": 1, \"marker_end\": \"open-arrow\"}], \"options\": {}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-long-light"
+  },
+  {
+    "kind": "click",
+    "x": 570,
+    "y": 265
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "op": "query",
+      "target": "selection"
+    },
+    "path": "/result/edges/0",
+    "value": "thick"
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-long-selected"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"A\", \"x\": 20, \"y\": 80, \"width\": 180, \"height\": 130, \"title\": \"A\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"B\", \"x\": 800, \"y\": 80, \"width\": 180, \"height\": 130, \"title\": \"B\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"C\", \"x\": 20, \"y\": 320, \"width\": 180, \"height\": 130, \"title\": \"C\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"D\", \"x\": 800, \"y\": 320, \"width\": 180, \"height\": 130, \"title\": \"D\", \"data\": {\"text\": \"连接检查\"}}], \"edges\": [{\"id\": \"thick\", \"source_node\": \"A\", \"target_node\": \"B\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 0}, {\"id\": \"thin\", \"source_node\": \"C\", \"target_node\": \"D\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 2, \"style\": 1, \"marker_end\": \"open-arrow\"}], \"options\": {}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-long-dark"
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"A\", \"x\": 20, \"y\": 80, \"width\": 180, \"height\": 130, \"title\": \"A\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"B\", \"x\": 800, \"y\": 80, \"width\": 180, \"height\": 130, \"title\": \"B\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"C\", \"x\": 20, \"y\": 320, \"width\": 180, \"height\": 130, \"title\": \"C\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"D\", \"x\": 800, \"y\": 320, \"width\": 180, \"height\": 130, \"title\": \"D\", \"data\": {\"text\": \"连接检查\"}}], \"edges\": [{\"id\": \"thick\", \"source_node\": \"A\", \"target_node\": \"B\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 0}, {\"id\": \"thin\", \"source_node\": \"C\", \"target_node\": \"D\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 2, \"style\": 1, \"marker_end\": \"open-arrow\"}], \"options\": {}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 0.75
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-long-zoom"
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"center\", \"x\": 0, \"y\": 140, \"width\": 180, \"height\": 130, \"title\": \"center\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-0\", \"x\": 700, \"y\": 0, \"width\": 180, \"height\": 130, \"title\": \"branch-0\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-1\", \"x\": 700, \"y\": 220, \"width\": 180, \"height\": 130, \"title\": \"branch-1\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-2\", \"x\": 700, \"y\": 440, \"width\": 180, \"height\": 130, \"title\": \"branch-2\", \"data\": {\"text\": \"连接检查\"}}], \"edges\": [{\"id\": \"fan-0\", \"source_node\": \"center\", \"target_node\": \"branch-0\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 2}, {\"id\": \"fan-1\", \"source_node\": \"center\", \"target_node\": \"branch-1\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 2}, {\"id\": \"fan-2\", \"source_node\": \"center\", \"target_node\": \"branch-2\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 2}], \"options\": {}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-fan-out"
+  },
+  {
+    "kind": "click",
+    "x": 268,
+    "y": 365
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "op": "query",
+      "target": "selection"
+    },
+    "path": "/result/edges/0",
+    "value": "fan-1"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"center\", \"x\": 0, \"y\": 140, \"width\": 180, \"height\": 130, \"title\": \"center\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-0\", \"x\": 700, \"y\": 0, \"width\": 180, \"height\": 130, \"title\": \"branch-0\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-1\", \"x\": 700, \"y\": 220, \"width\": 180, \"height\": 130, \"title\": \"branch-1\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-2\", \"x\": 700, \"y\": 440, \"width\": 180, \"height\": 130, \"title\": \"branch-2\", \"data\": {\"text\": \"连接检查\"}}], \"edges\": [{\"id\": \"fan-0\", \"source_node\": \"center\", \"target_node\": \"branch-0\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 3}, {\"id\": \"fan-1\", \"source_node\": \"center\", \"target_node\": \"branch-1\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 3}, {\"id\": \"fan-2\", \"source_node\": \"center\", \"target_node\": \"branch-2\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 3}], \"options\": {}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-fan-out-rounded"
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"center\", \"x\": 700, \"y\": 140, \"width\": 180, \"height\": 130, \"title\": \"center\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-0\", \"x\": 0, \"y\": 0, \"width\": 180, \"height\": 130, \"title\": \"branch-0\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-1\", \"x\": 0, \"y\": 220, \"width\": 180, \"height\": 130, \"title\": \"branch-1\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-2\", \"x\": 0, \"y\": 440, \"width\": 180, \"height\": 130, \"title\": \"branch-2\", \"data\": {\"text\": \"连接检查\"}}], \"edges\": [{\"id\": \"fan-0\", \"source_node\": \"branch-0\", \"target_node\": \"center\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 2}, {\"id\": \"fan-1\", \"source_node\": \"branch-1\", \"target_node\": \"center\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 2}, {\"id\": \"fan-2\", \"source_node\": \"branch-2\", \"target_node\": \"center\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 2}], \"options\": {}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-fan-in"
+  },
+  {
+    "kind": "click",
+    "x": 692,
+    "y": 365
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "op": "query",
+      "target": "selection"
+    },
+    "path": "/result/edges/0",
+    "value": "fan-1"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"center\", \"x\": 700, \"y\": 140, \"width\": 180, \"height\": 130, \"title\": \"center\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-0\", \"x\": 0, \"y\": 0, \"width\": 180, \"height\": 130, \"title\": \"branch-0\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-1\", \"x\": 0, \"y\": 220, \"width\": 180, \"height\": 130, \"title\": \"branch-1\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"branch-2\", \"x\": 0, \"y\": 440, \"width\": 180, \"height\": 130, \"title\": \"branch-2\", \"data\": {\"text\": \"连接检查\"}}], \"edges\": [{\"id\": \"fan-0\", \"source_node\": \"branch-0\", \"target_node\": \"center\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 3}, {\"id\": \"fan-1\", \"source_node\": \"branch-1\", \"target_node\": \"center\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 3}, {\"id\": \"fan-2\", \"source_node\": \"branch-2\", \"target_node\": \"center\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 8, \"style\": 3}], \"options\": {}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-fan-in-rounded"
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"A\", \"x\": 80, \"y\": 40, \"width\": 180, \"height\": 130, \"title\": \"A\", \"data\": {\"text\": \"连接检查\"}}, {\"id\": \"B\", \"x\": 280, \"y\": 40, \"width\": 180, \"height\": 130, \"title\": \"B\", \"data\": {\"text\": \"连接检查\"}}], \"edges\": [{\"id\": \"close-1\", \"source_node\": \"A\", \"target_node\": \"B\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 2, \"style\": 2}, {\"id\": \"close-2\", \"source_node\": \"A\", \"target_node\": \"B\", \"source_port\": \"out\", \"target_port\": \"in\", \"stroke_color\": \"#DD2244\", \"stroke_width\": 2, \"style\": 2}], \"options\": {\"allow_parallel_connections\": true}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 2
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-close-parallel"
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [{\"id\": \"n0\", \"x\": 2, \"y\": 9, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n1\", \"x\": 255, \"y\": 6, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n2\", \"x\": 514, \"y\": 6, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n3\", \"x\": 756, \"y\": 5, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n4\", \"x\": 5, \"y\": 158, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n5\", \"x\": 250, \"y\": 168, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n6\", \"x\": 512, \"y\": 160, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n7\", \"x\": 770, \"y\": 159, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n8\", \"x\": 12, \"y\": 315, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n9\", \"x\": 256, \"y\": 327, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n10\", \"x\": 510, \"y\": 320, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n11\", \"x\": 761, \"y\": 323, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n12\", \"x\": 7, \"y\": 474, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n13\", \"x\": 251, \"y\": 483, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n14\", \"x\": 503, \"y\": 471, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}, {\"id\": \"n15\", \"x\": 766, \"y\": 468, \"width\": 220, \"height\": 130, \"ports\": [{\"id\": \"0\", \"side\": 0, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"1\", \"side\": 1, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"2\", \"side\": 2, \"direction\": 2, \"offset\": 0.5}, {\"id\": \"3\", \"side\": 3, \"direction\": 2, \"offset\": 0.5}]}], \"edges\": [{\"id\": \"e0\", \"source_node\": \"n4\", \"target_node\": \"n15\", \"source_port\": \"2\", \"target_port\": \"0\", \"style\": 1, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e1\", \"source_node\": \"n11\", \"target_node\": \"n7\", \"source_port\": \"2\", \"target_port\": \"2\", \"style\": 3, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e2\", \"source_node\": \"n13\", \"target_node\": \"n14\", \"source_port\": \"3\", \"target_port\": \"0\", \"style\": 3, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e3\", \"source_node\": \"n4\", \"target_node\": \"n2\", \"source_port\": \"2\", \"target_port\": \"2\", \"style\": 3, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e4\", \"source_node\": \"n1\", \"target_node\": \"n15\", \"source_port\": \"0\", \"target_port\": \"0\", \"style\": 3, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e5\", \"source_node\": \"n7\", \"target_node\": \"n6\", \"source_port\": \"1\", \"target_port\": \"3\", \"style\": 3, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e6\", \"source_node\": \"n14\", \"target_node\": \"n12\", \"source_port\": \"2\", \"target_port\": \"3\", \"style\": 1, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e7\", \"source_node\": \"n11\", \"target_node\": \"n6\", \"source_port\": \"2\", \"target_port\": \"0\", \"style\": 2, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e8\", \"source_node\": \"n8\", \"target_node\": \"n2\", \"source_port\": \"3\", \"target_port\": \"1\", \"style\": 3, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e9\", \"source_node\": \"n1\", \"target_node\": \"n0\", \"source_port\": \"0\", \"target_port\": \"0\", \"style\": 2, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e10\", \"source_node\": \"n15\", \"target_node\": \"n14\", \"source_port\": \"0\", \"target_port\": \"1\", \"style\": 2, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}, {\"id\": \"e11\", \"source_node\": \"n5\", \"target_node\": \"n6\", \"source_port\": \"0\", \"target_port\": \"2\", \"style\": 2, \"stroke_width\": 8, \"stroke_color\": \"#DD2244\"}], \"options\": {}}"
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 20,
+    "zoom": 0.8
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-dense"
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 1
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-cross-row"
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "size",
+    "width": 760,
+    "height": 600
+  },
+  {
+    "kind": "view",
+    "x": 30,
+    "y": 10,
+    "zoom": 0.7
+  },
+  {
+    "kind": "snapshot",
+    "name": "routing-cross-row-narrow"
+  },
+  {
+    "kind": "finish"
+  }
+]

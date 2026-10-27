@@ -8,6 +8,10 @@ from release_payload import ROOT, interface_files, interface_text
 
 def prepare(destination):
     destination.mkdir(parents=True, exist_ok=True)
+    # 显式隔离消费项目，放在仓库 build 目录时也不能误用上层 Cargo 工作区。
+    (destination / "Cargo.toml").write_text(
+        '[workspace]\nresolver = "2"\nmembers = ["examples/flow-rust", "sdk/rust", "sdk/runtime-api", "sdk/rust-build"]\n',
+        encoding="utf-8")
     shutil.copy2(ROOT / "rust-toolchain.toml", destination / "rust-toolchain.toml")
     for source, relative in interface_files():
         target = destination / relative
@@ -20,7 +24,7 @@ def prepare(destination):
         shutil.copytree(ROOT / "examples" / name, destination / "examples" / name)
     ui = destination / "examples/ui"
     ui.mkdir(parents=True, exist_ok=True)
-    for name in ("flow.slint", "flow-showcase.slint", "flow-device.svg", "flow-qa.json", "flow-transform.slint"):
+    for name in ("flow.slint", "flow-showcase.slint", "flow-device.svg", "flow-qa.json", "flow-edge-qa.json", "flow-refinement-qa.json", "flow-batch1-qa.json", "flow-batch2-qa.json", "flow-batch3-qa.json", "flow-transform.slint"):
         shutil.copy2(ROOT / "examples/ui" / name, ui / name)
     manifest = destination / "examples/flow-rust/Cargo.toml"
     manifest.write_text(manifest.read_text(encoding="utf-8")
@@ -28,7 +32,7 @@ def prepare(destination):
                         .replace("version.workspace = true", 'version = "0.1.2"')
                         .replace("edition.workspace = true", 'edition = "2021"')
                         .replace("publish.workspace = true", "publish = false"), encoding="utf-8")
-    shutil.copy2(ROOT / "Cargo.lock", manifest.parent / "Cargo.lock")
+    shutil.copy2(ROOT / "Cargo.lock", destination / "Cargo.lock")
     # 独立项目编译后把已安装 SDK 的 DLL 部署到应用目录。
     build = manifest.parent / "build.rs"
     build.write_text(build.read_text(encoding="utf-8").replace(

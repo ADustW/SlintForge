@@ -4130,6 +4130,7 @@ dependencies = [
 name = "slintforge-flow-example"
 version = "0.1.2"
 dependencies = [
+ "i-slint-core",
  "serde_json",
  "slint",
  "slint-build",

@@ -1,0 +1,345 @@
+[
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 1
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "click",
+    "x": 160,
+    "y": 218
+  },
+  {
+    "kind": "snapshot",
+    "name": "node-tools"
+  },
+  {
+    "kind": "press",
+    "x": 320,
+    "y": 332
+  },
+  {
+    "kind": "move",
+    "x": 380,
+    "y": 372
+  },
+  {
+    "kind": "release",
+    "x": 380,
+    "y": 372
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/width",
+    "value": 280
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/height",
+    "value": 172
+  },
+  {
+    "kind": "snapshot",
+    "name": "node-resized"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/width",
+    "value": 220
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/height",
+    "value": 132
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1.5
+  },
+  {
+    "kind": "press",
+    "x": 460,
+    "y": 428
+  },
+  {
+    "kind": "move",
+    "x": 520,
+    "y": 458
+  },
+  {
+    "kind": "release",
+    "x": 520,
+    "y": 458
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/width",
+    "value": 260
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/height",
+    "value": 152
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/width",
+    "value": 220
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "click",
+    "x": 146,
+    "y": 74
+  },
+  {
+    "kind": "snapshot",
+    "name": "node-library"
+  },
+  {
+    "kind": "press",
+    "x": 100,
+    "y": 235
+  },
+  {
+    "kind": "move",
+    "x": 700,
+    "y": 580
+  },
+  {
+    "kind": "snapshot",
+    "name": "node-drop-preview"
+  },
+  {
+    "kind": "release",
+    "x": 700,
+    "y": 580
+  },
+  {
+    "kind": "count",
+    "nodes": 7,
+    "edges": 5
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/6/kind",
+    "value": "form"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/6/x",
+    "value": 660
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/6/y",
+    "value": 440
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "count",
+    "nodes": 6,
+    "edges": 5
+  },
+  {
+    "kind": "click",
+    "x": 62,
+    "y": 74
+  },
+  {
+    "kind": "press",
+    "x": 700,
+    "y": 620
+  },
+  {
+    "kind": "move",
+    "x": 730,
+    "y": 640
+  },
+  {
+    "kind": "release",
+    "x": 730,
+    "y": 640
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/x",
+    "value": 70
+  },
+  {
+    "kind": "expect",
+    "path": "/viewport/y",
+    "value": 60
+  },
+  {
+    "kind": "click",
+    "x": 26,
+    "y": 74
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "press",
+    "x": 610,
+    "y": 266
+  },
+  {
+    "kind": "move",
+    "x": 390,
+    "y": 476
+  },
+  {
+    "kind": "snapshot",
+    "name": "valid-connection-preview"
+  },
+  {
+    "kind": "release",
+    "x": 390,
+    "y": 476
+  },
+  {
+    "kind": "count",
+    "nodes": 6,
+    "edges": 6
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "snapshot",
+    "name": "editor-dark"
+  },
+  {
+    "kind": "size",
+    "width": 640,
+    "height": 500
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "editor-narrow-dark"
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "snapshot",
+    "name": "editor-narrow-light"
+  },
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 0
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "basic"
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 1
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "custom"
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 2
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "flowchart"
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 3
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "topology"
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 4
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "mindmap"
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "finish"
+  }
+]

@@ -312,10 +312,12 @@ fn tree_grid_expansion_parent_keyboard_filter_model_updates_and_large_scrolling(
         true,
     );
     assert_eq!(ui.get_scene().rows.row_data(0).unwrap().id, "root");
-    ui.set_filter(" \t\n".into());tick();
+    ui.set_filter(" \t\n".into());
+    tick();
     click(&ui, 118., 79.);
     assert_eq!(ui.get_scene().rows.row_count(), 2);
-    ui.set_filter("".into());tick();
+    ui.set_filter("".into());
+    tick();
     ui.invoke_select(0, false, false);
     key(&ui, Key::RightArrow);
     assert_eq!(ui.get_scene().rows.row_count(), 4);

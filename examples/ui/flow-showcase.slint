@@ -1,18 +1,24 @@
 import { Button, LineEdit, ComboBox, CheckBox, Palette } from "std-widgets.slint";
-import { ForgeFlowCanvas, ForgeFlowNode, ForgeFlowAction, ForgeFlowState, ForgeFlowServices } from "@slintforge";
+import { ForgeFlowCanvas, ForgeFlowNode, ForgeFlowAction, ForgeFlowState, ForgeFlowServices, ForgeFlowTheme, ForgeFlowToolButton, ForgeFlowIcons, ForgeFlowLayoutControls, ForgeFlowNodePalette } from "@slintforge";
 
 // 节点循环由调用方持有，每种业务组件仅创建一次，移动时只更新容器位置。
 export component ForgeFlowMixedCanvas inherits ForgeFlowCanvas {
     callback business-action(string);
     for n in root.state.nodes : ForgeFlowNode {
-        node: n; tree: root.state.mode == "mindmap"; snap: root.snap; read-only: root.read-only; pan-mode: root.pan-mode;
+        node: n; tree: root.state.mode == "mindmap"; snap: root.snap; read-only: root.read-only; pan-mode: root.pan-mode; chinese: root.chinese;
         visible: root.node-visible(n);
+        zoom: root.viewport.zoom; candidate-port: root.connection-target == n.id ? root.connection-port : "";
+        auto-size: n.kind == "auto-form";
+        content-height: n.kind == "auto-form" ? (ForgeFlowServices.field(n.data-json,"expanded") == "yes" ? 184 : 116) : 0;
+        drag-area: {x:0, y:0, width:n.width, height:n.kind == "image" ? n.height : (n.header-visible ? n.header-height : 0)};
         action(a) => { root.act(a); }
-        if n.kind == "form" : VerticalLayout {
+        if n.kind == "form" || n.kind == "auto-form" : VerticalLayout {
             spacing: 4px;
             editor := LineEdit { text: ForgeFlowServices.field(n.data-json, "text"); enabled: !root.read-only; placeholder-text: root.chinese ? "输入参数" : "Parameter";
                 accepted => { root.act({op: "field", id: n.id, target: "text", text: self.text}); }
             }
+            if n.kind == "auto-form" : Button { enabled: !root.read-only; text: ForgeFlowServices.field(n.data-json,"expanded") == "yes" ? (root.chinese ? "收起内容" : "Collapse content") : (root.chinese ? "展开内容" : "Expand content"); clicked => { root.act({op:"field",id:n.id,target:"expanded",text:ForgeFlowServices.field(n.data-json,"expanded") == "yes" ? "no" : "yes"}); } }
+            if n.kind == "auto-form" && ForgeFlowServices.field(n.data-json,"expanded") == "yes" : Text { text: root.chinese ? "业务内容变化后，容器尺寸与端口自动更新。" : "Content size updates the card and handles."; color: ForgeFlowTheme.muted; wrap: word-wrap; }
             HorizontalLayout {
                 Button { text: root.chinese ? "提交" : "Apply"; enabled: !root.read-only; clicked => { root.act({op: "field", id: n.id, target: "text", text: editor.text}); } }
                 ComboBox { model: root.chinese ? ["手动", "自动"] : ["Manual", "Auto"]; enabled: !root.read-only;
@@ -23,15 +29,19 @@ export component ForgeFlowMixedCanvas inherits ForgeFlowCanvas {
         }
         if n.kind == "device" : VerticalLayout {
             spacing: 4px;
-            Text { text: (root.chinese ? "设备状态 · " : "Status · ") + (ForgeFlowServices.field(n.data-json,"status") == "stopped" ? (root.chinese ? "已停止" : "Stopped") : (root.chinese ? "运行中" : "Running")); color: Palette.foreground; }
-            Button { text: ForgeFlowServices.field(n.data-json,"status") == "stopped" ? (root.chinese ? "启动" : "Start") : (root.chinese ? "停止" : "Stop"); enabled: !root.read-only;
+            HorizontalLayout { height: 20px; spacing: 7px;
+                Rectangle { width: 7px; height: 7px; border-radius: 4px; background: ForgeFlowServices.field(n.data-json,"status") == "stopped" ? ForgeFlowTheme.muted : ForgeFlowTheme.success; }
+                Text { text: ForgeFlowServices.field(n.data-json,"status") == "stopped" ? (root.chinese ? "设备已停止" : "Device stopped") : (root.chinese ? "设备在线 · 运行中" : "Device online · Running"); color: ForgeFlowTheme.muted; font-size: 11px; }
+            }
+            ForgeFlowToolButton { text: ForgeFlowServices.field(n.data-json,"status") == "stopped" ? (root.chinese ? "启动设备" : "Start device") : (root.chinese ? "停止设备" : "Stop device"); enabled: !root.read-only;
+                background: ForgeFlowTheme.raised; horizontal-stretch: 1;
                 clicked => { root.act({op: "field", id: n.id, target: "status", text: ForgeFlowServices.field(n.data-json,"status") == "stopped" ? "running" : "stopped"}); root.business-action(n.id); }
             }
         }
         if n.kind == "image" : Image { source: @image-url("flow-device.svg"); image-fit: contain; }
-        if n.kind != "form" && n.kind != "device" && n.kind != "image" : Text {
+        if !n.is-group && n.kind != "form" && n.kind != "auto-form" && n.kind != "device" && n.kind != "image" : Text {
             text: n.kind == "text" ? ForgeFlowServices.field(n.data-json, "text") : (root.chinese ? "未注册的卡片类型：" : "Unknown card type: ") + n.kind;
-            color: Palette.foreground; wrap: word-wrap; font-size: 12px;
+            color: ForgeFlowTheme.muted; wrap: word-wrap; font-size: 12px;
         }
     }
 }
@@ -41,12 +51,35 @@ export component ForgeFlowShowcase inherits Rectangle {
     in property<int> variant: 0;
     in property<bool> chinese: true;
     in property<bool> active: true;
+    in-out property<bool> animations-enabled: true;
+    in-out property<bool> diagnostic-background: true;
+    in-out property<bool> diagnostic-minimap: true;
     in-out property<bool> read-only: false;
     in-out property<bool> snap: false;
     in property<string> blocked-target;
+    in property<string> blocked-operation;
     out property<ForgeFlowState> state: canvas.state;
+    out property<string> error: canvas.error;
+    out property<string> connection-path: canvas.connection-path;
+    callback interaction(string, ForgeFlowAction);
+    callback edited(ForgeFlowAction, ForgeFlowState);
     out property<int> business-count;
-    private property<string> file-path: "flow-document.json";
+    in-out property<string> file-path: "flow-document.json";
+    in-out property<string> image-path: "flow-diagram.png";
+    callback save-finished(string, string);
+    callback image-exported(string, string);
+    private property<bool> palette-open: false;
+    private property<bool> settings-open: false;
+    private property<bool> layout-open: false;
+    private property<bool> adding: false;
+    private property<float> ghost-x;
+    private property<float> ghost-y;
+    private property<int> adding-type;
+    private property<string> notice;
+    public function add-card(index: int, x: float, y: float) {
+        canvas.act({op: "add", target: ["text", "form", "device", "image"][index], text: root.chinese ? ["新节点", "参数表单", "设备控制", "图像预览"][index] : ["New node", "Parameters", "Device control", "Image preview"][index], x: x, y: y});
+        root.palette-open = false; root.adding = false;
+    }
     callback edit(ForgeFlowAction);
     edit(a) => { canvas.act(a); }
     callback fit();
@@ -57,61 +90,113 @@ export component ForgeFlowShowcase inherits Rectangle {
     document-json => { return canvas.document-json(); }
     callback set-view(float, float, float);
     set-view(x,y,z) => { canvas.viewport = {x:x,y:y,zoom:z}; canvas.commit-view(); }
-    background: Palette.background;
+    callback save-document(); save-document => { canvas.save(root.file-path); }
+    callback dispose(); dispose => { canvas.dispose(); }
+    callback reopen(); reopen => { canvas.reopen(); }
+    callback focus-canvas(); focus-canvas => { canvas.focus-canvas(); }
+    callback export-image(bool); export-image(selected) => { canvas.export-image(root.image-path, selected, "{\"theme\":\"" + (Palette.color-scheme == ColorScheme.dark ? "dark" : "light") + "\"}"); }
+    background: ForgeFlowTheme.surface; border-radius: 8px;
     VerticalLayout {
         spacing: 0px;
         Rectangle {
-            height: 44px;
+            height: 52px;
             HorizontalLayout {
-                padding: 6px; spacing: 4px;
-                Button { text: root.variant == 4 ? (root.chinese ? "子主题" : "Child") : (root.chinese ? "新增" : "Add"); enabled: !root.read-only;
-                    clicked => { canvas.act({op: root.variant == 4 ? "add-child" : "add", id: canvas.state.selected-id, text: root.chinese ? "新节点" : "New node", x: (canvas.width / 2px - canvas.viewport.x) / canvas.viewport.zoom, y: (canvas.height / 2px - canvas.viewport.y) / canvas.viewport.zoom}); }
+                padding: 10px; spacing: 5px;
+                ForgeFlowToolButton { icon: ForgeFlowIcons.select; checked: !canvas.pan-on-drag; label: root.chinese ? "选择 (V)" : "Select (V)"; clicked => { canvas.pan-on-drag = false; } }
+                ForgeFlowToolButton { icon: ForgeFlowIcons.hand; checked: canvas.pan-on-drag; label: root.chinese ? "平移 (H)" : "Pan (H)"; clicked => { canvas.pan-on-drag = true; } }
+                Rectangle { width: 1px; background: ForgeFlowTheme.border; }
+                ForgeFlowToolButton { text: root.variant == 4 ? (root.chinese ? "子主题" : "Child") : (root.chinese ? "添加节点" : "Add node"); icon: ForgeFlowIcons.add; checked: root.palette-open; enabled: !root.read-only;
+                    clicked => { if root.variant == 4 { canvas.act({op: "add-child", id: root.state.selected-id, text: root.chinese ? "新主题" : "New topic"}); } else { root.palette-open = !root.palette-open; root.settings-open = false; root.layout-open = false; } }
                 }
-                Button { text: root.variant == 4 ? (root.chinese ? "同级" : "Sibling") : (root.chinese ? "复制" : "Copy"); enabled: !root.read-only && root.state.selected-id != "";
-                    clicked => { canvas.act({op: root.variant == 4 ? "add-sibling" : "duplicate", id: root.state.selected-id, text: root.chinese ? "新主题" : "New topic"}); }
-                }
-                Button { text: root.chinese ? "删除" : "Delete"; enabled: !root.read-only; clicked => { canvas.act({op: "delete"}); } }
-                if root.variant == 4 : Button { text: root.chinese ? "布局" : "Layout"; enabled: !root.read-only; clicked => { canvas.act({op: "layout"}); canvas.fit(); } }
-                if root.variant != 4 : ComboBox { width: 100px; model: root.chinese ? ["直线", "曲线", "折线"] : ["Straight", "Bezier", "Step"]; enabled: !root.read-only;
+                if root.variant != 4 && root.width > 570px : ComboBox {
+                    width: 112px; model: root.chinese ? ["直线", "贝塞尔曲线", "折线", "圆角折线"] : ["Straight", "Bezier", "Step", "Smooth step"]; enabled: !root.read-only;
                     private property<int> effective-style: root.state.selected-edge-count > 0 ? root.state.selected-edge.style : canvas.edge-style;
-                    current-index: self.effective-style;
-                    changed effective-style => { self.current-index = self.effective-style; }
+                    current-index: self.effective-style; changed effective-style => { self.current-index = self.effective-style; }
                     selected(v) => { canvas.change-edge-style(self.current-index); }
                 }
-                CheckBox { text: root.chinese ? "吸附" : "Snap"; checked <=> root.snap; }
-                CheckBox { text: root.chinese ? "只读" : "Read only"; checked <=> root.read-only; }
+                if root.variant != 4 : ForgeFlowToolButton { text: root.chinese ? "布局" : "Layout"; enabled: !root.read-only; checked: root.layout-open; clicked => { root.layout-open = !root.layout-open; root.palette-open = false; root.settings-open = false; } }
+                if root.variant == 4 : ForgeFlowToolButton { text: root.chinese ? "同级" : "Sibling"; enabled: !root.read-only && root.state.selected-id != ""; clicked => { canvas.act({op: "add-sibling", id: root.state.selected-id, text: root.chinese ? "新主题" : "New topic"}); } }
+                if root.variant == 4 : ForgeFlowToolButton { text: root.chinese ? "布局" : "Layout"; enabled: !root.read-only; clicked => { canvas.act({op: "layout"}); canvas.fit(); } }
                 Rectangle { horizontal-stretch: 1; }
-                if root.width > 720px : Button { text: "500 / 1000"; enabled: !root.read-only && root.variant != 4; clicked => { canvas.act({op: "demo", number: root.variant, count: 500}); } }
-            }
-        }
-        Rectangle {
-            height: 42px;
-            HorizontalLayout {
-                padding: 6px; spacing: 6px;
-                title-edit := LineEdit { placeholder-text: root.chinese ? "选中节点后编辑标题" : "Select a node to rename"; text: root.state.selected-title; enabled: !root.read-only && root.state.selected-id != "";
-                    accepted => { canvas.act({op: "title", id: root.state.selected-id, text: self.text}); }
-                }
-                Button { text: root.chinese ? "改标题" : "Rename"; enabled: !root.read-only && root.state.selected-id != ""; clicked => { canvas.act({op: "title", id: root.state.selected-id, text: title-edit.text}); } }
-                if root.variant == 4 : parent-edit := LineEdit { placeholder-text: root.chinese ? "父主题 ID" : "Parent ID"; width: 110px;
-                    accepted => { canvas.act({op: "reparent", id: root.state.selected-id, target: self.text}); }
-                }
-                if root.width > 640px : LineEdit { text <=> root.file-path; width: 155px; }
-                if root.width > 640px : Button { text: root.chinese ? "保存" : "Save"; clicked => { canvas.save(root.file-path); } }
-                if root.width > 640px : Button { text: root.chinese ? "加载" : "Load"; enabled: !root.read-only; clicked => { canvas.load(root.file-path); } }
+                if root.width > 690px : ForgeFlowToolButton { text: root.chinese ? "吸附" : "Snap"; checked: root.snap; clicked => { root.snap = !root.snap; } }
+                ForgeFlowToolButton { icon: ForgeFlowIcons.lock; checked: root.read-only; label: root.chinese ? "只读模式" : "Read only"; clicked => { root.read-only = !root.read-only; } }
+                ForgeFlowToolButton { icon: ForgeFlowIcons.settings; checked: root.settings-open; label: root.chinese ? "画布与文件" : "Canvas and file"; clicked => { root.settings-open = !root.settings-open; root.palette-open = false; root.layout-open = false; } }
+                ForgeFlowToolButton { text: root.chinese ? "保存" : "Save"; icon: ForgeFlowIcons.save; primary: true; clicked => { canvas.save(root.file-path); root.notice = canvas.error == "" ? (root.chinese ? "已保存 " : "Saved ") + root.file-path : canvas.error; } }
             }
         }
         canvas := ForgeFlowMixedCanvas {
             demo: root.variant; mode: root.variant == 4 ? "mindmap" : "graph";
             chinese: root.chinese; read-only: root.read-only; snap: root.snap;
+            animations-enabled: root.animations-enabled && root.active;
+            grid: root.diagnostic-background; show-minimap: root.diagnostic-minimap;
             business-action(id) => { root.business-count += 1; }
             connection-allowed(a) => { return a.target != root.blocked-target; }
+            edit-allowed(a) => { return a.op != root.blocked-operation; }
+            interaction(name,a) => { root.interaction(name,a); }
+            edited(a,state) => { root.edited(a,state); }
+            save-finished(path,error) => { root.notice = error == "" ? (root.chinese ? "已保存 " : "Saved ") + path : error; root.save-finished(path,error); }
+            image-exported(path,error) => { root.notice = error == "" ? (root.chinese ? "已导出 " : "Exported ") + path : error; root.image-exported(path,error); }
             vertical-stretch: 1;
         }
         Rectangle {
-            height: 26px;
-            Text { x: 8px; width: parent.width - 16px; vertical-alignment: center; font-size: 11px; color: Palette.foreground.with-alpha(0.7); overflow: elide;
-                text: root.state.node-count + (root.chinese ? " 节点 · " : " nodes · ") + root.state.edge-count + (root.chinese ? " 连线    标题拖动 · 端口连接 · 滚轮缩放 · 中键平移 · Ctrl 多选" : " edges    Drag headers · Connect ports · Wheel zoom · Middle pan · Ctrl select");
+            height: 28px;
+            // 显式固定在顶部，避免固定高度的分隔线默认居中并穿过状态文字。
+            Rectangle { x: 0px; y: 0px; height: 1px; width: parent.width; background: ForgeFlowTheme.border; }
+            HorizontalLayout { padding-left: 12px; padding-right: 12px; spacing: 12px;
+                Text { text: root.state.node-count + (root.chinese ? " 个节点" : " nodes") + "  /  " + root.state.edge-count + (root.chinese ? " 条连线" : " edges"); color: ForgeFlowTheme.muted; font-size: 11px; vertical-alignment: center; }
+                if root.width > 720px : Text { text: root.notice != "" ? root.notice : root.read-only ? (root.chinese ? "只读浏览" : "Read only") : (root.chinese ? "拖动标题移动 · 四角调整大小 · 拖动端口连接" : "Drag headers · Resize corners · Connect handles"); color: ForgeFlowTheme.muted; font-size: 11px; overflow: elide; vertical-alignment: center; }
+                Rectangle { horizontal-stretch: 1; }
+                Text { text: root.state.dirty ? (root.chinese ? "未保存" : "Unsaved") : (root.chinese ? "未修改" : "Unmodified"); color: root.state.dirty ? ForgeFlowTheme.accent : ForgeFlowTheme.muted; font-size: 11px; vertical-alignment: center; }
+                Text { text: canvas.pan-on-drag ? (root.chinese ? "平移 H" : "Pan H") : (root.chinese ? "选择 V" : "Select V"); color: ForgeFlowTheme.accent; font-size: 11px; vertical-alignment: center; }
             }
+        }
+    }
+    if root.palette-open : palette := ForgeFlowNodePalette {
+        x: 12px; y: 64px; width: 184px; height: 258px; chinese: root.chinese; read-only: root.read-only;
+        gesture(index, phase, x, y) => {
+            if phase == "begin" { root.adding-type = index; root.adding = false; }
+            if phase == "move" { root.adding = true; root.ghost-x = palette.x / 1px + x; root.ghost-y = palette.y / 1px + y; }
+            if phase == "end" {
+                if root.adding { if root.ghost-x > 206 && root.ghost-x < root.width / 1px && root.ghost-y > 52 && root.ghost-y < (root.height - 28px) / 1px { root.add-card(index, (root.ghost-x - canvas.viewport.x) / canvas.viewport.zoom, (root.ghost-y - 52 - canvas.viewport.y) / canvas.viewport.zoom); } root.adding = false; }
+                else { root.add-card(index, (canvas.width / 2px - canvas.viewport.x) / canvas.viewport.zoom, (canvas.height / 2px - canvas.viewport.y) / canvas.viewport.zoom); }
+            }
+            if phase == "cancel" { root.adding = false; }
+        }
+    }
+    if root.adding : Rectangle {
+        x: root.ghost-x * 1px + 12px; y: root.ghost-y * 1px + 12px; width: 170px; height: 44px;
+        background: ForgeFlowTheme.surface.with-alpha(0.9); border-width: 2px; border-color: ForgeFlowTheme.accent; border-radius: 8px;
+        Text { text: root.chinese ? ["文本节点", "参数表单", "设备控制", "图像预览"][root.adding-type] : ["Text node", "Parameters", "Device control", "Image preview"][root.adding-type]; color: ForgeFlowTheme.text; horizontal-alignment: center; vertical-alignment: center; }
+    }
+    if root.layout-open : ForgeFlowLayoutControls {
+        x: Math.min(200px, Math.max(10px, parent.width - self.width - 10px)); y: 64px; width: 288px; height: 224px;
+        chinese: root.chinese; read-only: root.read-only; tree-mode: root.variant == 4;
+        action(a) => { canvas.act(a); if root.state.ok { root.layout-open = false; canvas.fit(); canvas.focus-canvas(); } }
+    }
+    if root.settings-open : Rectangle {
+        x: Math.max(10px, parent.width - 274px); y: 64px; width: 260px; height: Math.min(parent.height - 100px, root.variant == 4 ? 428px : 396px);
+        background: ForgeFlowTheme.surface; border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 8px;
+        drop-shadow-color: #10233c20; drop-shadow-blur: 18px; drop-shadow-offset-y: 4px;
+        Flickable { width: parent.width; height: parent.height; content-height: root.variant == 4 ? 428px : 396px;
+        VerticalLayout { width: parent.width; height: parent.height; padding: 14px; spacing: 8px;
+            Text { text: root.chinese ? "画布与文件" : "Canvas and file"; color: ForgeFlowTheme.text; font-size: 13px; font-weight: 600; }
+            ComboBox { model: root.chinese ? ["点阵背景", "网格背景", "纯色背景"] : ["Dots", "Grid", "Plain"]; current-index <=> canvas.background-variant; }
+            HorizontalLayout { CheckBox { text: root.chinese ? "网格吸附" : "Snap"; checked <=> root.snap; } CheckBox { text: root.chinese ? "小地图" : "Minimap"; checked <=> canvas.show-minimap; } }
+            Text { text: root.chinese ? "文档路径" : "Document path"; color: ForgeFlowTheme.muted; font-size: 11px; }
+            LineEdit { text <=> root.file-path; }
+            HorizontalLayout {
+                ForgeFlowToolButton { text: root.chinese ? "加载文档" : "Load"; enabled: !root.read-only; clicked => { canvas.load(root.file-path); root.settings-open = false; } }
+                ForgeFlowToolButton { text: root.chinese ? "保存文档" : "Save"; clicked => { canvas.save(root.file-path); root.settings-open = false; } }
+            }
+            if root.variant == 4 : LineEdit { placeholder-text: root.chinese ? "父主题 ID，回车修改" : "Parent ID, Enter to apply"; enabled: !root.read-only && root.state.selected-id != ""; accepted => { canvas.act({op: "reparent", id: root.state.selected-id, target: self.text}); } }
+            ForgeFlowToolButton { text: root.chinese ? "性能场景 · 500 节点 / 1000 连线" : "Stress scene · 500 nodes / 1000 edges"; enabled: !root.read-only && root.variant != 4; clicked => { canvas.act({op: "demo", number: root.variant, count: 500}); root.settings-open = false; } }
+            Text { text: root.chinese ? "图片路径（.png / .svg）" : "Image path (.png / .svg)"; color: ForgeFlowTheme.muted; font-size: 11px; }
+            LineEdit { text <=> root.image-path; }
+            HorizontalLayout {
+                ForgeFlowToolButton { text: root.chinese ? "导出整图" : "Export all"; clicked => { root.export-image(false); } }
+                ForgeFlowToolButton { text: root.chinese ? "导出选区" : "Export selected"; enabled: root.state.selected-node-count + root.state.selected-edge-count > 0; clicked => { root.export-image(true); } }
+            }
+        }
         }
     }
 }

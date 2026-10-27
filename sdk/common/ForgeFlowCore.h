@@ -2,8 +2,8 @@
 #include <stdint.h>
 
 // 共用引擎持有文档、事务和历史；返回文本有效至同一对象的下一次调用。
-// Flow 契约 2：增量行增加 style/arrow/stroke_width，状态增加 selected_edge/selected_edge_count。
-// edge-appearance 仅更新外观，可撤销且不会修改端点；旧 JSON 默认线宽为 2。
+// Flow 契约 14：增量撤销、实例级历史预算及历史用量/边界统计。
+// 节点和连线扩展字段有兼容默认值；操作号 36 至 40 保持不变。
 #ifdef __cplusplus
 extern "C" {
 #endif

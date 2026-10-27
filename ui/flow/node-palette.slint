@@ -1,0 +1,32 @@
+import { ForgeFlowTheme } from "theme.slint";
+
+// 节点库只上报类型与手势，节点模板及业务默认值由接入方决定。
+export component ForgeFlowNodePalette inherits Rectangle {
+    in property<[string]> kinds: ["text", "form", "device", "image"];
+    in property<[string]> labels: root.chinese ? ["文本节点", "参数表单", "设备控制", "图像预览"] : ["Text node", "Parameters", "Device control", "Image preview"];
+    in property<bool> chinese: true;
+    in property<bool> read-only: false;
+    callback gesture(int, string, float, float);
+    width: 184px; height: 74px + root.kinds.length * 46px; border-radius: 8px;
+    background: ForgeFlowTheme.surface; border-width: 1px; border-color: ForgeFlowTheme.border;
+    drop-shadow-color: #10233c20; drop-shadow-blur: 18px; drop-shadow-offset-y: 4px;
+    Text { x: 12px; y: 12px; text: root.chinese ? "节点库" : "Node library"; color: ForgeFlowTheme.text; font-size: 13px; font-weight: 600; }
+    Text { x: 12px; y: 33px; text: root.chinese ? "点击添加，或拖入画布" : "Click or drag onto canvas"; color: ForgeFlowTheme.muted; font-size: 10px; }
+    for kind[index] in root.kinds : Rectangle {
+        x: 10px; y: (58 + index * 46) * 1px; width: parent.width - 20px; height: 38px;
+        background: touch.has-hover ? ForgeFlowTheme.raised : ForgeFlowTheme.surface;
+        border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 6px;
+        opacity: root.read-only ? 0.45 : 1;
+        Rectangle { x: 10px; y: 11px; width: 4px; height: 16px; border-radius: 2px; background: [ForgeFlowTheme.accent, #7c5ce7, #11998a, #d48727][Math.mod(index,4)]; }
+        Text { x: 25px; width: parent.width - 32px; height: parent.height; text: index < root.labels.length ? root.labels[index] : kind; color: ForgeFlowTheme.text; overflow: elide; font-size: 12px; vertical-alignment: center; }
+        touch := TouchArea {
+            enabled: !root.read-only; mouse-cursor: grab;
+            pointer-event(e) => {
+                if e.button == PointerEventButton.left && e.kind == PointerEventKind.down { root.gesture(index,"begin",(parent.x + self.mouse-x) / 1px,(parent.y + self.mouse-y) / 1px); }
+                if e.button == PointerEventButton.left && e.kind == PointerEventKind.up { root.gesture(index,"end",(parent.x + self.mouse-x) / 1px,(parent.y + self.mouse-y) / 1px); }
+                if e.kind == PointerEventKind.cancel { root.gesture(index,"cancel",0,0); }
+            }
+            moved => { if self.pressed { root.gesture(index,"move",(parent.x + self.mouse-x) / 1px,(parent.y + self.mouse-y) / 1px); } }
+        }
+    }
+}

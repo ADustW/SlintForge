@@ -43,15 +43,24 @@ fn tick() {
 }
 fn click(ui: &ChartTestWindow, x: f32, y: f32) {
     let position = LogicalPosition::new(x, y);
-    ui.window().dispatch_event(WindowEvent::PointerMoved { position });
-    ui.window().dispatch_event(WindowEvent::PointerPressed { position, button: PointerEventButton::Left });
-    ui.window().dispatch_event(WindowEvent::PointerReleased { position, button: PointerEventButton::Left });
+    ui.window()
+        .dispatch_event(WindowEvent::PointerMoved { position });
+    ui.window().dispatch_event(WindowEvent::PointerPressed {
+        position,
+        button: PointerEventButton::Left,
+    });
+    ui.window().dispatch_event(WindowEvent::PointerReleased {
+        position,
+        button: PointerEventButton::Left,
+    });
     tick();
 }
 fn key(ui: &ChartTestWindow, key: Key) {
     let text: slint::SharedString = key.into();
-    ui.window().dispatch_event(WindowEvent::KeyPressed { text: text.clone() });
-    ui.window().dispatch_event(WindowEvent::KeyReleased { text });
+    ui.window()
+        .dispatch_event(WindowEvent::KeyPressed { text: text.clone() });
+    ui.window()
+        .dispatch_event(WindowEvent::KeyReleased { text });
     tick();
 }
 
@@ -60,7 +69,15 @@ fn charts_bind_models_render_geometry_and_handle_input() {
     i_slint_backend_testing::init_no_event_loop();
     let ui = ChartTestWindow::new().unwrap();
     assert_eq!(ui.get_scene().status, 3);
-    slintforge::bind_chart_services!(ui, ForgeChartServices, ForgeChartScene, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel);
+    slintforge::bind_chart_services!(
+        ui,
+        ForgeChartServices,
+        ForgeChartScene,
+        ForgeChartMark,
+        ForgeChartLine,
+        ForgeChartTick,
+        ForgeChartLabel
+    );
     ui.show().unwrap();
     tick();
     assert_eq!(ui.get_scene().marks.row_count(), 6);
@@ -68,7 +85,9 @@ fn charts_bind_models_render_geometry_and_handle_input() {
     let first = ui.get_scene().marks.row_data(0).unwrap();
     let x = 72. + (first.x + first.width / 2.) * 528.;
     let y = 32. + (first.y + first.height / 2.) * 278.;
-    ui.window().dispatch_event(WindowEvent::PointerMoved { position: LogicalPosition::new(x, y) });
+    ui.window().dispatch_event(WindowEvent::PointerMoved {
+        position: LogicalPosition::new(x, y),
+    });
     assert_eq!(ui.get_hover(), 0);
     click(&ui, x, y);
     assert_eq!(ui.get_hover(), 0);
@@ -89,7 +108,12 @@ fn charts_bind_models_render_geometry_and_handle_input() {
     ui.invoke_hide_series(1, false);
     ui.set_stacked(true);
     assert_eq!(ui.get_scene().y_max, 100.);
-    for kind in [ForgeChartKind::Line, ForgeChartKind::Bubble, ForgeChartKind::Scatter, ForgeChartKind::Radar] {
+    for kind in [
+        ForgeChartKind::Line,
+        ForgeChartKind::Bubble,
+        ForgeChartKind::Scatter,
+        ForgeChartKind::Radar,
+    ] {
         ui.set_kind(kind);
         assert_eq!(ui.get_scene().status, 0);
         assert_eq!(ui.get_scene().marks.row_count(), 6);
@@ -109,11 +133,26 @@ fn charts_bind_models_render_geometry_and_handle_input() {
     ui.set_y_max(0.);
     assert_eq!(ui.get_scene().status, 2);
     ui.set_auto_range(true);
-    let points = ModelRc::new(VecModel::from(vec![ForgeChartPoint { x: 1., y: 42., ..Default::default() }]));
-    ui.set_series(ModelRc::new(VecModel::from(vec![ForgeChartSeries { name: "Updated".into(), points: points.clone(), ..Default::default() }])));
+    let points = ModelRc::new(VecModel::from(vec![ForgeChartPoint {
+        x: 1.,
+        y: 42.,
+        ..Default::default()
+    }]));
+    ui.set_series(ModelRc::new(VecModel::from(vec![ForgeChartSeries {
+        name: "Updated".into(),
+        points: points.clone(),
+        ..Default::default()
+    }])));
     assert_eq!(ui.get_scene().marks.row_count(), 1);
     assert_eq!(ui.get_scene().marks.row_data(0).unwrap().value, 42.);
-    points.set_row_data(0, ForgeChartPoint { x: 1., y: 73., ..Default::default() });
+    points.set_row_data(
+        0,
+        ForgeChartPoint {
+            x: 1.,
+            y: 73.,
+            ..Default::default()
+        },
+    );
     ui.invoke_refresh();
     assert_eq!(ui.get_scene().marks.row_data(0).unwrap().value, 73.);
     ui.set_series(ModelRc::new(VecModel::from(Vec::<ForgeChartSeries>::new())));

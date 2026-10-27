@@ -4,6 +4,7 @@ pub use models::*;
 pub mod capture;
 pub mod charts;
 pub mod color;
+mod flow_native;
 pub mod grids;
 pub mod icons;
 mod pixels;
@@ -12,7 +13,6 @@ mod plot_native;
 pub mod staggered_layout;
 pub mod widgets;
 mod wire;
-mod flow_native;
 use slintforge_runtime_api::models::*;
 use slintforge_runtime_api::{Arena, CallResult, RuntimeApiV1, Wire, ABI_SCHEMA, ABI_VERSION};
 use std::collections::HashMap;
@@ -144,19 +144,29 @@ unsafe fn dispatch(
     Ok(match operation {
         OP_FLOWNEW => {
             let a = arg::<ArgsFlowNew>(input)?;
-            let document = flow_native::FlowNative::new(&text(a.mode)).map_err(|e| failure(1100, e))?;
+            let document =
+                flow_native::FlowNative::new(&text(a.mode)).map_err(|e| failure(1100, e))?;
             own(store(Object::Flow(document)))
         }
         OP_FLOWCALL | OP_FLOWSNAPSHOT | OP_FLOWEXPORT | OP_FLOWFREE => {
             let handle = arg::<ArgsFlowSnapshot>(input)?.handle;
             let mut all = objects().lock().unwrap_or_else(|e| e.into_inner());
-            let Some(Object::Flow(document)) = all.get_mut(&handle) else { return Err(failure(1101, "图文档句柄无效")); };
-            if operation == OP_FLOWFREE { all.remove(&handle); own(true) }
-            else if operation == OP_FLOWCALL {
+            let Some(Object::Flow(document)) = all.get_mut(&handle) else {
+                return Err(failure(1101, "图文档句柄无效"));
+            };
+            if operation == OP_FLOWFREE {
+                all.remove(&handle);
+                own(true)
+            } else if operation == OP_FLOWCALL {
                 let a = arg::<ArgsFlowCall>(input)?;
-                own(document.execute(&text(a.command)).map_err(|e| failure(1102, e))?)
-            } else if operation == OP_FLOWSNAPSHOT { own(document.snapshot()) }
-            else { own(document.export()) }
+                own(document
+                    .execute(&text(a.command))
+                    .map_err(|e| failure(1102, e))?)
+            } else if operation == OP_FLOWSNAPSHOT {
+                own(document.snapshot())
+            } else {
+                own(document.export())
+            }
         }
         OP_ROUTERNEW => {
             let a = arg::<ArgsRouterNew>(input)?;

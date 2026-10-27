@@ -11,9 +11,58 @@ static nlohmann::json forge_flow_test_command(ForgeFlowDocument& document, nlohm
     return result;
 }
 #include "ForgeFlowRoutingTests.hpp"
+#include "ForgeFlowDenseRoutingTests.hpp"
+#include "ForgeFlowEditorTests.hpp"
+#include "ForgeFlowPoliciesTests.hpp"
+#include "ForgeFlowGroupsTests.hpp"
+#include "ForgeFlowClipboardTests.hpp"
+#include "ForgeFlowLayoutTests.hpp"
+#include "ForgeFlowAlignmentTests.hpp"
+#include "ForgeFlowNavigationTests.hpp"
+#include "ForgeFlowEditorComponentsTests.hpp"
+#include "ForgeFlowAppearanceTests.hpp"
+#include "ForgeFlowDocumentTests.hpp"
+#include "ForgeFlowLifecycleTests.hpp"
+#include "ForgeFlowHistoryTests.hpp"
+static void forge_flow_test_mindmap_edge_patches() {
+    ForgeFlowDocument tree("mindmap"), restored("mindmap");
+    forge_flow_test_command(tree, {{"op","demo"},{"number",4}});
+    forge_flow_test_require(tree.patch_edge("tree:node-2", {{"label","保留连线属性"}})["ok"].get<bool>(), "合法连线补丁被拒绝");
+    const auto decorated = tree.export_json();
+    tree.undo();
+    tree.select("tree:node-2");
+    const auto before = tree.export_json();
+    const auto status = tree.document_status();
+    const auto selection = tree.query("selection");
+    // 非法端点补丁必须保持文档、选区、保存状态及重做历史不变。
+    for (const auto& patch : nlohmann::json::array({{{"source_node","node-3"},{"label","不应保留"}},{{"target_node","node-5"}}})) {
+        forge_flow_test_require(!tree.patch_edge("tree:node-2", patch)["ok"].get<bool>(), "连线补丁绕过思维导图父级约束");
+        forge_flow_test_command(tree, {{"op","edge-patch"},{"id","tree:node-2"},{"text",patch.dump()}}, false);
+        forge_flow_test_require(tree.export_json()==before && tree.document_status()==status && tree.query("selection")==selection, "非法连线补丁未完整回滚");
+    }
+    forge_flow_test_require(restored.import_json(tree.export_json())["ok"].get<bool>() && restored.export_json()==before, "拒绝补丁后文档无法重新加载");
+    tree.redo();
+    forge_flow_test_require(tree.export_json()==decorated, "拒绝补丁破坏重做历史");
+    forge_flow_test_require(restored.import_json(decorated)["ok"].get<bool>() && restored.export_json()==decorated, "合法连线补丁无法保存加载");
+    std::cout << "FLOW_MINDMAP_EDGE_PATCH_OK invalid=atomic valid=roundtrip history=preserved\n";
+}
 int main() {
     try {
+        forge_flow_test_mindmap_edge_patches();
         forge_flow_test_routing_and_appearance();
+        forge_flow_test_dense_routing();
+        forge_flow_test_editor_refinement();
+        forge_flow_test_policies_and_transactions();
+        forge_flow_test_groups();
+        forge_flow_test_clipboard();
+        forge_flow_test_general_layout();
+        forge_flow_test_alignment();
+        forge_flow_test_navigation();
+        forge_flow_test_editor_components();
+        forge_flow_test_advanced_appearance();
+        forge_flow_test_documents_and_export();
+        forge_flow_test_keyboard_and_lifecycle();
+        forge_flow_test_incremental_history();
         ForgeFlowDocument graph, other;
         forge_flow_test_command(graph, {{"op","demo"},{"number",1}});
         auto original = graph.export_json();

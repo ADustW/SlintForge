@@ -1,0 +1,16 @@
+import { ForgeFlowCanvas, ForgeFlowNode, ForgeFlowAlignmentControls } from "@slintforge";
+
+export component FlowAlignmentUsage inherits Window {
+    width: 1000px; height: 700px;
+    // 自定义放置对齐工具时关闭默认入口，保持公共模型与历史不变。
+    graph := ForgeFlowCanvas {
+        demo: 0; show-alignment-controls: false;
+        for node in graph.state.nodes : ForgeFlowNode {
+            node: node; zoom: graph.viewport.zoom; action(a) => { graph.act(a); }
+        }
+    }
+    ForgeFlowAlignmentControls {
+        x: 70px; y: 12px; width: 246px; selection-count: graph.state.selected-node-count;
+        action(a) => { graph.act(a); graph.focus-canvas(); }
+    }
+}

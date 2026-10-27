@@ -1,27 +1,71 @@
 import { Palette, Button, LineEdit, ComboBox, CheckBox, SpinBox } from "std-widgets.slint";
-import { ForgeFlowServices, ForgeFlowState, ForgeFlowAction, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport } from "../types/flow.slint";
-import { ForgeFlowControls, ForgeFlowMiniMap } from "controls.slint";
+import { ForgeFlowServices, ForgeFlowState, ForgeFlowAction, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport, ForgeFlowRect } from "../types/flow.slint";
+import { ForgeFlowControls, ForgeFlowMiniMap, ForgeFlowNodeToolbar } from "controls.slint";
+import { ForgeFlowBackground } from "background.slint";
+import { ForgeFlowEdge } from "edge.slint";
+import { ForgeFlowEdgeEditor } from "edge-editor.slint";
+import { ForgeFlowAlignmentControls } from "alignment-controls.slint";
+import { ForgeFlowContextMenu } from "context-menu.slint";
+import { ForgeFlowNodeProperties } from "node-properties.slint";
+import { ForgeFlowTheme, ForgeFlowToolButton } from "theme.slint";
 
 export component ForgeFlowCanvas inherits Rectangle {
     in property<string> mode: "graph";
     in property<int> demo: -1;
     in property<bool> read-only: false;
     in property<bool> grid: true;
+    in-out property<int> background-variant: 0;
+    in-out property<bool> pan-on-drag: false;
+    in property<bool> show-node-toolbar: true;
+    out property<string> connection-target: root.candidate.op == "" ? "" : (root.pending.target == "reconnect" && root.pending.number == 0 ? root.candidate.id : root.candidate.target);
+    out property<string> connection-port: root.candidate.op == "" ? "" : (root.pending.target == "reconnect" && root.pending.number == 0 ? root.candidate.port : root.candidate.target-port);
+    private property<ForgeFlowAction> candidate;
+    private property<bool> node-inspector: false;
+    in property<bool> show-search: true;
+    in property<bool> show-context-menu: true;
+    in-out property<bool> properties-open: false;
+    private property<string> context-kind;
+    private property<float> context-x;
+    private property<float> context-y;
+    in-out property<bool> search-open: false;
+    private property<[string]> search-results;
+    private property<float> pointer-screen-x;
+    private property<float> pointer-screen-y;
+    private property<string> gesture-node;
+    private property<bool> auto-pan-tick: false;
+    private property<ForgeFlowViewport> pinch-view;
+    private property<float> pinch-anchor-x;
+    private property<float> pinch-anchor-y;
     in property<bool> snap: false;
     in property<bool> chinese: true;
     in property<bool> show-controls: true;
     in property<bool> show-minimap: true;
+    in property<bool> show-edges: true;
+    in property<bool> animations-enabled: true;
     in property<bool> show-edit-controls: false;
     in property<bool> show-edge-editor: true;
+    in property<bool> show-alignment-controls: true;
     in-out property<int> edge-style: 1;
     in property<bool> edge-arrow: true;
+    in property<string> initial-options-json: "{}";
     in-out property<ForgeFlowState> state;
     in-out property<ForgeFlowViewport> viewport: {x: 40, y: 40, zoom: 1};
     out property<string> error;
-    out property<bool> pan-mode: root.space-down;
+    out property<bool> dirty: root.state.dirty;
+    out property<bool> disposed: false;
+    callback dirty-changed(bool);
+    callback save-finished(string, string);
+    callback image-exported(string, string);
+    out property<string> connection-path: root.linking ? root.preview-edge.path : "";
+    out property<bool> pan-mode: root.space-down || root.pan-on-drag;
     callback changed-document(ForgeFlowState);
     callback connection-allowed(ForgeFlowAction) -> bool;
     connection-allowed(a) => { return true; }
+    callback edit-allowed(ForgeFlowAction) -> bool;
+    edit-allowed(a) => { return true; }
+    callback edited(ForgeFlowAction, ForgeFlowState);
+    callback edit-rejected(ForgeFlowAction, string);
+    callback interaction(string, ForgeFlowAction);
     private property<bool> ready: ForgeFlowServices.connected;
     private property<bool> space-down: false;
     private property<bool> panning: false;
@@ -32,116 +76,275 @@ export component ForgeFlowCanvas inherits Rectangle {
     private property<float> pan-y;
     private property<bool> additive: false;
     private property<bool> linking: false;
+    private property<bool> link-dragged: false;
+    private property<string> active-gesture;
+    private property<string> hovered-edge;
+    private property<ForgeFlowEdgeData> preview-edge;
     private property<ForgeFlowAction> pending;
     private property<float> end-x;
     private property<float> end-y;
-    private property<float> grid-step: Math.max(20, Math.ceil(12 / root.viewport.zoom / 20) * 20) * root.viewport.zoom;
-    background: Palette.alternate-background; clip: true;
+    background: ForgeFlowTheme.canvas; clip: true;
+    accessible-role: region;
+    accessible-label: root.chinese ? "节点与连线编辑器" : "Node and edge editor";
+    accessible-description: root.chinese ? "方向键移动选中节点；Ctrl 加 PageUp 或 PageDown 切换节点，Alt 切换连线；Tab 进入卡片控件。" : "Arrows move selected nodes. Ctrl PageUp/PageDown cycles nodes; Alt cycles edges. Tab enters card controls.";
+    accessible-read-only: root.read-only;
 
     init => { root.initialize(); }
     changed ready => { root.initialize(); }
+    changed dirty => { root.dirty-changed(root.dirty); }
     public function initialize() {
-        if root.ready && root.state.token == 0 {
+        if root.ready && !root.disposed && root.state.token == 0 {
             root.state = ForgeFlowServices.create(root.mode);
             if root.demo >= 0 { root.state = ForgeFlowServices.execute(root.state.token, {op: "demo", number: root.demo}); }
+            if root.initial-options-json != "{}" { root.state = ForgeFlowServices.execute(root.state.token, {op: "options", text: root.initial-options-json}); }
             root.viewport = root.state.viewport;
+            root.error = root.state.error;
+        }
+    }
+    public function dispose() {
+        if root.state.token > 0 { ForgeFlowServices.release(root.state.token); }
+        root.disposed = true; root.state = {}; root.active-gesture = ""; root.linking = false;
+        root.panning = false; root.boxing = false; root.space-down = false; root.candidate = {};
+        root.properties-open = false; root.search-open = false; context-menu.close();
+        root.error = "";
+    }
+    public function reopen() { if root.disposed { root.disposed = false; root.initialize(); } }
+    public function select-next(reverse: bool, edges: bool) {
+        root.act({op: "select-next", flag: reverse, target: edges ? "edge" : "node"});
+        let b = ForgeFlowServices.bounds(root.state.token, true, "");
+        if b.width > 0 && b.height > 0 && (b.x * root.viewport.zoom + root.viewport.x < 24 || b.y * root.viewport.zoom + root.viewport.y < 24 || (b.x + b.width) * root.viewport.zoom + root.viewport.x > root.width / 1px - 24 || (b.y + b.height) * root.viewport.zoom + root.viewport.y > root.height / 1px - 24) {
+            root.viewport = {x: root.width / 2px - (b.x + b.width / 2) * root.viewport.zoom, y: root.height / 2px - (b.y + b.height / 2) * root.viewport.zoom, zoom: root.viewport.zoom}; root.commit-view();
         }
     }
     public pure function node-visible(n: ForgeFlowNodeData) -> bool {
         return !n.hidden && (n.x + n.width) * root.viewport.zoom + root.viewport.x >= -24 && n.x * root.viewport.zoom + root.viewport.x <= root.width / 1px + 24 && (n.y + n.height) * root.viewport.zoom + root.viewport.y >= -24 && n.y * root.viewport.zoom + root.viewport.y <= root.height / 1px + 24;
     }
+    public pure function edge-visible(e: ForgeFlowEdgeData) -> bool {
+        return !e.hidden && e.max-x * root.viewport.zoom + root.viewport.x >= -24 && e.min-x * root.viewport.zoom + root.viewport.x <= root.width / 1px + 24 && e.max-y * root.viewport.zoom + root.viewport.y >= -24 && e.min-y * root.viewport.zoom + root.viewport.y <= root.height / 1px + 24;
+    }
     public function commit-view() {
         if root.state.token > 0 { root.state = ForgeFlowServices.execute(root.state.token, {op: "view", x: root.viewport.x, y: root.viewport.y, zoom: root.viewport.zoom}); }
     }
     public function zoom-at(value: float, px: float, py: float) {
-        let z = Math.clamp(value, 0.1, 4);
+        let z = Math.clamp(value, root.state.min-zoom, root.state.max-zoom);
         root.viewport = {x: px - (px - root.viewport.x) * z / root.viewport.zoom, y: py - (py - root.viewport.y) * z / root.viewport.zoom, zoom: z};
         root.commit-view();
     }
-    public function fit() {
-        let b = root.state.bounds;
-        let z = Math.clamp(Math.min((root.width / 1px - 80) / Math.max(1, b.width), (root.height / 1px - 80) / Math.max(1, b.height)), 0.1, 4);
+    public function fit() { root.fit-bounds(root.state.bounds); }
+    public function fit-selected() { root.fit-bounds(ForgeFlowServices.bounds(root.state.token, true, "")); }
+    public function focus-node(id: string) {
+        root.act({op: root.read-only ? "select" : "reveal", id: id});
+        if root.state.ok { root.fit-bounds(ForgeFlowServices.bounds(root.state.token, false, id)); }
+    }
+    public function fit-bounds(b: ForgeFlowRect) {
+        if b.width <= 0 || b.height <= 0 { return; }
+        let z = Math.clamp(Math.min((root.width / 1px - 80) / Math.max(1, b.width), (root.height / 1px - 80) / Math.max(1, b.height)), root.state.min-zoom, Math.max(root.state.min-zoom, Math.min(2, root.state.max-zoom)));
         root.viewport = {x: (root.width / 1px - b.width * z) / 2 - b.x * z, y: (root.height / 1px - b.height * z) / 2 - b.y * z, zoom: z};
         root.commit-view();
     }
+    public function wheel(dx: float, dy: float, px: float, py: float, control: bool) -> bool {
+        if root.state.wheel-mode == "none" || (dx == 0 && dy == 0) { return false; }
+        if root.state.wheel-mode == "pan" && !control {
+            root.viewport = {x: root.viewport.x + dx, y: root.viewport.y + dy, zoom: root.viewport.zoom}; root.commit-view(); return true;
+        }
+        if root.state.wheel-zoom-requires-control && !control { return false; }
+        if dy == 0 { return false; }
+        root.zoom-at(root.viewport.zoom * (dy > 0 ? root.state.wheel-zoom-step : 1 / root.state.wheel-zoom-step), px, py); return true;
+    }
+    function remember-pointer(x: float, y: float) {
+        if !root.auto-pan-tick { root.pointer-screen-x = x * root.viewport.zoom + root.viewport.x; root.pointer-screen-y = y * root.viewport.zoom + root.viewport.y; }
+    }
+    // 定时移动视口后重新计算世界坐标；一次完整拖动仍然只有一条编辑历史。
+    function auto-pan-step() {
+        // 已排队的定时回调可能晚于加载、只读切换或手势结束，必须再次检查状态。
+        if !root.state.auto-pan || root.read-only || !(root.active-gesture == "drag-begin" || (root.linking && root.link-dragged)) { return; }
+        let margin = root.state.auto-pan-margin;
+        let dx = root.pointer-screen-x < margin ? root.state.auto-pan-speed : root.pointer-screen-x > root.width / 1px - margin ? -root.state.auto-pan-speed : 0;
+        let dy = root.pointer-screen-y < margin ? root.state.auto-pan-speed : root.pointer-screen-y > root.height / 1px - margin ? -root.state.auto-pan-speed : 0;
+        if dx == 0 && dy == 0 { return; }
+        root.auto-pan-tick = true;
+        root.viewport = {x: root.viewport.x + dx, y: root.viewport.y + dy, zoom: root.viewport.zoom}; root.commit-view();
+        let x = (root.pointer-screen-x - root.viewport.x) / root.viewport.zoom; let y = (root.pointer-screen-y - root.viewport.y) / root.viewport.zoom;
+        if root.linking { root.update-connection(x, y); }
+        else if root.active-gesture == "drag-begin" { root.act({op: "drag-move", id: root.gesture-node, x: x, y: y, flag: root.snap}); }
+        root.auto-pan-tick = false;
+    }
+    Timer { interval: 16ms; running: root.state.auto-pan && !root.read-only && (root.active-gesture == "drag-begin" || (root.linking && root.link-dragged)); triggered => { root.auto-pan-step(); } }
     public function change-edge-style(style: int) {
         if root.read-only { return; }
         if root.state.selected-edge-count > 0 { root.act({op: "edge-appearance", target: "style", number: style}); }
         else { root.edge-style = style; }
     }
     public function act(a: ForgeFlowAction) {
+        if root.disposed { root.error = root.chinese ? "画布文档已释放" : "Canvas document disposed"; return; }
         root.initialize();
+        if a.op == "drag-begin" || a.op == "drag-move" { root.remember-pointer(a.x, a.y); root.gesture-node = a.id; }
+        if a.op == "event" { if a.target == "node-context-menu" { root.open-context(a); } root.interaction(a.target, a); return; }
         if a.op == "pan-begin" { root.start-x = a.x * root.viewport.zoom + root.viewport.x; root.start-y = a.y * root.viewport.zoom + root.viewport.y; root.pan-x = root.viewport.x; root.pan-y = root.viewport.y; return; }
         if a.op == "pan-move" { root.viewport = {x: root.pan-x + a.x * root.viewport.zoom + root.viewport.x - root.start-x, y: root.pan-y + a.y * root.viewport.zoom + root.viewport.y - root.start-y, zoom: root.viewport.zoom}; return; }
         if a.op == "pan-end" { root.commit-view(); return; }
-        if a.op == "cancel" { root.linking = false; root.boxing = false; root.panning = false; }
-        if root.read-only && a.op != "pick" && a.op != "select" && a.op != "refresh" { return; }
+        if a.op == "cancel" { root.linking = false; root.candidate = {}; root.boxing = false; root.panning = false; root.active-gesture = ""; }
+        if root.read-only && a.op != "pick" && a.op != "select" && a.op != "select-next" && a.op != "select-all" && a.op != "copy" && a.op != "refresh" && a.op != "cancel" { return; }
         if a.op == "connection-begin" {
-            if a.number == 0 { root.error = root.chinese ? "请从输出或双向端口拖动" : "Start at an output port"; return; }
-            root.commit-view(); root.pending = a; root.linking = true; root.end-x = a.x; root.end-y = a.y; return;
+            if root.linking && (root.state.click-to-connect || a.flag) { root.finish-connection(a.x, a.y); return; }
+            if a.number == 0 && root.state.connection-mode != "loose" { root.error = root.chinese ? "请从输出或双向端口拖动" : "Start at an output port"; return; }
+            root.error = ""; root.candidate = {}; root.commit-view(); root.pending = a; root.linking = true; root.link-dragged = false; root.end-x = a.x; root.end-y = a.y; root.update-connection(a.x, a.y); return;
         }
-        if a.op == "connection-move" { root.end-x = a.x; root.end-y = a.y; return; }
+        if a.op == "connection-move" { if root.linking { root.update-connection(a.x, a.y); } return; }
         if a.op == "connection-end" {
             if !root.linking { return; }
-            root.linking = false;
-            let proposal = ForgeFlowServices.resolve(root.state.token, {id: root.pending.id, port: root.pending.port, target: root.pending.target, number: root.pending.target == "reconnect" ? root.pending.number : root.edge-style, flag: root.edge-arrow, x: a.x, y: a.y});
-            if proposal.op == "" { root.error = root.chinese ? "请拖到有效端口" : "Drop on a compatible port"; return; }
-            if !root.connection-allowed(proposal) { root.error = root.chinese ? "业务规则拒绝此连接" : "Connection rejected"; return; }
-            root.state = ForgeFlowServices.execute(root.state.token, proposal);
-        } else {
-            if a.op == "drag-begin" { focus.focus(); }
-            root.state = ForgeFlowServices.execute(root.state.token, a);
+            if root.state.click-to-connect && root.pending.target != "reconnect" && !root.link-dragged { return; }
+            root.finish-connection(a.x, a.y); return;
         }
+        if (a.op == "drag-move" || a.op == "resize-move" || a.op == "bend-move") && root.active-gesture == "" { return; }
+        if a.op != "cancel" && !root.edit-allowed(a) {
+            root.error = root.chinese ? "业务规则拒绝此修改" : "Edit rejected";
+            if a.op == "drag-end" || a.op == "resize-end" || a.op == "bend-end" { root.state = ForgeFlowServices.execute(root.state.token, {op: "cancel"}); root.active-gesture = ""; }
+            root.edit-rejected(a, root.error); return;
+        }
+        if a.op == "drag-begin" || a.op == "resize-begin" || a.op == "bend-begin" { focus.focus(); root.node-inspector = false; }
+        root.state = ForgeFlowServices.execute(root.state.token, a);
+        if root.state.ok && (a.op == "drag-begin" || a.op == "resize-begin" || a.op == "bend-begin") { root.active-gesture = a.op; }
+        if a.op == "drag-end" || a.op == "resize-end" || a.op == "bend-end" { root.active-gesture = ""; }
         root.error = root.state.error;
-        if a.op == "load" || a.op == "demo" { root.viewport = root.state.viewport; }
+        if root.state.ok && (a.op == "load" || a.op == "demo") {
+            context-menu.close(); root.properties-open = false; root.search-open = false;
+            root.active-gesture = ""; root.linking = false; root.candidate = {}; root.panning = false; root.boxing = false;
+        }
+        if a.op == "load" || a.op == "demo" || a.op == "options" || a.op == "undo" || a.op == "redo" { root.viewport = root.state.viewport; }
         root.changed-document(root.state);
+        if root.state.ok { root.edited(a, root.state); root.interaction(a.op, a); }
+        else { root.edit-rejected(a, root.state.error); }
     }
-    public function save(path: string) { root.commit-view(); root.error = ForgeFlowServices.save-file(root.state.token, path); }
+    public function finish-connection(x: float, y: float) {
+        root.linking = false; root.candidate = {};
+        let proposal = ForgeFlowServices.resolve(root.state.token, {id: root.pending.id, port: root.pending.port, target: root.pending.target, number: root.pending.target == "reconnect" ? root.pending.number : root.edge-style, flag: root.edge-arrow, x: x, y: y});
+        if proposal.op == "" { root.error = root.chinese ? "请连接有效端口" : "Choose a compatible port"; return; }
+        if !root.connection-allowed(proposal) || !root.edit-allowed(proposal) { root.error = root.chinese ? "业务规则拒绝此连接" : "Connection rejected"; root.edit-rejected(proposal, root.error); return; }
+        root.state = ForgeFlowServices.execute(root.state.token, proposal); root.error = root.state.error; root.changed-document(root.state);
+        if root.state.ok { root.edited(proposal, root.state); root.interaction(proposal.op, proposal); } else { root.edit-rejected(proposal, root.error); }
+    }
+    function open-context(a: ForgeFlowAction) {
+        if !root.show-context-menu { return; }
+        root.context-kind = a.target; root.context-x = a.x; root.context-y = a.y;
+        if a.id != "" && !a.flag {
+            let selection = {op: "select", id: a.id};
+            if !root.edit-allowed(selection) { root.error = root.chinese ? "业务规则拒绝此选择" : "Selection rejected"; root.edit-rejected(selection,root.error); return; }
+            root.state = ForgeFlowServices.execute(root.state.token,selection); root.error = root.state.error; root.changed-document(root.state);
+            if !root.state.ok { root.edit-rejected(selection,root.error); return; }
+            root.edited(selection,root.state);
+        }
+        context-menu.open-at(Math.clamp(a.x * root.viewport.zoom + root.viewport.x, 0, Math.max(0, root.width / 1px - 200)), Math.clamp(a.y * root.viewport.zoom + root.viewport.y, 0, Math.max(0, root.height / 1px - 294)));
+    }
+    public function edge-at(x: float, y: float) -> string {
+        return ForgeFlowServices.field(ForgeFlowServices.query(root.state.token, "{\"target\":\"edge-at\",\"x\":" + x + ",\"y\":" + y + "}"), "result");
+    }
+    public function track-pointer(x: float, y: float) {
+        if root.linking { root.update-connection(x,y); }
+        if !root.panning && !root.boxing && !root.linking {
+            let id = root.edge-at(x,y);
+            if id != root.hovered-edge { if root.hovered-edge != "" { root.interaction("edge-leave", {id: root.hovered-edge, x:x, y:y}); } root.hovered-edge = id; if root.hovered-edge != "" { root.interaction("edge-enter", {id:root.hovered-edge, x:x, y:y}); } }
+        }
+    }
+    public function update-connection(x: float, y: float) {
+        root.remember-pointer(x, y);
+        if Math.abs(x - root.pending.x) + Math.abs(y - root.pending.y) > 4 / root.viewport.zoom { root.link-dragged = true; }
+        root.candidate = ForgeFlowServices.resolve(root.state.token, {id: root.pending.id, port: root.pending.port, target: root.pending.target, number: root.pending.target == "reconnect" ? root.pending.number : root.edge-style, flag: root.edge-arrow, x: x, y: y});
+        if root.candidate.op != "" && !root.connection-allowed(root.candidate) { root.candidate = {}; }
+        root.end-x = root.candidate.op == "" ? x : root.candidate.x;
+        root.end-y = root.candidate.op == "" ? y : root.candidate.y;
+        root.preview-edge = ForgeFlowServices.preview(root.state.token, {id: root.pending.id, port: root.pending.port, target: root.pending.target, number: root.pending.target == "reconnect" ? root.pending.number : root.edge-style, flag: root.edge-arrow, x: x, y: y});
+    }
+    changed read-only => { if root.read-only { root.act({op: "cancel"}); } }
+    public function save(path: string) {
+        root.commit-view(); root.error = ForgeFlowServices.save-file(root.state.token, path);
+        if root.error == "" { root.state = ForgeFlowServices.execute(root.state.token, {op: "refresh"}); root.changed-document(root.state); }
+        root.save-finished(path, root.error);
+    }
+    public function export-image(path: string, selected: bool, options: string) {
+        root.error = ForgeFlowServices.export-image(root.state.token, path, selected, options);
+        root.image-exported(path, root.error);
+    }
     public function load(path: string) {
         if root.read-only { return; }
+        let action = {op: "load", text: path};
+        if !root.edit-allowed(action) { root.error = root.chinese ? "业务规则拒绝此修改" : "Edit rejected"; root.edit-rejected(action, root.error); return; }
         root.state = ForgeFlowServices.load-file(root.state.token, path); root.error = root.state.error;
-        if root.state.ok { root.viewport = root.state.viewport; }
+        if root.state.ok {
+            root.viewport = root.state.viewport; root.active-gesture = ""; root.linking = false;
+            root.candidate = {}; root.panning = false; root.boxing = false; context-menu.close();
+        }
         root.changed-document(root.state);
+        if root.state.ok { root.edited(action, root.state); root.interaction("load", action); }
+        else { root.edit-rejected(action, root.error); }
     }
     public function document-json() -> string { root.commit-view(); return ForgeFlowServices.export-json(root.state.token); }
+    public function focus-canvas() { focus.focus(); }
 
+    pinch := ScaleRotateGestureHandler {
+        enabled: root.state.touch-enabled;
+        started => {
+            root.act({op: "cancel"}); root.pinch-view = root.viewport;
+            root.pinch-anchor-x = (self.center.x / 1px - root.viewport.x) / root.viewport.zoom;
+            root.pinch-anchor-y = (self.center.y / 1px - root.viewport.y) / root.viewport.zoom;
+        }
+        updated => {
+            let zoom = Math.clamp(root.pinch-view.zoom * self.scale, root.state.min-zoom, root.state.max-zoom);
+            root.viewport = {x: self.center.x / 1px - root.pinch-anchor-x * zoom, y: self.center.y / 1px - root.pinch-anchor-y * zoom, zoom: zoom}; root.commit-view();
+        }
+        ended => { root.commit-view(); }
+        cancelled => { root.viewport = root.pinch-view; root.commit-view(); }
     focus := FocusScope {
         key-pressed(e) => {
+            if (e.modifiers.control || e.modifiers.alt) && (e.text == Key.PageUp || e.text == Key.PageDown) { root.select-next(e.text == Key.PageUp, e.modifiers.alt); return accept; }
+            if focus.has-focus && (e.text == Key.LeftArrow || e.text == Key.RightArrow || e.text == Key.UpArrow || e.text == Key.DownArrow) {
+                let step = e.modifiers.shift ? 10 : 1;
+                root.act({op: "nudge", x: e.text == Key.LeftArrow ? -step : e.text == Key.RightArrow ? step : 0, y: e.text == Key.UpArrow ? -step : e.text == Key.DownArrow ? step : 0}); return accept;
+            }
+            if e.modifiers.control && (e.text == "f" || e.text == "F") { root.search-open = true; return accept; }
+            if !e.modifiers.control && (e.text == "f" || e.text == "F") { if e.modifiers.shift { root.fit-selected(); } else { root.fit(); } return accept; }
+            if !e.modifiers.control && (e.text == "v" || e.text == "V") { root.pan-on-drag = false; return accept; }
+            if !e.modifiers.control && (e.text == "h" || e.text == "H") { root.pan-on-drag = true; return accept; }
             if e.text == " " { root.space-down = true; return accept; }
-            if e.text == Key.Escape { root.act({op: "cancel"}); return accept; }
+            if e.text == Key.Escape { context-menu.close(); root.search-open = false; root.act({op: "cancel"}); return accept; }
             if e.modifiers.control && (e.text == "z" || e.text == "Z") { root.act({op: e.modifiers.shift ? "redo" : "undo"}); return accept; }
             if e.modifiers.control && (e.text == "y" || e.text == "Y") { root.act({op: "redo"}); return accept; }
             if e.modifiers.control && (e.text == "a" || e.text == "A") { root.act({op: "select-all"}); return accept; }
             if e.modifiers.control && (e.text == "d" || e.text == "D") { root.act({op: "duplicate"}); return accept; }
+            if e.modifiers.control && (e.text == "c" || e.text == "C") { root.act({op: "copy"}); return accept; }
+            if e.modifiers.control && (e.text == "x" || e.text == "X") { root.act({op: "cut"}); return accept; }
+            if e.modifiers.control && (e.text == "v" || e.text == "V") { root.act({op: "paste", x: (root.width / 2px - root.viewport.x) / root.viewport.zoom, y: (root.height / 2px - root.viewport.y) / root.viewport.zoom, flag: true, target: root.state.mode == "mindmap" ? root.state.selected-id : ""}); return accept; }
+            if e.modifiers.control && (e.text == "g" || e.text == "G") { root.act({op: e.modifiers.shift ? "ungroup" : "group", id: root.state.selected-id, text: root.chinese ? "新分组" : "New group"}); return accept; }
             if e.text == Key.Delete { root.act({op: "delete"}); return accept; }
             return reject;
         }
         key-released(e) => { if e.text == " " { root.space-down = false; return accept; } return reject; }
-        for i in (root.grid ? Math.min(180, Math.ceil(root.width / 1px / root.grid-step) + 1) : 0) : Rectangle {
-            x: (Math.mod(root.viewport.x, root.grid-step) + i * root.grid-step) * 1px;
-            width: 1px; height: parent.height; background: Palette.foreground.with-alpha(0.06);
-        }
-        for i in (root.grid ? Math.min(120, Math.ceil(root.height / 1px / root.grid-step) + 1) : 0) : Rectangle {
-            y: (Math.mod(root.viewport.y, root.grid-step) + i * root.grid-step) * 1px;
-            height: 1px; width: parent.width; background: Palette.foreground.with-alpha(0.06);
-        }
+        ForgeFlowBackground { viewport: root.viewport; variant: root.grid ? root.background-variant : 2; gap: root.state.grid-size > 0 ? root.state.grid-size : 20; }
         surface := TouchArea {
+            mouse-cursor: root.panning ? grabbing : root.pan-mode || root.read-only ? grab : default;
             scroll-event(e) => {
-                root.zoom-at(root.viewport.zoom * (e.delta-y > 0px ? 1.12 : 1 / 1.12), self.mouse-x / 1px, self.mouse-y / 1px); return accept;
+                return root.wheel(e.delta-x / 1px, e.delta-y / 1px, self.mouse-x / 1px, self.mouse-y / 1px, e.modifiers.control) ? accept : reject;
             }
             pointer-event(e) => {
-                if e.kind == PointerEventKind.down {
+                if e.kind == PointerEventKind.move && !self.pressed { root.track-pointer((self.mouse-x / 1px - root.viewport.x) / root.viewport.zoom, (self.mouse-y / 1px - root.viewport.y) / root.viewport.zoom); }
+                if e.kind == PointerEventKind.down && e.button == PointerEventButton.right {
+                    let x = (self.mouse-x / 1px - root.viewport.x) / root.viewport.zoom; let y = (self.mouse-y / 1px - root.viewport.y) / root.viewport.zoom;
+                    let id = root.edge-at(x, y); let name = id == "" ? "canvas-context-menu" : "edge-context-menu"; root.open-context({target: name, id: id, x: x, y: y, flag: id == root.state.selected-edge.id}); root.interaction(name, {id: id, x: x, y: y});
+                }
+                if e.kind == PointerEventKind.down && (e.button == PointerEventButton.left || e.button == PointerEventButton.middle) {
                     focus.focus(); root.start-x = self.mouse-x / 1px; root.start-y = self.mouse-y / 1px;
                     root.pan-x = root.viewport.x; root.pan-y = root.viewport.y;
                     root.additive = e.modifiers.control || e.modifiers.shift;
-                    root.panning = e.button == PointerEventButton.middle || (e.button == PointerEventButton.left && root.space-down);
+                    root.panning = e.button == PointerEventButton.middle || (e.button == PointerEventButton.left && (root.pan-mode || root.read-only));
                     root.boxing = !root.read-only && !root.panning && e.button == PointerEventButton.left;
+                    if root.linking && e.button == PointerEventButton.left { root.finish-connection((self.mouse-x / 1px - root.viewport.x) / root.viewport.zoom, (self.mouse-y / 1px - root.viewport.y) / root.viewport.zoom); root.boxing = false; }
                 }
                 if e.kind == PointerEventKind.up {
                     if root.panning { root.commit-view(); }
                     if root.boxing {
                         if Math.abs(self.mouse-x / 1px - root.start-x) + Math.abs(self.mouse-y / 1px - root.start-y) < 4 {
                             root.act({op: "pick", x: (root.start-x - root.viewport.x) / root.viewport.zoom, y: (root.start-y - root.viewport.y) / root.viewport.zoom, additive: root.additive});
+                            if root.state.selected-edge.id != "" { root.interaction("edge-click", {id: root.state.selected-edge.id, x: (root.start-x - root.viewport.x) / root.viewport.zoom, y: (root.start-y - root.viewport.y) / root.viewport.zoom}); }
                         } else {
                             root.act({op: "select-rect", x: (root.start-x - root.viewport.x) / root.viewport.zoom, y: (root.start-y - root.viewport.y) / root.viewport.zoom, width: (self.mouse-x / 1px - root.viewport.x) / root.viewport.zoom, height: (self.mouse-y / 1px - root.viewport.y) / root.viewport.zoom, additive: root.additive});
                         }
@@ -150,51 +353,67 @@ export component ForgeFlowCanvas inherits Rectangle {
                 }
                 if e.kind == PointerEventKind.cancel { root.panning = false; root.boxing = false; }
             }
-            moved => { if root.panning { root.viewport = {x: root.pan-x + self.mouse-x / 1px - root.start-x, y: root.pan-y + self.mouse-y / 1px - root.start-y, zoom: root.viewport.zoom}; } }
+            double-clicked => { let x = (self.mouse-x / 1px - root.viewport.x) / root.viewport.zoom; let y = (self.mouse-y / 1px - root.viewport.y) / root.viewport.zoom; let id = root.edge-at(x, y); root.interaction(id == "" ? "canvas-double-click" : "edge-double-click", {id: id, x: x, y: y}); }
+            moved => {
+                if root.panning { root.viewport = {x: root.pan-x + self.mouse-x / 1px - root.start-x, y: root.pan-y + self.mouse-y / 1px - root.start-y, zoom: root.viewport.zoom}; }
+                let x = (self.mouse-x / 1px - root.viewport.x) / root.viewport.zoom; let y = (self.mouse-y / 1px - root.viewport.y) / root.viewport.zoom;
+                root.track-pointer(x,y);
+            }
+            changed has-hover => { if !self.has-hover && root.hovered-edge != "" { root.interaction("edge-leave", {id: root.hovered-edge}); root.hovered-edge = ""; } }
         }
         world := Rectangle {
             x: root.viewport.x * 1px; y: root.viewport.y * 1px;
             width: root.width / root.viewport.zoom; height: root.height / root.viewport.zoom;
             transform-origin: {x: 0px, y: 0px}; transform-scale: root.viewport.zoom;
-            for e in root.state.edges : Rectangle {
-                visible: !e.hidden && e.max-x * root.viewport.zoom + root.viewport.x >= 0 && e.min-x * root.viewport.zoom + root.viewport.x <= root.width / 1px && e.max-y * root.viewport.zoom + root.viewport.y >= 0 && e.min-y * root.viewport.zoom + root.viewport.y <= root.height / 1px;
-                x: e.min-x * 1px; y: e.min-y * 1px; width: (e.max-x - e.min-x) * 1px; height: (e.max-y - e.min-y) * 1px;
-                Path { width: parent.width; height: parent.height; viewbox-x: e.min-x; viewbox-y: e.min-y; viewbox-width: e.max-x - e.min-x; viewbox-height: e.max-y - e.min-y;
-                    commands: e.path; stroke: e.selected ? Palette.accent-background : Palette.foreground.with-alpha(0.55); stroke-width: (e.stroke-width + (e.selected ? 1 : 0)) * 1px; fill: transparent; }
-                Path { width: parent.width; height: parent.height; viewbox-x: e.min-x; viewbox-y: e.min-y; viewbox-width: e.max-x - e.min-x; viewbox-height: e.max-y - e.min-y;
-                    commands: e.arrow-path; fill: e.selected ? Palette.accent-background : Palette.foreground.with-alpha(0.65); }
-                if e.label != "" : Rectangle {
-                    x: (e.label-x - e.min-x) * 1px - self.width / 2; y: (e.label-y - e.min-y) * 1px - 12px;
-                    width: label.preferred-width + 12px; height: 24px; background: Palette.background; border-radius: 4px;
-                    label := Text { text: e.label; color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; font-size: 11px; }
-                }
-
+            for e in root.state.edges : ForgeFlowEdge {
+                edge: e;
+                hovered: root.hovered-edge == e.id; animations-enabled: root.animations-enabled;
+                visible: root.show-edges && root.edge-visible(e);
+                activated => { root.act({op:"select",id:e.id}); root.focus-canvas(); }
             }
             @children
+            for guide in root.state.guides : Rectangle {
+                z: 1900; x: guide.x * 1px; y: guide.y * 1px;
+                width: Math.max(1 / root.viewport.zoom, guide.width) * 1px; height: Math.max(1 / root.viewport.zoom, guide.height) * 1px;
+                background: ForgeFlowTheme.accent.with-alpha(0.65);
+            }
             for e in root.state.edges : Rectangle {
+                z: 2000;
                 visible: e.selected && !e.hidden;
                 x: e.min-x * 1px; y: e.min-y * 1px; width: (e.max-x - e.min-x) * 1px; height: (e.max-y - e.min-y) * 1px;
-                for endpoint in (e.selected && !root.read-only && root.state.mode != "mindmap" ? 2 : 0) : Rectangle {
+              if e.selected && !e.hidden : Rectangle {
+                for endpoint in 2 : Rectangle {
+                    visible: e.selected && e.reconnectable && !root.read-only && root.state.mode != "mindmap" && (!root.linking || root.pending.target == "reconnect");
                     x: ((endpoint == 0 ? e.source-x : e.target-x) - e.min-x) * 1px - 9px;
                     y: ((endpoint == 0 ? e.source-y : e.target-y) - e.min-y) * 1px - 9px;
                     width: 18px; height: 18px; border-radius: 9px; border-width: 3px; border-color: Palette.accent-background; background: Palette.background;
                     TouchArea {
                         pointer-event(p) => {
-                            if p.kind == PointerEventKind.down { root.pending = {id: e.id, target: "reconnect", number: endpoint, x: endpoint == 0 ? e.target-x : e.source-x, y: endpoint == 0 ? e.target-y : e.source-y}; root.linking = true; root.end-x = endpoint == 0 ? e.source-x : e.target-x; root.end-y = endpoint == 0 ? e.source-y : e.target-y; }
+                            if p.kind == PointerEventKind.down && p.button == PointerEventButton.left { root.pending = {id: e.id, target: "reconnect", number: endpoint, x: endpoint == 0 ? e.target-x : e.source-x, y: endpoint == 0 ? e.target-y : e.source-y}; root.linking = true; root.link-dragged = true; root.end-x = endpoint == 0 ? e.source-x : e.target-x; root.end-y = endpoint == 0 ? e.source-y : e.target-y; root.update-connection(root.end-x, root.end-y); }
                             if p.kind == PointerEventKind.up { root.act({op: "connection-end", x: e.min-x + parent.x / 1px + self.mouse-x / 1px, y: e.min-y + parent.y / 1px + self.mouse-y / 1px}); }
                             if p.kind == PointerEventKind.cancel { root.act({op: "cancel"}); }
                         }
-                        moved => { if self.pressed { root.end-x = e.min-x + parent.x / 1px + self.mouse-x / 1px; root.end-y = e.min-y + parent.y / 1px + self.mouse-y / 1px; } }
+                        moved => { if self.pressed { root.update-connection(e.min-x + parent.x / 1px + self.mouse-x / 1px, e.min-y + parent.y / 1px + self.mouse-y / 1px); } }
                     }
                 }
+                for point[index] in e.control-points : Rectangle {
+                    visible: !root.read-only; x: (point.x - e.min-x) * 1px - 6px; y: (point.y - e.min-y) * 1px - 6px;
+                    width: 12px; height: 12px; background: ForgeFlowTheme.surface; border-color: ForgeFlowTheme.accent; border-width: 2px; border-radius: 2px;
+                    TouchArea {
+                        mouse-cursor: move;
+                        pointer-event(p) => {
+                            if p.kind == PointerEventKind.down && p.button == PointerEventButton.left { root.act({op: "bend-begin", id: e.id, number: index}); }
+                            if p.kind == PointerEventKind.down && p.button == PointerEventButton.right { root.act({op: "bend-remove", id: e.id, number: index}); }
+                            if p.kind == PointerEventKind.up && p.button == PointerEventButton.left { root.act({op: "bend-end", id: e.id}); }
+                            if p.kind == PointerEventKind.cancel { root.act({op: "cancel"}); }
+                        }
+                        moved => { if self.pressed { root.act({op: "bend-move", id: e.id, x: e.min-x + parent.x / 1px + self.mouse-x / 1px, y: e.min-y + parent.y / 1px + self.mouse-y / 1px}); } }
+                    }
+                }
+              }
             }
-            if root.linking : Path {
-                x: Math.min(root.pending.x, root.end-x) * 1px - 2px; y: Math.min(root.pending.y, root.end-y) * 1px - 2px;
-                width: (Math.abs(root.pending.x - root.end-x) + 4) * 1px; height: (Math.abs(root.pending.y - root.end-y) + 4) * 1px;
-                viewbox-x: Math.min(root.pending.x, root.end-x) - 2; viewbox-y: Math.min(root.pending.y, root.end-y) - 2;
-                viewbox-width: Math.abs(root.pending.x - root.end-x) + 4; viewbox-height: Math.abs(root.pending.y - root.end-y) + 4;
-                commands: "M " + root.pending.x + " " + root.pending.y + " L " + root.end-x + " " + root.end-y;
-                stroke: Palette.accent-background; stroke-width: 2px; fill: transparent;
+            if root.linking : ForgeFlowEdge {
+                edge: root.preview-edge; show-label: false; default-color: root.candidate.op == "" ? ForgeFlowTheme.accent : ForgeFlowTheme.success;
             }
         }
         if root.boxing : Rectangle {
@@ -203,11 +422,50 @@ export component ForgeFlowCanvas inherits Rectangle {
             background: Palette.accent-background.with-alpha(0.12); border-color: Palette.accent-background; border-width: 1px;
         }
     }
+    }
+    context-menu := ForgeFlowContextMenu {
+        x: 0px; y: 0px;
+        commands: root.context-kind == "canvas-context-menu" ? ["paste","select-all","fit","fit-selected"] : ["copy","cut","duplicate","delete","group","ungroup","fit-selected","properties"];
+        labels: root.context-kind == "canvas-context-menu" ? (root.chinese ? ["粘贴到此处","选择全部","适应全部","适应选中"] : ["Paste here","Select all","Fit all","Fit selection"]) : (root.chinese ? ["复制","剪切","创建副本","删除","组合节点","解散分组","适应选中","批量属性"] : ["Copy","Cut","Duplicate","Delete","Group","Ungroup","Fit selection","Properties"]);
+        available: root.context-kind == "canvas-context-menu" ? [!root.read-only,true,true,root.state.selected-node-count + root.state.selected-edge-count > 0] : [root.state.selected-node-count > 0,!root.read-only && root.state.selected-node-count > 0,!root.read-only && root.state.selected-node-count > 0,!root.read-only,!root.read-only && root.state.mode == "graph" && root.state.selected-node-count > 1,!root.read-only && root.state.mode == "graph" && root.state.selected-node-count == 1 && root.state.selected-is-group,true,root.state.selected-node-count > 0];
+        command(op) => {
+            if op == "fit" { root.fit(); } else if op == "fit-selected" { root.fit-selected(); }
+            else if op == "properties" { root.properties-open = true; }
+            else if op == "paste" { root.act({op: op, flag: true, x: root.context-x, y: root.context-y, target: root.state.mode == "mindmap" ? root.state.selected-id : ""}); }
+            else { root.act({op: op, id: op == "ungroup" ? root.state.selected-id : "", text: root.chinese ? "新分组" : "New group"}); }
+            root.focus-canvas();
+        }
+    }
+    if root.properties-open && root.state.selected-node-count > 0 : ForgeFlowNodeProperties {
+        x: Math.max(8px, parent.width - self.width - 12px); y: 12px; width: Math.min(288px, parent.width - 24px);
+        count: root.state.selected-node-count; chinese: root.chinese; read-only: root.read-only;
+        action(a) => { root.act(a); } close => { root.properties-open = false; }
+    }
+    if root.show-search : ForgeFlowToolButton {
+        x: 12px; y: 12px; width: 46px; height: 34px; background: ForgeFlowTheme.surface;
+        text: root.chinese ? "查找" : "Find"; clicked => { root.search-open = !root.search-open; }
+    }
+    if root.show-search && root.search-open : Rectangle {
+        x: 66px; y: 12px; width: Math.min(300px, parent.width - 84px); height: 44px + (root.search-results.length > 0 ? Math.min(5, root.search-results.length) * 32px : 0px);
+        background: ForgeFlowTheme.surface; border-color: ForgeFlowTheme.border; border-width: 1px; border-radius: 7px;
+        TouchArea { }
+        search-edit := LineEdit {
+            x: 6px; y: 6px; width: parent.width - 12px; height: 32px; placeholder-text: root.chinese ? "搜索标题、ID 或类型" : "Search title, ID or type";
+            edited => { root.search-results = ForgeFlowServices.search(root.state.token, self.text); }
+            accepted => { if root.search-results.length > 0 { root.focus-node(root.search-results[0]); root.search-open = false; root.focus-canvas(); } }
+            init => { self.focus(); }
+        }
+        for id[index] in root.search-results : ForgeFlowToolButton {
+            visible: index < 5; x: 6px; y: 42px + index * 32px; width: parent.width - 12px; height: 30px;
+            text: id; clicked => { root.focus-node(id); root.search-open = false; root.focus-canvas(); }
+        }
+    }
     if root.show-controls : ForgeFlowControls {
-        x: 12px; y: parent.height - self.height - 12px; width: 336px; height: 40px;
-        zoom: root.viewport.zoom; can-undo: root.state.can-undo; can-redo: root.state.can-redo; read-only: root.read-only; chinese: root.chinese;
+        x: 12px; y: parent.height - self.height - 12px; width: 46px; height: 238px;
+        zoom: root.viewport.zoom; min-zoom: root.state.min-zoom; max-zoom: root.state.max-zoom; can-undo: root.state.can-undo; can-redo: root.state.can-redo; read-only: root.read-only; chinese: root.chinese;
         command(op) => {
             if op == "fit" { root.fit(); }
+            else if op == "reset-zoom" { root.zoom-at(1, root.width / 2px, root.height / 2px); }
             else if op == "zoom-in" || op == "zoom-out" { root.zoom-at(root.viewport.zoom * (op == "zoom-in" ? 1.2 : 1 / 1.2), root.width / 2px, root.height / 2px); }
             else { root.act({op: op}); }
         }
@@ -226,60 +484,53 @@ export component ForgeFlowCanvas inherits Rectangle {
             if root.state.mode == "mindmap" : Button { text: root.chinese ? "布局" : "Layout"; enabled: !root.read-only; clicked => { root.act({op: "layout"}); root.fit(); } }
         }
     }
-    Rectangle {
-        visible: root.show-edge-editor && root.state.selected-edge-count > 0;
-        private property<ForgeFlowEdgeData> edge: root.state.selected-edge;
-        private property<string> last-id;
-        private property<string> last-label;
-        changed edge => {
-            // 原生输入控件会持有本地编辑值，外部修改和撤销后显式同步回显。
-            style-choice.current-index = self.edge.style;
-            width-choice.value = Math.round(self.edge.stroke-width);
-            arrow-choice.checked = self.edge.arrow;
-            if self.last-id != self.edge.id || self.last-label != self.edge.label { edge-label.text = self.edge.label; }
-            self.last-id = self.edge.id; self.last-label = self.edge.label;
-        }
-        x: 12px; y: parent.height - self.height - (root.show-controls ? 64px : 12px);
-        width: Math.min(420px, parent.width - 24px); height: 102px;
-        background: Palette.background; border-color: Palette.border; border-width: 1px; border-radius: 6px;
-        // 样式编辑放在画布层，默认组件和调用方自定义卡片共用同一入口。
-        VerticalLayout {
-            padding: 8px; spacing: 5px;
-            Text { text: (root.chinese ? "连线样式" : "Edge appearance") + (root.state.selected-edge-count > 1 ? " · " + root.state.selected-edge-count : ""); color: Palette.foreground; font-size: 11px; }
-            HorizontalLayout {
-                spacing: 6px;
-                style-choice := ComboBox { width: 120px; model: root.chinese ? ["直线", "曲线", "折线"] : ["Straight", "Bezier", "Step"];
-                    current-index: root.state.selected-edge.style; enabled: !root.read-only;
-                    selected(v) => { root.change-edge-style(self.current-index); }
-                }
-                Text { text: root.chinese ? "线宽" : "Width"; color: Palette.foreground; vertical-alignment: center; }
-                width-choice := SpinBox { width: 82px; minimum: 1; maximum: 8; value: Math.round(root.state.selected-edge.stroke-width); enabled: !root.read-only;
-                    edited(v) => { root.act({op: "edge-appearance", target: "stroke_width", width: v}); }
-                }
-                arrow-choice := CheckBox { text: root.chinese ? "箭头" : "Arrow"; checked: root.state.selected-edge.arrow; enabled: !root.read-only;
-                    toggled => { root.act({op: "edge-appearance", target: "arrow", flag: self.checked}); }
+    if root.show-node-toolbar : Rectangle {
+        for n in root.state.nodes : Rectangle {
+            visible: n.id == root.state.selected-id && root.node-visible(n);
+          // 只为选中节点建立工具栏；持续拖动期间布尔条件不变，保留输入焦点。
+          if n.id == root.state.selected-id : Rectangle {
+            toolbar := ForgeFlowNodeToolbar {
+                x: Math.clamp((n.x + n.width / 2) * root.viewport.zoom * 1px + root.viewport.x * 1px - self.width / 2, 10px, root.width - self.width - 10px);
+                y: Math.max(10px, n.y * root.viewport.zoom * 1px + root.viewport.y * 1px - 48px);
+                chinese: root.chinese; read-only: root.read-only; tree: root.state.mode == "mindmap";
+                command(op) => { if op == "inspect" { root.node-inspector = !root.node-inspector; } else { root.act({op: op, id: n.id, text: root.chinese ? "新主题" : "New topic"}); } }
+            }
+            if root.node-inspector : Rectangle {
+                x: Math.min(toolbar.x, root.width - self.width - 10px); y: toolbar.y + 42px;
+                width: 254px; height: 98px; background: ForgeFlowTheme.surface;
+                border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 8px;
+                VerticalLayout { padding: 10px; spacing: 5px;
+                    Text { text: (root.chinese ? "节点标题" : "Node title") + " · " + Math.round(n.width) + " × " + Math.round(n.height); color: ForgeFlowTheme.muted; font-size: 11px; }
+                    HorizontalLayout { spacing: 4px;
+                        node-title := LineEdit { text: n.title; enabled: !root.read-only; accepted => { root.act({op: "title", id: n.id, text: self.text}); } }
+                        ForgeFlowToolButton { text: root.chinese ? "应用" : "Apply"; enabled: !root.read-only; primary: true; clicked => { root.act({op: "title", id: n.id, text: node-title.text}); } }
+                    }
                 }
             }
-            HorizontalLayout {
-                spacing: 6px;
-                edge-label := LineEdit { text: root.state.selected-edge.label; placeholder-text: root.chinese ? "连线标签" : "Edge label"; enabled: !root.read-only;
-                    accepted => { root.act({op: "edge-appearance", target: "label", text: self.text}); }
-                }
-                Button { text: root.chinese ? "应用" : "Apply"; enabled: !root.read-only;
-                    clicked => { root.act({op: "edge-appearance", target: "label", text: edge-label.text}); }
-                }
-            }
+          }
         }
     }
-    if root.show-minimap && root.width > 600px : ForgeFlowMiniMap {
+    if root.show-alignment-controls && root.state.selected-node-count > 1 && root.state.mode == "graph" && !root.read-only && root.active-gesture == "" : ForgeFlowAlignmentControls {
+        x: (parent.width - self.width) / 2; y: parent.height - self.height - 12px; width: Math.min(246px, parent.width - 130px);
+        chinese: root.chinese; selection-count: root.state.selected-node-count;
+        action(a) => { root.act(a); root.focus-canvas(); }
+    }
+    if root.show-edge-editor && root.state.selected-edge-count > 0 : ForgeFlowEdgeEditor {
+        x: parent.width - self.width - 12px; y: 12px;
+        chinese: root.chinese; read-only: root.read-only; edge: root.state.selected-edge; count: root.state.selected-edge-count;
+        action(a) => { root.act(a); }
+    }
+    if root.show-minimap && root.width > 760px && (root.height > 440px || root.state.selected-edge-count == 0) : ForgeFlowMiniMap {
         x: parent.width - self.width - 12px; y: parent.height - self.height - 12px;
         nodes: root.state.nodes; bounds: root.state.bounds; viewport: root.viewport;
         canvas-width: root.width / 1px; canvas-height: root.height / 1px;
+        zoom-step: root.state.wheel-zoom-step; wheel-enabled: root.state.wheel-mode != "none"; wheel-requires-control: root.state.wheel-zoom-requires-control || root.state.wheel-mode == "pan";
+        zoom-by(factor) => { root.zoom-at(root.viewport.zoom * factor, root.width / 2px, root.height / 2px); }
         navigate(x,y) => { root.viewport = {x: root.width / 2px - x * root.viewport.zoom, y: root.height / 2px - y * root.viewport.zoom, zoom: root.viewport.zoom}; root.commit-view(); }
     }
     if root.error != "" : Rectangle {
         x: 12px; y: root.show-edit-controls ? 54px : 10px; width: Math.min(parent.width - 24px, notice.preferred-width + 24px); height: 34px;
         background: Palette.background; border-color: #c46b40; border-width: 1px; border-radius: 4px;
-        notice := Text { x: 10px; width: parent.width - 20px; text: root.error; color: Palette.foreground; vertical-alignment: center; overflow: elide; }
+        notice := Text { x: 10px; width: parent.width - 20px; text: root.error; color: Palette.foreground; vertical-alignment: center; overflow: elide; accessible-live-region: polite; }
     }
 }

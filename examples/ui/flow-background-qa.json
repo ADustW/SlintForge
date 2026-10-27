@@ -1,0 +1,445 @@
+[
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 2, \"mode\": \"graph\", \"nodes\": [], \"edges\": [], \"viewport\": {\"x\": 40, \"y\": 40, \"zoom\": 1}}"
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 17.25,
+    "y": -11.5,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "dots-0-0"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": -37.4,
+    "y": 12.7,
+    "zoom": 0.75
+  },
+  {
+    "kind": "snapshot",
+    "name": "dots-0-1"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 32}"
+  },
+  {
+    "kind": "view",
+    "x": 125.5,
+    "y": 24.25,
+    "zoom": 1.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "dots-0-2"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 13,
+    "y": -25,
+    "zoom": 0.1
+  },
+  {
+    "kind": "snapshot",
+    "name": "dots-0-3"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 17.25,
+    "y": -11.5,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "dots-1-0"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": -37.4,
+    "y": 12.7,
+    "zoom": 0.75
+  },
+  {
+    "kind": "snapshot",
+    "name": "dots-1-1"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 32}"
+  },
+  {
+    "kind": "view",
+    "x": 125.5,
+    "y": 24.25,
+    "zoom": 1.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "dots-1-2"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 13,
+    "y": -25,
+    "zoom": 0.1
+  },
+  {
+    "kind": "snapshot",
+    "name": "dots-1-3"
+  },
+  {
+    "kind": "click",
+    "x": 1000,
+    "y": 75
+  },
+  {
+    "kind": "click",
+    "x": 950,
+    "y": 171
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "click",
+    "x": 1000,
+    "y": 75
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 17.25,
+    "y": -11.5,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-0-0"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": -37.4,
+    "y": 12.7,
+    "zoom": 0.75
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-0-1"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 32}"
+  },
+  {
+    "kind": "view",
+    "x": 125.5,
+    "y": 24.25,
+    "zoom": 1.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-0-2"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 13,
+    "y": -25,
+    "zoom": 0.1
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-0-3"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 17.25,
+    "y": -11.5,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-1-0"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": -37.4,
+    "y": 12.7,
+    "zoom": 0.75
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-1-1"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 32}"
+  },
+  {
+    "kind": "view",
+    "x": 125.5,
+    "y": 24.25,
+    "zoom": 1.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-1-2"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 13,
+    "y": -25,
+    "zoom": 0.1
+  },
+  {
+    "kind": "snapshot",
+    "name": "grid-1-3"
+  },
+  {
+    "kind": "click",
+    "x": 1000,
+    "y": 75
+  },
+  {
+    "kind": "click",
+    "x": 950,
+    "y": 171
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "click",
+    "x": 1000,
+    "y": 75
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 17.25,
+    "y": -11.5,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "plain-0-0"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": -37.4,
+    "y": 12.7,
+    "zoom": 0.75
+  },
+  {
+    "kind": "snapshot",
+    "name": "plain-0-1"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 32}"
+  },
+  {
+    "kind": "view",
+    "x": 125.5,
+    "y": 24.25,
+    "zoom": 1.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "plain-0-2"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 13,
+    "y": -25,
+    "zoom": 0.1
+  },
+  {
+    "kind": "snapshot",
+    "name": "plain-0-3"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 17.25,
+    "y": -11.5,
+    "zoom": 1
+  },
+  {
+    "kind": "snapshot",
+    "name": "plain-1-0"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": -37.4,
+    "y": 12.7,
+    "zoom": 0.75
+  },
+  {
+    "kind": "snapshot",
+    "name": "plain-1-1"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 32}"
+  },
+  {
+    "kind": "view",
+    "x": 125.5,
+    "y": 24.25,
+    "zoom": 1.5
+  },
+  {
+    "kind": "snapshot",
+    "name": "plain-1-2"
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"grid_size\": 20}"
+  },
+  {
+    "kind": "view",
+    "x": 13,
+    "y": -25,
+    "zoom": 0.1
+  },
+  {
+    "kind": "snapshot",
+    "name": "plain-1-3"
+  },
+  {
+    "kind": "finish"
+  }
+]

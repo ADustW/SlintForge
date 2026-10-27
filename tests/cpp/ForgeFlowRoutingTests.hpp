@@ -37,7 +37,7 @@ static void forge_flow_test_routing_and_appearance() {
     ForgeFlowDocument sample;
     forge_flow_test_command(sample,{{"op","demo"},{"number",1}});
     forge_flow_test_clear(sample,"edge-3");
-    for(int style:{1,2})for(int source=0;source<4;++source)for(int target=0;target<4;++target)
+    for(int style:{1,2,3})for(int source=0;source<4;++source)for(int target=0;target<4;++target)
         for(const auto& position:std::vector<std::pair<double,double>>{{400,240},{-350,240},{400,0},{0,300}}){
             ForgeFlowDocument doc;
             doc.add_node({{"id","a"},{"ports",nlohmann::json::array({{{"id","p"},{"direction",1},{"side",source},{"offset",.5}}})}});
@@ -84,5 +84,5 @@ static void forge_flow_test_routing_and_appearance() {
         forge_flow_test_require(std::isfinite(connected_close["edges"][0]["label_x"].get<double>()),"退化路径标签无效");
         forge_flow_test_clear(close,connected_close["edges"][0]["id"]);
     }
-    std::cout<<"FLOW_ROUTING_OK directions=128 obstacle_move=incremental appearance=undo_redo_roundtrip\n";
+    std::cout<<"FLOW_ROUTING_OK directions=192 obstacle_move=incremental appearance=undo_redo_roundtrip\n";
 }

@@ -8,6 +8,17 @@ fn main() {
     println!("cargo:rerun-if-changed=../common/ForgePlotCore.cpp");
     println!("cargo:rerun-if-changed=../common/ForgeFlowCore.cpp");
     println!("cargo:rerun-if-changed=../common/ForgeFlowCore.h");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowHistory.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowRouting.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowQueries.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowGroups.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowClipboard.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowLayout.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowAlignment.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowNavigation.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowEditor.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowAppearance.hpp");
+    println!("cargo:rerun-if-changed=../common/ForgeFlowExport.hpp");
     cc::Build::new()
         .cpp(true)
         // 数值和路径循环在 Debug 中也保持交互性能，调试信息仍由 Cargo 管理。

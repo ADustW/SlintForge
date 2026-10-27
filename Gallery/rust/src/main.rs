@@ -2,12 +2,14 @@ slint::include_modules!();
 
 mod capture;
 mod capture_scene;
-mod navigation;
-mod settings;
+mod component_qa;
 mod demos;
 mod grids_demo;
+mod navigation;
 mod plot_demo;
-mod component_qa;
+mod settings;
+#[path = "../../../examples/flow-rust/src/card_export.rs"]
+mod flow_card_export;
 
 use navigation::{GalleryArea, GalleryEntry};
 use settings::GallerySettings;
@@ -309,7 +311,9 @@ fn apply_state(ui: &GalleryWindow, state: &GalleryState) {
     let pending: Vec<_> = state
         .entries
         .iter()
-        .filter(|entry| entry.item.kind == NavItemKind::Page && navigation::is_deferred(&entry.item.id))
+        .filter(|entry| {
+            entry.item.kind == NavItemKind::Page && navigation::is_deferred(&entry.item.id)
+        })
         .map(|entry| GalleryPendingItem {
             id: entry.item.id.as_str().into(),
             title: navigation::title(entry, &state.language).into(),
@@ -339,12 +343,28 @@ fn apply_state(ui: &GalleryWindow, state: &GalleryState) {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "windows")]
-    if std::env::var_os("WGPU_BACKEND").is_none() { std::env::set_var("WGPU_BACKEND", "dx12"); }
+    if std::env::var_os("WGPU_BACKEND").is_none() {
+        std::env::set_var("WGPU_BACKEND", "dx12");
+    }
     let backend = std::env::var("SLINT_BACKEND").unwrap_or_else(|_| "winit-skia".into());
-    slint::BackendSelector::new().backend_name("winit".into()).renderer_name(backend.trim_start_matches("winit-").into()).select()?;
+    slint::BackendSelector::new()
+        .backend_name("winit".into())
+        .renderer_name(backend.trim_start_matches("winit-").into())
+        .select()?;
     let ui = GalleryWindow::new()?;
-    slintforge::bind_flow_services!(ui, ForgeFlowServices, ForgeFlowPortData, ForgeFlowNodeData,
-        ForgeFlowEdgeData, ForgeFlowViewport, ForgeFlowRect, ForgeFlowAction, ForgeFlowState);
+    slintforge::bind_flow_services!(
+        ui,
+        ForgeFlowServices,
+        ForgeFlowPointData,
+        ForgeFlowPortData,
+        ForgeFlowNodeData,
+        ForgeFlowEdgeData,
+        ForgeFlowViewport,
+        ForgeFlowRect,
+        ForgeFlowAction,
+        ForgeFlowState
+    );
+    ui.global::<ForgeFlowServices>().on_export_card(|node|flow_card_export::content(node.as_str()).into());
     let smoke = std::env::args().any(|arg| arg == "--smoke");
     let capture_smoke = std::env::args().any(|arg| arg == "--capture-smoke");
     let capture_preview = std::env::args().any(|arg| arg == "--capture-preview");
@@ -718,22 +738,45 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // 检查完整树、已展开的侧栏和页脚，覆盖嵌套子项与搜索结果的动态切换。
         let verify_navigation_language = |language: &str| {
             let current = state.borrow();
-            for model in [ui.get_navigation_items(), ui.get_all_navigation_items(), ui.get_footer_items()] {
+            for model in [
+                ui.get_navigation_items(),
+                ui.get_all_navigation_items(),
+                ui.get_footer_items(),
+            ] {
                 for index in 0..model.row_count() {
                     let row = model.row_data(index).unwrap();
-                    if row.kind == ForgeNavItemKind::Separator { continue; }
-                    let entry = current.entries.iter().find(|entry| entry.item.id.as_str() == row.id.as_str()).unwrap();
-                    assert_eq!(row.title.as_str(), navigation::title(entry, language), "导航名称: {}", row.id);
+                    if row.kind == ForgeNavItemKind::Separator {
+                        continue;
+                    }
+                    let entry = current
+                        .entries
+                        .iter()
+                        .find(|entry| entry.item.id.as_str() == row.id.as_str())
+                        .unwrap();
+                    assert_eq!(
+                        row.title.as_str(),
+                        navigation::title(entry, language),
+                        "导航名称: {}",
+                        row.id
+                    );
                     if language == "zh" {
-                        assert!(row.title.chars().any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c)), "导航仍为英文: {}", row.id);
+                        assert!(
+                            row.title
+                                .chars()
+                                .any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c)),
+                            "导航仍为英文: {}",
+                            row.id
+                        );
                     }
                 }
             }
         };
-        let navigation_structure = || (0..ui.get_navigation_items().row_count())
-            .filter_map(|index| ui.get_navigation_items().row_data(index))
-            .map(|row| (row.id, row.parent_id, row.depth, row.expanded))
-            .collect::<Vec<_>>();
+        let navigation_structure = || {
+            (0..ui.get_navigation_items().row_count())
+                .filter_map(|index| ui.get_navigation_items().row_data(index))
+                .map(|row| (row.id, row.parent_id, row.depth, row.expanded))
+                .collect::<Vec<_>>()
+        };
         let route_before_language_switch = ui.get_active_route_id();
         let structure_before_language_switch = navigation_structure();
         verify_navigation_language("zh");
@@ -751,11 +794,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(navigation_structure(), structure_before_language_switch);
         ui.invoke_search_requested("日期选择器".into());
         assert_eq!(ui.get_navigation_items().row_count(), 1);
-        assert_eq!(ui.get_navigation_items().row_data(0).unwrap().id, "form-date-picker");
+        assert_eq!(
+            ui.get_navigation_items().row_data(0).unwrap().id,
+            "form-date-picker"
+        );
         ui.invoke_language_requested("en".into());
         verify_navigation_language("en");
         assert_eq!(ui.get_search_query(), "日期选择器");
-        assert_eq!(ui.get_navigation_items().row_data(0).unwrap().title, "DatePicker");
+        assert_eq!(
+            ui.get_navigation_items().row_data(0).unwrap().title,
+            "DatePicker"
+        );
         ui.invoke_language_requested("zh".into());
         verify_navigation_language("zh");
         ui.invoke_search_requested("".into());

@@ -47,7 +47,10 @@ fn suggestion_changes_empty_results_escape_and_disabled_state_are_safe() {
     ui.show().unwrap();
     ui.invoke_focus_input();
     key(ui.window(), Key::DownArrow);
-    ui.set_candidates(ModelRc::new(VecModel::from(vec!["中文".into(), "另一个".into()])));
+    ui.set_candidates(ModelRc::new(VecModel::from(vec![
+        "中文".into(),
+        "另一个".into(),
+    ])));
     settle();
     assert_eq!(ui.get_candidate_index(), -1);
     ui.set_query("中文".into());
@@ -89,9 +92,13 @@ fn business_dialog_cycles_content_skips_disabled_and_restores_focus() {
     key(ui.window(), Key::Tab);
     assert_eq!(ui.get_focus_position(), 0);
     // 使用真实修饰键事件检查反向遍历，而非直接调用焦点函数。
-    ui.window().dispatch_event(WindowEvent::KeyPressed { text: Key::Shift.into() });
+    ui.window().dispatch_event(WindowEvent::KeyPressed {
+        text: Key::Shift.into(),
+    });
     key(ui.window(), Key::Tab);
-    ui.window().dispatch_event(WindowEvent::KeyReleased { text: Key::Shift.into() });
+    ui.window().dispatch_event(WindowEvent::KeyReleased {
+        text: Key::Shift.into(),
+    });
     assert_eq!(ui.get_focus_position(), 4);
     ui.set_device_name("设备 A".into());
     ui.set_directory("D:/记录 数据".into());

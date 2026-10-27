@@ -1,26 +1,44 @@
 import { Palette } from "std-widgets.slint";
-import { ForgeFlowNodeData, ForgeFlowPortData, ForgeFlowAction } from "../types/flow.slint";
+import { ForgeFlowNodeData, ForgeFlowPortData, ForgeFlowAction, ForgeFlowRect } from "../types/flow.slint";
+import { ForgeFlowTheme } from "theme.slint";
 
 export component ForgeFlowPort inherits Rectangle {
     in property<ForgeFlowPortData> port;
     in property<bool> connected: false;
     in property<bool> read-only: false;
+    in property<color> accent: ForgeFlowTheme.accent;
+    in property<bool> candidate: false;
+    in property<bool> keyboard-enabled: true;
+    in property<string> name: root.port.id;
+    in property<string> node-id;
     callback gesture(string, float, float);
     width: 20px; height: 20px;
     Rectangle {
-        x: 4px; y: 4px; width: 12px; height: 12px; border-radius: 6px;
-        background: touch.has-hover || root.connected ? Palette.accent-background : Palette.background;
-        border-width: 2px; border-color: Palette.accent-background;
+        x: root.candidate ? 1px : 4px; y: root.candidate ? 1px : 4px;
+        width: root.candidate ? 18px : 12px; height: self.width; border-radius: self.width / 2;
+        background: root.candidate ? ForgeFlowTheme.success : touch.has-hover || port-focus.has-focus || root.connected ? root.accent : ForgeFlowTheme.surface;
+        border-width: 2px; border-color: root.candidate ? ForgeFlowTheme.success : root.read-only || !root.port.connectable ? ForgeFlowTheme.muted : root.accent;
+    }
+    if port-focus.has-focus : Rectangle { x: -2px; y: -2px; width: 24px; height: 24px; background: transparent; border-width: 2px; border-color: root.accent; border-radius: 12px; }
+    port-focus := FocusScope {
+        enabled: root.keyboard-enabled && !root.read-only && root.port.connectable;
+        focus-on-click: false;
+        accessible-role: button; accessible-label: root.name; accessible-id: "flow-port-" + root.node-id + "-" + root.port.id;
+        accessible-enabled: !root.read-only && root.port.connectable;
+        accessible-action-default => { root.gesture("keyboard-connect", 10, 10); }
+        focus-gained(reason) => { root.gesture("connection-move", 10, 10); }
+        key-pressed(e) => { if e.text == Key.Return || e.text == " " { root.gesture("keyboard-connect", 10, 10); return accept; } return reject; }
     }
     touch := TouchArea {
-        enabled: !root.read-only;
+        enabled: !root.read-only && root.port.connectable;
         mouse-cursor: crosshair;
         pointer-event(e) => {
+            if e.kind == PointerEventKind.move && !self.pressed { root.gesture("connection-move", self.mouse-x / 1px, self.mouse-y / 1px); }
             if e.button == PointerEventButton.left && e.kind == PointerEventKind.down { root.gesture("connection-begin", self.mouse-x / 1px, self.mouse-y / 1px); }
             if e.button == PointerEventButton.left && e.kind == PointerEventKind.up { root.gesture("connection-end", self.mouse-x / 1px, self.mouse-y / 1px); }
             if e.kind == PointerEventKind.cancel { root.gesture("cancel", 0, 0); }
         }
-        moved => { if self.pressed { root.gesture("connection-move", self.mouse-x / 1px, self.mouse-y / 1px); } }
+        moved => { root.gesture("connection-move", self.mouse-x / 1px, self.mouse-y / 1px); }
     }
 }
 
@@ -28,54 +46,166 @@ export component ForgeFlowNode inherits Rectangle {
     in property<ForgeFlowNodeData> node;
     in property<bool> read-only: false;
     in property<bool> tree: false;
+    in property<bool> chinese: true;
     in property<bool> snap: false;
     in property<bool> pan-mode: false;
+    in property<bool> resizable: true;
+    in property<bool> reparent-on-drop: true;
+    in property<float> minimum-resize-width: 160;
+    in property<float> minimum-resize-height: 112;
+    in property<ForgeFlowRect> drag-area: {x: 0, y: 0, width: root.node.width, height: root.node.header-visible ? root.node.header-height : 0};
+    in property<bool> auto-size: false;
+    in property<float> content-width: 0;
+    in property<float> content-height: 0;
+    in property<float> zoom: 1;
+    in property<string> candidate-port;
+    in property<color> accent: root.node.kind == "form" ? #7c5ce7 : root.node.kind == "device" ? #11998a : root.node.kind == "image" ? #d48727 : ForgeFlowTheme.accent;
+    in property<color> card-background: root.node.is-group ? ForgeFlowTheme.raised.with-alpha(0.5) : ForgeFlowTheme.surface;
+    in property<length> corner-radius: ForgeFlowTheme.radius;
     private property<bool> pan-gesture: false;
     private property<bool> gesture-active: false;
+    private property<bool> gesture-moved: false;
+    private property<float> press-x;
+    private property<float> press-y;
+    private property<bool> hovered: body-events.has-hover || drag.has-hover;
     callback action(ForgeFlowAction);
+    changed hovered => { root.action({op: "event", target: root.hovered ? "node-enter" : "node-leave", id: root.node.id}); }
+    changed content-width => { root.resize-to-content(); }
+    changed content-height => { root.resize-to-content(); }
+    changed auto-size => { root.resize-to-content(); }
+    changed node => { root.resize-to-content(); }
+    changed gesture-active => { if !root.gesture-active { root.resize-to-content(); } }
+    public function resize-to-content() {
+        if !root.auto-size || root.read-only || !root.node.resizable || root.gesture-active || root.node.id == "" { return; }
+        let preferred-w = Math.clamp(root.content-width > 0 ? root.content-width + 24 : root.node.width, root.node.min-width, root.node.max-width);
+        let preferred-h = Math.clamp(root.content-height > 0 ? root.content-height + (root.node.header-visible ? root.node.header-height : 0) + 20 : root.node.height, root.node.min-height, root.node.max-height);
+        let w = root.node.aspect-ratio > 0 ? Math.clamp(Math.max(preferred-w, preferred-h * root.node.aspect-ratio), Math.max(root.node.min-width, root.node.min-height * root.node.aspect-ratio), Math.min(root.node.max-width, root.node.max-height * root.node.aspect-ratio)) : preferred-w;
+        let h = root.node.aspect-ratio > 0 ? w / root.node.aspect-ratio : preferred-h;
+        if Math.abs(w - root.node.width) > 0.5 || Math.abs(h - root.node.height) > 0.5 { root.action({op: "auto-size", id: root.node.id, width: w, height: h}); }
+    }
     x: root.node.x * 1px; y: root.node.y * 1px;
+    z: root.node.is-group ? -1000 + root.node.depth : 1 + root.node.depth;
     width: root.node.width * 1px; height: root.node.height * 1px;
-    background: Palette.background;
-    border-color: root.node.selected ? Palette.accent-background : Palette.border;
-    border-width: root.node.selected ? 2px : 1px; border-radius: 8px;
+    background: root.card-background;
+    border-color: root.node.selected || header-focus.has-focus ? root.accent : root.hovered ? root.accent.with-alpha(0.55) : ForgeFlowTheme.border;
+    border-width: root.node.selected ? 2px : 1px; border-radius: root.corner-radius;
+    drop-shadow-color: ForgeFlowTheme.dark ? #00000035 : #19365b16;
+    drop-shadow-blur: 10px; drop-shadow-offset-y: 3px;
+    header-focus := FocusScope {
+        height: Math.max(24, root.node.header-height) * 1px;
+        enabled: root.node.selectable && !root.node.hidden;
+        focus-on-click: false;
+        accessible-role: list-item; accessible-id: "flow-node-" + root.node.id;
+        accessible-label: root.node.title; accessible-value: root.node.kind;
+        accessible-description: root.chinese ? "方向键移动，Shift 加速，回车选择，Tab 进入卡片。" : "Arrow keys move; Shift moves faster. Enter selects, Tab enters the card.";
+        accessible-item-selectable: root.node.selectable; accessible-item-selected: root.node.selected;
+        accessible-read-only: root.read-only || !root.node.draggable;
+        accessible-expandable: root.tree || root.node.is-group; accessible-expanded: !root.node.collapsed;
+        accessible-action-default => { root.action({op:"select",id:root.node.id}); self.focus(); }
+        accessible-action-expand => { if !root.read-only && (root.tree || root.node.is-group) { root.action({op:"collapse",id:root.node.id}); } }
+        focus-gained(reason) => {
+            if !root.node.selected { root.action({op:"select",id:root.node.id}); }
+            root.action({op:"event",target:"node-focus",id:root.node.id});
+        }
+        key-pressed(e) => {
+            if e.text == Key.Return || e.text == " " { root.action({op:"select",id:root.node.id,additive:e.modifiers.control || e.modifiers.shift}); return accept; }
+            if e.text == Key.LeftArrow || e.text == Key.RightArrow || e.text == Key.UpArrow || e.text == Key.DownArrow {
+                if !root.read-only && root.node.draggable {
+                    let step = e.modifiers.shift ? 10 : 1;
+                    root.action({op:"nudge",id:root.node.id,x:e.text == Key.LeftArrow ? -step : e.text == Key.RightArrow ? step : 0,y:e.text == Key.UpArrow ? -step : e.text == Key.DownArrow ? step : 0});
+                }
+                return accept;
+            }
+            return reject;
+        }
+    }
+    if header-focus.has-focus : Rectangle { x: 5px; y: 5px; width: parent.width - 10px; height: Math.max(24, root.node.header-height) * 1px - 10px; background: transparent; border-radius: 4px; border-width: 1px; border-color: root.accent; }
+    if root.node.selected : Rectangle {
+        x: -4px; y: -4px; width: parent.width + 8px; height: parent.height + 8px;
+        background: transparent; border-width: 2px; border-color: root.accent.with-alpha(0.15); border-radius: root.corner-radius + 3px;
+    }
+    // 放在业务内容下方，输入框、按钮和滚动区域优先取得事件。
+    body-events := TouchArea {
+        enabled: !root.node.is-group;
+        clicked => { if root.node.selectable { root.action({op: "select", id: root.node.id}); } root.action({op: "event", target: "node-click", id: root.node.id, x: root.node.x + self.mouse-x / 1px, y: root.node.y + self.mouse-y / 1px}); }
+        double-clicked => { root.action({op: "event", target: "node-double-click", id: root.node.id, x: root.node.x + self.mouse-x / 1px, y: root.node.y + self.mouse-y / 1px}); }
+        pointer-event(e) => { if e.kind == PointerEventKind.move { root.action({op: "connection-move", x: root.node.x + self.mouse-x / 1px, y: root.node.y + self.mouse-y / 1px}); } if e.kind == PointerEventKind.down && e.button == PointerEventButton.right { root.action({op: "event", target: "node-context-menu", id: root.node.id, flag: root.node.selected, x: root.node.x + self.mouse-x / 1px, y: root.node.y + self.mouse-y / 1px}); } }
+    }
     // 标题与正文使用独立的事件区域，正文控件不会触发拖动。
     Rectangle {
-        x: 0px; y: 0px; width: parent.width; height: 36px;
-        background: root.node.selected ? Palette.accent-background.with-alpha(0.15) : Palette.alternate-background;
-        Text { x: 12px; width: parent.width - (root.tree ? 48px : 24px); height: parent.height;
-            text: root.node.title; color: Palette.foreground; font-size: 13px; font-weight: 600;
+        x: 1px; y: 1px; width: parent.width - 2px; height: root.node.header-visible ? root.node.header-height * 1px : 0px;
+        Rectangle { visible: root.node.header-visible; x: 10px; y: 7px; width: 22px; height: 22px; border-radius: 5px; background: root.accent.with-alpha(0.12);
+            Path { x: 4px; y: 4px; width: 14px; height: 14px; viewbox-width: 20; viewbox-height: 20;
+                commands: root.node.kind == "form" ? "M 3 3 L 17 3 L 17 17 L 3 17 Z M 6 7 L 14 7 M 6 11 L 12 11 M 6 14 L 10 14" : root.node.kind == "device" ? "M 3 4 L 17 4 L 17 14 L 3 14 Z M 6 17 L 14 17 M 10 14 L 10 17 M 6 8 L 8 8 M 12 8 L 14 8" : root.node.kind == "image" ? "M 2 2 L 18 2 L 18 18 L 2 18 Z M 3 15 L 8 9 L 12 13 L 15 10 L 18 14 M 12 6 L 14 6" : "M 5 2 L 15 2 L 18 5 L 18 15 L 15 18 L 5 18 L 2 15 L 2 5 Z M 6 7 L 14 7 M 6 11 L 12 11";
+                fill: transparent; stroke: root.accent; stroke-width: 1.3px; stroke-line-cap: round; stroke-line-join: round;
+            }
+        }
+        Text { visible: root.node.header-visible; x: 40px; width: parent.width - (root.tree || root.node.is-group ? 74px : 52px); height: parent.height;
+            text: root.node.title; color: ForgeFlowTheme.text; font-size: 13px; font-weight: 600;
             vertical-alignment: center; overflow: elide;
         }
+        Rectangle { visible: root.node.header-visible; x: 11px; y: parent.height; width: parent.width - 22px; height: 1px; background: ForgeFlowTheme.border.with-alpha(0.65); }
         drag := TouchArea {
-            mouse-cursor: grab;
+            x: root.drag-area.x * 1px - 1px; y: root.drag-area.y * 1px - 1px; width: root.drag-area.width * 1px; height: root.drag-area.height * 1px;
+            mouse-cursor: root.gesture-active ? grabbing : root.node.draggable ? grab : default;
             pointer-event(e) => {
+                if e.kind == PointerEventKind.move && !self.pressed { root.action({op: "connection-move", x: root.node.x + root.drag-area.x + self.mouse-x / 1px, y: root.node.y + root.drag-area.y + self.mouse-y / 1px}); }
+                if e.kind == PointerEventKind.down && e.button == PointerEventButton.right { root.action({op: "event", target: "node-context-menu", id: root.node.id, flag: root.node.selected, x: root.node.x + root.drag-area.x + self.mouse-x / 1px, y: root.node.y + root.drag-area.y + self.mouse-y / 1px}); }
                 if (e.button == PointerEventButton.left || e.button == PointerEventButton.middle) && e.kind == PointerEventKind.down {
                     root.pan-gesture = root.pan-mode || e.button == PointerEventButton.middle;
-                    root.gesture-active = true;
-                    if root.pan-gesture || !root.read-only { root.action({ op: root.pan-gesture ? "pan-begin" : "drag-begin", id: root.node.id, x: root.node.x + self.mouse-x / 1px, y: root.node.y + self.mouse-y / 1px, additive: e.modifiers.control || e.modifiers.shift }); }
+                    root.gesture-moved = false; root.press-x = root.node.x + root.drag-area.x + self.mouse-x / 1px; root.press-y = root.node.y + root.drag-area.y + self.mouse-y / 1px;
+                    root.gesture-active = root.pan-gesture || (!root.read-only && root.node.draggable);
+                    if root.gesture-active { root.action({ op: root.pan-gesture ? "pan-begin" : "drag-begin", id: root.node.id, x: root.press-x, y: root.press-y, additive: e.modifiers.control || e.modifiers.shift }); }
+                    else if root.node.selectable { root.action({op: "select", id: root.node.id, additive: e.modifiers.control || e.modifiers.shift}); }
                 }
-                if (e.button == PointerEventButton.left || e.button == PointerEventButton.middle) && e.kind == PointerEventKind.up { root.gesture-active = false; if root.pan-gesture || !root.read-only { root.action({op: root.pan-gesture ? "pan-end" : "drag-end"}); } }
+                if (e.button == PointerEventButton.left || e.button == PointerEventButton.middle) && e.kind == PointerEventKind.up { if root.gesture-active { root.action({op: root.pan-gesture ? "pan-end" : "drag-end", id: root.node.id, flag: root.reparent-on-drop && root.gesture-moved}); } root.gesture-active = false; if !root.gesture-moved && e.button == PointerEventButton.left { root.action({op: "event", target: "node-click", id: root.node.id, x: root.press-x, y: root.press-y}); } }
                 if e.kind == PointerEventKind.cancel { root.gesture-active = false; root.action({op: "cancel"}); }
             }
-            moved => { if root.gesture-active && (root.pan-gesture || !root.read-only) { root.action({op: root.pan-gesture ? "pan-move" : "drag-move", x: root.node.x + self.mouse-x / 1px, y: root.node.y + self.mouse-y / 1px, flag: root.snap}); } }
+            double-clicked => { root.action({op: "event", target: "node-double-click", id: root.node.id, x: root.node.x + root.drag-area.x + self.mouse-x / 1px, y: root.node.y + root.drag-area.y + self.mouse-y / 1px}); }
+            moved => { if root.gesture-active { if Math.abs(root.node.x + root.drag-area.x + self.mouse-x / 1px - root.press-x) + Math.abs(root.node.y + root.drag-area.y + self.mouse-y / 1px - root.press-y) > 4 { root.gesture-moved = true; } root.action({op: root.pan-gesture ? "pan-move" : "drag-move", id: root.node.id, x: root.node.x + root.drag-area.x + self.mouse-x / 1px, y: root.node.y + root.drag-area.y + self.mouse-y / 1px, flag: root.snap}); } }
         }
-        if root.tree : Rectangle {
+        if (root.tree || root.node.is-group) && root.node.header-visible : Rectangle {
             x: parent.width - 32px; y: 5px; width: 26px; height: 26px;
-            Text { text: root.node.collapsed ? "+" : "−"; color: Palette.foreground; horizontal-alignment: center; vertical-alignment: center; }
+            border-radius: 4px; background: ForgeFlowTheme.raised;
+            Text { text: root.node.collapsed ? "+" : "−"; color: ForgeFlowTheme.text; horizontal-alignment: center; vertical-alignment: center; }
             TouchArea { enabled: !root.read-only; clicked => { root.action({op: "collapse", id: root.node.id}); } }
         }
     }
     Rectangle {
-        x: 12px; y: 46px; width: parent.width - 24px; height: parent.height - 56px;
+        x: 12px; y: (root.node.header-visible ? root.node.header-height : 0) * 1px + 10px; width: parent.width - 24px; height: Math.max(0px, parent.height - self.y - 10px);
         clip: true;
+        // 正文包含条件组件和交互控件。软件渲染下强制缓存会在文档换行复用时残留旧内容。
         @children
     }
     for p in root.node.ports : port-item := ForgeFlowPort {
-        port: p; read-only: root.read-only || root.tree;
+        node-id: root.node.id;
+        port: p; read-only: root.read-only || root.tree || !root.node.connectable; accent: root.accent; candidate: root.candidate-port == p.id;
+        name: root.node.title + " · " + (root.chinese ? (p.direction == 0 ? "输入 " : p.direction == 1 ? "输出 " : "双向 ") : (p.direction == 0 ? "Input " : p.direction == 1 ? "Output " : "Bidirectional ")) + p.id;
         x: (p.side == 0 ? 0px : p.side == 1 ? parent.width : parent.width * p.offset) - 10px;
         y: (p.side == 2 ? 0px : p.side == 3 ? parent.height : parent.height * p.offset) - 10px;
         gesture(op, px, py) => {
-            root.action({op: op, id: root.node.id, port: p.id, x: root.node.x + self.x / 1px + px, y: root.node.y + self.y / 1px + py, number: p.direction});
+            root.action({op: op == "keyboard-connect" ? "connection-begin" : op, flag: op == "keyboard-connect", id: root.node.id, port: p.id, x: root.node.x + self.x / 1px + px, y: root.node.y + self.y / 1px + py, number: p.direction});
         }
+    }
+    // 布尔条件保留选中期间的子项；未选中节点不创建命中手柄。
+    if root.node.selected && root.resizable && root.node.resizable && !(root.node.is-group && root.node.collapsed) && !root.read-only && !root.pan-mode : Rectangle {
+      for corner in 4 : Rectangle {
+        private property<length> handle-size: 16px / Math.max(0.5, root.zoom);
+        x: (Math.mod(corner, 2) == 0 ? 0px : parent.width) - self.handle-size / 2;
+        y: (corner < 2 ? 0px : parent.height) - self.handle-size / 2;
+        width: self.handle-size; height: self.handle-size;
+        Rectangle { x: parent.width / 4; y: parent.height / 4; width: parent.width / 2; height: parent.height / 2;
+            background: ForgeFlowTheme.surface; border-width: 1.5px / Math.max(0.5, root.zoom); border-color: root.accent; border-radius: 2px;
+        }
+        TouchArea {
+            mouse-cursor: corner == 0 || corner == 3 ? nwse-resize : nesw-resize;
+            pointer-event(e) => {
+                if e.button == PointerEventButton.left && e.kind == PointerEventKind.down { root.action({op: "resize-begin", id: root.node.id, number: corner, x: root.node.x + parent.x / 1px + self.mouse-x / 1px, y: root.node.y + parent.y / 1px + self.mouse-y / 1px, width: Math.min(root.node.max-width, Math.max(root.minimum-resize-width, root.node.min-width)), height: Math.min(root.node.max-height, Math.max(root.minimum-resize-height, root.node.min-height))}); }
+                if e.button == PointerEventButton.left && e.kind == PointerEventKind.up { root.action({op: "resize-end"}); }
+                if e.kind == PointerEventKind.cancel { root.action({op: "cancel"}); }
+            }
+            moved => { if self.pressed { root.action({op: "resize-move", x: root.node.x + parent.x / 1px + self.mouse-x / 1px, y: root.node.y + parent.y / 1px + self.mouse-y / 1px, flag: root.snap}); } }
+        }
+      }
     }
 }

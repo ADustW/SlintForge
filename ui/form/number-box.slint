@@ -7,6 +7,7 @@ export component ForgeNumberBox inherits Rectangle {
     in property<float> step: 0.1;
     in property<bool> enabled: true;
     out property<bool> input-valid: field.text.is-float();
+    private property<float> pending-value: Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), field.text.is-float() ? field.text.to-float() : root.value));
     callback value-changed(float);
     init => { root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), root.value)); }
     public function commit() {
@@ -17,6 +18,13 @@ export component ForgeNumberBox inherits Rectangle {
         if !root.enabled { return; }
         root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), candidate));
         root.value-changed(root.value);
+    }
+    function step-by(delta: float) {
+        if !root.enabled || root.step <= 0 { return; }
+        // 鼠标点击不保证失焦；按已限幅的当前输入步进，只通知一次最终值。
+        root.set-value(root.pending-value + delta);
+        // 到达边界时 value 可能未改变，也要清除未提交文本，避免失焦重复通知。
+        field.text = "\{root.value}";
     }
     changed value => {
         // 宿主赋值也遵守范围约束；只有用户操作触发 value-changed。
@@ -29,18 +37,18 @@ export component ForgeNumberBox inherits Rectangle {
     forward-focus: field;
     HorizontalLayout {
         spacing: 4px;
-        Button { text: "−"; enabled: root.enabled && root.value > root.minimum && root.step > 0; clicked => { root.set-value(root.value - Math.max(0, root.step)); } }
+        Button { text: "−"; enabled: root.enabled && root.pending-value > root.minimum && root.step > 0; clicked => { root.step-by(-root.step); } }
         field := LineEdit {
             text: "\{root.value}"; input-type: decimal; enabled: root.enabled;
             accepted => { root.commit(); }
             // 失焦时提交未确认的输入；非法文本恢复为当前值。
             changed has-focus => { if !self.has-focus && self.text != "\{root.value}" { root.commit(); } }
             key-pressed(event) => {
-                if event.text == Key.UpArrow { root.set-value(root.value + Math.max(0, root.step)); return accept; }
-                if event.text == Key.DownArrow { root.set-value(root.value - Math.max(0, root.step)); return accept; }
+                if event.text == Key.UpArrow { root.step-by(root.step); return accept; }
+                if event.text == Key.DownArrow { root.step-by(-root.step); return accept; }
                 return reject;
             }
         }
-        Button { text: "+"; enabled: root.enabled && root.value < root.maximum && root.step > 0; clicked => { root.set-value(root.value + Math.max(0, root.step)); } }
+        Button { text: "+"; enabled: root.enabled && root.pending-value < root.maximum && root.step > 0; clicked => { root.step-by(root.step); } }
     }
 }

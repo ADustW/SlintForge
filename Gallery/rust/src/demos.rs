@@ -83,7 +83,15 @@ fn refresh_tree(ui: &GalleryWindow, items: &mut [ForgeTreeItem]) {
 pub fn connect(ui: &GalleryWindow) {
     crate::plot_demo::connect(ui);
     crate::grids_demo::connect(ui);
-    slintforge::bind_chart_services!(ui, crate::ForgeChartServices, crate::ForgeChartScene, crate::ForgeChartMark, crate::ForgeChartLine, crate::ForgeChartTick, crate::ForgeChartLabel);
+    slintforge::bind_chart_services!(
+        ui,
+        crate::ForgeChartServices,
+        crate::ForgeChartScene,
+        crate::ForgeChartMark,
+        crate::ForgeChartLine,
+        crate::ForgeChartTick,
+        crate::ForgeChartLabel
+    );
     let model = Rc::new(RefCell::new(tree_model()));
     refresh_tree(ui, &mut model.borrow_mut());
     let mut pixels = SharedPixelBuffer::<Rgba8Pixel>::new(600, 360);

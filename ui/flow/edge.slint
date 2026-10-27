@@ -1,0 +1,77 @@
+import { ForgeFlowTheme } from "theme.slint";
+import { ForgeFlowEdgeData, ForgeFlowPointData } from "../types/flow.slint";
+
+// 可独立使用的连线绘制组件，几何、标签和业务样式由调用方传入。
+export component ForgeFlowEdge inherits Rectangle {
+    in property<ForgeFlowEdgeData> edge;
+    in property<color> default-color: ForgeFlowTheme.edge;
+    in property<bool> show-label: true;
+    in property<bool> hovered: false;
+    in property<bool> animations-enabled: true;
+    callback activated();
+    // 均匀距离采样由共用核心生成；每帧只更新绘制位置，不调用编辑器或序列化。
+    private property<bool> flowing: root.visible && root.animations-enabled && root.edge.animated && root.edge.motion-points.length > 1 && root.edge.path-length > 0;
+    private property<float> progress: root.flowing ? Math.mod(animation-tick() / 1ms * root.edge.animation-speed / (root.edge.path-length * 1000), 1) : 0;
+    public pure function motion-point(progress: float) -> ForgeFlowPointData {
+        if root.edge.motion-points.length < 2 { return {x: root.edge.source-x, y: root.edge.source-y}; }
+        let fraction = Math.clamp(progress, 0, 1) * (root.edge.motion-points.length - 1);
+        let index = Math.min(Math.floor(fraction), root.edge.motion-points.length - 2);
+        let a = root.edge.motion-points[index]; let b = root.edge.motion-points[index + 1];
+        return {x: a.x + (b.x - a.x) * (fraction - index), y: a.y + (b.y - a.y) * (fraction - index)};
+    }
+    private property<color> ink: root.edge.stroke-color == "" ? root.default-color : rgb(root.edge.color-red, root.edge.color-green, root.edge.color-blue);
+    x: root.edge.min-x * 1px; y: root.edge.min-y * 1px;
+    z: root.edge.layer;
+    accessible-role: list-item;
+    accessible-label: root.edge.label == "" ? root.edge.source-node + " → " + root.edge.target-node : root.edge.label;
+    accessible-id: "flow-edge-" + root.edge.id;
+    accessible-item-selectable: root.edge.selectable; accessible-item-selected: root.edge.selected;
+    accessible-read-only: !root.edge.reconnectable && !root.edge.deletable;
+    accessible-action-default => { if root.edge.selectable { root.activated(); } }
+    width: (root.edge.max-x - root.edge.min-x) * 1px; height: (root.edge.max-y - root.edge.min-y) * 1px;
+    if root.edge.selected || root.hovered : Path {
+        // Slint 会为描边缩小视框；补回描边尺寸，使路径、端口、标记和命中保持同一坐标。
+        x: -self.stroke-width / 2; y: -self.stroke-width / 2;
+        width: parent.width + self.stroke-width; height: parent.height + self.stroke-width; fit: fill;
+        viewbox-x: root.edge.min-x; viewbox-y: root.edge.min-y; viewbox-width: root.edge.max-x - root.edge.min-x; viewbox-height: root.edge.max-y - root.edge.min-y;
+        commands: root.edge.path; stroke: ForgeFlowTheme.accent.with-alpha(0.16); stroke-width: (root.edge.stroke-width + 8) * 1px; fill: transparent;
+        stroke-line-cap: round; stroke-line-join: round;
+    }
+    Path {
+        x: -self.stroke-width / 2; y: -self.stroke-width / 2;
+        width: parent.width + self.stroke-width; height: parent.height + self.stroke-width; fit: fill;
+        viewbox-x: root.edge.min-x; viewbox-y: root.edge.min-y; viewbox-width: root.edge.max-x - root.edge.min-x; viewbox-height: root.edge.max-y - root.edge.min-y;
+        commands: root.edge.path; stroke: root.edge.selected && root.edge.stroke-color == "" ? ForgeFlowTheme.accent : root.ink;
+        stroke-width: root.edge.stroke-width * 1px; fill: transparent; stroke-line-cap: round; stroke-line-join: round;
+    }
+    Path {
+        x: 0px; y: 0px; width: parent.width; height: parent.height; fit: fill;
+        viewbox-x: root.edge.min-x; viewbox-y: root.edge.min-y; viewbox-width: root.edge.max-x - root.edge.min-x; viewbox-height: root.edge.max-y - root.edge.min-y;
+        commands: root.edge.arrow-path; fill: root.edge.selected && root.edge.stroke-color == "" ? ForgeFlowTheme.accent : root.ink;
+    }
+    Path {
+        x: -self.stroke-width / 2; y: -self.stroke-width / 2;
+        width: parent.width + self.stroke-width; height: parent.height + self.stroke-width; fit: fill;
+        viewbox-x: root.edge.min-x; viewbox-y: root.edge.min-y; viewbox-width: root.edge.max-x - root.edge.min-x; viewbox-height: root.edge.max-y - root.edge.min-y;
+        commands: root.edge.marker-stroke-path; fill: transparent;
+        stroke: root.edge.selected && root.edge.stroke-color == "" ? ForgeFlowTheme.accent : root.ink;
+        stroke-width: root.edge.stroke-width * 1px; stroke-line-cap: round; stroke-line-join: round;
+    }
+    if root.flowing : Rectangle {
+        private property<ForgeFlowPointData> point: root.motion-point(root.progress);
+        x: (self.point.x - root.edge.min-x) * 1px - self.width / 2;
+        y: (self.point.y - root.edge.min-y) * 1px - self.height / 2;
+        width: (root.edge.stroke-width + 4) * 1px; height: self.width; border-radius: self.width / 2;
+        background: root.edge.stroke-color == "" ? ForgeFlowTheme.accent : root.ink;
+        border-width: 1px; border-color: ForgeFlowTheme.surface;
+    }
+    if root.show-label && root.edge.label != "" : Rectangle {
+        x: (root.edge.label-x - root.edge.min-x) * 1px - self.width / 2;
+        y: (root.edge.label-y - root.edge.min-y) * 1px - 11px;
+        width: label.preferred-width + 16px; height: 22px;
+        background: ForgeFlowTheme.surface; border-radius: 6px; border-width: 1px;
+        border-color: root.edge.selected ? ForgeFlowTheme.accent.with-alpha(0.4) : ForgeFlowTheme.border;
+        label := Text { text: root.edge.label; color: ForgeFlowTheme.muted; horizontal-alignment: center; vertical-alignment: center; font-size: 11px; }
+    }
+    @children
+}

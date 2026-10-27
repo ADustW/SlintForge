@@ -1,0 +1,14 @@
+import { ForgeFlowTheme } from "theme.slint";
+
+// 作为 Canvas 的同级元素，内容保持屏幕尺寸；可放业务工具栏或自定义小地图。
+export component ForgeFlowPanel inherits Rectangle {
+    in property<int> horizontal-anchor: 2;
+    in property<int> vertical-anchor: 0;
+    in property<length> margin: 12px;
+    in property<length> canvas-width;
+    in property<length> canvas-height;
+    x: Math.max(root.margin, root.horizontal-anchor == 0 ? root.margin : root.horizontal-anchor == 1 ? (root.canvas-width - root.width) / 2 : root.canvas-width - root.width - root.margin);
+    y: Math.max(root.margin, root.vertical-anchor == 0 ? root.margin : root.vertical-anchor == 1 ? (root.canvas-height - root.height) / 2 : root.canvas-height - root.height - root.margin);
+    width: 240px; height: 44px; background: ForgeFlowTheme.surface; border-color: ForgeFlowTheme.border; border-width: 1px; border-radius: 8px;
+    @children
+}

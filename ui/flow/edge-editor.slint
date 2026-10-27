@@ -1,0 +1,152 @@
+import { ComboBox, SpinBox, CheckBox, LineEdit } from "std-widgets.slint";
+import { ForgeFlowEdgeData, ForgeFlowAction } from "../types/flow.slint";
+import { ForgeFlowTheme, ForgeFlowToolButton } from "theme.slint";
+
+export component ForgeFlowEdgeEditor inherits Rectangle {
+    in property<ForgeFlowEdgeData> edge;
+    in property<int> count: 1;
+    in property<bool> read-only;
+    in property<bool> chinese: true;
+    callback action(ForgeFlowAction);
+    private property<string> last-id;
+    private property<string> last-label;
+    pure function marker-index(value: string) -> int { return value == "none" ? 0 : value == "arrow" ? 1 : value == "open-arrow" ? 2 : value == "circle" ? 3 : value == "diamond" ? 4 : 5; }
+    changed edge => {
+        shape.current-index = root.edge.style; weight.value = Math.round(root.edge.stroke-width);
+        arrow.checked = root.edge.arrow; dashed.checked = root.edge.dashed;
+        color-field.text = root.edge.stroke-color;
+        if root.last-id != root.edge.id || root.last-label != root.edge.label { label-field.text = root.edge.label; }
+        root.last-id = root.edge.id; root.last-label = root.edge.label;
+    }
+    width: 244px; height: 304px;
+    background: ForgeFlowTheme.surface; border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 8px;
+    drop-shadow-color: #10233c14; drop-shadow-blur: 16px; drop-shadow-offset-y: 4px;
+    TouchArea { }
+    VerticalLayout {
+        x: 0px; y: 0px; height: 264px;
+        padding: 12px; spacing: 8px;
+        HorizontalLayout {
+            Text { text: root.chinese ? "连线属性" : "Edge properties"; color: ForgeFlowTheme.text; font-size: 13px; font-weight: 600; horizontal-stretch: 1; }
+            Text { text: root.count > 1 ? root.count + (root.chinese ? " 项" : " edges") : ""; color: ForgeFlowTheme.muted; font-size: 11px; horizontal-alignment: right; }
+            ForgeFlowToolButton { text: root.chinese ? "更多" : "More"; preferred-height: 24px; min-height: 24px; clicked => { advanced.show(); } }
+        }
+        Rectangle { height: 1px; background: ForgeFlowTheme.border; }
+        HorizontalLayout {
+            shape := ComboBox { width: 144px; model: root.chinese ? ["直线", "贝塞尔曲线", "折线", "圆角折线"] : ["Straight", "Bezier", "Step", "Smooth step"]; enabled: !root.read-only;
+                current-index: root.edge.style; selected(v) => { root.action({op: "edge-appearance", target: "style", number: self.current-index}); }
+            }
+            weight := SpinBox { width: 70px; minimum: 1; maximum: 8; value: Math.round(root.edge.stroke-width); enabled: !root.read-only;
+                edited(v) => { root.action({op: "edge-appearance", target: "stroke_width", width: v}); }
+            }
+        }
+        HorizontalLayout {
+            arrow := CheckBox { text: root.chinese ? "箭头" : "Arrow"; checked: root.edge.arrow; enabled: !root.read-only;
+                toggled => { root.action({op: "edge-appearance", target: "arrow", flag: self.checked}); }
+            }
+            dashed := CheckBox { text: root.chinese ? "虚线" : "Dashed"; checked: root.edge.dashed; enabled: !root.read-only;
+                toggled => { root.action({op: "edge-appearance", target: "dashed", flag: self.checked}); }
+            }
+        }
+        Text { text: root.chinese ? "颜色" : "Color"; color: ForgeFlowTheme.muted; font-size: 11px; }
+        HorizontalLayout {
+            spacing: 6px;
+            for color[index] in [#8191ab, #2563eb, #059669, #7c5ce7, #d48727, #df5262] : Rectangle {
+                width: 24px; height: 24px; border-radius: 12px; background: color;
+                border-width: swatch.has-hover ? 3px : 1px; border-color: ForgeFlowTheme.surface;
+                swatch := TouchArea { enabled: !root.read-only; mouse-cursor: pointer;
+                    clicked => { root.action({op: "edge-appearance", target: "stroke_color", text: ["#8191ab", "#2563eb", "#059669", "#7c5ce7", "#d48727", "#df5262"][index]}); }
+                }
+            }
+            ForgeFlowToolButton { text: root.chinese ? "重置" : "Reset"; enabled: !root.read-only; clicked => { root.action({op: "edge-appearance", target: "stroke_color", text: ""}); } }
+        }
+        color-field := LineEdit { text: root.edge.stroke-color; placeholder-text: root.chinese ? "自定义颜色 #RRGGBB" : "Custom color #RRGGBB"; enabled: !root.read-only;
+            accepted => { root.action({op: "edge-appearance", target: "stroke_color", text: self.text}); }
+        }
+        HorizontalLayout {
+            label-field := LineEdit { text: root.edge.label; placeholder-text: root.chinese ? "连线标签" : "Edge label"; enabled: !root.read-only;
+                accepted => { root.action({op: "edge-appearance", target: "label", text: self.text}); }
+            }
+            ForgeFlowToolButton { text: root.chinese ? "应用" : "Apply"; primary: true; enabled: !root.read-only;
+                clicked => { root.action({op: "edge-appearance", target: "label", text: label-field.text}); }
+            }
+        }
+    }
+    HorizontalLayout {
+        x: 12px; y: 267px; width: parent.width - 24px; height: 28px; spacing: 6px;
+        ForgeFlowToolButton { text: root.chinese ? "添加折点" : "Add bend"; enabled: !root.read-only && root.count == 1 && root.edge.path-kind != "cubic";
+            clicked => { root.action({op: "bend-insert", id: root.edge.id, number: root.edge.control-points.length, x: root.edge.label-x, y: root.edge.label-y}); }
+        }
+        ForgeFlowToolButton { text: root.chinese ? "自动路径" : "Auto route"; enabled: !root.read-only && root.count == 1;
+            clicked => { root.action({op: "route-reset", id: root.edge.id}); }
+        }
+    }
+    advanced := PopupWindow {
+        x: -66px; y: 0px; width: 310px; height: 288px;
+        close-policy: close-on-click-outside; forward-focus: advanced-focus;
+        Rectangle {
+            private property<ForgeFlowEdgeData> current-edge: root.edge;
+            changed current-edge => {
+                start-marker-picker.current-index = root.marker-index(root.edge.start-marker); end-marker-picker.current-index = root.marker-index(root.edge.end-marker);
+                flow-enabled.checked = root.edge.animated; flow-speed.value = Math.round(root.edge.animation-speed);
+                curve.value = Math.round(root.edge.curvature * 100); offset.value = Math.round(root.edge.parallel-offset); layer.value = root.edge.layer;
+            }
+            background: ForgeFlowTheme.surface; border-color: ForgeFlowTheme.border; border-width: 1px; border-radius: 8px;
+            advanced-focus := FocusScope {
+                key-pressed(e) => { if e.text == Key.Escape { advanced.close(); return accept; } return reject; }
+                VerticalLayout {
+                    padding: 10px; spacing: 6px;
+                    HorizontalLayout {
+                        height: 24px;
+                        Text { text: root.chinese ? "高级连线样式" : "Advanced edge styles"; color: ForgeFlowTheme.text; font-weight: 600; horizontal-stretch: 1; }
+                        ForgeFlowToolButton { text: "×"; label: root.chinese ? "关闭" : "Close"; width: 26px; min-height: 24px; clicked => { advanced.close(); } }
+                    }
+                    HorizontalLayout {
+                        Text { width: 78px; text: root.chinese ? "起点标记" : "Start marker"; color: ForgeFlowTheme.muted; vertical-alignment: center; }
+                        start-marker-picker := ComboBox {
+                            model: root.chinese ? (root.edge.start-marker == "custom" ? ["无", "箭头", "开放箭头", "圆形", "菱形", "自定义"] : ["无", "箭头", "开放箭头", "圆形", "菱形"]) : (root.edge.start-marker == "custom" ? ["None", "Arrow", "Open arrow", "Circle", "Diamond", "Custom"] : ["None", "Arrow", "Open arrow", "Circle", "Diamond"]);
+                            current-index: root.marker-index(root.edge.start-marker); enabled: !root.read-only;
+                            selected(v) => { if self.current-index < 5 { root.action({op: "edge-appearance", target: "marker_start", text: ["none", "arrow", "open-arrow", "circle", "diamond"][self.current-index]}); } }
+                        }
+                    }
+                    HorizontalLayout {
+                        Text { width: 78px; text: root.chinese ? "终点标记" : "End marker"; color: ForgeFlowTheme.muted; vertical-alignment: center; }
+                        end-marker-picker := ComboBox {
+                            model: root.chinese ? (root.edge.end-marker == "custom" ? ["无", "箭头", "开放箭头", "圆形", "菱形", "自定义"] : ["无", "箭头", "开放箭头", "圆形", "菱形"]) : (root.edge.end-marker == "custom" ? ["None", "Arrow", "Open arrow", "Circle", "Diamond", "Custom"] : ["None", "Arrow", "Open arrow", "Circle", "Diamond"]);
+                            current-index: root.marker-index(root.edge.end-marker); enabled: !root.read-only;
+                            selected(v) => { if self.current-index < 5 { root.action({op: "edge-appearance", target: "marker_end", text: ["none", "arrow", "open-arrow", "circle", "diamond"][self.current-index]}); } }
+                        }
+                    }
+                    HorizontalLayout {
+                        flow-enabled := CheckBox { text: root.chinese ? "流动动画" : "Animate"; checked: root.edge.animated; enabled: !root.read-only;
+                            toggled => { root.action({op: "edge-appearance", target: "animated", flag: self.checked}); }
+                        }
+                        flow-speed := SpinBox { minimum: 5; maximum: 600; value: Math.round(root.edge.animation-speed); enabled: !root.read-only;
+                            accessible-label: root.chinese ? "流动速度，像素每秒" : "Animation speed, pixels per second";
+                            edited(v) => { root.action({op: "edge-appearance", target: "animation_speed", width: v}); }
+                        }
+                        Text { text: "px/s"; color: ForgeFlowTheme.muted; vertical-alignment: center; }
+                    }
+                    HorizontalLayout {
+                        Text { width: 78px; text: root.chinese ? "曲率 %" : "Curvature %"; color: ForgeFlowTheme.muted; vertical-alignment: center; }
+                        curve := SpinBox { minimum: 0; maximum: 200; value: Math.round(root.edge.curvature * 100); enabled: !root.read-only && root.edge.style == 1 && root.edge.path-kind == "auto";
+                            edited(v) => { root.action({op: "edge-appearance", target: "curvature", width: v / 100}); }
+                        }
+                    }
+                    HorizontalLayout {
+                        Text { width: 78px; text: root.chinese ? "通道偏移" : "Lane offset"; color: ForgeFlowTheme.muted; vertical-alignment: center; }
+                        offset := SpinBox { minimum: -512; maximum: 512; value: Math.round(root.edge.parallel-offset); enabled: !root.read-only && root.edge.path-kind == "auto";
+                            edited(v) => { root.action({op: "edge-appearance", target: "parallel_offset", width: v}); }
+                        }
+                    }
+                    HorizontalLayout {
+                        Text { width: 78px; text: root.chinese ? "显示层级" : "Layer"; color: ForgeFlowTheme.muted; vertical-alignment: center; }
+                        layer := SpinBox { minimum: -900; maximum: 1500; value: root.edge.layer; enabled: !root.read-only;
+                            edited(v) => { root.action({op: "edge-appearance", target: "layer", number: v}); }
+                        }
+                    }
+                    Text { text: root.count > 1 ? (root.chinese ? "修改将应用到所有选中连线" : "Changes apply to all selected edges") : (root.chinese ? "修改支持撤销与保存" : "Changes support undo and save"); color: ForgeFlowTheme.muted; font-size: 11px; }
+                }
+            }
+        }
+    }
+}

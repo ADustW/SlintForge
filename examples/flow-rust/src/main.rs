@@ -1,7 +1,12 @@
 slint::include_modules!();
 mod performance;
 mod qa;
+mod sdk_contract;
+mod card_export;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    if std::env::args().any(|arg| arg == "--sdk-contract") {
+        return sdk_contract::run();
+    }
     #[cfg(target_os = "windows")]
     if std::env::var_os("WGPU_BACKEND").is_none() {
         std::env::set_var("WGPU_BACKEND", "dx12");
@@ -15,6 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     slintforge::bind_flow_services!(
         ui,
         ForgeFlowServices,
+        ForgeFlowPointData,
         ForgeFlowPortData,
         ForgeFlowNodeData,
         ForgeFlowEdgeData,
@@ -23,6 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ForgeFlowAction,
         ForgeFlowState
     );
+    ui.global::<ForgeFlowServices>().on_export_card(|node|card_export::content(node.as_str()).into());
     let verification = std::env::args()
         .any(|arg| arg == "--smoke")
         .then(|| qa::start(&ui));

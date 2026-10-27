@@ -1,0 +1,1066 @@
+[
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"a\", \"x\": 40, \"y\": 80, \"title\": \"信号源\"}, {\"id\": \"b\", \"x\": 640, \"y\": 180, \"title\": \"接收设备\"}], \"edges\": [{\"id\": \"e\", \"source_node\": \"a\", \"source_port\": \"out\", \"target_node\": \"b\", \"target_port\": \"in\", \"layer\": 0}]}"
+  },
+  {
+    "kind": "click",
+    "x": 490,
+    "y": 336
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "op": "query",
+      "target": "selection"
+    },
+    "path": "/result/edges/0",
+    "value": "e"
+  },
+  {
+    "kind": "click",
+    "x": 1045,
+    "y": 132
+  },
+  {
+    "kind": "snapshot",
+    "name": "advanced-panel"
+  },
+  {
+    "kind": "click",
+    "x": 974,
+    "y": 168
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/marker_start",
+    "value": "circle"
+  },
+  {
+    "kind": "click",
+    "x": 974,
+    "y": 207
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/marker_end",
+    "value": "open-arrow"
+  },
+  {
+    "kind": "click",
+    "x": 797,
+    "y": 245
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/animated",
+    "value": true
+  },
+  {
+    "kind": "click",
+    "x": 938,
+    "y": 245
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "120"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/animation_speed",
+    "value": 120
+  },
+  {
+    "kind": "click",
+    "x": 938,
+    "y": 282
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "70"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/curvature",
+    "value": 0.7
+  },
+  {
+    "kind": "click",
+    "x": 938,
+    "y": 318
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "36"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/parallel_offset",
+    "value": 36
+  },
+  {
+    "kind": "click",
+    "x": 938,
+    "y": 354
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "5"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/layer",
+    "value": 5
+  },
+  {
+    "kind": "snapshot",
+    "name": "advanced-edited"
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/layer",
+    "value": 0
+  },
+  {
+    "kind": "edit",
+    "op": "redo"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/layer",
+    "value": 5
+  },
+  {
+    "kind": "snapshot",
+    "name": "animation-a"
+  },
+  {
+    "kind": "snapshot",
+    "name": "animation-b"
+  },
+  {
+    "kind": "animations",
+    "value": false
+  },
+  {
+    "kind": "snapshot",
+    "name": "animation-paused-a"
+  },
+  {
+    "kind": "snapshot",
+    "name": "animation-paused-b"
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "edit",
+    "op": "select",
+    "id": "e"
+  },
+  {
+    "kind": "readonly",
+    "value": true
+  },
+  {
+    "kind": "click",
+    "x": 1045,
+    "y": 132
+  },
+  {
+    "kind": "click",
+    "x": 797,
+    "y": 245
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/animated",
+    "value": true
+  },
+  {
+    "kind": "snapshot",
+    "name": "advanced-readonly"
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "readonly",
+    "value": false
+  },
+  {
+    "kind": "edit",
+    "op": "options",
+    "text": "{\"allow_parallel_connections\": true, \"parallel_spacing\": 48}"
+  },
+  {
+    "kind": "edit",
+    "op": "connect",
+    "id": "a",
+    "port": "out",
+    "target": "b",
+    "target_port": "in",
+    "number": 1,
+    "flag": true
+  },
+  {
+    "kind": "edit",
+    "op": "edge-patch",
+    "id": "e",
+    "text": "{\"marker_start\": {\"shape\": \"custom\", \"size\": 24, \"points\": [{\"x\": 0, \"y\": 0}, {\"x\": -1, \"y\": 1}, {\"x\": -1, \"y\": -1}]}, \"marker_end\": \"diamond\", \"stroke_color\": \"#7c5ce7\"}"
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "snapshot",
+    "name": "parallel-custom-markers"
+  },
+  {
+    "kind": "theme",
+    "dark": true
+  },
+  {
+    "kind": "snapshot",
+    "name": "parallel-dark"
+  },
+  {
+    "kind": "size",
+    "width": 650,
+    "height": 450
+  },
+  {
+    "kind": "fit"
+  },
+  {
+    "kind": "click",
+    "x": 596,
+    "y": 132
+  },
+  {
+    "kind": "snapshot",
+    "name": "advanced-narrow-dark"
+  },
+  {
+    "kind": "key",
+    "text": "\u001b"
+  },
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "theme",
+    "dark": false
+  },
+  {
+    "kind": "animations",
+    "value": true
+  },
+  {
+    "kind": "save-load"
+  },
+  {
+    "kind": "edit",
+    "op": "demo",
+    "number": 1
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": false,
+      "save_count": 0,
+      "export_count": 0
+    }
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "document-status"
+    },
+    "path": "/result/schema_version",
+    "value": 2
+  },
+  {
+    "kind": "edit",
+    "op": "field",
+    "id": "node-1",
+    "target": "text",
+    "text": "已提交 <参数> & 中文"
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": true
+    }
+  },
+  {
+    "kind": "file-path",
+    "name": "saved-document.json"
+  },
+  {
+    "kind": "save"
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": false,
+      "save_count": 1
+    }
+  },
+  {
+    "kind": "edit",
+    "op": "field",
+    "id": "node-1",
+    "target": "text",
+    "text": "临时修改"
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": true
+    }
+  },
+  {
+    "kind": "edit",
+    "op": "undo"
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": false
+    }
+  },
+  {
+    "kind": "view",
+    "x": -300,
+    "y": -200,
+    "zoom": 2
+  },
+  {
+    "kind": "image-path",
+    "name": "whole.svg"
+  },
+  {
+    "kind": "export"
+  },
+  {
+    "kind": "image-path",
+    "name": "whole.png"
+  },
+  {
+    "kind": "export"
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": false,
+      "export_count": 2
+    }
+  },
+  {
+    "kind": "edit",
+    "op": "select",
+    "id": "node-1"
+  },
+  {
+    "kind": "edit",
+    "op": "select",
+    "id": "node-2",
+    "additive": true
+  },
+  {
+    "kind": "image-path",
+    "name": "selected.svg"
+  },
+  {
+    "kind": "export",
+    "selected": true
+  },
+  {
+    "kind": "image-path",
+    "name": "selected.png"
+  },
+  {
+    "kind": "export",
+    "selected": true
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": false,
+      "export_count": 4
+    }
+  },
+  {
+    "kind": "image-path",
+    "name": "rejected.bmp"
+  },
+  {
+    "kind": "export"
+  },
+  {
+    "kind": "error",
+    "contains": ".svg"
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": false,
+      "export_count": 4
+    }
+  },
+  {
+    "kind": "view",
+    "x": 40,
+    "y": 40,
+    "zoom": 1
+  },
+  {
+    "kind": "image-path",
+    "name": "button.png"
+  },
+  {
+    "kind": "click",
+    "x": 1000,
+    "y": 74
+  },
+  {
+    "kind": "snapshot",
+    "name": "document-export-panel"
+  },
+  {
+    "kind": "click",
+    "x": 895,
+    "y": 475
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "export_count": 5
+    }
+  },
+  {
+    "kind": "image-path",
+    "name": "button-selected.png"
+  },
+  {
+    "kind": "click",
+    "x": 1015,
+    "y": 475
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "export_count": 6
+    }
+  },
+  {
+    "kind": "size",
+    "width": 650,
+    "height": 450
+  },
+  {
+    "kind": "snapshot",
+    "name": "document-export-narrow"
+  },
+  {
+    "kind": "size",
+    "width": 1100,
+    "height": 760
+  },
+  {
+    "kind": "click",
+    "x": 1000,
+    "y": 74
+  },
+  {
+    "kind": "edit",
+    "op": "load",
+    "text": "{\"version\": 1, \"mode\": \"graph\", \"nodes\": [{\"id\": \"a\", \"title\": \"键盘表单\", \"kind\": \"form\", \"x\": 60, \"y\": 100, \"data\": {\"text\": \"键盘参数\"}}, {\"id\": \"b\", \"title\": \"目标节点\", \"x\": 400, \"y\": 100}], \"edges\": [], \"viewport\": {\"x\": 40, \"y\": 40, \"zoom\": 1}}"
+  },
+  {
+    "kind": "focus-canvas"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "selection"
+    },
+    "path": "/result",
+    "value": {
+      "nodes": [
+        "a"
+      ],
+      "edges": []
+    }
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 61
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0010"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0010"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/y",
+    "value": 110
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "z"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/y",
+    "value": 100
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "z"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 60
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": false
+    }
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "selection"
+    },
+    "path": "/result",
+    "value": {
+      "nodes": [
+        "b"
+      ],
+      "edges": []
+    }
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "selection"
+    },
+    "path": "/result",
+    "value": {
+      "nodes": [
+        "a"
+      ],
+      "edges": []
+    }
+  },
+  {
+    "kind": "focus-canvas"
+  },
+  {
+    "kind": "key",
+    "text": "\t"
+  },
+  {
+    "kind": "event",
+    "value": "node-focus",
+    "id": "a"
+  },
+  {
+    "kind": "snapshot",
+    "name": "keyboard-node-focus"
+  },
+  {
+    "kind": "key",
+    "text": "\t"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 60
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "a"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "正文只编辑文本"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/data/text",
+    "value": "正文只编辑文本"
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 60
+  },
+  {
+    "kind": "key",
+    "text": "\t"
+  },
+  {
+    "kind": "key",
+    "text": "\t"
+  },
+  {
+    "kind": "key",
+    "text": "\t"
+  },
+  {
+    "kind": "key",
+    "text": "\t"
+  },
+  {
+    "kind": "snapshot",
+    "name": "keyboard-port-focus"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "key",
+    "text": "\t"
+  },
+  {
+    "kind": "key",
+    "text": "\t"
+  },
+  {
+    "kind": "snapshot",
+    "name": "keyboard-connection-preview"
+  },
+  {
+    "kind": "key",
+    "text": "\n"
+  },
+  {
+    "kind": "count",
+    "nodes": 2,
+    "edges": 1
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/source_node",
+    "value": "a"
+  },
+  {
+    "kind": "expect",
+    "path": "/edges/0/target_node",
+    "value": "b"
+  },
+  {
+    "kind": "focus-canvas"
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0012"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0012"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "selection"
+    },
+    "path": "/result/nodes",
+    "value": []
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "count",
+    "nodes": 2,
+    "edges": 0
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": "z"
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "count",
+    "nodes": 2,
+    "edges": 1
+  },
+  {
+    "kind": "edit",
+    "op": "select",
+    "id": "a"
+  },
+  {
+    "kind": "readonly",
+    "value": true
+  },
+  {
+    "kind": "focus-canvas"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "expect",
+    "path": "/nodes/0/x",
+    "value": 60
+  },
+  {
+    "kind": "key-down",
+    "text": "\u0011"
+  },
+  {
+    "kind": "key",
+    "text": ""
+  },
+  {
+    "kind": "key-up",
+    "text": "\u0011"
+  },
+  {
+    "kind": "query-expect",
+    "request": {
+      "target": "selection"
+    },
+    "path": "/result",
+    "value": {
+      "nodes": [
+        "b"
+      ],
+      "edges": []
+    }
+  },
+  {
+    "kind": "readonly",
+    "value": false
+  },
+  {
+    "kind": "snapshot",
+    "name": "keyboard-complete"
+  },
+  {
+    "kind": "controllers",
+    "value": 1
+  },
+  {
+    "kind": "lifecycle"
+  },
+  {
+    "kind": "controllers",
+    "value": 1
+  },
+  {
+    "kind": "dispose"
+  },
+  {
+    "kind": "controllers",
+    "value": 0
+  },
+  {
+    "kind": "dispose"
+  },
+  {
+    "kind": "controllers",
+    "value": 0
+  },
+  {
+    "kind": "reopen"
+  },
+  {
+    "kind": "controllers",
+    "value": 1
+  },
+  {
+    "kind": "dispose"
+  },
+  {
+    "kind": "controllers",
+    "value": 0
+  },
+  {
+    "kind": "dispose"
+  },
+  {
+    "kind": "controllers",
+    "value": 0
+  },
+  {
+    "kind": "reopen"
+  },
+  {
+    "kind": "controllers",
+    "value": 1
+  },
+  {
+    "kind": "dispose"
+  },
+  {
+    "kind": "controllers",
+    "value": 0
+  },
+  {
+    "kind": "dispose"
+  },
+  {
+    "kind": "controllers",
+    "value": 0
+  },
+  {
+    "kind": "reopen"
+  },
+  {
+    "kind": "controllers",
+    "value": 1
+  },
+  {
+    "kind": "dispose"
+  },
+  {
+    "kind": "controllers",
+    "value": 0
+  },
+  {
+    "kind": "dispose"
+  },
+  {
+    "kind": "controllers",
+    "value": 0
+  },
+  {
+    "kind": "reopen"
+  },
+  {
+    "kind": "controllers",
+    "value": 1
+  },
+  {
+    "kind": "count",
+    "nodes": 6,
+    "edges": 5
+  },
+  {
+    "kind": "ui-state",
+    "value": {
+      "dirty": false
+    }
+  },
+  {
+    "kind": "finish"
+  }
+]

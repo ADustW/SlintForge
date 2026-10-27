@@ -1,5 +1,5 @@
-use slint::ComponentHandle;
 use slint::platform::{PointerEventButton, WindowEvent};
+use slint::ComponentHandle;
 
 slint::slint! {
     export { ForgeDateTimeTestWindow } from "../../../tests/ui/date-time-picker.slint";
@@ -15,22 +15,54 @@ fn calendar_adjacent_month_cells_follow_locale_range_and_draft_commit() {
         ui.set_language(language.into());
         ui.invoke_open_date();
         let position = slint::LogicalPosition::new(40., 114.);
-        for event in [WindowEvent::PointerMoved { position },
-            WindowEvent::PointerPressed { position, button: PointerEventButton::Left },
-            WindowEvent::PointerReleased { position, button: PointerEventButton::Left }] {
+        for event in [
+            WindowEvent::PointerMoved { position },
+            WindowEvent::PointerPressed {
+                position,
+                button: PointerEventButton::Left,
+            },
+            WindowEvent::PointerReleased {
+                position,
+                button: PointerEventButton::Left,
+            },
+        ] {
             ui.window().dispatch_event(event);
         }
-        assert_eq!(ui.get_draft_date(), Date { year: 2024, month: 1, day });
-        assert_eq!(ui.get_selected_date(), Date { year: 2024, month: 2, day: 28 });
+        assert_eq!(
+            ui.get_draft_date(),
+            Date {
+                year: 2024,
+                month: 1,
+                day
+            }
+        );
+        assert_eq!(
+            ui.get_selected_date(),
+            Date {
+                year: 2024,
+                month: 2,
+                day: 28
+            }
+        );
         ui.invoke_cancel_date();
         assert_eq!(ui.get_selected_date().month, 2);
     }
     ui.set_language("zh".into());
-    ui.set_minimum_date(Date { year: 2024, month: 2, day: 1 });
+    ui.set_minimum_date(Date {
+        year: 2024,
+        month: 2,
+        day: 1,
+    });
     ui.invoke_open_date();
     let position = slint::LogicalPosition::new(40., 114.);
-    ui.window().dispatch_event(WindowEvent::PointerPressed { position, button: PointerEventButton::Left });
-    ui.window().dispatch_event(WindowEvent::PointerReleased { position, button: PointerEventButton::Left });
+    ui.window().dispatch_event(WindowEvent::PointerPressed {
+        position,
+        button: PointerEventButton::Left,
+    });
+    ui.window().dispatch_event(WindowEvent::PointerReleased {
+        position,
+        button: PointerEventButton::Left,
+    });
     assert_eq!(ui.get_draft_date().month, 2);
     assert_eq!(ui.get_draft_date().day, 28);
     ui.invoke_confirm_date();

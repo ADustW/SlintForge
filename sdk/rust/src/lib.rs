@@ -1,9 +1,11 @@
 //! SlintForge 的 Rust 宿主模型。视觉组件由 ui/slintforge.slint 统一定义。
 
-mod icons;
-pub mod runtime;
 pub mod flow;
 mod flow_bindings;
+mod flow_export;
+pub use flow_export::save_flow_image;
+mod icons;
+pub mod runtime;
 mod wire;
 pub use icons::{IconCatalog, IconGlyph};
 mod window_corners;

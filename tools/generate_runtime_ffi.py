@@ -122,7 +122,8 @@ def generate():
     base_contract = (ROOT / 'sdk/runtime-api/src/lib.rs').read_text(encoding='utf-8')
     layout = '\n'.join(re.findall(r'#\[repr\(C\)\].*?pub struct [^{]+\{[^}]*\}', base_contract, re.S))
     flow_contract = (ROOT / 'sdk/common/ForgeFlowCore.h').read_text(encoding='utf-8')
-    schema = hashlib.sha256(('\n'.join(model_lines)+plot_source+flow_contract+'\n'.join(table)+layout).encode()).digest()
+    flow_models = (ROOT / 'ui/types/flow.slint').read_text(encoding='utf-8')
+    schema = hashlib.sha256(('\n'.join(model_lines)+plot_source+flow_contract+flow_models+'\n'.join(table)+layout).encode()).digest()
     table += ['pub const ABI_SCHEMA: [u8; 32] = '+repr(list(schema))+';', '']
     wrappers = ['//! 专业绘图公开接口的 DLL 转发；数据布局与共用头文件一致。', 'pub use slintforge_runtime_api::plot::*;', '']
     for name,args,ret in functions:

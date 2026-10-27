@@ -1,22 +1,44 @@
-import { Button, Palette } from "std-widgets.slint";
 import { ForgeFlowNodeData, ForgeFlowViewport, ForgeFlowRect } from "../types/flow.slint";
+import { ForgeFlowTheme, ForgeFlowToolButton, ForgeFlowIcons } from "theme.slint";
 
 export component ForgeFlowControls inherits Rectangle {
     in property<float> zoom: 1;
+    in property<float> min-zoom: 0.1;
+    in property<float> max-zoom: 4;
     in property<bool> can-undo;
     in property<bool> can-redo;
     in property<bool> read-only;
     in property<bool> chinese: true;
     callback command(string);
-    background: Palette.background; border-width: 1px; border-color: Palette.border; border-radius: 6px;
+    width: 46px; height: 238px;
+    background: ForgeFlowTheme.surface; border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 8px;
+    drop-shadow-color: #10233c12; drop-shadow-blur: 12px; drop-shadow-offset-y: 3px;
+    VerticalLayout {
+        padding: 5px; spacing: 1px;
+        ForgeFlowToolButton { icon: ForgeFlowIcons.add; label: root.chinese ? "放大" : "Zoom in"; enabled: root.zoom < root.max-zoom; clicked => { root.command("zoom-in"); } }
+        ForgeFlowToolButton { text: Math.round(root.zoom * 100) + "%"; label: root.chinese ? "恢复 100%" : "Reset zoom"; clicked => { root.command("reset-zoom"); } }
+        ForgeFlowToolButton { icon: ForgeFlowIcons.minus; label: root.chinese ? "缩小" : "Zoom out"; enabled: root.zoom > root.min-zoom; clicked => { root.command("zoom-out"); } }
+        Rectangle { height: 1px; background: ForgeFlowTheme.border; }
+        ForgeFlowToolButton { icon: ForgeFlowIcons.fit; label: root.chinese ? "适应全部" : "Fit view"; clicked => { root.command("fit"); } }
+        Rectangle { height: 1px; background: ForgeFlowTheme.border; }
+        ForgeFlowToolButton { icon: ForgeFlowIcons.undo; label: root.chinese ? "撤销" : "Undo"; enabled: root.can-undo && !root.read-only; clicked => { root.command("undo"); } }
+        ForgeFlowToolButton { icon: ForgeFlowIcons.redo; label: root.chinese ? "重做" : "Redo"; enabled: root.can-redo && !root.read-only; clicked => { root.command("redo"); } }
+    }
+}
+
+export component ForgeFlowNodeToolbar inherits Rectangle {
+    in property<bool> chinese: true;
+    in property<bool> read-only: false;
+    in property<bool> tree: false;
+    callback command(string);
+    height: 38px; width: 184px;
+    background: ForgeFlowTheme.surface; border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 7px;
+    drop-shadow-color: #10233c18; drop-shadow-blur: 10px; drop-shadow-offset-y: 2px;
     HorizontalLayout {
-        padding: 5px; spacing: 4px;
-        Button { text: "−"; width: 32px; clicked => { root.command("zoom-out"); } }
-        Text { text: Math.round(root.zoom * 100) + "%"; color: Palette.foreground; min-width: 46px; horizontal-alignment: center; vertical-alignment: center; }
-        Button { text: "+"; width: 32px; clicked => { root.command("zoom-in"); } }
-        Button { text: root.chinese ? "适应" : "Fit"; clicked => { root.command("fit"); } }
-        Button { text: root.chinese ? "撤销" : "Undo"; width: 52px; enabled: root.can-undo && !root.read-only; clicked => { root.command("undo"); } }
-        Button { text: root.chinese ? "重做" : "Redo"; width: 52px; enabled: root.can-redo && !root.read-only; clicked => { root.command("redo"); } }
+        padding: 3px; spacing: 2px;
+        ForgeFlowToolButton { text: root.tree ? (root.chinese ? "子主题" : "Child") : (root.chinese ? "复制" : "Copy"); icon: root.tree ? ForgeFlowIcons.add : ForgeFlowIcons.copy; enabled: !root.read-only; clicked => { root.command(root.tree ? "add-child" : "duplicate"); } }
+        ForgeFlowToolButton { text: root.chinese ? "删除" : "Delete"; icon: ForgeFlowIcons.trash; enabled: !root.read-only; clicked => { root.command("delete"); } }
+        ForgeFlowToolButton { icon: ForgeFlowIcons.settings; label: root.chinese ? "节点属性" : "Node properties"; clicked => { root.command("inspect"); } }
     }
 }
 
@@ -26,26 +48,57 @@ export component ForgeFlowMiniMap inherits Rectangle {
     in property<ForgeFlowViewport> viewport;
     in property<float> canvas-width;
     in property<float> canvas-height;
+    in property<color> viewport-color: ForgeFlowTheme.accent;
+    in property<color> viewport-fill: root.viewport-color.with-alpha(0.04);
+    in property<length> node-radius: 2px;
+    pure callback node-color(ForgeFlowNodeData) -> color;
+    node-color(n) => { return n.selected ? ForgeFlowTheme.accent : n.kind == "form" ? #9b87e4 : n.kind == "device" ? #75bcb1 : n.kind == "image" ? #dabb83 : ForgeFlowTheme.edge.with-alpha(0.55); }
     callback navigate(float, float);
-    private property<float> ratio: Math.min((root.width / 1px - 12) / Math.max(1, root.bounds.width), (root.height / 1px - 12) / Math.max(1, root.bounds.height));
-    width: 160px; height: 100px; clip: true;
-    background: Palette.background.with-alpha(0.96); border-width: 1px; border-color: Palette.border; border-radius: 5px;
-    for n in root.nodes : Rectangle {
+    callback zoom-by(float);
+    in property<float> zoom-step: 1.12;
+    in property<bool> wheel-enabled: true;
+    in property<bool> wheel-requires-control: false;
+    private property<float> vx: -root.viewport.x / Math.max(0.01, root.viewport.zoom);
+    private property<float> vy: -root.viewport.y / Math.max(0.01, root.viewport.zoom);
+    private property<float> bw: root.canvas-width / Math.max(0.01, root.viewport.zoom);
+    private property<float> bh: root.canvas-height / Math.max(0.01, root.viewport.zoom);
+    private property<float> left: Math.min(root.bounds.x, root.vx) - 20;
+    private property<float> top: Math.min(root.bounds.y, root.vy) - 20;
+    private property<float> world-width: Math.max(root.bounds.x + root.bounds.width, root.vx + root.bw) - root.left + 20;
+    private property<float> world-height: Math.max(root.bounds.y + root.bounds.height, root.vy + root.bh) - root.top + 20;
+    private property<float> ratio: Math.min((root.width / 1px - 16) / Math.max(1, root.world-width), (root.height / 1px - 16) / Math.max(1, root.world-height));
+    // 节点图层只跟随文档变化。视口的平移和缩放通过外层变换显示，避免重复绘制全部节点。
+    private property<float> node-ratio: Math.min((root.width / 1px - 16) / Math.max(1, root.bounds.width), (root.height / 1px - 16) / Math.max(1, root.bounds.height));
+    private property<float> ox: (root.width / 1px - root.world-width * root.ratio) / 2;
+    private property<float> oy: (root.height / 1px - root.world-height * root.ratio) / 2;
+    width: 164px; height: 112px; clip: true;
+    background: ForgeFlowTheme.surface; border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 8px;
+    Rectangle {
+      x: (root.ox + (root.bounds.x - root.left) * root.ratio) * 1px;
+      y: (root.oy + (root.bounds.y - root.top) * root.ratio) * 1px;
+      width: Math.max(1, root.bounds.width) * root.node-ratio * 1px;
+      height: Math.max(1, root.bounds.height) * root.node-ratio * 1px;
+      transform-origin: {x: 0px, y: 0px}; transform-scale: root.ratio / root.node-ratio;
+      cache-rendering-hint: true;
+      for n in root.nodes : Rectangle {
         visible: !n.hidden;
-        x: (6 + (n.x - root.bounds.x) * root.ratio) * 1px;
-        y: (6 + (n.y - root.bounds.y) * root.ratio) * 1px;
-        width: Math.max(2, n.width * root.ratio) * 1px; height: Math.max(2, n.height * root.ratio) * 1px;
-        background: n.selected ? Palette.accent-background : Palette.foreground.with-alpha(0.25);
+        x: (n.x - root.bounds.x) * root.node-ratio * 1px;
+        y: (n.y - root.bounds.y) * root.node-ratio * 1px;
+        width: Math.max(2, n.width * root.node-ratio) * 1px; height: Math.max(2, n.height * root.node-ratio) * 1px;
+        border-radius: root.node-radius;
+        background: root.node-color(n);
+      }
     }
     Rectangle {
-        x: (6 + (-root.viewport.x / root.viewport.zoom - root.bounds.x) * root.ratio) * 1px;
-        y: (6 + (-root.viewport.y / root.viewport.zoom - root.bounds.y) * root.ratio) * 1px;
-        width: root.canvas-width / root.viewport.zoom * root.ratio * 1px;
-        height: root.canvas-height / root.viewport.zoom * root.ratio * 1px;
-        border-width: 1px; border-color: Palette.accent-background; background: Palette.accent-background.with-alpha(0.08);
+        x: (root.ox + (root.vx - root.left) * root.ratio) * 1px;
+        y: (root.oy + (root.vy - root.top) * root.ratio) * 1px;
+        width: root.bw * root.ratio * 1px; height: root.bh * root.ratio * 1px;
+        border-radius: 2px; border-width: 1px; border-color: root.viewport-color; background: root.viewport-fill;
     }
     TouchArea {
-        clicked => { root.navigate((self.mouse-x / 1px - 6) / root.ratio + root.bounds.x, (self.mouse-y / 1px - 6) / root.ratio + root.bounds.y); }
-        moved => { if self.pressed { root.navigate((self.mouse-x / 1px - 6) / root.ratio + root.bounds.x, (self.mouse-y / 1px - 6) / root.ratio + root.bounds.y); } }
+        mouse-cursor: crosshair;
+        clicked => { root.navigate((self.mouse-x / 1px - root.ox) / root.ratio + root.left, (self.mouse-y / 1px - root.oy) / root.ratio + root.top); }
+        moved => { if self.pressed { root.navigate((self.mouse-x / 1px - root.ox) / root.ratio + root.left, (self.mouse-y / 1px - root.oy) / root.ratio + root.top); } }
+        scroll-event(e) => { if !root.wheel-enabled || (root.wheel-requires-control && !e.modifiers.control) || e.delta-y == 0px { return reject; } root.zoom-by(e.delta-y > 0px ? root.zoom-step : 1 / root.zoom-step); return accept; }
     }
 }

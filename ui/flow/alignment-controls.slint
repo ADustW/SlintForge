@@ -1,0 +1,21 @@
+import { ComboBox } from "std-widgets.slint";
+import { ForgeFlowAction } from "../types/flow.slint";
+import { ForgeFlowTheme, ForgeFlowToolButton } from "theme.slint";
+
+export component ForgeFlowAlignmentControls inherits Rectangle {
+    in property<bool> chinese: true;
+    in property<bool> read-only: false;
+    in property<int> selection-count;
+    in-out property<int> mode: 0;
+    callback action(ForgeFlowAction);
+    preferred-width: 246px; height: 44px;
+    border-radius: 7px; border-width: 1px; border-color: ForgeFlowTheme.border; background: ForgeFlowTheme.surface;
+    HorizontalLayout { padding: 6px; spacing: 6px;
+        ComboBox { min-width: 0px; horizontal-stretch: 1; current-index <=> root.mode; enabled: !root.read-only;
+            model: root.chinese ? ["左对齐", "右对齐", "顶部对齐", "底部对齐", "水平居中", "垂直居中", "水平等距", "垂直等距"] : ["Align left", "Align right", "Align top", "Align bottom", "Center X", "Center Y", "Distribute X", "Distribute Y"];
+        }
+        ForgeFlowToolButton { text: root.chinese ? "应用" : "Apply"; enabled: !root.read-only && root.selection-count >= (root.mode >= 6 ? 3 : 2); primary: true;
+            clicked => { root.action({op: "align", target: ["left", "right", "top", "bottom", "center-x", "center-y", "distribute-x", "distribute-y"][root.mode]}); }
+        }
+    }
+}

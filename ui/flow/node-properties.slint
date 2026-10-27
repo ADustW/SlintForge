@@ -1,0 +1,36 @@
+import { ComboBox, SpinBox } from "std-widgets.slint";
+import { ForgeFlowAction } from "../types/flow.slint";
+import { ForgeFlowTheme, ForgeFlowToolButton } from "theme.slint";
+
+export component ForgeFlowNodeProperties inherits Rectangle {
+    in property<int> count;
+    in property<bool> chinese: true;
+    in property<bool> read-only;
+    callback action(ForgeFlowAction);
+    callback close();
+    width: 288px; height: 210px; background: ForgeFlowTheme.surface; border-color: ForgeFlowTheme.border; border-width: 1px; border-radius: 8px;
+    TouchArea { }
+    VerticalLayout { padding: 12px; spacing: 8px;
+        HorizontalLayout {
+            Text { text: (root.chinese ? "节点批量属性 · " : "Node properties · ") + root.count; color: ForgeFlowTheme.text; font-weight: 600; horizontal-stretch: 1; }
+            ForgeFlowToolButton { width: 28px; text: "×"; label: root.chinese ? "关闭" : "Close"; clicked => { root.close(); } }
+        }
+        Text { text: root.chinese ? "仅应用当前选择的属性" : "Apply only the chosen property"; color: ForgeFlowTheme.muted; font-size: 11px; }
+        HorizontalLayout { spacing: 4px;
+            key := ComboBox { min-width: 0px; horizontal-stretch: 1; model: root.chinese ? ["允许拖动", "允许缩放", "允许连接", "允许删除", "允许选择", "布局固定", "显示标题栏"] : ["Draggable", "Resizable", "Connectable", "Deletable", "Selectable", "Fixed layout", "Show header"]; }
+            value := ComboBox { width: 72px; model: root.chinese ? ["开启", "关闭"] : ["On", "Off"]; }
+            ForgeFlowToolButton { text: root.chinese ? "应用" : "Apply"; primary: true; enabled: !root.read-only && root.count > 0;
+                clicked => { root.action({op: "node-properties", target: ["draggable","resizable","connectable","deletable","selectable","layout_fixed","header_visible"][key.current-index], flag: value.current-index == 0}); }
+            }
+        }
+        Text { text: root.chinese ? "统一尺寸（不可缩放节点会拒绝整次修改）" : "Set size (requires resizable nodes)"; color: ForgeFlowTheme.muted; font-size: 11px; }
+        HorizontalLayout { spacing: 4px;
+            width-input := SpinBox { min-width: 0px; horizontal-stretch: 1; minimum: 60; maximum: 4096; value: 220; }
+            Text { text: "×"; color: ForgeFlowTheme.muted; }
+            height-input := SpinBox { min-width: 0px; horizontal-stretch: 1; minimum: 40; maximum: 4096; value: 132; }
+            ForgeFlowToolButton { text: root.chinese ? "应用" : "Apply"; enabled: !root.read-only && root.count > 0;
+                clicked => { root.action({op: "node-properties", text: "{\"width\":" + width-input.value + ",\"height\":" + height-input.value + "}"}); }
+            }
+        }
+    }
+}

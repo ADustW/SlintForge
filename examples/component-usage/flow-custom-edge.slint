@@ -1,0 +1,28 @@
+import { ForgeFlowCanvas, ForgeFlowNode, ForgeFlowEdge, ForgeFlowTheme } from "@slintforge";
+import { Button } from "std-widgets.slint";
+
+export component FlowCustomEdgeUsage inherits Window {
+    width: 1000px; height: 700px;
+    // 宿主创建窗口后绑定 ForgeFlowServices，业务自行持有连线与节点循环。
+    graph := ForgeFlowCanvas {
+        demo: 0; show-edges: false;
+        for e in graph.state.edges : ForgeFlowEdge {
+            edge: e; visible: graph.edge-visible(e); show-label: !e.selected;
+            // 标签是普通 Slint 内容，可响应点击，不必把交互绘入路径。
+            if e.selected : Button {
+                x: (e.label-x - e.min-x) * 1px - 35px;
+                y: (e.label-y - e.min-y) * 1px - 14px;
+                width: 70px; height: 28px; text: "删除连线";
+                enabled: !graph.read-only;
+                clicked => { graph.act({op: "remove-edge", id: e.id}); }
+            }
+        }
+        for n in graph.state.nodes : ForgeFlowNode {
+            node: n; visible: graph.node-visible(n); zoom: graph.viewport.zoom;
+            read-only: graph.read-only; pan-mode: graph.pan-mode; snap: graph.snap;
+            candidate-port: graph.connection-target == n.id ? graph.connection-port : "";
+            action(a) => { graph.act(a); }
+            Text { text: "点击连线，在标签处执行操作"; color: ForgeFlowTheme.muted; wrap: word-wrap; }
+        }
+    }
+}

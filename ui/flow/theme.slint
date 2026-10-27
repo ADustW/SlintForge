@@ -1,0 +1,68 @@
+import { Palette } from "std-widgets.slint";
+
+// Flow 独立视觉令牌，不改变 Gallery 中其他组件的全局主题。
+export global ForgeFlowTheme {
+    in-out property<bool> dark: Palette.color-scheme == ColorScheme.dark;
+    in-out property<color> canvas: self.dark ? #141b27 : #f8fafc;
+    in-out property<color> surface: self.dark ? #202b3b : #ffffff;
+    in-out property<color> raised: self.dark ? #2a374b : #f1f5f9;
+    in-out property<color> border: self.dark ? #41516b : #d9e2ee;
+    in-out property<color> text: self.dark ? #e9eff8 : #1e293b;
+    in-out property<color> muted: self.dark ? #9cacbf : #64748b;
+    in-out property<color> accent: self.dark ? #76a9ff : #2563eb;
+    in-out property<color> edge: self.dark ? #8d9db7 : #8191ab;
+    in-out property<color> grid: self.dark ? #3c4b62 : #cbd5e1;
+    in-out property<color> success: self.dark ? #60d8ac : #059669;
+    in-out property<length> radius: 8px;
+}
+
+export component ForgeFlowToolButton inherits Rectangle {
+    in property<string> text;
+    in property<string> label: root.text;
+    in property<string> icon;
+    in property<bool> enabled: true;
+    in property<bool> checked: false;
+    in property<bool> primary: false;
+    callback clicked();
+    preferred-width: root.text == "" ? 32px : caption.preferred-width + (root.icon == "" ? 24px : 44px);
+    preferred-height: 32px; min-height: 28px;
+    horizontal-stretch: 0; vertical-stretch: 0;
+    background: root.primary ? ForgeFlowTheme.accent : root.checked ? ForgeFlowTheme.accent.with-alpha(0.12) : touch.has-hover ? ForgeFlowTheme.raised : transparent;
+    border-radius: 5px; border-width: focus.has-focus ? 1px : 0px; border-color: ForgeFlowTheme.accent;
+    opacity: root.enabled ? 1 : 0.35;
+    accessible-role: button; accessible-label: root.label; accessible-enabled: root.enabled;
+    accessible-action-default => { if root.enabled { root.clicked(); } }
+    forward-focus: focus;
+    if root.icon != "" : Path {
+        x: root.text == "" ? (root.width - 18px) / 2 : 8px; y: (root.height - 18px) / 2;
+        width: 18px; height: 18px; viewbox-width: 24; viewbox-height: 24;
+        commands: root.icon; fill: transparent; stroke: root.primary ? white : root.checked ? ForgeFlowTheme.accent : ForgeFlowTheme.text;
+        stroke-width: 1.7px; stroke-line-cap: round; stroke-line-join: round;
+    }
+    caption := Text {
+        x: root.icon == "" ? 0px : 30px; width: parent.width - self.x; height: parent.height;
+        text: root.text; font-size: 12px; font-weight: root.primary ? 600 : 400;
+        horizontal-alignment: center; vertical-alignment: center; overflow: elide;
+        color: root.primary ? white : root.checked ? ForgeFlowTheme.accent : ForgeFlowTheme.text;
+    }
+    focus := FocusScope { enabled: root.enabled;
+        key-pressed(e) => { if e.text == Key.Return || e.text == " " { root.clicked(); return accept; } return reject; }
+    }
+    touch := TouchArea { enabled: root.enabled; mouse-cursor: pointer; clicked => { focus.focus(); root.clicked(); } }
+}
+
+export global ForgeFlowIcons {
+    out property<string> add: "M 12 5 L 12 19 M 5 12 L 19 12";
+    out property<string> minus: "M 5 12 L 19 12";
+    out property<string> select: "M 5 3 L 5 19 L 10 14 L 15 21 L 18 19 L 13 12 L 20 11 Z";
+    out property<string> hand: "M 7 12 L 7 6 Q 7 3 10 5 L 10 11 L 10 3 Q 12 1 13 3 L 13 11 L 13 5 Q 16 3 16 6 L 16 12 L 16 8 Q 19 6 19 9 L 19 15 Q 19 21 13 21 L 10 21 Q 7 21 5 17 L 2 12 Q 3 9 5 11 L 7 14";
+    out property<string> fit: "M 9 4 L 4 4 L 4 9 M 15 4 L 20 4 L 20 9 M 4 15 L 4 20 L 9 20 M 15 20 L 20 20 L 20 15 M 9 9 L 15 9 L 15 15 L 9 15 Z";
+    out property<string> undo: "M 9 5 L 4 10 L 9 15 M 4 10 L 15 10 Q 21 10 21 16 L 21 19";
+    out property<string> redo: "M 15 5 L 20 10 L 15 15 M 20 10 L 9 10 Q 3 10 3 16 L 3 19";
+    out property<string> copy: "M 9 8 L 20 8 L 20 21 L 9 21 Z M 15 8 L 15 3 L 4 3 L 4 16 L 9 16";
+    out property<string> trash: "M 4 6 L 20 6 M 9 6 L 9 3 L 15 3 L 15 6 M 6 6 L 7 21 L 17 21 L 18 6 M 10 10 L 10 17 M 14 10 L 14 17";
+    out property<string> lock: "M 5 11 L 19 11 L 19 21 L 5 21 Z M 8 11 L 8 7 C 8 1 16 1 16 7 L 16 11 M 12 15 L 12 18";
+    out property<string> grid: "M 8 3 L 8 21 M 16 3 L 16 21 M 3 8 L 21 8 M 3 16 L 21 16";
+    out property<string> save: "M 4 3 L 17 3 L 21 7 L 21 21 L 3 21 L 3 3 Z M 7 3 L 7 9 L 17 9 L 17 3 M 7 21 L 7 14 L 17 14 L 17 21";
+    out property<string> settings: "M 4 6 L 20 6 M 4 12 L 20 12 M 4 18 L 20 18 M 8 3 L 8 9 M 16 9 L 16 15 M 10 15 L 10 21";
+}

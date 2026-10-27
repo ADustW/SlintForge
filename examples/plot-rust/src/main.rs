@@ -1,10 +1,10 @@
 slint::include_modules!();
-mod performance;
-mod streaming_qa;
 mod appearance_qa;
-mod placement_qa;
-mod usability_qa;
 mod drag_qa;
+mod performance;
+mod placement_qa;
+mod streaming_qa;
+mod usability_qa;
 use slint::{ComponentHandle, Model};
 use std::time::{Duration, Instant};
 fn benchmark(ui: &ProfessionalPlotWindow) -> Result<(), Box<dyn std::error::Error>> {
@@ -73,25 +73,71 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ForgePlotExportResult
     );
     let sampler = std::rc::Rc::new(slint::Timer::default());
-    let timer = sampler.clone();let clock=std::rc::Rc::new(std::cell::Cell::new(0f64));
-    let weak=ui.as_weak();
+    let timer = sampler.clone();
+    let clock = std::rc::Rc::new(std::cell::Cell::new(0f64));
+    let weak = ui.as_weak();
     ui.on_sample_running(move |running| {
-        if !running {timer.stop();return;}
-        let clock=clock.clone();let base=clock.get();let started=Instant::now();let weak=weak.clone();
-        timer.start(slint::TimerMode::Repeated,Duration::from_millis(33),move || {
-            if let Some(ui)=weak.upgrade(){
-                let target=base+started.elapsed().as_secs_f64();let mut time=clock.get();let mut measured=Vec::new();let mut reference=Vec::new();
-                while time+0.01<=target {time+=0.01;measured.push(ForgePlotPoint{x:time as f32,y:((time*3.).sin()*2.+5.) as f32,..Default::default()});reference.push(ForgePlotPoint{x:time as f32,y:((time*1.5).sin()+2.) as f32,..Default::default()});}
-                if !measured.is_empty(){ui.invoke_append_points(0,slint::ModelRc::new(slint::VecModel::from(measured)));ui.invoke_append_points(1,slint::ModelRc::new(slint::VecModel::from(reference)));clock.set(time);}
-            }
-        });
+        if !running {
+            timer.stop();
+            return;
+        }
+        let clock = clock.clone();
+        let base = clock.get();
+        let started = Instant::now();
+        let weak = weak.clone();
+        timer.start(
+            slint::TimerMode::Repeated,
+            Duration::from_millis(33),
+            move || {
+                if let Some(ui) = weak.upgrade() {
+                    let target = base + started.elapsed().as_secs_f64();
+                    let mut time = clock.get();
+                    let mut measured = Vec::new();
+                    let mut reference = Vec::new();
+                    while time + 0.01 <= target {
+                        time += 0.01;
+                        measured.push(ForgePlotPoint {
+                            x: time as f32,
+                            y: ((time * 3.).sin() * 2. + 5.) as f32,
+                            ..Default::default()
+                        });
+                        reference.push(ForgePlotPoint {
+                            x: time as f32,
+                            y: ((time * 1.5).sin() + 2.) as f32,
+                            ..Default::default()
+                        });
+                    }
+                    if !measured.is_empty() {
+                        ui.invoke_append_points(
+                            0,
+                            slint::ModelRc::new(slint::VecModel::from(measured)),
+                        );
+                        ui.invoke_append_points(
+                            1,
+                            slint::ModelRc::new(slint::VecModel::from(reference)),
+                        );
+                        clock.set(time);
+                    }
+                }
+            },
+        );
     });
     let smoke = slint::Timer::default();
-    if std::env::args().any(|a|a=="--appearance-smoke") {appearance_qa::start(&ui,&smoke);}
-    if std::env::args().any(|a|a=="--placement-smoke") {placement_qa::start(&ui,&smoke);}
-    if std::env::args().any(|a|a=="--usability-smoke") {usability_qa::start(&ui,&smoke);}
-    if std::env::args().any(|a|a=="--cursor-drag-smoke") {drag_qa::start(&ui,&smoke);}
-    if std::env::args().any(|a|a=="--streaming-smoke") {streaming_qa::start(&ui,&smoke);}
+    if std::env::args().any(|a| a == "--appearance-smoke") {
+        appearance_qa::start(&ui, &smoke);
+    }
+    if std::env::args().any(|a| a == "--placement-smoke") {
+        placement_qa::start(&ui, &smoke);
+    }
+    if std::env::args().any(|a| a == "--usability-smoke") {
+        usability_qa::start(&ui, &smoke);
+    }
+    if std::env::args().any(|a| a == "--cursor-drag-smoke") {
+        drag_qa::start(&ui, &smoke);
+    }
+    if std::env::args().any(|a| a == "--streaming-smoke") {
+        streaming_qa::start(&ui, &smoke);
+    }
     if std::env::args().any(|a| a == "--interaction-benchmark") {
         let weak = ui.as_weak();
         smoke.start(
@@ -176,38 +222,173 @@ mod tests {
     }
     #[test]
     fn position_menu_last_two_items_can_be_clicked_and_panel_axis_is_correct() {
-        use slint::platform::{WindowEvent,PointerEventButton};
-        i_slint_backend_testing::init_no_event_loop();let ui=ProfessionalPlotWindow::new().unwrap();
-        slintforge::bind_plot_services!(ui,ForgePlotServices,ForgePlotScene,ForgePlotAxis,ForgePlotRange,ForgePlotRect,ForgePlotHit,ForgePlotSelection,ForgePlotExportResult);
-        ui.show().unwrap();ui.set_measure(true);tick();
-        for menu in 0..2 {for position in [6,7] {
-            let (x,y)=if menu==0{ui.invoke_show_legend_positions();(ui.get_legend_picker_x(),ui.get_legend_picker_y())}else{ui.invoke_show_measurement_positions();(ui.get_measurement_picker_x(),ui.get_measurement_picker_y())};
-            tick();assert!(if menu==0{ui.get_legend_menu_open()}else{ui.get_measurement_menu_open()});
-            let target=slint::LogicalPosition::new(x+30.,y+34.+4.+4.+position as f32*32.+16.);
-            ui.window().dispatch_event(WindowEvent::PointerMoved{position:target});ui.window().dispatch_event(WindowEvent::PointerPressed{position:target,button:PointerEventButton::Left});ui.window().dispatch_event(WindowEvent::PointerReleased{position:target,button:PointerEventButton::Left});tick();
-            assert_eq!(if menu==0{ui.get_legend_position_index()}else{ui.get_measurement_position_index()},position,"必须点击实际弹出菜单的最后两行");
-            assert!(!ui.get_legend_menu_open()&&!ui.get_measurement_menu_open());
-        }}
-        ui.set_mode(9);ui.invoke_reset();ui.set_measurement_series(1);tick();let scene=ui.get_scene();assert_eq!(scene.measurement_axis,2);
-        ui.invoke_benchmark_pan(40.,0.);tick();let scene=ui.get_scene();let service=ui.global::<ForgePlotServices>();
-        assert!((ui.get_cursor_a_pixel()-service.invoke_coordinate(scene.token,2,ui.get_cursor_a(),false)).abs()<0.001,"光标应使用所选曲线的坐标轴");
-        assert!((ui.get_cursor_a_pixel()-service.invoke_coordinate(scene.token,0,ui.get_cursor_a(),false)).abs()>1.,"两个绘图区的独立视图应可区分");
+        use slint::platform::{PointerEventButton, WindowEvent};
+        i_slint_backend_testing::init_no_event_loop();
+        let ui = ProfessionalPlotWindow::new().unwrap();
+        slintforge::bind_plot_services!(
+            ui,
+            ForgePlotServices,
+            ForgePlotScene,
+            ForgePlotAxis,
+            ForgePlotRange,
+            ForgePlotRect,
+            ForgePlotHit,
+            ForgePlotSelection,
+            ForgePlotExportResult
+        );
+        ui.show().unwrap();
+        ui.set_measure(true);
+        tick();
+        for menu in 0..2 {
+            for position in [6, 7] {
+                let (x, y) = if menu == 0 {
+                    ui.invoke_show_legend_positions();
+                    (ui.get_legend_picker_x(), ui.get_legend_picker_y())
+                } else {
+                    ui.invoke_show_measurement_positions();
+                    (ui.get_measurement_picker_x(), ui.get_measurement_picker_y())
+                };
+                tick();
+                assert!(if menu == 0 {
+                    ui.get_legend_menu_open()
+                } else {
+                    ui.get_measurement_menu_open()
+                });
+                let target = slint::LogicalPosition::new(
+                    x + 30.,
+                    y + 34. + 4. + 4. + position as f32 * 32. + 16.,
+                );
+                ui.window()
+                    .dispatch_event(WindowEvent::PointerMoved { position: target });
+                ui.window().dispatch_event(WindowEvent::PointerPressed {
+                    position: target,
+                    button: PointerEventButton::Left,
+                });
+                ui.window().dispatch_event(WindowEvent::PointerReleased {
+                    position: target,
+                    button: PointerEventButton::Left,
+                });
+                tick();
+                assert_eq!(
+                    if menu == 0 {
+                        ui.get_legend_position_index()
+                    } else {
+                        ui.get_measurement_position_index()
+                    },
+                    position,
+                    "必须点击实际弹出菜单的最后两行"
+                );
+                assert!(!ui.get_legend_menu_open() && !ui.get_measurement_menu_open());
+            }
+        }
+        ui.set_mode(9);
+        ui.invoke_reset();
+        ui.set_measurement_series(1);
+        tick();
+        let scene = ui.get_scene();
+        assert_eq!(scene.measurement_axis, 2);
+        ui.invoke_benchmark_pan(40., 0.);
+        tick();
+        let scene = ui.get_scene();
+        let service = ui.global::<ForgePlotServices>();
+        assert!(
+            (ui.get_cursor_a_pixel()
+                - service.invoke_coordinate(scene.token, 2, ui.get_cursor_a(), false))
+            .abs()
+                < 0.001,
+            "光标应使用所选曲线的坐标轴"
+        );
+        assert!(
+            (ui.get_cursor_a_pixel()
+                - service.invoke_coordinate(scene.token, 0, ui.get_cursor_a(), false))
+            .abs()
+                > 1.,
+            "两个绘图区的独立视图应可区分"
+        );
     }
     #[test]
     fn incremental_history_survives_view_and_legend_changes() {
-        i_slint_backend_testing::init_no_event_loop();let ui=ProfessionalPlotWindow::new().unwrap();
-        slintforge::bind_plot_services!(ui,ForgePlotServices,ForgePlotScene,ForgePlotAxis,ForgePlotRange,ForgePlotRect,ForgePlotHit,ForgePlotSelection,ForgePlotExportResult);
-        ui.set_streaming(true);ui.set_window_mode(1);tick();
-        for id in 0..2 {let points=(0..10000).map(|i|ForgePlotPoint{x:i as f32*0.01,y:if id==0{5.+(i as f32*0.03).sin()}else{2.},..Default::default()}).collect::<Vec<_>>();assert!(ui.invoke_append_points(id,slint::ModelRc::new(slint::VecModel::from(points))));}
-        ui.invoke_flush();let scene=ui.get_scene();assert_eq!(scene.status,0,"{}",scene.error);assert_eq!(scene.input_points,20000);assert!((scene.window_range.maximum-scene.window_range.minimum-10.).abs()<0.001);assert!(scene.history_range.maximum>99.);
-        ui.set_legend_position_index(4);ui.set_legend_style_index(1);tick();assert_eq!(ui.get_scene().input_points,20000,"图例配置不应清空历史");
-        ui.set_measure(true);ui.set_legend_placement_index(1);ui.set_measurement_position_index(2);tick();assert_eq!(ui.get_scene().input_points,20000,"区域内外布局切换不能清空追加历史");
-        ui.set_measurement_placement_index(0);tick();assert_eq!(ui.get_scene().input_points,20000);ui.set_measure(false);
-        ui.invoke_scroll_history(0.);let before=ui.get_scene();assert!(before.window_range.minimum.abs()<0.001);
-        assert!(ui.invoke_append_points(0,slint::ModelRc::new(slint::VecModel::from(vec![ForgePlotPoint{x:100.,y:6.,..Default::default()}]))));
-        ui.invoke_flush();let after=ui.get_scene();assert_eq!(after.input_points,20001);assert!((after.window_range.minimum-before.window_range.minimum).abs()<0.001,"查看历史时追加不应强制跟随");
-        ui.invoke_reset();tick();let scene=ui.get_scene();assert_eq!(scene.input_points,20001);assert!((scene.window_range.maximum-100.).abs()<0.001);
-        let measure=ui.global::<ForgePlotServices>().invoke_measure(scene.token,0,0.01);assert_eq!(measure.index,1);assert!((measure.x-0.01).abs()<0.00001,"测量必须使用原始点");
+        i_slint_backend_testing::init_no_event_loop();
+        let ui = ProfessionalPlotWindow::new().unwrap();
+        slintforge::bind_plot_services!(
+            ui,
+            ForgePlotServices,
+            ForgePlotScene,
+            ForgePlotAxis,
+            ForgePlotRange,
+            ForgePlotRect,
+            ForgePlotHit,
+            ForgePlotSelection,
+            ForgePlotExportResult
+        );
+        ui.set_streaming(true);
+        ui.set_window_mode(1);
+        tick();
+        for id in 0..2 {
+            let points = (0..10000)
+                .map(|i| ForgePlotPoint {
+                    x: i as f32 * 0.01,
+                    y: if id == 0 {
+                        5. + (i as f32 * 0.03).sin()
+                    } else {
+                        2.
+                    },
+                    ..Default::default()
+                })
+                .collect::<Vec<_>>();
+            assert!(ui.invoke_append_points(id, slint::ModelRc::new(slint::VecModel::from(points))));
+        }
+        ui.invoke_flush();
+        let scene = ui.get_scene();
+        assert_eq!(scene.status, 0, "{}", scene.error);
+        assert_eq!(scene.input_points, 20000);
+        assert!((scene.window_range.maximum - scene.window_range.minimum - 10.).abs() < 0.001);
+        assert!(scene.history_range.maximum > 99.);
+        ui.set_legend_position_index(4);
+        ui.set_legend_style_index(1);
+        tick();
+        assert_eq!(ui.get_scene().input_points, 20000, "图例配置不应清空历史");
+        ui.set_measure(true);
+        ui.set_legend_placement_index(1);
+        ui.set_measurement_position_index(2);
+        tick();
+        assert_eq!(
+            ui.get_scene().input_points,
+            20000,
+            "区域内外布局切换不能清空追加历史"
+        );
+        ui.set_measurement_placement_index(0);
+        tick();
+        assert_eq!(ui.get_scene().input_points, 20000);
+        ui.set_measure(false);
+        ui.invoke_scroll_history(0.);
+        let before = ui.get_scene();
+        assert!(before.window_range.minimum.abs() < 0.001);
+        assert!(ui.invoke_append_points(
+            0,
+            slint::ModelRc::new(slint::VecModel::from(vec![ForgePlotPoint {
+                x: 100.,
+                y: 6.,
+                ..Default::default()
+            }]))
+        ));
+        ui.invoke_flush();
+        let after = ui.get_scene();
+        assert_eq!(after.input_points, 20001);
+        assert!(
+            (after.window_range.minimum - before.window_range.minimum).abs() < 0.001,
+            "查看历史时追加不应强制跟随"
+        );
+        ui.invoke_reset();
+        tick();
+        let scene = ui.get_scene();
+        assert_eq!(scene.input_points, 20001);
+        assert!((scene.window_range.maximum - 100.).abs() < 0.001);
+        let measure = ui
+            .global::<ForgePlotServices>()
+            .invoke_measure(scene.token, 0, 0.01);
+        assert_eq!(measure.index, 1);
+        assert!((measure.x - 0.01).abs() < 0.00001, "测量必须使用原始点");
     }
     #[test]
     fn demo_preserves_legend_on_data_updates_and_resets_axes_on_mode_switch() {

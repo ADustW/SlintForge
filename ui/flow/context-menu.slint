@@ -1,0 +1,36 @@
+import { ForgeFlowTheme, ForgeFlowToolButton } from "theme.slint";
+
+export component ForgeFlowContextMenu inherits Rectangle {
+    in property<[string]> commands;
+    in property<[string]> labels;
+    in property<[bool]> available;
+    callback command(string);
+    private property<length> menu-x;
+    private property<length> menu-y;
+    private property<int> current: 0;
+    public function open-at(x: float, y: float) { root.menu-x = x * 1px; root.menu-y = y * 1px; root.current = 0; popup.show(); }
+    public function close() { popup.close(); }
+    popup := PopupWindow {
+        x: root.menu-x; y: root.menu-y; width: 196px; height: 12px + root.commands.length * 34px;
+        close-policy: close-on-click-outside; forward-focus: scope;
+        Rectangle {
+            background: ForgeFlowTheme.surface; border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 7px;
+            scope := FocusScope {
+                key-pressed(e) => {
+                    if e.text == Key.Escape { popup.close(); return accept; }
+                    if e.text == Key.DownArrow { root.current = Math.mod(root.current + 1, root.commands.length); return accept; }
+                    if e.text == Key.UpArrow { root.current = Math.mod(root.current + root.commands.length - 1, root.commands.length); return accept; }
+                    if e.text == Key.Return { if root.current < root.commands.length && (root.current >= root.available.length || root.available[root.current]) { root.command(root.commands[root.current]); popup.close(); } return accept; }
+                    return reject;
+                }
+                for op[index] in root.commands : ForgeFlowToolButton {
+                    x: 6px; y: 6px + index * 34px; width: parent.width - 12px; height: 32px;
+                    text: index < root.labels.length ? root.labels[index] : op;
+                    checked: scope.has-focus && index == root.current;
+                    enabled: index >= root.available.length || root.available[index];
+                    clicked => { root.command(op); popup.close(); }
+                }
+            }
+        }
+    }
+}

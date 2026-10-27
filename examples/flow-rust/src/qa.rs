@@ -4,7 +4,12 @@ use slint::{
     platform::{PointerEventButton, WindowEvent},
     ComponentHandle, LogicalPosition, PhysicalSize,
 };
-use std::{cell::Cell, rc::Rc, time::Duration};
+use std::{
+    cell::{Cell, RefCell},
+    collections::VecDeque,
+    rc::Rc,
+    time::Duration,
+};
 
 fn action(v: &Value) -> ForgeFlowAction {
     ForgeFlowAction {
@@ -36,7 +41,11 @@ fn screenshot(ui: &ForgeFlowWindow, name: &str) -> Result<(), Box<dyn std::error
     )?;
     Ok(())
 }
-fn step(ui: &ForgeFlowWindow, v: &Value) -> Result<(), Box<dyn std::error::Error>> {
+fn step(
+    ui: &ForgeFlowWindow,
+    v: &Value,
+    events: &RefCell<VecDeque<(String, String)>>,
+) -> Result<(), Box<dyn std::error::Error>> {
     let window = ui.window();
     let kind = v["kind"].as_str().unwrap();
     let position = LogicalPosition::new(
@@ -45,6 +54,8 @@ fn step(ui: &ForgeFlowWindow, v: &Value) -> Result<(), Box<dyn std::error::Error
     );
     let button = if v["button"] == "middle" {
         PointerEventButton::Middle
+    } else if v["button"] == "right" {
+        PointerEventButton::Right
     } else {
         PointerEventButton::Left
     };
@@ -60,7 +71,64 @@ fn step(ui: &ForgeFlowWindow, v: &Value) -> Result<(), Box<dyn std::error::Error
             }
         }
         "block" => ui.set_blocked_target(v["target"].as_str().unwrap_or_default().into()),
+        "block-edit" => ui.set_blocked_operation(v["op"].as_str().unwrap_or_default().into()),
+        "event" => {
+            if ui.get_last_interaction().as_str() != v["value"].as_str().unwrap()
+                || ui.get_last_interaction_id().as_str() != v["id"].as_str().unwrap_or_default()
+            {
+                return Err(format!("事件不符: {}", ui.get_last_interaction()).into());
+            }
+        }
+        "clear-events" => events.borrow_mut().clear(),
+        "observed-event" => {
+            if !events.borrow().contains(&(
+                v["value"].as_str().unwrap().into(),
+                v["id"].as_str().unwrap_or_default().into(),
+            )) {
+                return Err(format!("未收到事件: {}", v["value"]).into());
+            }
+        }
+        "preview" => {
+            if !ui
+                .get_connection_path()
+                .as_str()
+                .contains(v["contains"].as_str().unwrap())
+            {
+                return Err("连接预览线型不符".into());
+            }
+        }
+        "error" => {
+            if !ui
+                .get_flow_error()
+                .as_str()
+                .contains(v["contains"].as_str().unwrap())
+            {
+                return Err("缺少预期错误".into());
+            }
+        }
         "readonly" => ui.set_read_only(v["value"].as_bool().unwrap()),
+        "animations" => ui.set_animations_enabled(v["value"].as_bool().unwrap()),
+        "file-path" | "image-path" => {
+            let base=std::env::var_os("SLINTFORGE_FLOW_QA_DIR").map(std::path::PathBuf::from).unwrap_or_else(||"build/flow-qa/rust".into());
+            let path=base.join(v["name"].as_str().unwrap()).to_string_lossy().into_owned();
+            if kind=="file-path" {ui.set_file_path(path.into());} else {ui.set_image_path(path.into());}
+        }
+        "save" => ui.invoke_save_document(),
+        "focus-canvas" => ui.invoke_focus_canvas(),
+        "dispose" => ui.invoke_dispose(),
+        "reopen" => ui.invoke_reopen(),
+        "controllers" => {if ui.global::<ForgeFlowServices>().invoke_active_documents()!=v["value"].as_i64().unwrap() as i32 {return Err("文档控制器数量不符".into());}},
+        "lifecycle-marker" => println!("FLOW_LIFECYCLE_PHASE {}",v["name"].as_str().unwrap()),
+        "lifecycle" => {
+            let service=ui.global::<ForgeFlowServices>();let active=service.invoke_active_documents();let preserved=service.invoke_export_json(ui.get_state().token);
+            for cycle in 0..64 {let state=service.invoke_create("graph".into());service.invoke_execute(state.token,action(&json!({"op":"demo","number":cycle%4,"count":12})));service.invoke_release(state.token);service.invoke_release(state.token);if service.invoke_execute(state.token,action(&json!({"op":"refresh"}))).ok {return Err("已释放句柄仍可编辑".into());}}
+            if service.invoke_active_documents()!=active || service.invoke_export_json(ui.get_state().token)!=preserved {return Err("多实例释放泄漏控制器或影响当前文档".into());}
+        }
+        "export" => ui.invoke_export_image(v["selected"].as_bool().unwrap_or(false)),
+        "ui-state" => {
+            let state=json!({"dirty":ui.get_state().dirty,"save_count":ui.get_save_count(),"export_count":ui.get_export_count()});
+            for (key,value) in v["value"].as_object().unwrap() {if &state[key]!=value {return Err(format!("界面状态不符: {state}").into());}}
+        }
         "press" => window.dispatch_event(WindowEvent::PointerPressed { position, button }),
         "release" => window.dispatch_event(WindowEvent::PointerReleased { position, button }),
         "move" => window.dispatch_event(WindowEvent::PointerMoved { position }),
@@ -69,13 +137,47 @@ fn step(ui: &ForgeFlowWindow, v: &Value) -> Result<(), Box<dyn std::error::Error
             window.dispatch_event(WindowEvent::PointerPressed { position, button });
             window.dispatch_event(WindowEvent::PointerReleased { position, button });
         }
+        "double-click" => {
+            window.dispatch_event(WindowEvent::PointerMoved { position });
+            for _ in 0..2 {
+                window.dispatch_event(WindowEvent::PointerPressed { position, button });
+                window.dispatch_event(WindowEvent::PointerReleased { position, button });
+            }
+        }
         "wheel" => {
             window.dispatch_event(WindowEvent::PointerMoved { position });
             window.dispatch_event(WindowEvent::PointerScrolled {
                 position,
-                delta_x: 0.,
+                delta_x: v["delta_x"].as_f64().unwrap_or(0.) as f32,
                 delta_y: v["delta"].as_f64().unwrap() as f32,
             });
+        }
+        "pinch" => {
+            // 合成后端手势验证真实分发路径，不代表实体触摸设备验收。
+            let phase = match v["phase"].as_str().unwrap() {
+                "start" => i_slint_core::input::TouchPhase::Started,
+                "move" => i_slint_core::input::TouchPhase::Moved,
+                "end" => i_slint_core::input::TouchPhase::Ended,
+                _ => i_slint_core::input::TouchPhase::Cancelled,
+            };
+            window.dispatch_event(WindowEvent::internal(
+                i_slint_core::input::BackendMouseEvent::PinchGesture {
+                    position: i_slint_core::lengths::LogicalPoint::new(position.x, position.y),
+                    delta: v["delta"].as_f64().unwrap_or(0.) as f32,
+                    phase,
+                },
+            ));
+        }
+        "expect-range" => {
+            let doc: serde_json::Value = serde_json::from_str(ui.invoke_document_json().as_str())
+                .map_err(|e| e.to_string())?;
+            let value = doc
+                .pointer(v["path"].as_str().unwrap())
+                .and_then(|v| v.as_f64())
+                .ok_or("范围断言字段不是数值")?;
+            if value < v["min"].as_f64().unwrap() || value > v["max"].as_f64().unwrap() {
+                return Err(format!("{} 超出范围: {}", v["path"], value).into());
+            }
         }
         "key" | "key-down" | "key-up" => {
             let text: slint::SharedString = v["text"].as_str().unwrap().into();
@@ -94,8 +196,17 @@ fn step(ui: &ForgeFlowWindow, v: &Value) -> Result<(), Box<dyn std::error::Error
         )),
         "fit" => ui.invoke_fit(),
         "snapshot" => screenshot(ui, v["name"].as_str().unwrap())?,
-        "expect" => {
-            let doc: Value = serde_json::from_str(ui.invoke_document_json().as_str())?;
+        "expect" | "query-expect" => {
+            let text = if kind == "query-expect" {
+                ui.global::<ForgeFlowServices>()
+                    .invoke_query(ui.get_state().token, v["request"].to_string().into())
+            } else {
+                ui.invoke_document_json()
+            };
+            let doc: Value = serde_json::from_str(text.as_str())?;
+            if kind == "query-expect" && doc["ok"] != true {
+                return Err(format!("查询失败: {}", doc["error"]).into());
+            }
             let actual = doc
                 .pointer(v["path"].as_str().unwrap())
                 .ok_or("字段不存在")?;
@@ -139,6 +250,15 @@ fn step(ui: &ForgeFlowWindow, v: &Value) -> Result<(), Box<dyn std::error::Error
     Ok(())
 }
 pub fn start(ui: &ForgeFlowWindow) -> (slint::Timer, Rc<Cell<bool>>) {
+    let events = Rc::new(RefCell::new(VecDeque::new()));
+    let observed = events.clone();
+    ui.on_interaction(move |name, a| {
+        let mut events = observed.borrow_mut();
+        if events.len() == 64 {
+            events.pop_front();
+        }
+        events.push_back((name.to_string(), a.id.to_string()));
+    });
     let failed = Rc::new(Cell::new(false));
     let failure = failed.clone();
     let weak = ui.as_weak();
@@ -163,7 +283,7 @@ pub fn start(ui: &ForgeFlowWindow) -> (slint::Timer, Rc<Cell<bool>>) {
                 slint::quit_event_loop().unwrap();
                 return;
             }
-            if let Err(error) = step(&ui, v) {
+            if let Err(error) = step(&ui, v, &events) {
                 eprintln!("步骤 {index}: {error}");
                 failure.set(true);
                 let _ = screenshot(&ui, "failure");
