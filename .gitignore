@@ -85,3 +85,6 @@ Desktop.ini
 *~
 tmp/
 temp/
+
+# Flow 示例按默认路径保存的运行文档
+/flow-document.json
