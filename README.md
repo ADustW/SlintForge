@@ -1,3 +1,5 @@
+[简体中文](README.md) | [English](README.en.md)
+
 # SlintForge v0.1.2
 
 SlintForge 是一套共用 `.slint` 实现、可由 Rust 和 C++ 分别接入的桌面组件库，是独立的第三方项目，并非 Slint 官方项目。首版以 Windows x64、Slint **1.18.0**、`fluent` 样式为基线。`ui/` 是组件和公共 UI 类型的唯一来源，`ui/slintforge.slint` 是 `@slintforge` 的公共导出入口；两个 SDK 提供路由、导航树、完整图标目录、窗口／页面截图与 PNG 保存、二维码、词法高亮、背景图处理，以及 Windows 窗口边角适配。
