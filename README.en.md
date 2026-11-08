@@ -1,6 +1,8 @@
-[简体中文](README.md) | [English](README.en.md)
+[简体中文](README.md) | [English](README.en.md) | [Company website](https://shanxiheyoutech.com)
 
 # SlintForge v0.1.2
+
+**Developed and maintained by:** 陕西禾又科技有限责任公司 · [Visit the company website](https://shanxiheyoutech.com)
 
 SlintForge is a desktop component library with a shared `.slint` implementation and separate Rust and C++ integration paths. It is an independent third-party project, not an official Slint project. The initial baseline is Windows x64, Slint **1.18.0**, and the `fluent` style. `ui/` is the single source for components and public UI types; `ui/slintforge.slint` is the public `@slintforge` export entry point. The two SDKs provide routing, navigation trees, the complete icon catalog, window and page capture with PNG saving, QR codes, syntax highlighting, background image handling, and Windows window-corner adaptation.
 
