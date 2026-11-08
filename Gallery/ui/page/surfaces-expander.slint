@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeExpander, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
@@ -39,7 +42,7 @@ export component GalleryExpanderPage inherits Rectangle {
                     VerticalLayout {
                         spacing: 12px;
                         LineEdit { placeholder-text: @tr("输入文字后折叠并重新展开"); }
-                        Text { text: @tr("这里可以放置任意组件。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                        Text { text: @tr("这里可以放置任意组件。"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
                     }
                 }
             }
@@ -79,17 +82,17 @@ export component GalleryExpanderPage inherits Rectangle {
                         title: @tr("如何在 C++ 项目中使用组件？");
                         expanded: true;
                         toggled(value) => { root.open-count += value ? 1 : -1; }
-                        VerticalLayout { Text { text: @tr("通过 CMake 引入 SDK，并在 .slint 文件中导入 @slintforge 即可。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; } }
+                        VerticalLayout { Text { text: @tr("通过 CMake 引入 SDK，并在 .slint 文件中导入 @slintforge 即可。"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; } }
                     }
                     ForgeExpander {
                         title: @tr("是否支持深色主题？");
                         toggled(value) => { root.open-count += value ? 1 : -1; }
-                        VerticalLayout { Text { text: @tr("支持。所有组件使用 Palette 配色，随应用主题自动切换。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; } }
+                        VerticalLayout { Text { text: @tr("支持。所有组件使用 Palette 配色，随应用主题自动切换。"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; } }
                     }
                     ForgeExpander {
                         title: @tr("界面文字可以翻译吗？");
                         toggled(value) => { root.open-count += value ? 1 : -1; }
-                        VerticalLayout { Text { text: @tr("可以。文字使用 @tr 标记，运行时按所选语言加载译文。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; } }
+                        VerticalLayout { Text { text: @tr("可以。文字使用 @tr 标记，运行时按所选语言加载译文。"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; } }
                     }
                 }
             }

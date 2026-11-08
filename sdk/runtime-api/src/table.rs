@@ -1,6 +1,9 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct RuntimeApiV1 {
+pub struct RuntimeApiV2 {
     pub abi_version: u32,
     pub struct_size: u32,
     pub schema: [u8; 32],
@@ -111,6 +114,6 @@ pub struct RuntimeApiV1 {
 }
 
 pub const ABI_SCHEMA: [u8; 32] = [
-    144, 58, 80, 196, 131, 54, 90, 148, 229, 77, 97, 247, 155, 124, 187, 143, 16, 197, 232, 17,
-    133, 112, 182, 246, 153, 103, 76, 175, 206, 228, 225, 88,
+    239, 248, 67, 63, 116, 174, 38, 238, 168, 131, 14, 62, 92, 40, 73, 14, 239, 239, 67, 227, 102,
+    144, 61, 135, 190, 234, 156, 84, 127, 204, 48, 74,
 ];

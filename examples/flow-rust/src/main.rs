@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 slint::include_modules!();
 mod performance;
 mod qa;
@@ -7,15 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if std::env::args().any(|arg| arg == "--sdk-contract") {
         return sdk_contract::run();
     }
-    #[cfg(target_os = "windows")]
-    if std::env::var_os("WGPU_BACKEND").is_none() {
-        std::env::set_var("WGPU_BACKEND", "dx12");
-    }
-    let backend = std::env::var("SLINT_BACKEND").unwrap_or_else(|_| "winit-skia".into());
-    slint::BackendSelector::new()
-        .backend_name("winit".into())
-        .renderer_name(backend.trim_start_matches("winit-").into())
-        .select()?;
+    slintforge::configure_rendering(Default::default())?;
     let ui = ForgeFlowWindow::new()?;
     slintforge::bind_flow_services!(
         ui,

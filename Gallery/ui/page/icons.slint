@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { CheckBox, LineEdit, Palette, SpinBox } from "std-widgets.slint";
 import { ForgeIcon, ForgeIconEntry, ForgeIconButton, ForgeIcons, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
@@ -38,7 +41,7 @@ component GalleryToolButton inherits Rectangle {
     row := HorizontalLayout {
         padding-left: 9px; padding-right: 9px; spacing: 6px;
         ForgeIcon { glyph: root.glyph; font-size: 16px * ForgeTypography.scale; color: root.selected ? Palette.accent-foreground : Palette.foreground; }
-        if root.label != "" : Text { text: root.label; vertical-alignment: center; color: root.selected ? Palette.accent-foreground : Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+        if root.label != "" : Text { text: root.label; vertical-alignment: center; color: root.selected ? Palette.accent-foreground : Palette.foreground; font-size: 14px * ForgeTypography.scale; }
     }
     touch := TouchArea { clicked => { root.clicked(); } }
 }
@@ -132,7 +135,7 @@ export component GalleryIconsPage inherits Rectangle {
                         }
                         Text {
                             text: @tr("匹配图标") + ": " + root.total;
-                            color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                            color: Palette.foreground; font-size: 14px * ForgeTypography.scale;
                             vertical-alignment: center;
                         }
                     }
@@ -144,7 +147,7 @@ export component GalleryIconsPage inherits Rectangle {
                         }
                         Text {
                             text: (root.total == 0 ? 0 : root.page-index + 1) + " / " + root.page-count;
-                            color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                            color: Palette.foreground; font-size: 14px * ForgeTypography.scale;
                             vertical-alignment: center;
                         }
                         ForgeIconButton {

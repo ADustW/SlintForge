@@ -1,4 +1,7 @@
-﻿[CmdletBinding()]
+﻿# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
+[CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$VerificationReport,
     [string]$SlintSdk = (Join-Path $PSScriptRoot '../../../slint-sdk-1.18.0'),
@@ -31,6 +34,9 @@ if ($LASTEXITCODE -ne 0) { throw '发布源码指纹生成失败' }
 $verifiedFingerprint = & $script:ForgePython "$PSScriptRoot/source_snapshot.py" --verification-fingerprint
 if ($LASTEXITCODE -ne 0 -or $verifiedFingerprint -ne $report.verification_fingerprint) { throw '完整验收后应用或检查入口发生变化，需要重新验收' }
 foreach ($path in @($InnoCompiler,$VcRedist)) { if (!(Test-Path -LiteralPath $path)) { throw "打包依赖不存在：$path" } }
+$npmFlags = @('ci','--ignore-scripts'); if (!$Online) { $npmFlags += '--offline' }
+Invoke-ForgeCheck 'api-docs-dependencies' 'npm.cmd' $npmFlags
+Invoke-ForgeCheck 'api-docs-build' 'npm.cmd' @('run','docs:build')
 $cargoFlags = @('--workspace','--locked','--release'); if (!$Online) { $cargoFlags += '--offline' }
 Invoke-ForgeCheck 'rust-build-release' 'cargo' (@('build') + $cargoFlags)
 $cpp = Join-Path $script:ForgeRoot 'build/cpp'
@@ -63,9 +69,18 @@ Invoke-ForgeCheck 'launcher-build' 'rustc' @('--edition','2021','--target','x86_
 Invoke-ForgeCheck 'launcher-dependencies' 'dumpbin.exe' @('/dependents',"$launcherTools/Gallery-Launcher.exe")
 if ([IO.File]::ReadAllText("$script:ForgeEvidence/launcher-dependencies.log") -match '(?i)\b(?:msvcp\d\S*|vcruntime\d\S*|api-ms-win-crt\S*)\.dll\b') { throw '启动入口仍依赖动态 Visual C++ 运行库' }
 foreach ($hostName in @('Rust','Cpp')) { Copy-Item -LiteralPath "$launcherTools/Gallery-Launcher.exe" -Destination "$payload/Gallery-$hostName.exe" }
+Invoke-ForgeCheck 'docs-launcher-build' 'rustc' @('--edition','2021','--target','x86_64-pc-windows-msvc','-C','opt-level=2','-C','target-feature=+crt-static','-C','strip=symbols','-C',('link-arg='+$launcherRes),"$PSScriptRoot/Docs-Launcher.rs",'-o',"$launcherTools/SlintForge-Docs.exe")
+Invoke-ForgeCheck 'docs-launcher-dependencies' 'dumpbin.exe' @('/dependents',"$launcherTools/SlintForge-Docs.exe")
+if ([IO.File]::ReadAllText("$script:ForgeEvidence/docs-launcher-dependencies.log") -match '(?i)\b(?:msvcp\d\S*|vcruntime\d\S*|api-ms-win-crt\S*)\.dll\b') { throw '文档启动入口仍依赖动态 Visual C++ 运行库' }
+Copy-Item -LiteralPath "$launcherTools/SlintForge-Docs.exe" -Destination "$payload/SlintForge-Docs.exe"
+Copy-Item -LiteralPath "$script:ForgeRoot/LICENSE" -Destination "$payload/licenses/LICENSE-SlintForge.txt"
+Copy-Item -LiteralPath "$script:ForgeRoot/LICENSE.md" -Destination "$payload/licenses/NOTICE-SlintForge.md"
 Copy-Item -LiteralPath "$script:ForgeRoot/ui/assets/fonts/LICENSE-FluentSystemIcons.txt" -Destination "$payload/licenses/"
 Copy-Item -LiteralPath "$script:ForgeRoot/third_party/qrcodegen/LICENSE.txt" -Destination "$payload/licenses/LICENSE-qrcodegen.txt"
-Invoke-ForgeCheck 'content-final' $script:ForgePython @("$PSScriptRoot/release_payload.py",'--payload',$payload,'--receipt',"$script:ForgeEvidence/content-receipt.json")
+Copy-Item -LiteralPath "$script:ForgeRoot/node_modules/vitepress/LICENSE" -Destination "$payload/licenses/LICENSE-VitePress.txt"
+Copy-Item -LiteralPath "$script:ForgeRoot/node_modules/vue/LICENSE" -Destination "$payload/licenses/LICENSE-Vue.txt"
+Copy-Item -LiteralPath "$script:ForgeRoot/node_modules/minisearch/LICENSE.txt" -Destination "$payload/licenses/LICENSE-MiniSearch.txt"
+Invoke-ForgeCheck 'content-final' $script:ForgePython @("$PSScriptRoot/release_payload.py",'--payload',$payload,'--receipt',"$script:ForgeEvidence/content-receipt.json",'--final')
 $consumerArguments = @('-NoProfile','-File',"$PSScriptRoot/Test-BinaryConsumers.ps1",'-PackageDirectory',$payload,'-EvidenceDirectory',"$script:ForgeEvidence/consumers",'-CMake',$script:ForgeCMake)
 if ($Online) { $consumerArguments += '-Online' }
 Invoke-ForgeCheck 'external-binary-consumers' 'pwsh' $consumerArguments

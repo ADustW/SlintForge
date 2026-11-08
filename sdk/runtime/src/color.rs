@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 /// 颜色文本采用 RRGGBB 或 RRGGBBAA，六位颜色默认不透明。
 pub fn color_from_hex(text: &str) -> Option<crate::pixels::Color> {
     let value = text.strip_prefix('#').unwrap_or(text);

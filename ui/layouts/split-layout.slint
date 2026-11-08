@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 
 export enum ForgeSplitOrientation { horizontal, vertical }
@@ -27,7 +30,7 @@ export component ForgeSplitLayout inherits Rectangle {
         y: root.orientation == ForgeSplitOrientation.vertical ? root.first-height : 0px;
         width: root.orientation == ForgeSplitOrientation.horizontal ? root.effective-divider : parent.width;
         height: root.orientation == ForgeSplitOrientation.vertical ? root.effective-divider : parent.height;
-        background: Palette.border;
+        background: Palette.divider;
         TouchArea {
             property<float> pressed-ratio: root.ratio;
             property<length> pressed-root-x: 0px;

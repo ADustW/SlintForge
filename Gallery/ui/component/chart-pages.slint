@@ -1,4 +1,7 @@
-import { ForgeChartKind, ForgePlotScene, ForgePlotPoint } from "@slintforge";
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgePlotScene, ForgePlotPoint } from "@slintforge";
 import { GalleryChartPage } from "chart-page.slint";
 import { GalleryProfessionalPlotPage } from "plot-page.slint";
 export component GalleryChartPages inherits Rectangle {
@@ -18,12 +21,12 @@ export component GalleryChartPages inherits Rectangle {
         if route == "chart-radar" { radar.prepare-preview(open); }
         if route == "chart-professional" { professional.prepare-preview(open); }
     }
-    bar := GalleryChartPage { visible: root.active-route-id == "chart-bar"; title: "Bar Chart"; kind: ForgeChartKind.bar; }
-    line := GalleryChartPage { visible: root.active-route-id == "chart-line"; title: "Line Chart"; kind: ForgeChartKind.line; }
-    pie := GalleryChartPage { visible: root.active-route-id == "chart-pie"; title: "Pie Chart"; kind: ForgeChartKind.pie; }
-    polar := GalleryChartPage { visible: root.active-route-id == "chart-polar"; title: "Polar Area Chart"; kind: ForgeChartKind.polar; }
-    bubble := GalleryChartPage { visible: root.active-route-id == "chart-bubble"; title: "Bubble Chart"; kind: ForgeChartKind.bubble; }
-    scatter := GalleryChartPage { visible: root.active-route-id == "chart-scatter"; title: "Scatter Chart"; kind: ForgeChartKind.scatter; }
-    radar := GalleryChartPage { visible: root.active-route-id == "chart-radar"; title: "Radar Chart"; kind: ForgeChartKind.radar; }
+    bar := GalleryChartPage { visible: root.active-route-id == "chart-bar"; title: "Bar Chart"; kind: 0; }
+    line := GalleryChartPage { visible: root.active-route-id == "chart-line"; title: "Line Chart"; kind: 1; }
+    pie := GalleryChartPage { visible: root.active-route-id == "chart-pie"; title: "Pie Chart"; kind: 2; }
+    polar := GalleryChartPage { visible: root.active-route-id == "chart-polar"; title: "Polar Area Chart"; kind: 3; }
+    bubble := GalleryChartPage { visible: root.active-route-id == "chart-bubble"; title: "Bubble Chart"; kind: 4; }
+    scatter := GalleryChartPage { visible: root.active-route-id == "chart-scatter"; title: "Scatter Chart"; kind: 5; }
+    radar := GalleryChartPage { visible: root.active-route-id == "chart-radar"; title: "Radar Chart"; kind: 6; }
     professional := GalleryProfessionalPlotPage { visible: root.active-route-id == "chart-professional"; }
 }

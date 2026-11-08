@@ -1,6 +1,8 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "ForgeGalleryDemos.hpp"
 #include "ForgeWidgets.hpp"
-#include "ForgeCharts.hpp"
 #include "ForgeGalleryGrids.hpp"
 #include "ForgeGalleryPlot.hpp"
 #include <algorithm>
@@ -48,7 +50,6 @@ static void forge_gallery_refresh_demo_tree(const slint::ComponentHandle<Gallery
 void forge_gallery_connect_demos(const slint::ComponentHandle<GalleryWindow>& ui) {
     forge_gallery_connect_plot(ui);
     forge_gallery_connect_grids(ui);
-    forge_bind_chart_services<ForgeChartServices, ForgeChartScene, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel>(ui);
     auto model = std::make_shared<std::vector<ForgeTreeItem>>(forge_gallery_demo_tree());
     forge_gallery_refresh_demo_tree(ui, *model);
     slint::SharedPixelBuffer<slint::Rgba8Pixel> pixels(600, 360);

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 
@@ -10,9 +13,9 @@ export component ForgeStatistic inherits Rectangle {
     preferred-height: layout.preferred-height; min-width: layout.min-width;
     layout := VerticalLayout {
         spacing: 8px;
-        Text { text: root.title; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+        Text { text: root.title; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
         // 无单位时不追加空格；行尾空格会在紧凑布局中被折到下一行，撑高数值区。
         Text { text: root.suffix == "" ? root.value : root.value + " " + root.suffix; color: Palette.foreground; font-size: 32px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
-        if root.show-trend : Text { text: (root.trend >= 0 ? "↑ " : "↓ ") + root.trend + "%"; color: root.trend >= 0 ? #49b981 : #e45c5c; font-size: 13px * ForgeTypography.scale; }
+        if root.show-trend : Text { text: (root.trend >= 0 ? "↑ " : "↓ ") + root.trend + "%"; color: root.trend >= 0 ? Palette.success : Palette.error; font-size: 14px * ForgeTypography.scale; }
     }
 }

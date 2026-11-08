@@ -1,8 +1,10 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! SlintForge 纯计算运行库。GUI 对象只存在于客户应用。
 mod models;
 pub use models::*;
 pub mod capture;
-pub mod charts;
 pub mod color;
 mod flow_native;
 pub mod grids;
@@ -14,7 +16,7 @@ pub mod staggered_layout;
 pub mod widgets;
 mod wire;
 use slintforge_runtime_api::models::*;
-use slintforge_runtime_api::{Arena, CallResult, RuntimeApiV1, Wire, ABI_SCHEMA, ABI_VERSION};
+use slintforge_runtime_api::{Arena, CallResult, RuntimeApiV2, Wire, ABI_SCHEMA, ABI_VERSION};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
@@ -302,31 +304,6 @@ unsafe fn dispatch(
         }
         OP_SCREENCOLOR => own(wire_color(color::screen_color())),
         OP_SCREENINPUT => own(color::screen_color_input()),
-        OP_CHARTCOLOR => {
-            let a = arg::<ArgsChartColor>(input)?;
-            own(wire_color(charts::chart_color(a.index)))
-        }
-        OP_CHARTPREPARE => {
-            let a = arg::<ArgsChartPrepare>(input)?;
-            own(charts::prepare_chart(
-                a.kind,
-                &Vec::<charts::ChartSeriesData>::read(a.series),
-                &Vec::<charts::ChartSliceData>::read(a.slices),
-                &Vec::<String>::read(a.categories),
-                &charts::ChartOptionsData::read(a.options),
-            ))
-        }
-        OP_CHARTHIT => {
-            let a = arg::<ArgsChartHit>(input)?;
-            own(charts::chart_hit_test(
-                &Vec::<charts::ChartMarkData>::read(a.marks),
-                a.x,
-                a.y,
-                a.width,
-                a.height,
-                a.inner_radius,
-            ))
-        }
         OP_GRIDPREPARE => {
             let a = arg::<ArgsGridPrepare>(input)?;
             own(grids::prepare_grid(
@@ -502,9 +479,9 @@ unsafe extern "C" fn runtime_release(owner: u64) -> i32 {
 }
 
 include!("api_table.rs");
-/// 返回进程生命周期内有效的 ABI v1 函数表。
+/// 返回进程生命周期内有效的 ABI v2 函数表。
 #[no_mangle]
-pub extern "C" fn slintforge_runtime_get_api_v1() -> *const RuntimeApiV1 {
+pub extern "C" fn slintforge_runtime_get_api_v2() -> *const RuntimeApiV2 {
     &API
 }
 

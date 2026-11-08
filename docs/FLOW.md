@@ -1,5 +1,7 @@
 # ForgeFlow 节点与连线
 
+> **兼容提示：**本页继续保留 ForgeFlow 专题背景与实施记录。逐组件中英文 API 见 [中文 API 站点源码](site/index.md) 与 [English API source](site/en/index.md)。
+
 ForgeFlow 提供卡片节点编辑、流程图、拓扑图及思维导图，不包含流程执行、多人协作或最终用户模板设计器。两端共享 Slint 1.18.0 界面和 C++ 编辑核心；Rust 1.98.0 通过运行库 DLL 调用同一核心。
 
 ## 公共组件

@@ -1,13 +1,20 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 [package]
 name = "slintforge-gallery-rust"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
+authors.workspace = true
 publish.workspace = true
 build = "build.rs"
 
 [dependencies]
 slint = { version = "=1.18.0", features = ["renderer-skia"] }
 slintforge = { path = "../../sdk/rust", features = ["flow"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 [build-dependencies]
 slint-build = "=1.18.0"

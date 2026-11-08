@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #pragma once
 
 // 所有容器操作共用同一坐标转换；修改父级不改变节点在画布上的位置。

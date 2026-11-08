@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { CheckBox, Palette } from "std-widgets.slint";
 import { ForgeCaptureResult, ForgeIcon, ForgeIconButton, ForgeIcons, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
@@ -99,10 +102,10 @@ export component GalleryForgeWindowPage inherits Rectangle {
                                 alignment: center;
                                 Rectangle {
                                     width: 22px; height: 22px; border-radius: 5px; background: Palette.accent-background;
-                                    Text { text: "S"; color: Palette.accent-foreground; font-size: 13px * ForgeTypography.scale; font-weight: 700; }
+                                    Text { text: "S"; color: Palette.accent-foreground; font-size: 14px * ForgeTypography.scale; font-weight: 700; }
                                 }
                             }
-                            Text { text: @tr("我的应用"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
+                            Text { text: @tr("我的应用"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
                             if root.show-theme : VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.brightness; } }
                             if root.show-pin : VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.pin; } }
                             if root.show-settings : VerticalLayout { alignment: center; GalleryTitleGlyph { glyph: ForgeIcons.settings; } }

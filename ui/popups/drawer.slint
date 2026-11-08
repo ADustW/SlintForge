@@ -1,3 +1,7 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgeMetrics } from "../theme/theme.slint";
 import { Button, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 
@@ -10,7 +14,7 @@ export component ForgeDrawer inherits Rectangle {
     in property<bool> dismiss-on-outside: true;
     callback dismissed();
     public function dismiss() { if root.open { root.open = false; root.dismissed(); } }
-    visible: root.open; background: #00000070;
+    visible: root.open; background: Palette.smoke;
     TouchArea { clicked => { if root.dismiss-on-outside { root.dismiss(); } } }
     forward-focus: scope;
     scope := FocusScope {
@@ -19,8 +23,9 @@ export component ForgeDrawer inherits Rectangle {
     Rectangle {
         width: Math.max(0px, Math.min(root.width, root.panel-width));
         x: root.edge == ForgeDrawerEdge.left ? 0px : root.width - self.width;
-        y: 0px; height: root.height; background: Palette.background;
+        y: 0px; height: root.height; background: Palette.popup-background;
         TouchArea { }
+        Rectangle { x: root.edge == ForgeDrawerEdge.left ? parent.width - 1px : 0px; width: 1px; height: parent.height; background: Palette.divider; }
         VerticalLayout {
             padding: 20px; spacing: 16px;
             HorizontalLayout {
@@ -28,6 +33,7 @@ export component ForgeDrawer inherits Rectangle {
                 Text { text: root.title; color: Palette.foreground; font-size: 20px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
                 Button { text: "×"; accessible-label: @tr("关闭"); clicked => { root.dismiss(); } }
             }
+            Rectangle { height: 1px; background: Palette.divider; }
             Rectangle { clip: true; @children }
         }
     }

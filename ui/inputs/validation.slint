@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { LineEdit, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 
@@ -25,7 +28,7 @@ export component ForgeInputValidation inherits Rectangle {
             accepted => { root.touched = true; if root.valid { root.accepted(root.text); } }
         }
         if root.touched && !root.valid : Text {
-            text: root.validation-message; color: #e45c5c;
+            text: root.validation-message; color: Palette.error;
             font-size: 12px * ForgeTypography.scale; wrap: word-wrap;
         }
     }

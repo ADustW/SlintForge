@@ -4145,6 +4145,8 @@ dependencies = [
  "embed-resource",
  "i-slint-backend-testing",
  "i-slint-core",
+ "serde",
+ "serde_json",
  "slint",
  "slint-build",
  "slintforge",

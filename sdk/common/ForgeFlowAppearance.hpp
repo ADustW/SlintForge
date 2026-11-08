@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #pragma once
 
 // 标记采用端点局部坐标：尖端为原点，负 X 方向沿连线向内。

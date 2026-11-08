@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, Palette, Spinner } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 import { ForgeChoiceItem } from "../types/widgets.slint";
@@ -17,17 +20,17 @@ export component ForgePillButton inherits Rectangle {
     horizontal-stretch: 0; vertical-stretch: 0;
     border-radius: root.height / 2;
     border-width: focus.has-focus ? 2px : 1px;
-    border-color: focus.has-focus || root.primary ? Palette.accent-background : Palette.border;
-    background: root.primary ? Palette.accent-background : root.pressed || touch.has-hover ? Palette.control-background : Palette.background;
-    opacity: root.enabled ? 1 : 0.45;
+    border-color: !root.enabled ? Palette.border : focus.has-focus || root.primary ? Palette.accent-background : Palette.border;
+    background: !root.enabled ? Palette.control-disabled : root.primary ? (root.pressed ? Palette.tertiary-accent-background : touch.has-hover ? Palette.secondary-accent-background : Palette.accent-background) : root.pressed ? Palette.control-tertiary : touch.has-hover ? Palette.control-secondary : Palette.control-background;
+
     forward-focus: focus;
     accessible-role: button;
     accessible-label: root.text;
     accessible-enabled: root.enabled;
     accessible-action-default => { if root.enabled { root.clicked(); } }
     label := Text {
-        text: root.text; color: root.primary ? Palette.accent-foreground : Palette.foreground;
-        font-size: 13px * ForgeTypography.scale;
+        text: root.text; color: !root.enabled ? Palette.text-disabled : root.primary ? Palette.accent-foreground : root.pressed ? Palette.text-secondary : Palette.foreground;
+        font-size: 14px * ForgeTypography.scale;
         horizontal-alignment: center; vertical-alignment: center;
     }
     focus := FocusScope {
@@ -95,11 +98,11 @@ export component ForgeDelayButton inherits Rectangle {
         root.cancel();
     }
     min-width: max(160px * ForgeTypography.scale, label.preferred-width + 32px);
-    preferred-height: 36px * ForgeTypography.scale;
+    preferred-height: 32px * ForgeTypography.scale;
     horizontal-stretch: 0; vertical-stretch: 0;
     border-radius: root.pill ? root.height / 2 : 4px;
-    background: root.primary ? Palette.accent-background : touch.has-hover ? Palette.control-background : Palette.alternate-background;
-    opacity: root.enabled ? 1 : 0.45;
+    background: !root.enabled ? Palette.control-disabled : root.primary ? Palette.accent-background : root.pressed ? Palette.control-tertiary : touch.has-hover ? Palette.control-secondary : Palette.control-background;
+
     clip: true;
     forward-focus: focus;
     accessible-role: button; accessible-label: root.text; accessible-enabled: root.enabled;
@@ -111,15 +114,15 @@ export component ForgeDelayButton inherits Rectangle {
     }
     label := Text {
         text: root.text + (root.active && root.show-progress ? " · " + round(root.progress * 100) + "%" : "");
-        color: root.primary ? Palette.accent-foreground : Palette.foreground;
-        font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center;
+        color: !root.enabled ? Palette.text-disabled : root.primary ? Palette.accent-foreground : root.pressed ? Palette.text-secondary : Palette.foreground;
+        font-size: 14px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center;
     }
     Rectangle {
         x: 0px; y: 0px; width: root.width * root.progress; height: root.height; clip: true;
         Text {
             x: 0px; y: 0px; width: root.width; height: root.height;
             text: label.text; color: Palette.accent-foreground;
-            font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center;
+            font-size: 14px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center;
         }
     }
     Rectangle {
@@ -199,15 +202,15 @@ export component ForgeDropDownButton inherits Rectangle {
     button := Button { width: root.width; height: root.height; text: root.text + "      "; enabled: root.enabled; clicked => { popup.show(); } }
     ForgeIcon {
         x: root.width - self.width - 8px; width: 14px * ForgeTypography.scale; height: root.height;
-        glyph: ForgeIcons.chevron-down; font-size: 14px * ForgeTypography.scale;
-        opacity: root.enabled ? 1 : 0.45;
+        glyph: ForgeIcons.chevron-down; color: root.enabled ? Palette.foreground : Palette.text-disabled; font-size: 14px * ForgeTypography.scale;
+
     }
     popup := PopupWindow {
         x: 0px; y: root.height;
         width: Math.max(180px, root.width); height: Math.max(42px, root.items.length * 38px + 12px);
         close-policy: close-on-click-outside;
         Rectangle {
-            background: Palette.background; border-radius: 6px; border-width: 1px; border-color: Palette.border;
+            background: Palette.popup-background; border-radius: 8px; border-width: 1px; border-color: Palette.border;
             VerticalLayout {
                 padding: 6px; spacing: 4px;
                 for item in root.items : Button {

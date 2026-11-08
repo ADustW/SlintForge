@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """检查两端明暗主题图例的透明度、贴边间距及测量框配色。"""
 import argparse
 import csv

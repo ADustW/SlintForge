@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 
 import { ForgeBreadcrumbItem } from "../types/content.slint";
@@ -5,7 +8,7 @@ import { ForgeBreadcrumbItem } from "../types/content.slint";
 export component ForgeBreadcrumb inherits Rectangle {
     in property<[ForgeBreadcrumbItem]> items;
     callback selected(string);
-    height: 34px;
+    height: 32px;
     background: transparent;
     HorizontalLayout {
         spacing: 3px;

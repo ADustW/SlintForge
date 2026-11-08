@@ -1,4 +1,7 @@
-﻿[CmdletBinding()]
+﻿# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
+[CmdletBinding()]
 param(
     [ValidateSet('Quick','Full')][string]$Mode = 'Quick',
     [string]$SlintSdk = (Join-Path $PSScriptRoot '../../../slint-sdk-1.18.0'),

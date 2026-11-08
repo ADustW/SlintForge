@@ -1,24 +1,24 @@
-import { Palette } from "std-widgets.slint";
-import { ForgeBarChart, ForgeLineChart, ForgePieChart, ForgePolarAreaChart, ForgeBubbleChart, ForgeScatterChart, ForgeRadarChart, ForgeChartSeries, ForgeChartSlice } from "@slintforge";
-export { ForgeChartServices, ForgeChartScene, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel } from "@slintforge";
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
 
-// 消费者仅导入公共入口，使用两端 SDK 提供的服务绑定。
+import { Palette } from "std-widgets.slint";
+import { ForgePlot, ForgePlotKind } from "@slintforge";
+export { ForgePlotServices, ForgePlotScene, ForgePlotAxis, ForgePlotRange, ForgePlotRect, ForgePlotHit, ForgePlotSelection, ForgePlotExportResult } from "@slintforge";
 export component ChartsWindow inherits Window {
-    title: "SlintForge Charts"; width: 620px; height: 430px;
+    title: "SlintForge · ForgePlot"; width: 720px; height: 480px;
     background: Palette.background;
     in-out property<int> kind: 0;
-    in property<[ForgeChartSeries]> series: [
-        {name: "A", points: [{x: 0,y: 20,size: 12},{x: 1,y: 60,size: 18},{x: 2,y: 40,size: 10}]},
-        {name: "B", points: [{x: 0,y: 30,size: 15},{x: 1,y: 10,size: 20},{x: 2,y: 50,size: 9}]}
-    ];
-    in property<[ForgeChartSlice]> slices: [{label: "A",value: 1},{label: "B",value: 3}];
-    out property<int> status: root.kind == 0 ? bar.scene.status : root.kind == 1 ? line.scene.status : root.kind == 2 ? pie.scene.status : root.kind == 3 ? polar.scene.status : root.kind == 4 ? bubble.scene.status : root.kind == 5 ? scatter.scene.status : radar.scene.status;
-    out property<int> mark-count: root.kind == 0 ? bar.scene.marks.length : root.kind == 1 ? line.scene.marks.length : root.kind == 2 ? pie.scene.marks.length : root.kind == 3 ? polar.scene.marks.length : root.kind == 4 ? bubble.scene.marks.length : root.kind == 5 ? scatter.scene.marks.length : radar.scene.marks.length;
-    bar := ForgeBarChart { x: 20px;y: 20px;width: 580px;height: 370px;visible: root.kind == 0;series: root.series;categories: ["A","B","C"]; }
-    line := ForgeLineChart { x: 20px;y: 20px;width: 580px;height: 370px;visible: root.kind == 1;series: root.series;categories: ["A","B","C"];smooth: true;fill-area: true; }
-    pie := ForgePieChart { x: 20px;y: 20px;width: 580px;height: 370px;visible: root.kind == 2;slices: root.slices; }
-    polar := ForgePolarAreaChart { x: 20px;y: 20px;width: 580px;height: 370px;visible: root.kind == 3;slices: root.slices; }
-    bubble := ForgeBubbleChart { x: 20px;y: 20px;width: 580px;height: 370px;visible: root.kind == 4;series: root.series; }
-    scatter := ForgeScatterChart { x: 20px;y: 20px;width: 580px;height: 370px;visible: root.kind == 5;series: root.series; }
-    radar := ForgeRadarChart { x: 20px;y: 20px;width: 580px;height: 370px;visible: root.kind == 6;series: root.series;categories: ["A","B","C"]; }
+    property<ForgePlotKind> plot-kind: root.kind == 0 ? bars : root.kind == 2 ? pie : root.kind == 3 ? polar-area : root.kind == 4 ? bubble : root.kind == 6 ? radar : graph;
+    property<bool> slices: root.kind == 2 || root.kind == 3;
+    out property<int> status: plot.scene.status;
+    out property<int> mark-count: plot.scene.rendered-points;
+    plot := ForgePlot {
+        x: 16px; y: 16px; width: parent.width - 32px; height: parent.height - 32px;
+        legend-placement: outside;
+        panels: [{id: 0,width: 1,height: 1,categories: root.slices ? ["A","B"] : ["A","B","C"]}];
+        series: root.slices ? [{id: 1,kind: root.plot-kind,name: "Distribution",points: [{y: 1},{y: 3}]}] : [
+            {id: 1,kind: root.plot-kind,name: "A",color: Palette.accent-background,line-style: root.kind == 5 ? none : line,scatter-style: disc,point-size: 12,points: [{x: 0,y: 20},{x: 1,y: 60},{x: 2,y: 40}]},
+            {id: 2,kind: root.plot-kind,name: "B",color: #00a78e,line-style: root.kind == 5 ? none : line,scatter-style: disc,point-size: 18,points: [{x: 0,y: 30},{x: 1,y: 10},{x: 2,y: 50}]}
+        ];
+    }
 }

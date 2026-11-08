@@ -1,9 +1,39 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "ForgeGallerySettings.hpp"
 
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <iostream>
+#include <utility>
+
+ForgeGallerySettingsWriter::ForgeGallerySettingsWriter(std::function<void(const ForgeGallerySettings&)> save)
+    : save_(std::move(save)), worker_([this] {
+        for (;;) {
+            std::unique_lock lock(mutex_);
+            ready_.wait(lock, [this] { return stopping_ || pending_.has_value(); });
+            if (!pending_) return;
+            auto settings = std::move(*pending_);
+            pending_.reset();
+            lock.unlock();
+            try { save_(settings); }
+            catch (const std::exception& error) { std::cerr << "设置保存失败: " << error.what() << '\n'; }
+        }
+    }) {}
+
+ForgeGallerySettingsWriter::~ForgeGallerySettingsWriter() {
+    { std::lock_guard lock(mutex_); stopping_ = true; }
+    ready_.notify_one();
+    worker_.join();
+}
+
+void ForgeGallerySettingsWriter::request(const ForgeGallerySettings& settings) {
+    { std::lock_guard lock(mutex_); pending_ = settings; }
+    ready_.notify_one();
+}
 
 static std::filesystem::path forge_gallery_settings_path() {
 #ifdef _WIN32

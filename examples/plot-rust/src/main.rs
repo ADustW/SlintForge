@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 slint::include_modules!();
 mod appearance_qa;
 mod drag_qa;
@@ -60,6 +63,7 @@ fn benchmark(ui: &ProfessionalPlotWindow) -> Result<(), Box<dyn std::error::Erro
     Ok(())
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    slintforge::configure_rendering(Default::default())?;
     let ui = ProfessionalPlotWindow::new()?;
     slintforge::bind_plot_services!(
         ui,

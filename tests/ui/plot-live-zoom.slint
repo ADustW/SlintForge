@@ -1,0 +1,28 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgePlot } from "../../ui/charts/plot.slint";
+import { ForgePlotPoint, ForgePlotXWindowMode, ForgePlotScene } from "../../ui/types/plot.slint";
+export { ForgePlotServices, ForgePlotScene, ForgePlotAxis, ForgePlotRange, ForgePlotRect,
+    ForgePlotHit, ForgePlotSelection, ForgePlotExportResult } from "../../ui/types/plot.slint";
+
+// 不显示原生窗口，直接验证 C++ 消费者使用的共享组件和服务绑定。
+export component ForgePlotLiveZoomTestWindow inherits Window {
+    width: 780px; height: 520px;
+    in-out property<ForgePlotXWindowMode> window-mode: unlimited;
+    out property<ForgePlotScene> scene: plot.scene;
+    callback append(float) -> bool;
+    append(x) => { let ok = plot.append-point(7, {x:x,y:Math.sin(x * 1rad)}); plot.flush(); return ok; }
+    callback zoom(float);
+    zoom(factor) => { plot.zoom-at(390, 260, factor, 0); }
+    callback zoom-direction(int); zoom-direction(direction) => { plot.zoom-directions = direction; }
+    callback pan(float, float); pan(dx, dy) => { plot.pan-by(dx, dy, 0); }
+    callback history(float); history(position) => { plot.scroll-history(position); }
+    callback follow(); follow => { plot.follow-latest(); }
+    callback reset(); reset => { plot.reset-view(); }
+    plot := ForgePlot {
+        width: parent.width; height: parent.height;
+        x-window-mode: root.window-mode; x-window-size: 10;
+        series: [{id:7,y-axis:1,name:"实时采样",points:[{x:0,y:1},{x:1,y:3},{x:2,y:2}]}];
+    }
+}

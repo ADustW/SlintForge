@@ -1,8 +1,13 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
 use slint::platform::{Key, WindowEvent};
 use slint::ComponentHandle;
 use std::time::Duration;
 
-slint::slint! { export { ForgePickerTestWindow, ForgeWidgetServices, ForgeDelayButtonMode } from "../../../tests/ui/picker-interactions.slint"; }
+slintforge_ui! {
+ export { ForgePickerTestWindow, ForgeWidgetServices, ForgeDelayButtonMode } from "../../../tests/ui/picker-interactions.slint"; }
 
 fn tick(ms: u64) {
     i_slint_backend_testing::mock_elapsed_time(Duration::from_millis(ms));

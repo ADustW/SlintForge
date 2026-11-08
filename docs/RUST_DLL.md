@@ -53,7 +53,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 原有三个必填参数不变；原来的 `include!(env!("SLINTFORGE_GENERATED_UI"));` 仍可使用。脚本内部建立隔离 Cargo 消费工程，自动把 DLL 复制到 EXE 同目录。可添加 `-Configuration Debug`、`-Offline`、`-TargetDirectory` 和 `-Jobs`。默认使用当前客户 Cargo 工具链，编译目录位于用户 LocalAppData 的 SlintForge 缓存。
 
-首次构建需要联网获取并编译 Slint 等依赖；已有完整缓存与锁文件时可离线构建。SDK 主包体积、首次下载量、冷/热构建时间和本地编译缓存分别统计。公共接口源码可以查看，核心实现源码不随包交付。
+首次构建需要联网获取并编译 Slint 等依赖；已有完整缓存与锁文件时可离线构建。SDK 主包体积、首次下载量、冷/热构建时间和本地编译缓存分别统计。当前内部验证包提供公共接口源码，但核心实现源码不随包交付；对外分发二进制前须满足 [对应源码要求](RELEASE.md)。
 
 ## 发布应用
 
@@ -63,6 +63,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## ABI 与内存
 
-`slintforge_runtime_get_api_v1` 返回带 ABI 版本、函数表大小和契约指纹的函数表。输入文本、数组和像素视图只在同步调用期间借用，状态对象使用不透明句柄；DLL 输出由 DLL 释放，封装在释放之前完成复制。Slint 对象、Rust 集合和客户端闭包不跨 DLL 传递。Rust panic 与 C++ 异常分别在各自入口内部处理。
+`slintforge_runtime_get_api_v2` 返回带 ABI 版本 2、函数表大小和契约指纹的函数表。旧版入口、版本或指纹不匹配都会明确报错。旧图表操作编号 21–23 永久保留，不再分配；其他操作编号保持原值。输入文本、数组和像素视图只在同步调用期间借用，状态对象使用不透明句柄；DLL 输出由 DLL 释放，封装在释放之前完成复制。Slint 对象、Rust 集合和客户端闭包不跨 DLL 传递。Rust panic 与 C++ 异常分别在各自入口内部处理。
 
 所有 Slint 属性、模型通知和回调仍在 UI 线程执行，线程约定见 [接入指南](INTEGRATION.md)。

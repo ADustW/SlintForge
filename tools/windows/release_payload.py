@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """组装二进制 SDK，并以白名单核对发布目录；验收证据留在 build。"""
 import argparse
 import hashlib
@@ -7,7 +10,7 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
-API_DOCS = ('API.md', 'CAPTURE.en.md', 'COMPONENTS.md', 'CHARTS.md', 'GRIDS.md', 'PLOT.md', 'FLOW.md', 'INTEGRATION.md', 'PICKERS.md', 'RELEASE.md', 'RUST_DLL.md')
+API_DOCS = ('API.md', 'CAPTURE.en.md', 'COMPONENTS.md', 'CHARTS.md', 'GRIDS.md', 'PLOT.md', 'FLOW.md', 'INTEGRATION.md', 'WINUI3_THEME.md', 'RENDERING.md', 'PICKERS.md', 'RELEASE.md', 'RUST_DLL.md')
 
 
 INTERFACE_CRATES = ('rust', 'runtime-api', 'rust-build')
@@ -44,7 +47,7 @@ def assemble(payload, runtime, compiler, slint_sdk):
     shutil.copy2(runtime, payload / 'rust/slintforge_runtime.dll')
     shutil.copy2(compiler, rust / 'bin/slintforge-ui-compiler.exe')
     shutil.copy2(ROOT / 'tools/windows/Compile-Rust.ps1', rust / 'Compile-Rust.ps1')
-    metadata = dict(version='0.1.2', runtime_build_rustc=subprocess.check_output(['rustc', '--version'], text=True).strip(), minimum_client_rust='1.98.0', abi_version=1, target='x86_64-pc-windows-msvc', runtime='runtime/slintforge_runtime.dll', ui='../cpp/share/slintforge/ui/slintforge.slint', dependency_acquisition='cargo-first-online')
+    metadata = dict(version='0.1.2', runtime_build_rustc=subprocess.check_output(['rustc', '--version'], text=True).strip(), minimum_client_rust='1.98.0', abi_version=2, target='x86_64-pc-windows-msvc', runtime='runtime/slintforge_runtime.dll', ui='../cpp/share/slintforge/ui/slintforge.slint', dependency_acquisition='cargo-first-online')
     (rust / 'sdk.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding='utf-8')
     # 官方 Slint SDK 的头文件、库和编译器是接入依赖，不复制它的安装器或源码。
     for folder in ('include', 'lib', 'bin', 'licenses'):
@@ -54,6 +57,10 @@ def assemble(payload, runtime, compiler, slint_sdk):
     docs.mkdir(exist_ok=True)
     for name in API_DOCS:
         shutil.copy2(ROOT / 'docs' / name, docs / name)
+    site = ROOT / 'build/api-docs-site'
+    if not (site / 'index.html').is_file() or not (site / 'en/index.html').is_file():
+        raise RuntimeError('缺少已构建的中英文 API 文档站点')
+    shutil.copytree(site, docs / 'site')
     (payload / 'README.md').write_text((ROOT / 'docs/RELEASE.md').read_text(encoding='utf-8').replace('(INTEGRATION.md)', '(docs/INTEGRATION.md)').replace('(PICKERS.md)', '(docs/PICKERS.md)'), encoding='utf-8')
 
 
@@ -75,7 +82,7 @@ def validate(payload):
         if interface:
             assert path.read_text(encoding='utf-8') == interface_text(allowed_interfaces[relative.as_posix()]), f'接口源码清单不一致: {relative}'
     assert not forbidden, f'发布目录混入项目源码或额外归档: {forbidden}'
-    for name in ('rust/slintforge-gallery-rust.exe', 'rust/slintforge_runtime.dll', 'cpp/slintforge_gallery_cpp.exe', 'sdk/rust/sdk.json', 'sdk/rust/runtime/slintforge_runtime.dll', 'sdk/cpp/share/slintforge/ui/slintforge.slint'):
+    for name in ('rust/slintforge-gallery-rust.exe', 'rust/slintforge_runtime.dll', 'cpp/slintforge_gallery_cpp.exe', 'sdk/rust/sdk.json', 'sdk/rust/runtime/slintforge_runtime.dll', 'sdk/cpp/share/slintforge/ui/slintforge.slint', 'docs/site/index.html', 'docs/site/en/index.html'):
         assert (payload / name).is_file(), name
     for name in allowed_interfaces:
         assert (payload / name).is_file(), name
@@ -102,10 +109,13 @@ if __name__ == '__main__':
     parser.add_argument('--compiler', type=Path)
     parser.add_argument('--slint-sdk', type=Path)
     parser.add_argument('--receipt', type=Path)
+    parser.add_argument('--final', action='store_true')
     args = parser.parse_args()
     if args.runtime:
         assemble(args.payload, args.runtime, args.compiler, args.slint_sdk)
     hashes = validate(args.payload)
+    if args.final:
+        assert (args.payload / 'SlintForge-Docs.exe').is_file(), 'SlintForge-Docs.exe'
     if args.receipt:
         args.receipt.write_text(json.dumps({'passed': True, 'files': hashes, **content_statistics(args.payload)}, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f'RELEASE_CONTENT_OK core_source_files=0 archives=0 files={len(hashes)} rust_sdk_mib={content_statistics(args.payload)["rust_sdk_mib"]}')

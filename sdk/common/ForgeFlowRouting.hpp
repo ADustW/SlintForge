@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #pragma once
 
 // 简单通道无法连通时，在障碍物边界形成的稀疏网格上寻路。

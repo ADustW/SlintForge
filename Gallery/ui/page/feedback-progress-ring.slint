@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { CheckBox, Palette, Slider, Spinner } from "std-widgets.slint";
 import { ForgePillButton, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
@@ -37,7 +40,7 @@ export component GalleryFeedbackProgressRingPage inherits Rectangle {
             output: root.ring-indeterminate ? "indeterminate" : @tr("progress · {}%", Math.round(root.number));
             GalleryPreview {
                 min-preview-height: 160px * ForgeTypography.scale;
-                Spinner { width: root.ring-size; height: root.ring-size; progress: root.number / 100; indeterminate: root.ring-indeterminate; }
+                Spinner { width: root.ring-size; height: root.ring-size; progress: root.number / 100; indeterminate: root.ring-indeterminate && root.visible; }
             }
             GalleryOptions {
                 Text { text: "progress"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
@@ -55,7 +58,7 @@ export component GalleryFeedbackProgressRingPage inherits Rectangle {
                 content-padding: 16px;
                 GalleryVariant { caption: "progress: 0.25"; Spinner { width: 48px; height: 48px; progress: 0.25; } }
                 GalleryVariant { caption: "progress: 0.75"; Spinner { width: 48px; height: 48px; progress: 0.75; } }
-                GalleryVariant { caption: "indeterminate: true"; Spinner { width: 48px; height: 48px; indeterminate: true; } }
+                GalleryVariant { caption: "indeterminate: true"; Spinner { width: 48px; height: 48px; indeterminate: root.visible; } }
             }
         }
 
@@ -74,7 +77,7 @@ export component GalleryFeedbackProgressRingPage inherits Rectangle {
                         HorizontalLayout {
                             spacing: 8px;
                             Text { text: @tr("云盘空间"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; vertical-alignment: center; }
-                            if root.refreshing : VerticalLayout { alignment: center; Spinner { width: 16px; height: 16px; indeterminate: true; } }
+                            if root.refreshing : VerticalLayout { alignment: center; Spinner { width: 16px; height: 16px; indeterminate: root.visible; } }
                             Rectangle { horizontal-stretch: 1; }
                             ForgePillButton { text: @tr("刷新"); enabled: !root.refreshing; clicked => { root.refresh-ticks = 0; root.refreshing = true; } }
                         }
@@ -87,7 +90,7 @@ export component GalleryFeedbackProgressRingPage inherits Rectangle {
                             }
                             VerticalLayout {
                                 alignment: center; spacing: 4px;
-                                Text { text: @tr("已用 72 GB，共 100 GB"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                                Text { text: @tr("已用 72 GB，共 100 GB"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
                                 Text { text: @tr("照片 41 GB · 文档 23 GB · 其他 8 GB"); color: Palette.foreground.transparentize(0.4); font-size: 12px * ForgeTypography.scale; wrap: word-wrap; }
                             }
                         }

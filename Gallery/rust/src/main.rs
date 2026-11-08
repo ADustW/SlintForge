@@ -1,15 +1,22 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+#![cfg_attr(target_os = "windows", windows_subsystem = "windows")]
+
 slint::include_modules!();
 
+mod api_docs_capture;
 mod capture;
 mod capture_scene;
 mod component_qa;
 mod demos;
+#[path = "../../../examples/flow-rust/src/card_export.rs"]
+mod flow_card_export;
 mod grids_demo;
+mod interaction_qa;
 mod navigation;
 mod plot_demo;
 mod settings;
-#[path = "../../../examples/flow-rust/src/card_export.rs"]
-mod flow_card_export;
 
 use navigation::{GalleryArea, GalleryEntry};
 use settings::GallerySettings;
@@ -41,6 +48,7 @@ struct GalleryState {
     rounded_corners: bool,
     dark_mode: bool,
     persist: bool,
+    settings_writer: settings::SettingsWriter,
 }
 
 fn saved_settings(state: &GalleryState) -> GallerySettings {
@@ -68,9 +76,7 @@ fn saved_settings(state: &GalleryState) -> GallerySettings {
 
 fn persist_settings(state: &GalleryState) {
     if state.persist {
-        if let Err(error) = settings::save(&saved_settings(state)) {
-            eprintln!("设置保存失败: {error}");
-        }
+        state.settings_writer.request(saved_settings(state));
     }
 }
 
@@ -181,11 +187,29 @@ fn expand_route_ancestors(state: &mut GalleryState, id: &str) {
     }
 }
 
+// 仅替换实际变化的模型，避免搜索、主题和导航操作重建无关重复器并丢失行状态。
+fn update_model<T: Clone + PartialEq + 'static>(
+    current: ModelRc<T>,
+    rows: Vec<T>,
+    set: impl FnOnce(ModelRc<T>),
+) {
+    if current.row_count() == rows.len()
+        && rows
+            .iter()
+            .enumerate()
+            .all(|(index, row)| current.row_data(index).as_ref() == Some(row))
+    {
+        return;
+    }
+    set(ModelRc::new(VecModel::from(rows)));
+}
+
 fn apply_state(ui: &GalleryWindow, state: &GalleryState) {
     let (icons, icon_total) = state
         .icons
         .search(&state.icon_query, state.icon_page * 60, 60);
-    ui.set_icon_items(ModelRc::new(VecModel::from(
+    update_model(
+        ui.get_icon_items(),
         icons
             .into_iter()
             .map(|icon| {
@@ -198,7 +222,8 @@ fn apply_state(ui: &GalleryWindow, state: &GalleryState) {
                 }
             })
             .collect::<Vec<_>>(),
-    )));
+        |rows| ui.set_icon_items(rows),
+    );
     ui.set_icon_query(state.icon_query.as_str().into());
     ui.set_icon_total(icon_total as i32);
     ui.set_icon_page(state.icon_page as i32);
@@ -293,9 +318,15 @@ fn apply_state(ui: &GalleryWindow, state: &GalleryState) {
             row
         })
         .collect();
-    ui.set_navigation_items(ModelRc::new(VecModel::from(items)));
-    ui.set_all_navigation_items(ModelRc::new(VecModel::from(all_items)));
-    ui.set_footer_items(ModelRc::new(VecModel::from(footer)));
+    update_model(ui.get_navigation_items(), items, |rows| {
+        ui.set_navigation_items(rows)
+    });
+    update_model(ui.get_all_navigation_items(), all_items, |rows| {
+        ui.set_all_navigation_items(rows)
+    });
+    update_model(ui.get_footer_items(), footer, |rows| {
+        ui.set_footer_items(rows)
+    });
     ui.set_active_route_id(state.router.current().id.as_str().into());
     ui.set_active_top_id(active_top_id(&state.entries, &state.router.current().id).into());
     ui.set_search_query(state.search_query.as_str().into());
@@ -320,7 +351,9 @@ fn apply_state(ui: &GalleryWindow, state: &GalleryState) {
             category: navigation::category(&state.entries, &entry.item.id, &state.language).into(),
         })
         .collect();
-    ui.set_pending_items(ModelRc::new(VecModel::from(pending)));
+    update_model(ui.get_pending_items(), pending, |rows| {
+        ui.set_pending_items(rows)
+    });
     let summary = state
         .router
         .current()
@@ -342,15 +375,12 @@ fn apply_state(ui: &GalleryWindow, state: &GalleryState) {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    #[cfg(target_os = "windows")]
-    if std::env::var_os("WGPU_BACKEND").is_none() {
-        std::env::set_var("WGPU_BACKEND", "dx12");
+    let interaction_smoke = std::env::args().any(|arg| arg == "--interaction-smoke");
+    let api_docs_capture = std::env::args().any(|arg| arg == "--api-docs-capture");
+    if api_docs_capture && std::env::var_os("SLINT_SCALE_FACTOR").is_none() {
+        std::env::set_var("SLINT_SCALE_FACTOR", "1");
     }
-    let backend = std::env::var("SLINT_BACKEND").unwrap_or_else(|_| "winit-skia".into());
-    slint::BackendSelector::new()
-        .backend_name("winit".into())
-        .renderer_name(backend.trim_start_matches("winit-").into())
-        .select()?;
+    slintforge::configure_rendering(Default::default())?;
     let ui = GalleryWindow::new()?;
     slintforge::bind_flow_services!(
         ui,
@@ -364,12 +394,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ForgeFlowAction,
         ForgeFlowState
     );
-    ui.global::<ForgeFlowServices>().on_export_card(|node|flow_card_export::content(node.as_str()).into());
+    ui.global::<ForgeFlowServices>()
+        .on_export_card(|node| flow_card_export::content(node.as_str()).into());
     let smoke = std::env::args().any(|arg| arg == "--smoke");
     let capture_smoke = std::env::args().any(|arg| arg == "--capture-smoke");
     let capture_preview = std::env::args().any(|arg| arg == "--capture-preview");
     let components_smoke = std::env::args().any(|arg| arg == "--components-smoke");
-    let saved = if smoke || capture_smoke || capture_preview || components_smoke {
+    let saved = if smoke
+        || capture_smoke
+        || capture_preview
+        || components_smoke
+        || api_docs_capture
+        || interaction_smoke
+    {
         GallerySettings::default()
     } else {
         settings::load()
@@ -405,7 +442,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         pinned: saved.pinned,
         rounded_corners: saved.rounded_corners,
         dark_mode: saved.dark_mode,
-        persist: !smoke && !capture_smoke && !capture_preview && !components_smoke,
+        settings_writer: settings::SettingsWriter::new(),
+        persist: !smoke
+            && !capture_smoke
+            && !capture_preview
+            && !components_smoke
+            && !api_docs_capture
+            && !interaction_smoke,
     }));
     if std::env::args().any(|arg| arg == "--preview-top") {
         state.borrow_mut().placement = ForgeNavPlacement::Top;
@@ -512,11 +555,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let weak = ui.as_weak();
         ui.on_pane_state_requested(move |pane| {
             let mut state = state.borrow_mut();
+            if state.pane_state == pane { return; }
             state.pane_state = pane;
-            persist_settings(&state);
             if let Some(ui) = weak.upgrade() {
-                apply_state(&ui, &state);
+                // 宽度切换只更新导航状态，不重新搜索图标或生成全部页面模型。
+                ui.set_pane_state(pane);
             }
+            persist_settings(&state);
         });
     }
     {
@@ -694,13 +739,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .filter_map(|index| ui.get_pending_items().row_data(index))
                 .any(|row| row.id == id));
         }
-        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{e8b0}");
+        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{f560}");
         ui.invoke_qa_toggle_navigation();
-        assert_eq!(ui.get_pane_state(), ForgePaneState::Hidden);
-        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{e8b9}");
+        assert_eq!(ui.get_pane_state(), ForgePaneState::Compact);
+        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{f560}");
         ui.invoke_qa_toggle_navigation();
         assert_eq!(ui.get_pane_state(), ForgePaneState::Expanded);
-        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{e8b0}");
+        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{f560}");
         assert_eq!(ui.get_qa_localized_settings_label().as_str(), "设置");
         ui.invoke_staggered_layout_requested(3);
         assert_eq!(ui.get_staggered_items().row_count(), 9);
@@ -827,18 +872,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .any(|row| row.id == "tabbar"));
         ui.invoke_placement_requested(ForgeNavPlacement::Right);
         assert_eq!(ui.get_placement(), ForgeNavPlacement::Right);
-        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{e8bd}");
+        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{f560}");
         ui.invoke_qa_toggle_navigation();
-        assert_eq!(ui.get_pane_state(), ForgePaneState::Hidden);
-        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{e8c4}");
+        assert_eq!(ui.get_pane_state(), ForgePaneState::Compact);
+        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{f560}");
         ui.invoke_qa_toggle_navigation();
         assert_eq!(ui.get_pane_state(), ForgePaneState::Expanded);
         ui.invoke_placement_requested(ForgeNavPlacement::Top);
         assert_eq!(ui.get_placement(), ForgeNavPlacement::Top);
-        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{e8c6}");
+        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{f560}");
         ui.invoke_qa_toggle_navigation();
-        assert_eq!(ui.get_pane_state(), ForgePaneState::Hidden);
-        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{e8c7}");
+        assert_eq!(ui.get_pane_state(), ForgePaneState::Compact);
+        assert_eq!(ui.get_qa_navigation_glyph().as_str(), "\u{f560}");
         ui.invoke_qa_toggle_navigation();
         assert_eq!(ui.get_pane_state(), ForgePaneState::Expanded);
         assert_eq!(ui.get_active_top_id().as_str(), "navigation-group");
@@ -914,6 +959,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _capture_timer =
         capture::verification_timer(&ui, capture_smoke || capture_preview, capture_preview);
     let _component_timer = component_qa::verification_timer(&ui, components_smoke);
+    let _api_docs_timer = api_docs_capture::verification_timer(&ui, api_docs_capture);
+    let _interaction_timer = interaction_qa::verification_timer(&ui, interaction_smoke);
     let result = ui.run();
     running.store(false, Ordering::Relaxed);
     worker.join().expect("采样线程正常结束");

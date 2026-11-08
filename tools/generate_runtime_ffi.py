@@ -1,12 +1,16 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """从公开数据模型生成 C 视图与双端转换，固定 DLL ABI 的字段顺序。"""
 import argparse
 import hashlib
 import re
 import subprocess
 from pathlib import Path
+from license_header import with_license_header, without_license_header
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULES = ('lib', 'icons', 'staggered_layout', 'charts', 'grids', 'widgets', 'capture')
+MODULES = ('lib', 'icons', 'staggered_layout', 'grids', 'widgets', 'capture')
 OPS = [
     ('RouterNew', [('ids','Vec<String>'),('initial','String')]),
     ('RouterClone', [('handle','u64')]),
@@ -22,9 +26,9 @@ OPS = [
     ('Arrange', [('items','Vec<StaggeredInput>'),('columns','usize'),('gap','f32'),('padding','f32')]),
     ('ColorParse', [('text','String')]), ('ColorText', [('color','Color')]),
     ('ScreenColor', []), ('ScreenInput', []),
-    ('ChartColor', [('index','usize')]),
-    ('ChartPrepare', [('kind','i32'),('series','Vec<ChartSeriesData>'),('slices','Vec<ChartSliceData>'),('categories','Vec<String>'),('options','ChartOptionsData')]),
-    ('ChartHit', [('marks','Vec<ChartMarkData>'),('x','f64'),('y','f64'),('width','f64'),('height','f64'),('inner_radius','f64')]),
+    ('Reserved21', []),  # 退役操作编号，禁止复用。
+    ('Reserved22', []),  # 退役操作编号，禁止复用。
+    ('Reserved23', []),  # 退役操作编号，禁止复用。
     ('GridPrepare', [('rows','Vec<GridRowData>'),('columns','Vec<GridColumnData>'),('tree','bool'),('sort_column','i32'),('descending','bool'),('filter','String')]),
     ('GridUpdate', [('rows','Vec<GridRowData>'),('visible','Vec<i32>'),('operation','i32'),('target','i32'),('anchor','i32')]),
     ('GridCommit', [('rows','Vec<GridRowData>'),('columns','Vec<GridColumnData>'),('row','i32'),('column','i32'),('text','String')]),
@@ -105,14 +109,14 @@ def generate():
         converters += ['        }', '    }', '}', '']
     for index,(name,fields) in enumerate(OPS,1):
         model_lines += [f'pub const OP_{name.upper()}: u32 = {index};', structure('Args'+name,fields)]
-    plot_source = (ROOT / 'sdk/common/ForgePlotCore.h').read_text(encoding='utf-8')
+    plot_source = without_license_header((ROOT / 'sdk/common/ForgePlotCore.h').read_text(encoding='utf-8'))
     import generate_plot_ffi
     plot_full = generate_plot_ffi.generate_native()
     plot_types, declarations = plot_full.split('extern "C" {',1)
     functions = []
     for name,args,ret in re.findall(r'pub fn (\w+)\((.*?)\)([^;]*);',declarations):
         functions.append((name,args,ret))
-    table = ['#[repr(C)]', '#[derive(Clone, Copy)]', 'pub struct RuntimeApiV1 {', '    pub abi_version: u32,', '    pub struct_size: u32,', '    pub schema: [u8; 32],', '    pub call: unsafe extern "C" fn(u32, *const std::ffi::c_void, *mut CallResult) -> i32,', '    pub release: unsafe extern "C" fn(u64) -> i32,']
+    table = ['#[repr(C)]', '#[derive(Clone, Copy)]', 'pub struct RuntimeApiV2 {', '    pub abi_version: u32,', '    pub struct_size: u32,', '    pub schema: [u8; 32],', '    pub call: unsafe extern "C" fn(u32, *const std::ffi::c_void, *mut CallResult) -> i32,', '    pub release: unsafe extern "C" fn(u64) -> i32,']
     for name,args,ret in functions:
         args = re.sub(r'\b(ForgePlot\w+)\b',r'plot::\1',args)
         ret = re.sub(r'\b(ForgePlot\w+)\b',r'plot::\1',ret)
@@ -121,8 +125,8 @@ def generate():
     # 基础视图和所有权结构的变化也属于 ABI，不只检查生成的模型字段。
     base_contract = (ROOT / 'sdk/runtime-api/src/lib.rs').read_text(encoding='utf-8')
     layout = '\n'.join(re.findall(r'#\[repr\(C\)\].*?pub struct [^{]+\{[^}]*\}', base_contract, re.S))
-    flow_contract = (ROOT / 'sdk/common/ForgeFlowCore.h').read_text(encoding='utf-8')
-    flow_models = (ROOT / 'ui/types/flow.slint').read_text(encoding='utf-8')
+    flow_contract = without_license_header((ROOT / 'sdk/common/ForgeFlowCore.h').read_text(encoding='utf-8'))
+    flow_models = without_license_header((ROOT / 'ui/types/flow.slint').read_text(encoding='utf-8'))
     schema = hashlib.sha256(('\n'.join(model_lines)+plot_source+flow_contract+flow_models+'\n'.join(table)+layout).encode()).digest()
     table += ['pub const ABI_SCHEMA: [u8; 32] = '+repr(list(schema))+';', '']
     wrappers = ['//! 专业绘图公开接口的 DLL 转发；数据布局与共用头文件一致。', 'pub use slintforge_runtime_api::plot::*;', '']
@@ -137,7 +141,7 @@ def generate():
         'sdk/runtime/src/wire.rs': '\n'.join(converters),
         'sdk/rust/src/plot_ffi.rs': '\n'.join(wrappers),
         'sdk/runtime/src/plot_native.rs': 'pub use slintforge_runtime_api::plot::*;\nextern "C" {'+declarations,
-        'sdk/runtime/src/api_table.rs': 'static API: RuntimeApiV1 = RuntimeApiV1 {\n    abi_version: ABI_VERSION,\n    struct_size: std::mem::size_of::<RuntimeApiV1>() as u32,\n    schema: ABI_SCHEMA,\n    call: runtime_call,\n    release: runtime_release,\n'+''.join(f'    {name}: plot_native::{name},\n' for name,_,_ in functions)+'};\n',
+        'sdk/runtime/src/api_table.rs': 'static API: RuntimeApiV2 = RuntimeApiV2 {\n    abi_version: ABI_VERSION,\n    struct_size: std::mem::size_of::<RuntimeApiV2>() as u32,\n    schema: ABI_SCHEMA,\n    call: runtime_call,\n    release: runtime_release,\n'+''.join(f'    {name}: plot_native::{name},\n' for name,_,_ in functions)+'};\n',
     }
     return {name: format_rust(text) for name,text in files.items()}
 
@@ -155,6 +159,7 @@ if __name__ == '__main__':
     args=parser.parse_args()
     for name,text in generate().items():
         path=ROOT/name
+        text=with_license_header(text)
         if args.check:
             if not path.is_file() or path.read_text(encoding='utf-8') != text:
                 raise SystemExit('RUNTIME_FFI_STALE '+name)

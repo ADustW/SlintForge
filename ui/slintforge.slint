@@ -1,4 +1,8 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 // 唯一公共入口；实现按类别存放，内部组件不在此导出。
+export { ForgeTheme, ForgeMetrics } from "theme/theme.slint";
 export { ForgeFlow, } from "flow/flow.slint";
 export { ForgeFlowTheme, ForgeFlowToolButton, ForgeFlowIcons } from "flow/theme.slint";
 export { ForgeFlowBackground } from "flow/background.slint";
@@ -80,11 +84,9 @@ export { ForgeTour } from "other/tour.slint";
 export { ForgeDial } from "other/dial.slint";
 
 // 图表使用共享绘图层，数值服务由对应宿主绑定。
-export { ForgeChart, ForgeBarChart, ForgeLineChart, ForgePieChart, ForgePolarAreaChart, ForgeBubbleChart, ForgeScatterChart, ForgeRadarChart } from "charts/charts.slint";
-export { ForgeChartKind, ForgeChartPoint, ForgeChartSeries, ForgeChartSlice, ForgeChartOptions, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel, ForgeChartScene, ForgeChartServices } from "types/charts.slint";
 export { ForgePlot } from "charts/plot.slint";
 export { ForgePlotKind, ForgePlotLineStyle, ForgePlotScatterStyle, ForgePlotAxisSide, ForgePlotScale, ForgePlotTicker,
     ForgePlotLegendPosition, ForgePlotLegendStyle, ForgePlotPlacement, ForgePlotXWindowMode,
-    ForgePlotItemKind, ForgePlotCoordinates, ForgePlotPoint, ForgePlotTick, ForgePlotAxis, ForgePlotPanel,
+    ForgePlotItemKind, ForgePlotCoordinates, ForgePlotPoint, ForgePlotPointStyle, ForgePlotTick, ForgePlotAxis, ForgePlotPanel,
     ForgePlotSeries, ForgePlotColorMap, ForgePlotItem, ForgePlotOptions, ForgePlotRange, ForgePlotRect,
     ForgePlotHit, ForgePlotSelection, ForgePlotScene, ForgePlotExportResult, ForgePlotServices } from "types/plot.slint";

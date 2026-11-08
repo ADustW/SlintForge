@@ -26,4 +26,5 @@ Source: "{#ForgePayload}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 Name: "{group}\SlintForge Gallery"; Filename: "{app}\Gallery-Rust.exe"; WorkingDir: "{app}"; IconFilename: "{app}\Gallery-Rust.exe"
 Name: "{group}\SlintForge Gallery C++"; Filename: "{app}\Gallery-Cpp.exe"; WorkingDir: "{app}"; IconFilename: "{app}\Gallery-Cpp.exe"
 Name: "{group}\SlintForge Runtime Instructions"; Filename: "{app}\prerequisites\RUNTIME-README.txt"
+Name: "{group}\SlintForge API Documentation"; Filename: "{app}\SlintForge-Docs.exe"; WorkingDir: "{app}"; IconFilename: "{app}\SlintForge-Docs.exe"
 Name: "{group}\Uninstall SlintForge"; Filename: "{uninstallexe}"

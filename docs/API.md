@@ -1,5 +1,9 @@
 # SlintForge v0.1.2 公共 API
 
+宿主启动接口：Rust `configure_rendering(RenderOptions)` / C++ `forge_configure_rendering(ForgeRenderOptions)`，默认 `GpuPreferred`，支持 `Software`；详见 [UI 渲染偏好](RENDERING.md)。
+
+> **兼容提示：**本页继续保留历史入口。按组件拆分、可中英文切换的新版文档见 [中文 API 站点源码](site/index.md) 与 [English API source](site/en/index.md)；发布包通过 `SlintForge-Docs.exe` 打开构建后的离线站点。
+
 新增组件、公共模型与双端接入示例见 [新增组件 API](COMPONENTS.md)。DataGrid、TreeDataGrid 见 [表格 API](GRIDS.md) 和 [接手审查](GRID_REVIEW.md)；专业二维图表 ForgePlot 见 [图表 API](PLOT.md) 和 [验证记录](PLOT_VERIFICATION.md)。服务绑定、模型刷新和线程要求统一见 [接入约定](INTEGRATION.md)。专题验证报告保留原实施阶段记录，当前版本以发布目录的验收报告为准。
 
 节点编辑、流程图、拓扑图和思维导图使用 [ForgeFlow API](FLOW.md)。公共组件为 `ForgeFlow`、`ForgeFlowCanvas`、`ForgeFlowNode`、`ForgeFlowPort`、`ForgeFlowControls`、`ForgeFlowMiniMap`；共享模型与服务从 `@slintforge` 导入，C++ 使用 `ForgeFlowDocument`，Rust 使用 `slintforge::flow::FlowDocument`。该组件要求 Skia 渲染器。
@@ -33,7 +37,7 @@
 |---|---|---|
 | `ForgeWindow` | 继承 `Window` 的 `title`、`icon`、`maximized`、`minimized` 等属性；`brand-symbol`、`brand-icon`、`show-brand-icon`、`version-text`、`show-menu-button`、`navigation-glyph`、`show-theme-button`、`show-pin-button`、`show-settings-button`、`show-maximize-button`、`dark-mode`、`pinned`、`rounded-corners`；只读 `title-bar-height` | `menu-requested()`、`theme-toggle-requested()`、`pin-state-changed(bool)`、`settings-requested()`、`@children` |
 | `ForgeIcon` | `glyph`、继承自 `Text` 的 `color`、`font-size`、`width`、`height` | 使用内嵌图标字体绘制字形；默认字号随 `ForgeTypography.scale` 变化 |
-| `ForgeNavigationView` | `items`、`tree-items`、`footer-items`、`active-route-id`、`active-top-id`、`placement`、`pane-state`、`brand`、`search-query`、`can-go-back`、`dark-mode`、`show-app-bar` | `navigate-requested(id, params)`、`group-toggle-requested(id)`、`pane-state-requested(state)`、`search-requested(query)`、`back-requested()`、`theme-toggle-requested()`、`@children` |
+| `ForgeNavigationView` | `items`、`tree-items`、`footer-items`、`active-route-id`、`active-top-id`、`placement`、`pane-state`、`brand`、`search-query`、`can-go-back`、`dark-mode`、`show-app-bar` | `toggle-pane()`（完整菜单／图标栏）、`navigate-requested(id, params)`、`group-toggle-requested(id)`、`pane-state-requested(state)`、`search-requested(query)`、`back-requested()`、`theme-toggle-requested()`、`@children` |
 | `ForgeBreadcrumb` | `items` | `selected(id)` |
 | `ForgeTabBar` | `items`、`active-id` | `selected(id)` |
 | `ForgePageHeader` | `title`、`subtitle`、`can-go-back` | `back-requested()` |
@@ -72,7 +76,7 @@
 
 圆角裁剪依赖所选 Slint 渲染器；[Slint 官方渲染器说明](https://docs.slint.dev/latest/docs/slint/guide/backends-and-renderers/backends_and_renderers/)指出软件渲染器对 `clip: true` 和圆角同时使用存在限制，验收时以 Windows x64 默认渲染器为准。
 
-`ForgeWindow` 使用 Slint 的无边框窗口和原生窗口拖动能力，内容插槽位于 46px 标题栏下方。标题栏左侧的图标与文字垂直居中；非空 `version-text` 紧跟标题并以括号显示，例如 `SlintForge Gallery (v0.1.2)`。菜单、主题、图钉、设置及窗口控制位于右侧，没有返回按钮。`navigation-glyph` 决定菜单按钮的字体图标；Gallery 根据左、右、顶部导航位置和隐藏状态选择对应的 `ForgeIcons.panel-*` 字形，点击后隐藏或恢复此前的面板状态。主题按钮使用 `ForgeIcons.sun` / `ForgeIcons.moon`：深色时显示太阳供切换到浅色，浅色时显示月亮供切换到深色。`show-brand-icon` 为 `true` 时绘制 `brand-icon`，否则使用 `brand-symbol` 方块。`Window.icon` 是任务栏／系统窗口图标，需由应用另行设置。双击可拖动区域切换最大化。`pinned` 双向绑定 Slint `always-on-top`；标题栏图钉切换此属性并发出 `pin-state-changed`。设置按钮不会自行注册页面，`theme-toggle-requested` 不会自行改变 `dark-mode` 或 `Palette.color-scheme`。边缘缩放由 `resize-border-width: 6px` 提供，Slint 1.18.0 的这一属性只在 winit 后端生效。
+`ForgeWindow` 使用 Slint 的无边框窗口和原生窗口拖动能力，内容插槽位于 ForgeMetrics.title-bar-height（默认 36px）标题栏下方。标题栏左侧的图标与文字垂直居中；非空 `version-text` 紧跟标题并以括号显示，例如 `SlintForge Gallery (v0.1.2)`。主题、图钉、设置及窗口控制位于右侧；可通过 show-back-button、leading-menu-button、show-search-box 启用左侧返回、菜单与中部搜索，搜索框默认高 28px。`navigation-glyph` 决定菜单按钮的字体图标；Gallery 根据左、右、顶部导航位置和隐藏状态选择对应的 `ForgeIcons.panel-*` 字形，点击后在完整菜单（208px）与图标栏（48px）间切换；隐藏状态仍可由应用显式设置。主题按钮使用 `ForgeIcons.sun` / `ForgeIcons.moon`：深色时显示太阳供切换到浅色，浅色时显示月亮供切换到深色。`show-brand-icon` 为 `true` 时绘制 `brand-icon`，否则使用 `brand-symbol` 方块。`Window.icon` 是任务栏／系统窗口图标，需由应用另行设置。双击可拖动区域切换最大化。`pinned` 双向绑定 Slint `always-on-top`；标题栏图钉切换此属性并发出 `pin-state-changed`。设置按钮不会自行注册页面，`theme-toggle-requested` 不会自行改变 `dark-mode` 或 `Palette.color-scheme`。边缘缩放由 `resize-border-width: 6px` 提供，Slint 1.18.0 的这一属性只在 winit 后端生效。
 
 `rounded-corners` 是窗口边角意图。Windows 宿主在窗口句柄创建后调用 `slintforge::apply_window_corners(window, rounded)` 或 `forge_apply_window_corners(window, rounded)`，设置变化时再次调用。两者分别位于 Rust SDK 和 C++ `ForgeWindowCorners.hpp`，返回值表示原生请求是否成功。实现使用 Windows 11 的 DWM 边角偏好；Windows 11 构建 22000 以下和其他平台不支持此原生效果，且 DWM 对无边框窗口保留最终决定权。最大化、贴靠、虚拟机等场景可能由系统保持直角。
 

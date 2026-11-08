@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, CheckBox, LineEdit, Palette, Slider } from "std-widgets.slint";
 import { ForgeAcrylic, ForgeLiquidGlass, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
@@ -97,7 +100,7 @@ export component GalleryThemeLiquidGlassPage inherits Rectangle {
                     lock := VerticalLayout {
                         padding: 20px; spacing: 14px;
                         Text { text: "09:41"; color: white; font-size: 44px * ForgeTypography.scale; font-weight: 300; horizontal-alignment: center; }
-                        Text { text: @tr("10月25日 星期日"); color: #ffffffd0; font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; }
+                        Text { text: @tr("10月25日 星期日"); color: #ffffffd0; font-size: 14px * ForgeTypography.scale; horizontal-alignment: center; }
                         ForgeLiquidGlass {
                             height: note.preferred-height + 36px;
                             source: GalleryDemoModels.backdrop-image;

@@ -1,8 +1,12 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """从共用 C 数据契约生成 Rust FFI，避免手工维护字段顺序。"""
 import argparse
 import pathlib
 import re
 import subprocess
+from license_header import with_license_header
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 TYPES = {"int": "i32", "double": "f64", "size_t": "usize", "uint32_t": "u32", "uint64_t": "u64", "char": "std::ffi::c_char", "void": "std::ffi::c_void"}
@@ -61,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     path = ROOT / "sdk/rust/src/plot_ffi.rs"
-    expected = generate()
+    expected = with_license_header(generate())
     if args.check:
         if path.read_text(encoding="utf-8") != expected:
             raise SystemExit("PLOT_FFI_STALE")

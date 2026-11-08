@@ -1,0 +1,1213 @@
+[
+  {
+    "name": "ForgeFlow",
+    "category": "flow",
+    "slug": "forge-flow",
+    "source": "ui/flow/flow.slint",
+    "line": 6,
+    "page": "/components/flow/forge-flow",
+    "example": "examples/api-components/forge-flow.slint",
+    "services": [
+      "ForgeFlowServices"
+    ],
+    "screenshot": {
+      "route": "flow-basic",
+      "open": false,
+      "focus": "ForgeFlow"
+    }
+  },
+  {
+    "name": "ForgeFlowToolButton",
+    "category": "flow",
+    "slug": "forge-flow-tool-button",
+    "source": "ui/flow/theme.slint",
+    "line": 19,
+    "page": "/components/flow/forge-flow-tool-button",
+    "example": "examples/api-components/forge-flow-tool-button.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-basic",
+      "open": false,
+      "focus": "ForgeFlowToolButton"
+    }
+  },
+  {
+    "name": "ForgeFlowBackground",
+    "category": "flow",
+    "slug": "forge-flow-background",
+    "source": "ui/flow/background.slint",
+    "line": 4,
+    "page": "/components/flow/forge-flow-background",
+    "example": "examples/api-components/forge-flow-background.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-custom",
+      "open": false,
+      "focus": "ForgeFlowBackground"
+    }
+  },
+  {
+    "name": "ForgeFlowEdge",
+    "category": "flow",
+    "slug": "forge-flow-edge",
+    "source": "ui/flow/edge.slint",
+    "line": 5,
+    "page": "/components/flow/forge-flow-edge",
+    "example": "examples/api-components/forge-flow-edge.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-flowchart",
+      "open": false,
+      "focus": "ForgeFlowEdge"
+    }
+  },
+  {
+    "name": "ForgeFlowEdgeEditor",
+    "category": "flow",
+    "slug": "forge-flow-edge-editor",
+    "source": "ui/flow/edge-editor.slint",
+    "line": 5,
+    "page": "/components/flow/forge-flow-edge-editor",
+    "example": "examples/api-components/forge-flow-edge-editor.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-topology",
+      "open": false,
+      "focus": "ForgeFlowEdgeEditor"
+    }
+  },
+  {
+    "name": "ForgeFlowNodeToolbar",
+    "category": "flow",
+    "slug": "forge-flow-node-toolbar",
+    "source": "ui/flow/controls.slint",
+    "line": 29,
+    "page": "/components/flow/forge-flow-node-toolbar",
+    "example": "examples/api-components/forge-flow-node-toolbar.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-mindmap",
+      "open": false,
+      "focus": "ForgeFlowNodeToolbar"
+    }
+  },
+  {
+    "name": "ForgeFlowCanvas",
+    "category": "flow",
+    "slug": "forge-flow-canvas",
+    "source": "ui/flow/canvas.slint",
+    "line": 12,
+    "page": "/components/flow/forge-flow-canvas",
+    "example": "examples/api-components/forge-flow-canvas.slint",
+    "services": [
+      "ForgeFlowServices"
+    ],
+    "screenshot": {
+      "route": "flow-basic",
+      "open": false,
+      "focus": "ForgeFlowCanvas"
+    }
+  },
+  {
+    "name": "ForgeFlowNode",
+    "category": "flow",
+    "slug": "forge-flow-node",
+    "source": "ui/flow/node.slint",
+    "line": 45,
+    "page": "/components/flow/forge-flow-node",
+    "example": "examples/api-components/forge-flow-node.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-custom",
+      "open": false,
+      "focus": "ForgeFlowNode"
+    }
+  },
+  {
+    "name": "ForgeFlowPort",
+    "category": "flow",
+    "slug": "forge-flow-port",
+    "source": "ui/flow/node.slint",
+    "line": 5,
+    "page": "/components/flow/forge-flow-port",
+    "example": "examples/api-components/forge-flow-port.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-flowchart",
+      "open": false,
+      "focus": "ForgeFlowPort"
+    }
+  },
+  {
+    "name": "ForgeFlowControls",
+    "category": "flow",
+    "slug": "forge-flow-controls",
+    "source": "ui/flow/controls.slint",
+    "line": 4,
+    "page": "/components/flow/forge-flow-controls",
+    "example": "examples/api-components/forge-flow-controls.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-topology",
+      "open": false,
+      "focus": "ForgeFlowControls"
+    }
+  },
+  {
+    "name": "ForgeFlowMiniMap",
+    "category": "flow",
+    "slug": "forge-flow-mini-map",
+    "source": "ui/flow/controls.slint",
+    "line": 45,
+    "page": "/components/flow/forge-flow-mini-map",
+    "example": "examples/api-components/forge-flow-mini-map.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-mindmap",
+      "open": false,
+      "focus": "ForgeFlowMiniMap"
+    }
+  },
+  {
+    "name": "ForgeFlowLayoutControls",
+    "category": "flow",
+    "slug": "forge-flow-layout-controls",
+    "source": "ui/flow/layout-controls.slint",
+    "line": 6,
+    "page": "/components/flow/forge-flow-layout-controls",
+    "example": "examples/api-components/forge-flow-layout-controls.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-basic",
+      "open": false,
+      "focus": "ForgeFlowLayoutControls"
+    }
+  },
+  {
+    "name": "ForgeFlowAlignmentControls",
+    "category": "flow",
+    "slug": "forge-flow-alignment-controls",
+    "source": "ui/flow/alignment-controls.slint",
+    "line": 5,
+    "page": "/components/flow/forge-flow-alignment-controls",
+    "example": "examples/api-components/forge-flow-alignment-controls.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-custom",
+      "open": false,
+      "focus": "ForgeFlowAlignmentControls"
+    }
+  },
+  {
+    "name": "ForgeFlowNodePalette",
+    "category": "flow",
+    "slug": "forge-flow-node-palette",
+    "source": "ui/flow/node-palette.slint",
+    "line": 4,
+    "page": "/components/flow/forge-flow-node-palette",
+    "example": "examples/api-components/forge-flow-node-palette.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-flowchart",
+      "open": false,
+      "focus": "ForgeFlowNodePalette"
+    }
+  },
+  {
+    "name": "ForgeFlowContextMenu",
+    "category": "flow",
+    "slug": "forge-flow-context-menu",
+    "source": "ui/flow/context-menu.slint",
+    "line": 3,
+    "page": "/components/flow/forge-flow-context-menu",
+    "example": "examples/api-components/forge-flow-context-menu.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-topology",
+      "open": false,
+      "focus": "ForgeFlowContextMenu"
+    }
+  },
+  {
+    "name": "ForgeFlowNodeProperties",
+    "category": "flow",
+    "slug": "forge-flow-node-properties",
+    "source": "ui/flow/node-properties.slint",
+    "line": 5,
+    "page": "/components/flow/forge-flow-node-properties",
+    "example": "examples/api-components/forge-flow-node-properties.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-mindmap",
+      "open": false,
+      "focus": "ForgeFlowNodeProperties"
+    }
+  },
+  {
+    "name": "ForgeFlowPanel",
+    "category": "flow",
+    "slug": "forge-flow-panel",
+    "source": "ui/flow/panel.slint",
+    "line": 4,
+    "page": "/components/flow/forge-flow-panel",
+    "example": "examples/api-components/forge-flow-panel.slint",
+    "services": [],
+    "screenshot": {
+      "route": "flow-basic",
+      "open": false,
+      "focus": "ForgeFlowPanel"
+    }
+  },
+  {
+    "name": "ForgeIcon",
+    "category": "icons",
+    "slug": "forge-icon",
+    "source": "ui/icons/icon.slint",
+    "line": 41,
+    "page": "/components/icons/forge-icon",
+    "example": "examples/api-components/forge-icon.slint",
+    "services": [],
+    "screenshot": {
+      "route": "theme-icons",
+      "open": false,
+      "focus": "ForgeIcon"
+    }
+  },
+  {
+    "name": "ForgeIconButton",
+    "category": "basic",
+    "slug": "forge-icon-button",
+    "source": "ui/basic/icon-button.slint",
+    "line": 4,
+    "page": "/components/basic/forge-icon-button",
+    "example": "examples/api-components/forge-icon-button.slint",
+    "services": [],
+    "screenshot": {
+      "route": "iconbutton",
+      "open": false,
+      "focus": "ForgeIconButton"
+    }
+  },
+  {
+    "name": "ForgeCard",
+    "category": "basic",
+    "slug": "forge-card",
+    "source": "ui/basic/card.slint",
+    "line": 5,
+    "page": "/components/basic/forge-card",
+    "example": "examples/api-components/forge-card.slint",
+    "services": [],
+    "screenshot": {
+      "route": "card",
+      "open": false,
+      "focus": "ForgeCard"
+    }
+  },
+  {
+    "name": "ForgeInfoBar",
+    "category": "basic",
+    "slug": "forge-info-bar",
+    "source": "ui/basic/info-bar.slint",
+    "line": 7,
+    "page": "/components/basic/forge-info-bar",
+    "example": "examples/api-components/forge-info-bar.slint",
+    "services": [],
+    "screenshot": {
+      "route": "infobar",
+      "open": false,
+      "focus": "ForgeInfoBar"
+    }
+  },
+  {
+    "name": "ForgeSplitLayout",
+    "category": "layouts",
+    "slug": "forge-split-layout",
+    "source": "ui/layouts/split-layout.slint",
+    "line": 6,
+    "page": "/components/layouts/forge-split-layout",
+    "example": "examples/api-components/forge-split-layout.slint",
+    "services": [],
+    "screenshot": {
+      "route": "layouts-split",
+      "open": false,
+      "focus": "ForgeSplitLayout"
+    }
+  },
+  {
+    "name": "ForgeStaggeredGridView",
+    "category": "layouts",
+    "slug": "forge-staggered-grid-view",
+    "source": "ui/layouts/staggered-grid-view.slint",
+    "line": 43,
+    "page": "/components/layouts/forge-staggered-grid-view",
+    "example": "examples/api-components/forge-staggered-grid-view.slint",
+    "services": [],
+    "screenshot": {
+      "route": "layouts-staggered",
+      "open": false,
+      "focus": "ForgeStaggeredGridView"
+    }
+  },
+  {
+    "name": "ForgeFlowLayout",
+    "category": "layouts",
+    "slug": "forge-flow-layout",
+    "source": "ui/layouts/flow-layout.slint",
+    "line": 4,
+    "page": "/components/layouts/forge-flow-layout",
+    "example": "examples/api-components/forge-flow-layout.slint",
+    "services": [],
+    "screenshot": {
+      "route": "layouts-flow",
+      "open": false,
+      "focus": "ForgeFlowLayout"
+    }
+  },
+  {
+    "name": "ForgeAdaptiveGrid",
+    "category": "layouts",
+    "slug": "forge-adaptive-grid",
+    "source": "ui/layouts/adaptive-grid.slint",
+    "line": 4,
+    "page": "/components/layouts/forge-adaptive-grid",
+    "example": "examples/api-components/forge-adaptive-grid.slint",
+    "services": [],
+    "screenshot": {
+      "route": "layouts-adaptive-grid",
+      "open": false,
+      "focus": "ForgeAdaptiveGrid"
+    }
+  },
+  {
+    "name": "ForgePageStack",
+    "category": "layouts",
+    "slug": "forge-page-stack",
+    "source": "ui/layouts/page-stack.slint",
+    "line": 2,
+    "page": "/components/layouts/forge-page-stack",
+    "example": "examples/api-components/forge-page-stack.slint",
+    "services": [],
+    "screenshot": {
+      "route": "layouts-page-stack",
+      "open": false,
+      "focus": "ForgePageStack"
+    }
+  },
+  {
+    "name": "ForgeStackPage",
+    "category": "layouts",
+    "slug": "forge-stack-page",
+    "source": "ui/layouts/page-stack.slint",
+    "line": 9,
+    "page": "/components/layouts/forge-stack-page",
+    "example": "examples/api-components/forge-stack-page.slint",
+    "services": [],
+    "screenshot": {
+      "route": "layouts-page-stack",
+      "open": false,
+      "focus": "ForgeStackPage"
+    }
+  },
+  {
+    "name": "ForgeFormRow",
+    "category": "layouts",
+    "slug": "forge-form-row",
+    "source": "ui/layouts/form-row.slint",
+    "line": 5,
+    "page": "/components/layouts/forge-form-row",
+    "example": "examples/api-components/forge-form-row.slint",
+    "services": [],
+    "screenshot": {
+      "route": "layouts-form-row",
+      "open": false,
+      "focus": "ForgeFormRow"
+    }
+  },
+  {
+    "name": "ForgeDockLayout",
+    "category": "layouts",
+    "slug": "forge-dock-layout",
+    "source": "ui/layouts/dock-layout.slint",
+    "line": 7,
+    "page": "/components/layouts/forge-dock-layout",
+    "example": "examples/api-components/forge-dock-layout.slint",
+    "services": [],
+    "screenshot": {
+      "route": "layouts-dock",
+      "open": false,
+      "focus": "ForgeDockLayout"
+    }
+  },
+  {
+    "name": "ForgePage",
+    "category": "surfaces",
+    "slug": "forge-page",
+    "source": "ui/surfaces/page.slint",
+    "line": 5,
+    "page": "/components/surfaces/forge-page",
+    "example": "examples/api-components/forge-page.slint",
+    "services": [
+      "ForgeCaptureService"
+    ],
+    "screenshot": {
+      "route": "surfaces-page",
+      "open": false,
+      "focus": "ForgePage"
+    }
+  },
+  {
+    "name": "ForgeRoundImageView",
+    "category": "surfaces",
+    "slug": "forge-round-image-view",
+    "source": "ui/surfaces/round-image-view.slint",
+    "line": 3,
+    "page": "/components/surfaces/forge-round-image-view",
+    "example": "examples/api-components/forge-round-image-view.slint",
+    "services": [],
+    "screenshot": {
+      "route": "surfaces-round-image",
+      "open": false,
+      "focus": "ForgeRoundImageView"
+    }
+  },
+  {
+    "name": "ForgeIconLabel",
+    "category": "surfaces",
+    "slug": "forge-icon-label",
+    "source": "ui/surfaces/icon-label.slint",
+    "line": 5,
+    "page": "/components/surfaces/forge-icon-label",
+    "example": "examples/api-components/forge-icon-label.slint",
+    "services": [],
+    "screenshot": {
+      "route": "surfaces-icon-label",
+      "open": false,
+      "focus": "ForgeIconLabel"
+    }
+  },
+  {
+    "name": "ForgeExpander",
+    "category": "surfaces",
+    "slug": "forge-expander",
+    "source": "ui/surfaces/expander.slint",
+    "line": 5,
+    "page": "/components/surfaces/forge-expander",
+    "example": "examples/api-components/forge-expander.slint",
+    "services": [],
+    "screenshot": {
+      "route": "surfaces-expander",
+      "open": false,
+      "focus": "ForgeExpander"
+    }
+  },
+  {
+    "name": "ForgeWatermark",
+    "category": "surfaces",
+    "slug": "forge-watermark",
+    "source": "ui/surfaces/watermark.slint",
+    "line": 4,
+    "page": "/components/surfaces/forge-watermark",
+    "example": "examples/api-components/forge-watermark.slint",
+    "services": [],
+    "screenshot": {
+      "route": "surfaces-watermark",
+      "open": false,
+      "focus": "ForgeWatermark"
+    }
+  },
+  {
+    "name": "ForgeMarquee",
+    "category": "surfaces",
+    "slug": "forge-marquee",
+    "source": "ui/surfaces/marquee.slint",
+    "line": 4,
+    "page": "/components/surfaces/forge-marquee",
+    "example": "examples/api-components/forge-marquee.slint",
+    "services": [],
+    "screenshot": {
+      "route": "surfaces-marquee",
+      "open": false,
+      "focus": "ForgeMarquee"
+    }
+  },
+  {
+    "name": "ForgeWindow",
+    "category": "window",
+    "slug": "forge-window",
+    "source": "ui/window/forge-window.slint",
+    "line": 9,
+    "page": "/components/window/forge-window",
+    "example": "examples/api-components/forge-window.slint",
+    "services": [
+      "ForgeCaptureService"
+    ],
+    "screenshot": {
+      "route": "forge-window",
+      "open": false,
+      "focus": "ForgeWindow"
+    }
+  },
+  {
+    "name": "ForgeNavigationView",
+    "category": "navigation",
+    "slug": "forge-navigation-view",
+    "source": "ui/navigation/navigation-view.slint",
+    "line": 9,
+    "page": "/components/navigation/forge-navigation-view",
+    "example": "examples/api-components/forge-navigation-view.slint",
+    "services": [],
+    "screenshot": {
+      "route": "navigation",
+      "open": false,
+      "focus": "ForgeNavigationView"
+    }
+  },
+  {
+    "name": "ForgeBreadcrumb",
+    "category": "navigation",
+    "slug": "forge-breadcrumb",
+    "source": "ui/navigation/breadcrumb.slint",
+    "line": 5,
+    "page": "/components/navigation/forge-breadcrumb",
+    "example": "examples/api-components/forge-breadcrumb.slint",
+    "services": [],
+    "screenshot": {
+      "route": "breadcrumb",
+      "open": false,
+      "focus": "ForgeBreadcrumb"
+    }
+  },
+  {
+    "name": "ForgeTabBar",
+    "category": "navigation",
+    "slug": "forge-tab-bar",
+    "source": "ui/navigation/tab-bar.slint",
+    "line": 5,
+    "page": "/components/navigation/forge-tab-bar",
+    "example": "examples/api-components/forge-tab-bar.slint",
+    "services": [],
+    "screenshot": {
+      "route": "tabbar",
+      "open": false,
+      "focus": "ForgeTabBar"
+    }
+  },
+  {
+    "name": "ForgePageHeader",
+    "category": "navigation",
+    "slug": "forge-page-header",
+    "source": "ui/navigation/page-header.slint",
+    "line": 6,
+    "page": "/components/navigation/forge-page-header",
+    "example": "examples/api-components/forge-page-header.slint",
+    "services": [],
+    "screenshot": {
+      "route": "pageheader",
+      "open": false,
+      "focus": "ForgePageHeader"
+    }
+  },
+  {
+    "name": "ForgePillButton",
+    "category": "inputs",
+    "slug": "forge-pill-button",
+    "source": "ui/inputs/action-buttons.slint",
+    "line": 6,
+    "page": "/components/inputs/forge-pill-button",
+    "example": "examples/api-components/forge-pill-button.slint",
+    "services": [],
+    "screenshot": {
+      "route": "inputs-pill-button",
+      "open": false,
+      "focus": "ForgePillButton"
+    }
+  },
+  {
+    "name": "ForgeDelayButton",
+    "category": "inputs",
+    "slug": "forge-delay-button",
+    "source": "ui/inputs/action-buttons.slint",
+    "line": 55,
+    "page": "/components/inputs/forge-delay-button",
+    "example": "examples/api-components/forge-delay-button.slint",
+    "services": [],
+    "screenshot": {
+      "route": "inputs-delay-button",
+      "open": false,
+      "focus": "ForgeDelayButton"
+    }
+  },
+  {
+    "name": "ForgeDropDownButton",
+    "category": "inputs",
+    "slug": "forge-drop-down-button",
+    "source": "ui/inputs/action-buttons.slint",
+    "line": 189,
+    "page": "/components/inputs/forge-drop-down-button",
+    "example": "examples/api-components/forge-drop-down-button.slint",
+    "services": [],
+    "screenshot": {
+      "route": "inputs-dropdown-button",
+      "open": false,
+      "focus": "ForgeDropDownButton"
+    }
+  },
+  {
+    "name": "ForgeProgressButton",
+    "category": "inputs",
+    "slug": "forge-progress-button",
+    "source": "ui/inputs/action-buttons.slint",
+    "line": 170,
+    "page": "/components/inputs/forge-progress-button",
+    "example": "examples/api-components/forge-progress-button.slint",
+    "services": [],
+    "screenshot": {
+      "route": "inputs-progress-button",
+      "open": false,
+      "focus": "ForgeProgressButton"
+    }
+  },
+  {
+    "name": "ForgeInputValidation",
+    "category": "inputs",
+    "slug": "forge-input-validation",
+    "source": "ui/inputs/validation.slint",
+    "line": 4,
+    "page": "/components/inputs/forge-input-validation",
+    "example": "examples/api-components/forge-input-validation.slint",
+    "services": [],
+    "screenshot": {
+      "route": "inputs-validation",
+      "open": false,
+      "focus": "ForgeInputValidation"
+    }
+  },
+  {
+    "name": "ForgeChip",
+    "category": "inputs",
+    "slug": "forge-chip",
+    "source": "ui/inputs/tags.slint",
+    "line": 3,
+    "page": "/components/inputs/forge-chip",
+    "example": "examples/api-components/forge-chip.slint",
+    "services": [],
+    "screenshot": {
+      "route": "inputs-chip",
+      "open": false,
+      "focus": "ForgeChip"
+    }
+  },
+  {
+    "name": "ForgeTagInputBox",
+    "category": "inputs",
+    "slug": "forge-tag-input-box",
+    "source": "ui/inputs/tags.slint",
+    "line": 20,
+    "page": "/components/inputs/forge-tag-input-box",
+    "example": "examples/api-components/forge-tag-input-box.slint",
+    "services": [],
+    "screenshot": {
+      "route": "inputs-tag-input",
+      "open": false,
+      "focus": "ForgeTagInputBox"
+    }
+  },
+  {
+    "name": "ForgeNumberBox",
+    "category": "form",
+    "slug": "forge-number-box",
+    "source": "ui/form/number-box.slint",
+    "line": 3,
+    "page": "/components/form/forge-number-box",
+    "example": "examples/api-components/forge-number-box.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-number-box",
+      "open": false,
+      "focus": "ForgeNumberBox"
+    }
+  },
+  {
+    "name": "ForgeAutoSuggestBox",
+    "category": "form",
+    "slug": "forge-auto-suggest-box",
+    "source": "ui/form/auto-suggest.slint",
+    "line": 4,
+    "page": "/components/form/forge-auto-suggest-box",
+    "example": "examples/api-components/forge-auto-suggest-box.slint",
+    "services": [
+      "ForgeWidgetServices"
+    ],
+    "screenshot": {
+      "route": "form-auto-suggest",
+      "open": false,
+      "focus": "ForgeAutoSuggestBox"
+    }
+  },
+  {
+    "name": "ForgeColorPicker",
+    "category": "form",
+    "slug": "forge-color-picker",
+    "source": "ui/form/color-picker.slint",
+    "line": 7,
+    "page": "/components/form/forge-color-picker",
+    "example": "examples/api-components/forge-color-picker.slint",
+    "services": [
+      "ForgeWidgetServices"
+    ],
+    "screenshot": {
+      "route": "form-color-picker",
+      "open": false,
+      "focus": "ForgeColorPicker"
+    }
+  },
+  {
+    "name": "ForgeDatePicker",
+    "category": "form",
+    "slug": "forge-date-picker",
+    "source": "ui/form/date-picker.slint",
+    "line": 213,
+    "page": "/components/form/forge-date-picker",
+    "example": "examples/api-components/forge-date-picker.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-date-picker",
+      "open": false,
+      "focus": "ForgeDatePicker"
+    }
+  },
+  {
+    "name": "ForgeCalendarPicker",
+    "category": "form",
+    "slug": "forge-calendar-picker",
+    "source": "ui/form/date-picker.slint",
+    "line": 304,
+    "page": "/components/form/forge-calendar-picker",
+    "example": "examples/api-components/forge-calendar-picker.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-calendar-picker",
+      "open": false,
+      "focus": "ForgeCalendarPicker"
+    }
+  },
+  {
+    "name": "ForgeDatePickerPopup",
+    "category": "form",
+    "slug": "forge-date-picker-popup",
+    "source": "ui/form/date-picker.slint",
+    "line": 8,
+    "page": "/components/form/forge-date-picker-popup",
+    "example": "examples/api-components/forge-date-picker-popup.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-date-picker",
+      "open": true,
+      "focus": "ForgeDatePickerPopup"
+    }
+  },
+  {
+    "name": "ForgeTimePicker",
+    "category": "form",
+    "slug": "forge-time-picker",
+    "source": "ui/form/time-picker.slint",
+    "line": 104,
+    "page": "/components/form/forge-time-picker",
+    "example": "examples/api-components/forge-time-picker.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-time-picker",
+      "open": false,
+      "focus": "ForgeTimePicker"
+    }
+  },
+  {
+    "name": "ForgeTimePickerPopup",
+    "category": "form",
+    "slug": "forge-time-picker-popup",
+    "source": "ui/form/time-picker.slint",
+    "line": 6,
+    "page": "/components/form/forge-time-picker-popup",
+    "example": "examples/api-components/forge-time-picker-popup.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-time-picker",
+      "open": true,
+      "focus": "ForgeTimePickerPopup"
+    }
+  },
+  {
+    "name": "ForgeShortcutPicker",
+    "category": "form",
+    "slug": "forge-shortcut-picker",
+    "source": "ui/form/shortcut-picker.slint",
+    "line": 5,
+    "page": "/components/form/forge-shortcut-picker",
+    "example": "examples/api-components/forge-shortcut-picker.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-shortcut-picker",
+      "open": false,
+      "focus": "ForgeShortcutPicker"
+    }
+  },
+  {
+    "name": "ForgeMultiSelectComboBox",
+    "category": "form",
+    "slug": "forge-multi-select-combo-box",
+    "source": "ui/form/multi-select.slint",
+    "line": 7,
+    "page": "/components/form/forge-multi-select-combo-box",
+    "example": "examples/api-components/forge-multi-select-combo-box.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-multi-select-combo",
+      "open": false,
+      "focus": "ForgeMultiSelectComboBox"
+    }
+  },
+  {
+    "name": "ForgeMultiTreeSelectComboBox",
+    "category": "form",
+    "slug": "forge-multi-tree-select-combo-box",
+    "source": "ui/form/multi-select.slint",
+    "line": 47,
+    "page": "/components/form/forge-multi-tree-select-combo-box",
+    "example": "examples/api-components/forge-multi-tree-select-combo-box.slint",
+    "services": [],
+    "screenshot": {
+      "route": "form-multi-tree-combo",
+      "open": false,
+      "focus": "ForgeMultiTreeSelectComboBox"
+    }
+  },
+  {
+    "name": "ForgeSegmentedControl",
+    "category": "navigation",
+    "slug": "forge-segmented-control",
+    "source": "ui/navigation/segmented-control.slint",
+    "line": 4,
+    "page": "/components/navigation/forge-segmented-control",
+    "example": "examples/api-components/forge-segmented-control.slint",
+    "services": [],
+    "screenshot": {
+      "route": "navigation-segmented",
+      "open": false,
+      "focus": "ForgeSegmentedControl"
+    }
+  },
+  {
+    "name": "ForgePagination",
+    "category": "navigation",
+    "slug": "forge-pagination",
+    "source": "ui/navigation/pagination.slint",
+    "line": 3,
+    "page": "/components/navigation/forge-pagination",
+    "example": "examples/api-components/forge-pagination.slint",
+    "services": [],
+    "screenshot": {
+      "route": "navigation-pagination",
+      "open": false,
+      "focus": "ForgePagination"
+    }
+  },
+  {
+    "name": "ForgeFileTree",
+    "category": "data",
+    "slug": "forge-file-tree",
+    "source": "ui/data/file-tree.slint",
+    "line": 5,
+    "page": "/components/data/forge-file-tree",
+    "example": "examples/api-components/forge-file-tree.slint",
+    "services": [],
+    "screenshot": {
+      "route": "data-file-tree",
+      "open": false,
+      "focus": "ForgeFileTree"
+    }
+  },
+  {
+    "name": "ForgeDataGrid",
+    "category": "data",
+    "slug": "forge-data-grid",
+    "source": "ui/data/data-grid.slint",
+    "line": 64,
+    "page": "/components/data/forge-data-grid",
+    "example": "examples/api-components/forge-data-grid.slint",
+    "services": [
+      "ForgeGridServices"
+    ],
+    "screenshot": {
+      "route": "data-grid",
+      "open": false,
+      "focus": "ForgeDataGrid"
+    }
+  },
+  {
+    "name": "ForgeTreeDataGrid",
+    "category": "data",
+    "slug": "forge-tree-data-grid",
+    "source": "ui/data/data-grid.slint",
+    "line": 426,
+    "page": "/components/data/forge-tree-data-grid",
+    "example": "examples/api-components/forge-tree-data-grid.slint",
+    "services": [
+      "ForgeGridServices"
+    ],
+    "screenshot": {
+      "route": "data-tree-grid",
+      "open": false,
+      "focus": "ForgeTreeDataGrid"
+    }
+  },
+  {
+    "name": "ForgeTimeline",
+    "category": "data",
+    "slug": "forge-timeline",
+    "source": "ui/data/timeline.slint",
+    "line": 5,
+    "page": "/components/data/forge-timeline",
+    "example": "examples/api-components/forge-timeline.slint",
+    "services": [],
+    "screenshot": {
+      "route": "data-timeline",
+      "open": false,
+      "focus": "ForgeTimeline"
+    }
+  },
+  {
+    "name": "ForgeStatistic",
+    "category": "data",
+    "slug": "forge-statistic",
+    "source": "ui/data/statistic.slint",
+    "line": 4,
+    "page": "/components/data/forge-statistic",
+    "example": "examples/api-components/forge-statistic.slint",
+    "services": [],
+    "screenshot": {
+      "route": "data-statistic",
+      "open": false,
+      "focus": "ForgeStatistic"
+    }
+  },
+  {
+    "name": "ForgeQRCode",
+    "category": "data",
+    "slug": "forge-qr-code",
+    "source": "ui/data/qrcode.slint",
+    "line": 4,
+    "page": "/components/data/forge-qr-code",
+    "example": "examples/api-components/forge-qr-code.slint",
+    "services": [
+      "ForgeWidgetServices"
+    ],
+    "screenshot": {
+      "route": "data-qrcode",
+      "open": false,
+      "focus": "ForgeQRCode"
+    }
+  },
+  {
+    "name": "ForgeInfoBadge",
+    "category": "feedback",
+    "slug": "forge-info-badge",
+    "source": "ui/feedback/info-badge.slint",
+    "line": 4,
+    "page": "/components/feedback/forge-info-badge",
+    "example": "examples/api-components/forge-info-badge.slint",
+    "services": [],
+    "screenshot": {
+      "route": "feedback-info-badge",
+      "open": false,
+      "focus": "ForgeInfoBadge"
+    }
+  },
+  {
+    "name": "ForgeResult",
+    "category": "feedback",
+    "slug": "forge-result",
+    "source": "ui/feedback/result.slint",
+    "line": 6,
+    "page": "/components/feedback/forge-result",
+    "example": "examples/api-components/forge-result.slint",
+    "services": [],
+    "screenshot": {
+      "route": "feedback-result",
+      "open": false,
+      "focus": "ForgeResult"
+    }
+  },
+  {
+    "name": "ForgeRatingControl",
+    "category": "feedback",
+    "slug": "forge-rating-control",
+    "source": "ui/feedback/rating.slint",
+    "line": 3,
+    "page": "/components/feedback/forge-rating-control",
+    "example": "examples/api-components/forge-rating-control.slint",
+    "services": [],
+    "screenshot": {
+      "route": "feedback-rating",
+      "open": false,
+      "focus": "ForgeRatingControl"
+    }
+  },
+  {
+    "name": "ForgeShimmer",
+    "category": "feedback",
+    "slug": "forge-shimmer",
+    "source": "ui/feedback/shimmer.slint",
+    "line": 3,
+    "page": "/components/feedback/forge-shimmer",
+    "example": "examples/api-components/forge-shimmer.slint",
+    "services": [],
+    "screenshot": {
+      "route": "feedback-shimmer",
+      "open": false,
+      "focus": "ForgeShimmer"
+    }
+  },
+  {
+    "name": "ForgeSkeletonView",
+    "category": "feedback",
+    "slug": "forge-skeleton-view",
+    "source": "ui/feedback/shimmer.slint",
+    "line": 18,
+    "page": "/components/feedback/forge-skeleton-view",
+    "example": "examples/api-components/forge-skeleton-view.slint",
+    "services": [],
+    "screenshot": {
+      "route": "feedback-skeleton",
+      "open": false,
+      "focus": "ForgeSkeletonView"
+    }
+  },
+  {
+    "name": "ForgeContentDialog",
+    "category": "popups",
+    "slug": "forge-content-dialog",
+    "source": "ui/popups/content-dialog.slint",
+    "line": 6,
+    "page": "/components/popups/forge-content-dialog",
+    "example": "examples/api-components/forge-content-dialog.slint",
+    "services": [],
+    "screenshot": {
+      "route": "popups-content-dialog",
+      "open": true,
+      "focus": "ForgeContentDialog"
+    }
+  },
+  {
+    "name": "ForgeDrawer",
+    "category": "popups",
+    "slug": "forge-drawer",
+    "source": "ui/popups/drawer.slint",
+    "line": 6,
+    "page": "/components/popups/forge-drawer",
+    "example": "examples/api-components/forge-drawer.slint",
+    "services": [],
+    "screenshot": {
+      "route": "popups-drawer",
+      "open": true,
+      "focus": "ForgeDrawer"
+    }
+  },
+  {
+    "name": "ForgeAcrylic",
+    "category": "theme",
+    "slug": "forge-acrylic",
+    "source": "ui/theme/backdrop.slint",
+    "line": 5,
+    "page": "/components/theme/forge-acrylic",
+    "example": "examples/api-components/forge-acrylic.slint",
+    "services": [
+      "ForgeWidgetServices"
+    ],
+    "screenshot": {
+      "route": "theme-acrylic",
+      "open": false,
+      "focus": "ForgeAcrylic"
+    }
+  },
+  {
+    "name": "ForgeLiquidGlass",
+    "category": "theme",
+    "slug": "forge-liquid-glass",
+    "source": "ui/theme/backdrop.slint",
+    "line": 35,
+    "page": "/components/theme/forge-liquid-glass",
+    "example": "examples/api-components/forge-liquid-glass.slint",
+    "services": [
+      "ForgeWidgetServices"
+    ],
+    "screenshot": {
+      "route": "theme-liquid-glass",
+      "open": false,
+      "focus": "ForgeLiquidGlass"
+    }
+  },
+  {
+    "name": "ForgeSyntaxView",
+    "category": "other",
+    "slug": "forge-syntax-view",
+    "source": "ui/other/syntax-view.slint",
+    "line": 4,
+    "page": "/components/other/forge-syntax-view",
+    "example": "examples/api-components/forge-syntax-view.slint",
+    "services": [
+      "ForgeWidgetServices"
+    ],
+    "screenshot": {
+      "route": "other-syntax",
+      "open": false,
+      "focus": "ForgeSyntaxView"
+    }
+  },
+  {
+    "name": "ForgeTour",
+    "category": "other",
+    "slug": "forge-tour",
+    "source": "ui/other/tour.slint",
+    "line": 5,
+    "page": "/components/other/forge-tour",
+    "example": "examples/api-components/forge-tour.slint",
+    "services": [],
+    "screenshot": {
+      "route": "other-tour",
+      "open": true,
+      "focus": "ForgeTour"
+    }
+  },
+  {
+    "name": "ForgeDial",
+    "category": "other",
+    "slug": "forge-dial",
+    "source": "ui/other/dial.slint",
+    "line": 4,
+    "page": "/components/other/forge-dial",
+    "example": "examples/api-components/forge-dial.slint",
+    "services": [],
+    "screenshot": {
+      "route": "other-dial",
+      "open": false,
+      "focus": "ForgeDial"
+    }
+  },
+  {
+    "name": "ForgePlot",
+    "category": "plot",
+    "slug": "forge-plot",
+    "source": "ui/charts/plot.slint",
+    "line": 9,
+    "page": "/components/plot/forge-plot",
+    "example": "examples/api-components/forge-plot.slint",
+    "services": [
+      "ForgePlotServices"
+    ],
+    "screenshot": {
+      "route": "chart-professional",
+      "open": false,
+      "focus": "ForgePlot"
+    }
+  }
+]

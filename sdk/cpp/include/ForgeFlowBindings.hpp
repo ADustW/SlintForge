@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 // 由 tools/generate_flow_bindings.py 生成。
 #pragma once
 #include "ForgeFlow.hpp"

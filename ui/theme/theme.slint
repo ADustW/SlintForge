@@ -1,0 +1,120 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+// 浅色采用「紧凑专业」实色分层；深色沿用 WinUI 3 语义颜色。
+// 颜色使用 Slint RGBA 顺序；基础函数同时服务具有局部主题的选择器和 Flow。
+export global ForgeTheme {
+    // 选择器保留其局部 dark 属性，所有颜色仍从同一个语义表派生。
+    pure public function text-for(is-dark: bool) -> color { return is-dark ? #ffffff : #202832; }
+    pure public function secondary-for(is-dark: bool) -> color { return is-dark ? #ffffffc5 : #596575; }
+    pure public function surface-for(is-dark: bool) -> color { return is-dark ? #2c2c2c : #ffffff; }
+    pure public function border-for(is-dark: bool) -> color { return is-dark ? #ffffff12 : #d8dee7; }
+    pure public function divider-for(is-dark: bool) -> color { return is-dark ? #ffffff15 : #cdd4dd; }
+    pure public function strong-border-for(is-dark: bool) -> color { return is-dark ? #ffffff8b : #8794a5; }
+    pure public function disabled-text-for(is-dark: bool) -> color { return is-dark ? #ffffff5d : #939dab; }
+    pure public function disabled-fill-for(is-dark: bool) -> color { return is-dark ? #ffffff0b : #f1f3f6; }
+    pure public function disabled-border-for(is-dark: bool) -> color { return is-dark ? #ffffff28 : #dce2e9; }
+    pure public function control-for(is-dark: bool, state: int) -> color {
+        if state == 1 { return is-dark ? #ffffff15 : #f3f6fa; }
+        if state == 2 { return is-dark ? #ffffff08 : #e8edf3; }
+        return is-dark ? #ffffff0f : #ffffff;
+    }
+    pure public function subtle-for(is-dark: bool) -> color { return is-dark ? #ffffff0f : #e7ecf2; }
+    pure public function base-for(is-dark: bool) -> color { return is-dark ? #202020 : #f1f3f6; }
+    pure public function content-for(is-dark: bool) -> color { return is-dark ? #282828 : #f7f8fa; }
+    in-out property<ColorScheme> color-scheme: ColorScheme.light;
+    out property<bool> dark: self.color-scheme == ColorScheme.dark;
+    in-out property<color> accent-light: #005fb8;
+    in-out property<color> accent-dark: #60cdff;
+    out property<brush> background: self.base-for(self.dark);
+    out property<brush> content-background: self.content-for(self.dark);
+    out property<brush> popup-background: self.dark ? #2c2c2c : #ffffff;
+    out property<brush> foreground: self.text-for(self.dark);
+    out property<brush> alternate-background: self.content-background;
+    out property<brush> alternate-foreground: self.foreground;
+    out property<brush> control-background: self.control-for(self.dark, 0);
+    out property<brush> control-foreground: self.foreground;
+    out property<brush> accent-background: self.dark ? self.accent-dark : self.accent-light;
+    out property<brush> accent-foreground: self.dark ? #000000 : #ffffff;
+    out property<brush> selection-background: self.accent-background;
+    out property<brush> selection-foreground: self.accent-foreground;
+    out property<brush> border: self.border-for(self.dark);
+    out property<brush> secondary-accent-background: self.dark ? self.accent-background.with-alpha(0.9) : self.accent-light.darker(0.08);
+    out property<brush> tertiary-accent-background: self.dark ? self.accent-background.with-alpha(0.8) : self.accent-light.darker(0.16);
+    out property<brush> accent-disabled: self.dark ? #ffffff28 : #d6dce5;
+    out property<brush> accent-control-border: self.dark ? @linear-gradient(180deg, #ffffff14 90%, #00000023 100%) : self.accent-light.darker(0.12);
+    out property<brush> control-border: self.dark ? @linear-gradient(180deg, #ffffff18 0%, #ffffff12 10%) : #c5cdd8;
+    out property<brush> text-accent-foreground-secondary: self.dark ? #00000080 : #ffffffb3;
+    out property<brush> text-accent-foreground-disabled: self.dark ? #ffffff87 : #6b7685;
+    out property<brush> text-secondary: self.secondary-for(self.dark);
+    out property<brush> text-tertiary: self.dark ? #ffffff87 : #657183;
+    out property<brush> text-disabled: self.disabled-text-for(self.dark);
+    out property<brush> text-control-border: self.dark ? @linear-gradient(180deg, #ffffff12 99%, #ffffff8b 100%) : @linear-gradient(180deg, #c5cdd8 96%, #8794a5 100%);
+    out property<brush> control-secondary: self.control-for(self.dark, 1);
+    out property<brush> control-tertiary: self.control-for(self.dark, 2);
+    out property<brush> control-disabled: self.disabled-fill-for(self.dark);
+    out property<brush> control-alt-secondary: self.dark ? #00000019 : #eef1f5;
+    out property<brush> control-alt-tertiary: self.dark ? #ffffff0b : #e4eaf1;
+    out property<brush> control-alt-quaternary: self.dark ? #ffffff12 : #d9e1eb;
+    out property<brush> control-alt-disabled: transparent;
+    out property<brush> control-strong-stroke: self.strong-border-for(self.dark);
+    out property<brush> control-strong-stroke-disabled: self.disabled-border-for(self.dark);
+    out property<brush> control-solid: self.dark ? #454545 : #ffffff;
+    out property<brush> circle-border: self.control-border;
+    out property<brush> control-input-active: self.dark ? #1e1e1eb3 : #ffffff;
+    out property<brush> focus-stroke-inner: self.dark ? #000000b3 : #ffffff;
+    out property<brush> focus-stroke-outer: self.dark ? self.foreground : self.accent-background;
+    out property<brush> control-background-stroke-flyout: self.dark ? #00000033 : #cdd4dd;
+    out property<brush> sub-title-secondary: self.dark ? #ffffff0f : #e7ecf2;
+    out property<brush> sub-title-tertiary: self.dark ? #ffffff0a : #dce4ee;
+    out property<brush> shadow: self.dark ? #00000042 : #172b451a;
+    out property<brush> subtle: self.subtle-for(self.dark);
+    out property<brush> subtle-secondary: self.subtle;
+    out property<brush> subtle-tertiary: self.dark ? #ffffff0a : #dce4ee;
+    out property<brush> divider: self.divider-for(self.dark);
+    out property<brush> layer-on-mica-base-alt: self.dark ? #3a3a3a73 : #ffffff;
+    out property<brush> layer-on-mica-base-alt-secondary: self.dark ? #ffffff0f : #eef1f5;
+    out property<brush> card-background: self.dark ? #ffffff0d : #ffffff;
+    out property<brush> card-stroke: self.dark ? #00000019 : #d8dee7;
+    // 结构分区与数据表面独立于普通按钮填充，避免在浅色下混成同一层灰。
+    out property<brush> navigation-selected: self.dark ? self.subtle : self.accent-light.mix(#ffffff, 0.11);
+    out property<brush> accent-surface: self.dark ? self.accent-background.with-alpha(0.15) : self.accent-light.mix(#ffffff, 0.06);
+    out property<brush> table-background: self.dark ? self.background : #ffffff;
+    out property<brush> table-header: self.dark ? self.control-background : #eef1f5;
+    out property<brush> table-alternate: self.dark ? self.alternate-background : #f7f9fc;
+    out property<brush> table-selected: self.dark ? self.accent-background.with-alpha(0.18) : self.navigation-selected;
+    out property<brush> table-grid: self.dark ? self.border.with-alpha(0.025) : #e1e6ed;
+    out property<brush> plot-background: self.dark ? self.background : #ffffff;
+    out property<brush> plot-grid: self.dark ? self.border : #e3e8f0;
+    out property<brush> state: self.dark ? #ffffff : #000000;
+    out property<brush> state-secondary: self.dark ? #000000 : #ffffff;
+    out property<brush> smoke: #0000004d;
+    out property<brush> success: self.dark ? #6ccb5f : #0f7b0f;
+    out property<brush> warning: self.dark ? #fce100 : #9d5d00;
+    out property<brush> error: self.dark ? #ff99a4 : #c42b1c;
+    out property<brush> success-background: self.dark ? #393d1b : #dff6dd;
+    out property<brush> warning-background: self.dark ? #433519 : #fff4ce;
+    out property<brush> error-background: self.dark ? #442726 : #fde7e9;
+}
+
+// 使用逻辑像素，DPI 交给 Slint；不得对整个窗口再做缩放。
+export global ForgeMetrics {
+    out property<length> control-height: 32px;
+    out property<length> navigation-height: 36px;
+    out property<length> title-bar-height: 36px;
+    out property<length> title-bar-button-width: 36px;
+    out property<length> title-bar-leading-width: 32px;
+    out property<length> title-bar-search-height: 28px;
+    out property<length> pane-width: 208px;
+    out property<length> compact-pane-width: 48px;
+    out property<length> control-radius: 4px;
+    out property<length> surface-radius: 8px;
+    out property<length> stroke-width: 1px;
+    out property<length> page-padding: 24px;
+    out property<length> space-xs: 4px;
+    out property<length> space-s: 8px;
+    out property<length> space-m: 12px;
+    out property<length> space-l: 16px;
+    out property<length> space-xl: 24px;
+    out property<length> space-xxl: 32px;
+}

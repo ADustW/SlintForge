@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Slider, SpinBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 import { ForgePickerAction } from "picker-base.slint";
@@ -60,26 +63,28 @@ export component ForgeColorPicker inherits Rectangle {
     changed blue => { root.color-changed(root.value); }
     changed alpha => { root.color-changed(root.value); }
     preferred-width: 72px * root.scale;
-    preferred-height: 36px * root.scale; horizontal-stretch: 0; vertical-stretch: 0; forward-focus: focus;
+    preferred-height: 32px * root.scale; horizontal-stretch: 0; vertical-stretch: 0; forward-focus: focus;
     width: root.preferred-width; height: root.preferred-height;
-    border-radius: 4px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; background: root.dark ? #303030 : #fff;
-    opacity: root.enabled ? 1 : 0.45;
-    swatch := Rectangle { x: 6px * root.scale; y: 6px * root.scale; width: 24px * root.scale; height: 24px * root.scale; border-radius: 3px; background: root.value; }
-    Rectangle { x: 36px * root.scale; y: 6px * root.scale; width: 1px; height: 24px * root.scale; background: root.dark ? #454545 : #ddd; }
-    ForgeIcon { x: 40px * root.scale; width: 28px * root.scale; height: root.height; glyph: ForgeIcons.eyedropper; color: root.dark ? #fff : #202020; font-size: 16px * root.scale; }
+    border-radius: 4px; border-width: 1px; border-color: focus.has-focus ? Palette.focus-stroke-outer : Palette.border-for(root.dark); background: root.enabled ? Palette.control-for(root.dark, 0) : Palette.disabled-fill-for(root.dark);
+
+    accessible-role: button; accessible-label: root.language == "en" ? "Choose color" : "选择颜色"; accessible-enabled: root.enabled;
+    accessible-action-default => { if root.enabled {root.open();} }
+    swatch := Rectangle { x: 6px * root.scale; y: 6px * root.scale; width: 20px * root.scale; height: 20px * root.scale; border-radius: 3px; background: root.value; }
+    Rectangle { x: 36px * root.scale; y: 6px * root.scale; width: 1px; height: 20px * root.scale; background: Palette.border-for(root.dark); }
+    ForgeIcon { x: 40px * root.scale; width: 28px * root.scale; height: root.height; glyph: ForgeIcons.eyedropper; color: root.enabled ? Palette.text-for(root.dark) : Palette.disabled-text-for(root.dark); font-size: 16px * root.scale; }
     TouchArea { x: 0px; width: 36px * root.scale; height: root.height; enabled: root.enabled; clicked => { root.open(); } }
     TouchArea { x: 38px * root.scale; width: 34px * root.scale; height: root.height; enabled: root.enabled; clicked => { root.open(); root.start-screen-pick(); } }
     focus := FocusScope { enabled: root.enabled; key-pressed(event) => { if event.text == " " || event.text == Key.Return { root.open(); return accept; } return reject; } }
     popup := PopupWindow {
         y: root.height + 4px; width: 370px * root.scale; height: 514px * root.scale;
         close-policy: no-auto-close; forward-focus: popup-focus;
-        Rectangle { background: root.dark ? #242424 : #fff; border-radius: 8px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        Rectangle { background: Palette.surface-for(root.dark); border-radius: 8px; border-width: 1px; border-color: Palette.border-for(root.dark); }
         popup-focus := FocusScope {
             width: 100%; height: 100%; key-pressed(event) => { if event.text == Key.Escape { if root.picking { root.picking = false; } else { root.cancel(); } return accept; } return reject; }
         screen-focus := FocusScope { key-pressed(event) => { if root.picking && event.text == Key.Escape { root.picking = false; return accept; } return reject; } }
         VerticalLayout {
             padding: 16px * root.scale; spacing: 10px * root.scale;
-            Text { text: root.language == "en" ? "Color Picker" : "颜色选择器"; color: root.dark ? #fff : #202020; font-size: 18px * root.scale; font-weight: 600; }
+            Text { text: root.language == "en" ? "Color Picker" : "颜色选择器"; color: Palette.text-for(root.dark); font-size: 18px * root.scale; font-weight: 600; }
             HorizontalLayout {
                 ForgePickerAction { dark: root.dark; primary: root.tab == 0; text: root.language == "en" ? "Spectrum" : "色谱"; clicked => { root.tab = 0; } }
                 ForgePickerAction { dark: root.dark; primary: root.tab == 1; text: root.language == "en" ? "Palette" : "调色板"; clicked => { root.tab = 1; } }
@@ -99,7 +104,7 @@ export component ForgeColorPicker inherits Rectangle {
                 for color[index] in [#ffffff, #000000, #e81123, #ea005e, #c239b3, #881798, #0078d4, #00b7c3, #00cc6a, #10893e, #ffb900, #f7630c, #8e562e, #8764b8, #69797e, #9a0089, #004e8c, #038387, #498205, #da3b01, #c8c8c8, #7a7574, #4a5459, #2d7d9a, #515c6b, #b146c2, #567c73, #a80000]: Rectangle {
                     x: mod(index, 7) * parent.width / 7; y: floor(index / 7) * 40px * root.scale;
                     width: parent.width / 7 - 5px; height: 34px * root.scale; border-radius: 4px; background: color;
-                    border-width: 1px; border-color: root.dark ? #666 : #aaa;
+                    border-width: 1px; border-color: Palette.strong-border-for(root.dark);
                     TouchArea { clicked => { root.set-draft(color); } }
                 }
             }
@@ -110,29 +115,29 @@ export component ForgeColorPicker inherits Rectangle {
                 TouchArea { pointer-event(event) => { if event.kind == PointerEventKind.down { root.hue = max(0, min(359.9, self.mouse-x / hue-bar.width * 360)); } } moved => { if self.pressed { root.hue = max(0, min(359.9, self.mouse-x / hue-bar.width * 360)); } } }
             }
             HorizontalLayout {
-                Rectangle { width: 48px * root.scale; height: 34px * root.scale; border-radius: 4px; background: root.draft-value; border-width: 1px; border-color: root.dark ? #555 : #aaa; }
+                Rectangle { width: 48px * root.scale; height: 34px * root.scale; border-radius: 4px; background: root.draft-value; border-width: 1px; border-color: Palette.strong-border-for(root.dark); }
                 LineEdit { text <=> root.hex-text; placeholder-text: "#RRGGBB / #RRGGBBAA"; enabled: ForgeWidgetServices.connected; edited(text) => { root.edit-hex(text); } }
             }
-            if root.hex-invalid: Text { text: root.language == "en" ? "Invalid hexadecimal color" : "颜色格式不正确"; color: #e81123; font-size: 12px * root.scale; }
+            if root.hex-invalid: Text { text: root.language == "en" ? "Invalid hexadecimal color" : "颜色格式不正确"; color: Palette.error; font-size: 12px * root.scale; }
             HorizontalLayout {
                 spacing: 8px;
                 VerticalLayout {
-                    Text { text: root.language == "en" ? "Red" : "红"; color: root.dark ? #fff : #202020; font-size: 12px * root.scale; }
-                    SpinBox { minimum: 0; maximum: 255; value <=> root.draft-red; edited(value) => { root.set-draft(rgba(value, root.draft-value.green, root.draft-value.blue, root.opacity-value)); } }
+                    Text { text: root.language == "en" ? "Red" : "红"; color: Palette.text-for(root.dark); font-size: 12px * root.scale; }
+                    SpinBox { min-width: 0px; preferred-width: 96px * root.scale; min-height: 32px * root.scale; minimum: 0; maximum: 255; value <=> root.draft-red; edited(value) => { root.set-draft(rgba(value, root.draft-value.green, root.draft-value.blue, root.opacity-value)); } }
                 }
                 VerticalLayout {
-                    Text { text: root.language == "en" ? "Green" : "绿"; color: root.dark ? #fff : #202020; font-size: 12px * root.scale; }
-                    SpinBox { minimum: 0; maximum: 255; value <=> root.draft-green; edited(value) => { root.set-draft(rgba(root.draft-value.red, value, root.draft-value.blue, root.opacity-value)); } }
+                    Text { text: root.language == "en" ? "Green" : "绿"; color: Palette.text-for(root.dark); font-size: 12px * root.scale; }
+                    SpinBox { min-width: 0px; preferred-width: 96px * root.scale; min-height: 32px * root.scale; minimum: 0; maximum: 255; value <=> root.draft-green; edited(value) => { root.set-draft(rgba(root.draft-value.red, value, root.draft-value.blue, root.opacity-value)); } }
                 }
                 VerticalLayout {
-                    Text { text: root.language == "en" ? "Blue" : "蓝"; color: root.dark ? #fff : #202020; font-size: 12px * root.scale; }
-                    SpinBox { minimum: 0; maximum: 255; value <=> root.draft-blue; edited(value) => { root.set-draft(rgba(root.draft-value.red, root.draft-value.green, value, root.opacity-value)); } }
+                    Text { text: root.language == "en" ? "Blue" : "蓝"; color: Palette.text-for(root.dark); font-size: 12px * root.scale; }
+                    SpinBox { min-width: 0px; preferred-width: 96px * root.scale; min-height: 32px * root.scale; minimum: 0; maximum: 255; value <=> root.draft-blue; edited(value) => { root.set-draft(rgba(root.draft-value.red, root.draft-value.green, value, root.opacity-value)); } }
                 }
             }
             HorizontalLayout {
-                Text { text: root.language == "en" ? "Opacity" : "不透明度"; color: root.dark ? #fff : #202020; vertical-alignment: center; }
+                Text { text: root.language == "en" ? "Opacity" : "不透明度"; color: Palette.text-for(root.dark); vertical-alignment: center; }
                 Slider { minimum: 0; maximum: 1; value <=> root.opacity-value; }
-                Text { text: round(root.opacity-value * 100) + "%"; color: root.dark ? #fff : #202020; vertical-alignment: center; }
+                Text { text: round(root.opacity-value * 100) + "%"; color: Palette.text-for(root.dark); vertical-alignment: center; }
             }
             if root.picking: Text { text: root.language == "en" ? "Click a screen pixel; Esc to cancel" : "点击屏幕取色，Esc 取消"; color: Palette.accent-background; font-size: 12px * root.scale; }
             HorizontalLayout {

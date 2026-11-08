@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use crate::{ForgePlotPoint, ForgePlotServices, ProfessionalPlotWindow};
 use slint::platform::{PointerEventButton, WindowEvent};
 use slint::{ComponentHandle, Model};

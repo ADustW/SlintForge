@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 slint::include_modules!();
 use slint::ComponentHandle;
 
@@ -6,6 +9,7 @@ mod business;
 mod business_tests;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    slintforge::configure_rendering(Default::default())?;
     if std::env::args().any(|arg| arg == "--suggestion-demo" || arg == "--suggestion-smoke") {
         return business::suggestion(std::env::args().any(|arg| arg == "--suggestion-smoke"));
     }
@@ -61,15 +65,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn charts_smoke() -> Result<(), Box<dyn std::error::Error>> {
     let ui = ChartsWindow::new()?;
-    slintforge::bind_chart_services!(
-        ui,
-        ForgeChartServices,
-        ForgeChartScene,
-        ForgeChartMark,
-        ForgeChartLine,
-        ForgeChartTick,
-        ForgeChartLabel
-    );
+    slintforge::bind_plot_services!(ui, ForgePlotServices, ForgePlotScene, ForgePlotAxis, ForgePlotRange, ForgePlotRect, ForgePlotHit, ForgePlotSelection, ForgePlotExportResult);
     let directory = std::path::Path::new("build/charts-qa");
     std::fs::create_dir_all(directory)?;
     let timer = slint::Timer::default();

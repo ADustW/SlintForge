@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 import {
     ForgeFlowState, ForgeFlowAction, ForgeWindow, ForgeNavigationView, ForgeNavigationItem, ForgeNavPlacement,
@@ -29,6 +32,7 @@ import { GalleryWatermarkPage } from "../page/surfaces-watermark.slint";
 import { GalleryMarqueePage } from "../page/surfaces-marquee.slint";
 import { GalleryFlowPages } from "../component/flow-pages.slint";
 import { GalleryChartPages } from "../component/chart-pages.slint";
+import { GalleryRetainedViewport } from "../component/retained-viewport.slint";
 import { GalleryInputsPages } from "../component/inputs-pages.slint";
 import { GalleryDataPages } from "../component/data-pages.slint";
 import { GalleryFormPages } from "../component/form-pages.slint";
@@ -69,11 +73,19 @@ export component GalleryWindow inherits ForgeWindow {
     min-width: 960px;
     min-height: 600px;
     show-menu-button: true;
-    navigation-glyph: root.placement == ForgeNavPlacement.left
-        ? (root.pane-state == ForgePaneState.hidden ? ForgeIcons.panel-left-expand : ForgeIcons.panel-left)
-        : root.placement == ForgeNavPlacement.right
-            ? (root.pane-state == ForgePaneState.hidden ? ForgeIcons.panel-right-expand : ForgeIcons.panel-right)
-            : (root.pane-state == ForgePaneState.hidden ? ForgeIcons.panel-top-expand : ForgeIcons.panel-top-contract);
+    leading-menu-button: true;
+    navigation-glyph: ForgeIcons.navigation;
+    show-back-button: true;
+    back-enabled: root.can-go-back;
+    back-clicked => { root.back-requested(); }
+    show-search-box: true;
+    search-text: root.search-query;
+    search-edited(value) => { root.search-requested(value); }
+    search-accepted(value) => {
+        if value != "" && root.navigation-items.length > 0 {
+            root.navigate-requested(root.navigation-items[0].id, []);
+        }
+    }
     show-theme-button: true;
     show-pin-button: true;
     show-settings-button: true;
@@ -115,9 +127,10 @@ export component GalleryWindow inherits ForgeWindow {
     in property<bool> can-go-back: false;
     in property<ForgeNavPlacement> placement: ForgeNavPlacement.left;
     in property<ForgePaneState> pane-state: ForgePaneState.expanded;
-    property<ForgePaneState> last-visible-pane-state: ForgePaneState.expanded;
     in property<int> sample-counter: 0;
     in property<string> route-param-summary: @tr("无");
+    // 仅用于 API 文档截图的隐藏聚焦标记；空值时不参与普通 Gallery 布局与导航。
+    in property<string> api-doc-focus: "";
     in-out property<string> language <=> GalleryLocale.language;
     in-out property font-family-name <=> ForgeTypography.family;
     in-out property font-scale <=> ForgeTypography.scale;
@@ -125,8 +138,8 @@ export component GalleryWindow inherits ForgeWindow {
     in-out property window-rounded <=> root.rounded-corners;
     in-out property theme-dark <=> root.dark-mode;
     property<length> content-height: root.height - root.title-bar-height;
-    property<length> page-width: root.width - (root.placement == ForgeNavPlacement.top || root.pane-state == ForgePaneState.hidden ? 0px : root.pane-state == ForgePaneState.compact ? 50px : 320px);
-    property<length> page-height: root.content-height - (root.placement == ForgeNavPlacement.top && root.pane-state != ForgePaneState.hidden ? 48px : 0px);
+    property<length> page-width: navigation.content-width;
+    property<length> page-height: navigation.content-height;
     out property<string> lifecycle-draft: lifecycle-page.draft;
     out property<string> qa-localized-settings-label: @tr("设置");
     out property<string> qa-navigation-glyph: root.navigation-glyph;
@@ -153,15 +166,11 @@ export component GalleryWindow inherits ForgeWindow {
     settings-requested => { root.open-settings-requested(); }
     open-settings-requested => { root.navigate-requested("settings", []); }
     menu-requested => {
-        if (root.pane-state == ForgePaneState.hidden) {
-            root.pane-state-requested(root.last-visible-pane-state);
-        } else {
-            root.last-visible-pane-state = root.pane-state;
-            root.pane-state-requested(ForgePaneState.hidden);
+        // 按当前显示状态切换，搜索临时展开时也能直接收为图标栏。
+        navigation.toggle-pane();
+        if (root.search-query != "") {
+            root.search-requested("");
         }
-    }
-    changed pane-state => {
-        if (root.pane-state != ForgePaneState.hidden) { root.last-visible-pane-state = root.pane-state; }
     }
     theme-toggle-requested => {
         root.dark-mode = !root.dark-mode;
@@ -171,10 +180,12 @@ export component GalleryWindow inherits ForgeWindow {
     init => { Palette.color-scheme = ColorScheme.dark; }
     changed dark-mode => { Palette.color-scheme = root.dark-mode ? ColorScheme.dark : ColorScheme.light; }
 
-    ForgeNavigationView {
+    navigation := ForgeNavigationView {
         width: root.width;
         height: root.content-height;
         show-app-bar: false;
+        show-pane-header: false;
+        show-pane-search: false;
         items: root.navigation-items;
         tree-items: root.all-navigation-items;
         footer-items: root.footer-items;
@@ -184,7 +195,8 @@ export component GalleryWindow inherits ForgeWindow {
         can-go-back: root.can-go-back;
         dark-mode: root.dark-mode;
         placement: root.placement;
-        pane-state: root.pane-state;
+        // 搜索时暂时展开结果，清空后恢复用户原来的导航状态，不写入设置。
+        pane-state: root.search-query != "" ? ForgePaneState.expanded : root.pane-state;
         navigate-requested(id, params) => { root.navigate-requested(id, params); }
         group-toggle-requested(id) => { root.group-toggle-requested(id); }
         pane-state-requested(state) => { root.pane-state-requested(state); }
@@ -286,9 +298,21 @@ export component GalleryWindow inherits ForgeWindow {
             sample-counter: root.sample-counter;
             route-param-summary: root.route-param-summary;
         }
-        flow-components := GalleryFlowPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
-        chart-components := GalleryChartPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
-        grid-components := GalleryGridPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
+        flow-viewport := GalleryRetainedViewport {
+            active: root.active-route-id.starts-with("flow-");
+            viewport-width: root.page-width; viewport-height: root.page-height;
+            flow-components := GalleryFlowPages { width: flow-viewport.content-width; height: flow-viewport.content-height; active-route-id: root.active-route-id; }
+        }
+        chart-viewport := GalleryRetainedViewport {
+            active: root.active-route-id.starts-with("chart-");
+            viewport-width: root.page-width; viewport-height: root.page-height;
+            chart-components := GalleryChartPages { width: chart-viewport.content-width; height: chart-viewport.content-height; active-route-id: root.active-route-id; }
+        }
+        grid-viewport := GalleryRetainedViewport {
+            active: root.active-route-id.starts-with("data-");
+            viewport-width: root.page-width; viewport-height: root.page-height;
+            grid-components := GalleryGridPages { width: grid-viewport.content-width; height: grid-viewport.content-height; active-route-id: root.active-route-id; }
+        }
         inputs-components := GalleryInputsPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         data-components := GalleryDataPages { width: root.page-width; height: root.page-height; active-route-id: root.active-route-id; }
         form-components := GalleryFormPages { width: root.page-width; height: root.page-height; language: root.language; active-route-id: root.active-route-id; }
@@ -301,6 +325,32 @@ export component GalleryWindow inherits ForgeWindow {
             width: root.page-width; height: root.page-height;
             visible: root.active-route-id == pending.id;
             item: pending;
+        }
+    }
+
+    if root.api-doc-focus != "" : Rectangle {
+        x: root.width - self.width - 20px;
+        y: root.title-bar-height + 16px;
+        width: 360px;
+        height: 54px;
+        border-radius: 10px;
+        background: Palette.control-background;
+        border-width: 1px;
+        border-color: Palette.border;
+        drop-shadow-blur: 14px;
+        drop-shadow-color: #30000000;
+        z: 1000;
+
+        Text {
+            x: 16px;
+            width: parent.width - 32px;
+            height: parent.height;
+            vertical-alignment: center;
+            text: root.api-doc-focus;
+            color: Palette.foreground;
+            font-size: 16px;
+            font-weight: 600;
+            overflow: elide;
         }
     }
 }

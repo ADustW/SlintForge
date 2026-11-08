@@ -1,5 +1,7 @@
 # 延时按钮与 Fluent 选择器 API
 
+> **兼容提示：**本页继续保留选择器专题说明。逐组件中英文 API 见 [中文 API 站点源码](site/index.md) 与 [English API source](site/en/index.md)。
+
 所有控件从 `@slintforge` 导入；同一套 Slint 文件用于 Rust 和 C++。默认中文，`language: "en"` 切换英文；`dark` 支持实例独立主题，`enabled` 控制输入。取消、Esc、禁用和关闭都不提交草稿。
 
 ## ForgeDelayButton

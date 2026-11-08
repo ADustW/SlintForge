@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, CheckBox, LineEdit, Palette, TextEdit } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
@@ -97,7 +100,7 @@ export component GalleryInputsCopyableTextPage inherits Rectangle {
                     report := VerticalLayout {
                         padding: 20px; spacing: 12px;
                         Text { text: @tr("同步失败"); color: #c42b1c; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
-                        Text { text: @tr("无法连接到服务器。复制下方详情并发送给技术支持。"); color: Palette.foreground.transparentize(0.3); font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                        Text { text: @tr("无法连接到服务器。复制下方详情并发送给技术支持。"); color: Palette.foreground.transparentize(0.3); font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
                         details := TextEdit {
                             height: 90px * ForgeTypography.scale; read-only: true;
                             font-family: "Consolas"; font-size: 12px * ForgeTypography.scale;

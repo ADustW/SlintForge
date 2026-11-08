@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 // 由 tools/generate_plot_bindings.py 生成。
 #[macro_export]
 macro_rules! bind_plot_services {
@@ -59,6 +62,8 @@ a.x.to_bits()==b.x.to_bits() && a.y.to_bits()==b.y.to_bits() && a.low.to_bits()=
                 if !reusable {
                 for v in panels.iter() {
                     let title = plot_cstring(v.title.as_str());
+                    let category_labels=v.categories.iter().map(|v|plot_cstring(v.as_str())).collect::<Vec<_>>();
+                    let categories=category_labels.iter().enumerate().map(|(i,v)|ForgePlotTickCore{value:i as f64,label:v.as_ptr()}).collect::<Vec<_>>();
                     let core = ForgePlotPanelCore {
                 id: v.id,
                 x: v.x as f64,
@@ -66,6 +71,8 @@ a.x.to_bits()==b.x.to_bits() && a.y.to_bits()==b.y.to_bits() && a.low.to_bits()=
                 width: v.width as f64,
                 height: v.height as f64,
                 title: title.as_ptr(),
+                categories: categories.as_ptr(),
+                category_count: categories.len(),
                     }; unsafe { plot.add_panel_core(&core); }
                 }
                 }
@@ -97,6 +104,7 @@ a.x.to_bits()==b.x.to_bits() && a.y.to_bits()==b.y.to_bits() && a.low.to_bits()=
                 }
                 for v in series.iter() {
                     let name = plot_cstring(v.name.as_str());
+                    let point_styles=v.point_styles.iter().map(|v|ForgePlotPointStyleCore{index:v.index,hidden:v.hidden as i32,size:v.size as f64,color:plot_color(v.color)}).collect::<Vec<_>>();
                     let core = ForgePlotSeriesCore {
                 id: v.id,
                 kind: v.kind as i32,
@@ -117,6 +125,9 @@ a.x.to_bits()==b.x.to_bits() && a.y.to_bits()==b.y.to_bits() && a.low.to_bits()=
                 bar_width: if v.bar_width > 0. { v.bar_width as f64 } else { 0.8 },
                 baseline: v.baseline as f64,
                 name: name.as_ptr(),
+                inner_radius: v.inner_radius as f64,
+                point_styles: point_styles.as_ptr(),
+                point_style_count: point_styles.len(),
                     };
                     if reusable {unsafe{plot.update_series_core(&core);}continue;}
                     let mut labels = Vec::new(); let mut outliers = Vec::new();
@@ -307,6 +318,7 @@ a.x.to_bits()==b.x.to_bits() && a.y.to_bits()==b.y.to_bits() && a.low.to_bits()=
             let ranges=$crate::plot::merge_plot_selection(&a,&b,mode);
             slint::ModelRc::new(slint::VecModel::from(ranges.into_iter().map(|(id,first,last)| {let mut r=<$selection>::default();r.id=id;r.first=first;r.last=last;r}).collect::<Vec<_>>()))
         });
+        service.on_axis_index(|axes,id| axes.iter().position(|axis| axis.id == id).map(|index| index as i32).unwrap_or(-1));
         let query = state.clone(); service.on_change_view(move |token,axes,ranges,panel,mode,x,y,w,h,directions| {
             let state=query.borrow();let plot=state.get(token);
             slint::ModelRc::new(slint::VecModel::from(axes.iter().map(|mut a| {
@@ -322,7 +334,13 @@ a.x.to_bits()==b.x.to_bits() && a.y.to_bits()==b.y.to_bits() && a.low.to_bits()=
                 } a
             }).collect::<Vec<_>>()))
         });
-        service.on_toggle_series(move |series,id| slint::ModelRc::new(slint::VecModel::from(series.iter().map(|mut s| {if s.id==id{s.hidden=!s.hidden;}s}).collect::<Vec<_>>())));
+        service.on_cartesian_panel(|series,axes,panel| series.row_count()==0||series.iter().any(|s|{let kind=s.kind as i32;(kind<=5||kind==7)&&(panel<0||axes.iter().find(|a|a.id==s.x_axis).map(|a|a.panel).unwrap_or(s.x_axis/2)==panel)}));
+        service.on_cartesian_series(|series,id| series.iter().any(|s|s.id==id&&{let kind=s.kind as i32;kind<=5||kind==7}));
+        service.on_toggle_point(move |series,id,index| slint::ModelRc::new(slint::VecModel::from(series.iter().map(|mut s| {
+            if s.id==id {let mut styles=s.point_styles.iter().collect::<Vec<_>>();if let Some(style)=styles.iter_mut().find(|v|v.index==index){style.hidden=!style.hidden;}else{let mut style=styles.first().cloned().unwrap_or_default();style.index=index;style.hidden=true;style.size=if s.point_size>0.{s.point_size}else{6.};style.color=Default::default();styles.push(style);}s.point_styles=slint::ModelRc::new(slint::VecModel::from(styles));}s
+        }).collect::<Vec<_>>())));
+
+    service.on_toggle_series(move |series,id| slint::ModelRc::new(slint::VecModel::from(series.iter().map(|mut s| {if s.id==id{s.hidden=!s.hidden;}s}).collect::<Vec<_>>())));
         let query=state.clone();service.on_scroll_view(move |token,axes,id,position,span|{
             let bounds=query.borrow().get(token).and_then(|p|p.domains().into_iter().find(|r|r.id==id));
             slint::ModelRc::new(slint::VecModel::from(axes.iter().map(|mut a|{if a.id==id{if let Some(b)=bounds{let width=(span as f64).max(0.000001);a.manual_range=true;a.minimum=(b.minimum+(b.maximum-b.minimum-width).max(0.)*(position as f64).clamp(0.,1.)) as f32;a.maximum=a.minimum+width as f32;}}a}).collect::<Vec<_>>()))

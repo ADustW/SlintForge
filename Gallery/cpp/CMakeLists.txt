@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/../data/navigation.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/../data/component-status.txt)
@@ -11,9 +14,11 @@ if(MSVC)
     # 发布包中的 smoke 验证也保留断言。
     target_compile_options(slintforge_gallery_cpp PRIVATE /bigobj /UNDEBUG)
     # 与 Rust Gallery 保持相同栈预算（32MB），容纳统一模板下的固定页面、示例区与 API 表的初始化。
-    target_link_options(slintforge_gallery_cpp PRIVATE /STACK:33554432)
+    target_link_options(slintforge_gallery_cpp PRIVATE /STACK:33554432 /ENTRY:mainCRTStartup)
 endif()
 if(WIN32)
+    # 直接启动 Gallery 时只创建应用窗口；保留 main 参数和测试的重定向输出。
+    set_property(TARGET slintforge_gallery_cpp PROPERTY WIN32_EXECUTABLE TRUE)
     set(FORGE_GALLERY_ICON_RC "${CMAKE_CURRENT_SOURCE_DIR}/../ui/assets/brand/slintforge-gallery.ico")
     configure_file(gallery.rc.in ${CMAKE_CURRENT_BINARY_DIR}/gallery.rc @ONLY)
     target_sources(slintforge_gallery_cpp PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/gallery.rc)
@@ -24,5 +29,5 @@ set_property(TARGET slintforge_gallery_cpp PROPERTY SLINT_NO_DEFAULT_TRANSLATION
 set_property(TARGET slintforge_gallery_cpp PROPERTY SLINT_EMBED_RESOURCES embed-files)
 target_include_directories(slintforge_gallery_cpp PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(slintforge_gallery_cpp PRIVATE Slint::Slint SlintForge::Sdk)
-slint_target_sources(slintforge_gallery_cpp ../ui/gallery.slint COMPILATION_UNITS 4
+slintforge_target_sources(slintforge_gallery_cpp ../ui/gallery.slint COMPILATION_UNITS 4
     LIBRARY_PATHS "slintforge=${PROJECT_SOURCE_DIR}/ui/slintforge.slint")

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 pub use slintforge_runtime_api::plot::*;
 extern "C" {
     pub fn forge_plot_core_new(options: *const ForgePlotOptionsCore) -> *mut std::ffi::c_void;

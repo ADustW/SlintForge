@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "ForgePlotCore.h"
 #include <algorithm>
 #include <array>
@@ -52,6 +55,20 @@ static uint32_t forge_plot_palette(size_t i) {
     static const uint32_t colors[]{0xff36a2eb,0xffff6384,0xff4bc0c0,0xffffcd56,0xff9966ff,0xffff9f40,0xff788694};
     return colors[i % 7];
 }
+// SVG 使用显式回退链；系统控件的字体回退不会自动传递到离屏图像。
+static bool forge_plot_has_cjk(const std::string& text) {
+    for(size_t i=0;i<text.size();){
+        unsigned code=static_cast<unsigned char>(text[i++]);int remaining=0;
+        if(code>=0xf0){code&=7;remaining=3;}else if(code>=0xe0){code&=15;remaining=2;}else if(code>=0xc0){code&=31;remaining=1;}
+        while(remaining--&&i<text.size())code=(code<<6)|(static_cast<unsigned char>(text[i++])&63);
+        if((code>=0x2e80&&code<=0x9fff)||(code>=0xf900&&code<=0xfaff)||(code>=0x20000&&code<=0x3134f))return true;
+    }
+    return false;
+}
+static std::string forge_plot_font_families(std::string family) {
+    if(family.empty())family="Segoe UI Variable";
+    return family+", Segoe UI, Microsoft YaHei UI, Microsoft YaHei, Noto Sans CJK SC, sans-serif";
+}
 static double forge_plot_transform(double v, int scale) {
     if (scale == 0) return v;
     return v > 0 ? std::log10(v) : v < 0 ? -std::log10(-v) : std::numeric_limits<double>::quiet_NaN();
@@ -80,6 +97,7 @@ struct ForgePlotCoreSeriesState {
     std::vector<size_t> order;
     std::unordered_map<size_t,std::string> labels;
     std::unordered_map<size_t,std::vector<double>> outliers;
+    std::unordered_map<size_t,ForgePlotPointStyleCore> styles;
     bool monotone=true, binary_searchable=true;
     ForgePlotCoreBounds x_bounds,y_bounds;
     size_t latest_valid=std::numeric_limits<size_t>::max();
@@ -88,7 +106,7 @@ struct ForgePlotCoreSeriesState {
 };
 struct ForgePlotCoreMapState { ForgePlotMapCore spec{}; std::string name; std::vector<double> values; };
 struct ForgePlotCoreItemState { ForgePlotItemCore spec{}; std::string text,image; int image_width=0,image_height=0;std::vector<uint8_t> pixels; };
-struct ForgePlotCorePanelState { ForgePlotPanelCore spec{}; std::string title; ForgePlotRectCore rect{}; bool polar=false; };
+struct ForgePlotCorePanelState { ForgePlotPanelCore spec{}; std::string title; std::vector<std::string> categories; ForgePlotRectCore rect{}; bool polar=false; int system=0; };
 struct ForgePlotCoreDraw {
     int panel=-1, layer=0;
     bool clip=false,nearest=false;
@@ -99,7 +117,7 @@ struct ForgePlotCoreDraw {
     int raster_width=0,raster_height=0;
     std::vector<uint8_t> raster;
 };
-struct ForgePlotCoreHitState { ForgePlotHitCore hit{}; double x2=0,y2=0,radius=4; bool segment=false,rect=false,clip=true; };
+struct ForgePlotCoreHitState { ForgePlotHitCore hit{}; double x2=0,y2=0,radius=4; bool segment=false,rect=false,clip=true,sector=false; double cx=0,cy=0,inner=0,outer=0,start=0,sweep=0; };
 struct ForgePlotCoreState {
     ForgePlotOptionsCore options{};
     std::string title,font,error,svg;
@@ -157,6 +175,16 @@ static bool forge_plot_inside(const ForgePlotCorePanelState& panel,double x,doub
     const auto& r=panel.rect;if(x<r.x||x>r.x+r.width||y<r.y||y>r.y+r.height)return false;
     return !panel.polar||std::hypot(x-r.x-r.width*.5,y-r.y-r.height*.5)<=std::min(r.width,r.height)*.5+.1;
 }
+static const ForgePlotPointStyleCore* forge_plot_point_style(const ForgePlotCoreSeriesState& s,size_t index) {
+    const auto found=s.styles.find(index);return found==s.styles.end()?nullptr:&found->second;
+}
+static bool forge_plot_point_hidden(const ForgePlotCoreSeriesState& s,size_t index) {
+    const auto* style=forge_plot_point_style(s,index);return style&&style->hidden;
+}
+static void forge_plot_copy_styles(ForgePlotCoreSeriesState& s) {
+    s.styles.clear();if(s.spec.point_styles)for(size_t i=0;i<s.spec.point_style_count;++i){const auto& v=s.spec.point_styles[i];if(v.index>=0)s.styles[static_cast<size_t>(v.index)]=v;}
+    s.spec.point_styles=nullptr;
+}
 static bool forge_plot_point_valid(const ForgePlotCoreSeriesState& s,const ForgePlotPointCore& pt) {
     if(!std::isfinite(pt.x)||!std::isfinite(pt.y)) return false;
     if(s.spec.kind==3) return std::isfinite(pt.low)&&std::isfinite(pt.high)&&std::isfinite(pt.q1)&&std::isfinite(pt.q3)&&pt.low<=pt.q1&&pt.q1<=pt.y&&pt.y<=pt.q3&&pt.q3<=pt.high;
@@ -185,7 +213,7 @@ static void forge_plot_series_bounds(ForgePlotCoreSeriesState& s,size_t index) {
     if(!valid)return;s.latest_valid=index;
     s.x_bounds.include(pt.x);s.x_bounds.include(pt.x-std::max(0.,pt.error_x_minus));s.x_bounds.include(pt.x+std::max(0.,pt.error_x_plus));
     if(s.spec.kind>=2&&s.spec.kind<=5){s.x_bounds.include(pt.x-s.spec.bar_width*.5);s.x_bounds.include(pt.x+s.spec.bar_width*.5);}
-    if(s.spec.kind<4||s.spec.kind==6){s.y_bounds.include(pt.y);s.y_bounds.include(pt.y-std::max(0.,pt.error_y_minus));s.y_bounds.include(pt.y+std::max(0.,pt.error_y_plus));}
+    if(s.spec.kind<4||s.spec.kind>=6){s.y_bounds.include(pt.y);s.y_bounds.include(pt.y-std::max(0.,pt.error_y_minus));s.y_bounds.include(pt.y+std::max(0.,pt.error_y_plus));}
     if(s.spec.kind>=3&&s.spec.kind<=5){s.y_bounds.include(pt.low);s.y_bounds.include(pt.high);}
     if(s.spec.kind==2)s.y_bounds.include(s.spec.baseline);
     const auto outliers=s.outliers.find(index);if(outliers!=s.outliers.end())for(double v:outliers->second)s.y_bounds.include(v);
@@ -228,8 +256,9 @@ class ForgePlotLegendMetrics {
 public:
     ForgePlotLegendMetrics(const ForgePlotLegendMetrics&)=delete;
     ForgePlotLegendMetrics& operator=(const ForgePlotLegendMetrics&)=delete;
-    explicit ForgePlotLegendMetrics(const std::string& family) {
+    explicit ForgePlotLegendMetrics(std::string family) {
 #ifdef _WIN32
+        family=family.substr(0,family.find(','));
         dc_=CreateCompatibleDC(nullptr);if(dc_){font_=CreateFontW(-128,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_TT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH,forge_plot_wide(family).c_str());if(font_)previous_=SelectObject(dc_,font_);}
 #else
         (void)family;
@@ -247,8 +276,16 @@ public:
 #endif
         return forge_plot_text_width(text,size);
     }
+    bool supports(const std::string& text) const {
+#ifdef _WIN32
+        const auto wide=forge_plot_wide(text);std::vector<WORD> glyphs(wide.size());
+        return dc_&&font_&&GetGlyphIndicesW(dc_,wide.data(),static_cast<int>(wide.size()),glyphs.data(),GGI_MARK_NONEXISTING_GLYPHS)!=GDI_ERROR&&std::none_of(glyphs.begin(),glyphs.end(),[](WORD glyph){return glyph==0xffff;});
+#else
+        (void)text;return true;
+#endif
+    }
 };
-struct ForgePlotCoreLegendEntry {size_t index=0;double x=0,y=0,width=0;std::string text;};
+struct ForgePlotCoreLegendEntry {size_t index=0;double x=0,y=0,width=0;std::string text;int point=-1;};
 struct ForgePlotCoreLegendLayout {
     std::vector<ForgePlotCoreLegendEntry> entries;
     ForgePlotRectCore rect{};
@@ -269,7 +306,9 @@ static ForgePlotCoreLegendLayout forge_plot_legend_layout(const ForgePlotCoreSta
     const double available=vertical?std::min(260.,usable_width):usable_width;
     double x=padding,y=0;
     for(size_t i=0;i<p.series.size();++i){
-        const auto& series=p.series[i];auto text=series.name;for(auto& c:text)if(c=='\n'||c=='\r'||c=='\t')c=' ';
+        const auto& series=p.series[i];const bool slices=series.spec.kind==8||series.spec.kind==9;const auto* axis=forge_plot_axis_find(p,series.spec.x_axis);const auto* panel=axis?forge_plot_panel_find(p,axis->spec.panel):nullptr;
+        for(size_t item=0;item<(slices?series.points.size():1);++item){const int point=slices?static_cast<int>(item):-1;
+        auto text=slices?(panel&&item<panel->categories.size()?panel->categories[item]:series.labels.contains(item)?series.labels.at(item):std::to_string(item+1)):series.name;for(auto& c:text)if(c=='\n'||c=='\r'||c=='\t')c=' ';
         std::string suffix;if(p.options.legend_latest_value&&series.latest_valid!=std::numeric_limits<size_t>::max()){const auto& pt=series.points[series.latest_valid];suffix="  "+forge_plot_number(series.spec.kind==4||series.spec.kind==5?pt.close:pt.y,std::clamp(p.options.legend_precision,0,10));}
         const double text_limit=std::max(0.,available-28-metrics.width(suffix,size));bool shortened=false;
         while(!text.empty()&&metrics.width(text+(shortened?"…":""),size)>text_limit){size_t finish=text.size()-1;while(finish&&((static_cast<unsigned char>(text[finish])&0xc0)==0x80))--finish;text.resize(finish);shortened=true;}
@@ -277,8 +316,9 @@ static ForgePlotCoreLegendLayout forge_plot_legend_layout(const ForgePlotCoreSta
         text+=suffix;
         const double width=std::min(available,metrics.width(text,size)+28);
         if(!vertical&&x>padding&&x+width>available+padding){x=padding;y+=row_height;}
-        layout.entries.push_back({i,x,y+size+5,width,std::move(text)});layout.width=std::max(layout.width,x+width+padding);layout.height=std::max(layout.height,y+row_height+2*padding);
+        layout.entries.push_back({i,x,y+size+5,width,std::move(text),point});layout.width=std::max(layout.width,x+width+padding);layout.height=std::max(layout.height,y+row_height+2*padding);
         if(vertical)y+=row_height;else x+=width+8;
+        }
     }
     if(!outside)layout.height=std::min(layout.height,std::max(1.,rect.height-2*gap));
     layout.x=position==0||position==1?rect.x+(rect.width-layout.width)*.5:position==3||position==4||position==5?rect.x+rect.width-layout.width-gap:rect.x+gap;
@@ -297,7 +337,7 @@ static bool forge_plot_annotations_overlap(const ForgePlotRectCore& a,const Forg
 static bool forge_plot_layout_annotations(ForgePlotCoreState& p) {
     std::vector<std::array<double,4>> margins;
     for(const auto& panel:p.panels){std::array<double,4> margin{22,panel.title.empty()?18.:38.,22,22};
-        for(const auto& axis:p.axes)if(axis.spec.panel==panel.spec.id&&axis.spec.visible)margin[axis.spec.side]+=42+(axis.label.empty()?0:20)+std::max(0.,axis.spec.offset);
+        for(const auto& axis:p.axes)if(!panel.system&&axis.spec.panel==panel.spec.id&&axis.spec.visible)margin[axis.spec.side]+=42+(axis.label.empty()?0:20)+std::max(0.,axis.spec.offset);
         for(const auto& map:p.maps)if(map.spec.panel==panel.spec.id&&!map.spec.hidden&&map.spec.color_scale)margin[3]+=76;
         margins.push_back(margin);
     }
@@ -324,7 +364,7 @@ static bool forge_plot_layout_annotations(ForgePlotCoreState& p) {
     };
     // 图例换行会影响区域外高度，收敛布局带后统一计算绘图区与信息框。
     for(int pass=0;pass<8;++pass){if(!calculate())return false;legend=forge_plot_legend_layout(p);const auto& rect=forge_plot_panel_find(p,measurement_id)->rect;
-        if(p.options.measurement_enabled){
+        if(p.options.measurement_enabled&&measurement_panel->system==0){
             const double preferred_width=p.options.measurement_width>0?p.options.measurement_width:automatic_width,preferred_height=p.options.measurement_height>0?p.options.measurement_height:automatic_height;
             measurement_width=std::min(preferred_width,measurement_outside&&(measurement_position==2||measurement_position==3)?p.options.width*.28:std::max(1.,rect.width-12));
             measurement_height=std::min(preferred_height,measurement_outside?p.options.height*.35:std::max(1.,rect.height-12));
@@ -345,7 +385,7 @@ static bool forge_plot_layout_annotations(ForgePlotCoreState& p) {
     };
     p.legend_area={-1,0,0,0,0};p.measurement_area={-1,0,0,0,0};
     if(!legend.entries.empty()){const auto& rect=p.panels.front().rect;p.legend_area=legend_outside?outside_box(rect,legend.width,legend.height,legend_position):forge_plot_annotation_anchor(rect,legend.width,legend.height,legend_position);}
-    if(p.options.measurement_enabled){const auto& rect=forge_plot_panel_find(p,measurement_id)->rect;p.measurement_area=measurement_outside?outside_box(rect,measurement_width,measurement_height,measurement_position):forge_plot_annotation_anchor(rect,measurement_width,measurement_height,measurement_position);
+    if(p.options.measurement_enabled&&measurement_panel->system==0){const auto& rect=forge_plot_panel_find(p,measurement_id)->rect;p.measurement_area=measurement_outside?outside_box(rect,measurement_width,measurement_height,measurement_position):forge_plot_annotation_anchor(rect,measurement_width,measurement_height,measurement_position);
         // 区域内同位置的两个信息框向内错开，保持各自可读。
         if(!legend_outside&&!measurement_outside&&p.legend_area.id==rect.id&&forge_plot_annotations_overlap(p.legend_area,p.measurement_area)){
             auto candidate=p.measurement_area;candidate.y=measurement_position==0||measurement_position==5||measurement_position==7?p.legend_area.y-candidate.height-6:p.legend_area.y+p.legend_area.height+6;
@@ -413,12 +453,16 @@ static bool forge_plot_layout(ForgePlotCoreState& p) {
     std::map<int,int> panel_ids,axis_ids;
     for(auto& panel:p.panels) {
         if(panel_ids[panel.spec.id]++||!std::isfinite(panel.spec.x+panel.spec.y+panel.spec.width+panel.spec.height)||panel.spec.x<0||panel.spec.y<0||panel.spec.width<=0||panel.spec.height<=0||panel.spec.x+panel.spec.width>1.000001||panel.spec.y+panel.spec.height>1.000001){p.error="绘图区 ID 或比例矩形无效";return false;}
-        panel.polar=false;bool cartesian=false;
-        for(const auto& s:p.series)if(!s.spec.hidden){const auto* axis=forge_plot_axis_find(p,s.spec.x_axis);if(axis&&axis->spec.panel==panel.spec.id){if(s.spec.kind==6)panel.polar=true;else cartesian=true;}}
-        for(const auto& m:p.maps)if(!m.spec.hidden&&m.spec.panel==panel.spec.id)cartesian=true;
-        if(panel.polar&&cartesian){p.error="极坐标与笛卡尔系列须使用不同绘图区";return false;}
+        panel.polar=false;panel.system=-1;
+        for(const auto& s:p.series){const auto* axis=forge_plot_axis_find(p,s.spec.x_axis);if(axis&&axis->spec.panel==panel.spec.id){
+            const int system=s.spec.kind>=8?s.spec.kind:s.spec.kind==6?6:0;
+            if(panel.system>=0&&panel.system!=system){p.error="不同坐标体系须使用不同绘图区";return false;}panel.system=system;
+        }}
+        if(panel.system<0)panel.system=0;panel.polar=panel.system==6;
+        for(const auto& m:p.maps)if(!m.spec.hidden&&m.spec.panel==panel.spec.id&&panel.system){p.error="色图须使用笛卡尔绘图区";return false;}
+        if(panel.system==8||panel.system==9){size_t count=0;for(const auto& s:p.series){const auto* axis=forge_plot_axis_find(p,s.spec.x_axis);if(axis&&axis->spec.panel==panel.spec.id)++count;}if(count>1){p.error="饼图和极区面积图的多个系列须使用独立绘图区";return false;}}
         double left=22,right=22,top=panel.title.empty()?18:38,bottom=22;
-        for(const auto& a:p.axes)if(a.spec.panel==panel.spec.id&&a.spec.visible){const double extent=42+(a.label.empty()?0:20)+std::max(0.,a.spec.offset);if(a.spec.side==0)bottom+=extent;else if(a.spec.side==1)top+=extent;else if(a.spec.side==2)left+=extent;else right+=extent;}
+        for(const auto& a:p.axes)if(!panel.system&&a.spec.panel==panel.spec.id&&a.spec.visible){const double extent=42+(a.label.empty()?0:20)+std::max(0.,a.spec.offset);if(a.spec.side==0)bottom+=extent;else if(a.spec.side==1)top+=extent;else if(a.spec.side==2)left+=extent;else right+=extent;}
         for(const auto& m:p.maps)if(m.spec.panel==panel.spec.id&&!m.spec.hidden&&m.spec.color_scale)right+=76;
         const double title_height=p.title.empty()?0:36;
         const double usable=p.options.height-title_height;
@@ -437,8 +481,12 @@ static bool forge_plot_ranges(ForgePlotCoreState& p) {
         const auto include=[&](double v){if(std::isfinite(v)&&(a.spec.scale==0||(a.spec.minimum<0&&a.spec.maximum<0?v<0:v>0))){lo=std::min(lo,v);hi=std::max(hi,v);}};
         for(const auto& s:p.series)if(!s.spec.hidden&&(horizontal?s.spec.x_axis:s.spec.y_axis)==a.spec.id) {
             const auto& bounds=horizontal?s.x_bounds:s.y_bounds;const size_t domain=a.spec.scale?(a.spec.minimum<0&&a.spec.maximum<0?2:1):0;
-            include(bounds.minimum[domain]);include(bounds.maximum[domain]);
-            if(!horizontal&&s.spec.kind==2&&s.spec.stack_group>=0){std::map<double,std::pair<double,double>> sums;for(const auto& other:p.series)if(!other.spec.hidden&&other.spec.kind==2&&other.spec.stack_group==s.spec.stack_group&&other.spec.x_axis==s.spec.x_axis&&other.spec.y_axis==s.spec.y_axis)for(const auto& pt:other.points)if(forge_plot_point_valid(other,pt)){auto& sum=sums[pt.x];if(pt.y>=0)sum.first+=pt.y;else sum.second+=pt.y;}for(const auto& sum:sums){include(s.spec.baseline+sum.second.first);include(s.spec.baseline+sum.second.second);}}
+            if(s.styles.empty()){include(bounds.minimum[domain]);include(bounds.maximum[domain]);}
+            else for(size_t i=0;i<s.points.size();++i){const auto& pt=s.points[i];if(forge_plot_point_hidden(s,i)||!forge_plot_point_valid(s,pt))continue;
+                if(horizontal){include(pt.x-std::max(0.,pt.error_x_minus));include(pt.x+std::max(0.,pt.error_x_plus));if(s.spec.kind>=2&&s.spec.kind<=5){include(pt.x-s.spec.bar_width*.5);include(pt.x+s.spec.bar_width*.5);}}
+                else{include(pt.y-std::max(0.,pt.error_y_minus));include(pt.y+std::max(0.,pt.error_y_plus));if(s.spec.kind>=3&&s.spec.kind<=5){include(pt.low);include(pt.high);}if(s.spec.kind==2)include(s.spec.baseline);const auto outliers=s.outliers.find(i);if(outliers!=s.outliers.end())for(double v:outliers->second)include(v);}
+            }
+            if(!horizontal&&s.spec.kind==2&&s.spec.stack_group>=0){std::map<double,std::pair<double,double>> sums;for(const auto& other:p.series)if(!other.spec.hidden&&other.spec.kind==2&&other.spec.stack_group==s.spec.stack_group&&other.spec.x_axis==s.spec.x_axis&&other.spec.y_axis==s.spec.y_axis)for(size_t i=0;i<other.points.size();++i)if(!forge_plot_point_hidden(other,i)&&forge_plot_point_valid(other,other.points[i])){const auto& pt=other.points[i];auto& sum=sums[pt.x];if(pt.y>=0)sum.first+=pt.y;else sum.second+=pt.y;}for(const auto& sum:sums){include(s.spec.baseline+sum.second.first);include(s.spec.baseline+sum.second.second);}}
         }
         for(const auto& m:p.maps)if(!m.spec.hidden&&(horizontal?m.spec.x_axis:m.spec.y_axis)==a.spec.id){include(horizontal?m.spec.x_min:m.spec.y_min);include(horizontal?m.spec.x_max:m.spec.y_max);}
         if(polar&&a.spec.auto_range&&horizontal){lo=0;hi=360;}
@@ -449,7 +497,7 @@ static bool forge_plot_ranges(ForgePlotCoreState& p) {
             if(lo==hi){if(a.spec.scale){lo=lo>0?lo/2:lo*2;hi=hi>0?hi*2:hi/2;}else{const double delta=std::max(std::abs(lo)*.05,1.);lo-=delta;hi+=delta;}}
             else if(!polar||!horizontal){const double tl=forge_plot_transform(lo,a.spec.scale),th=forge_plot_transform(hi,a.spec.scale),pad=(th-tl)*.04;if(!polar)lo=forge_plot_inverse(tl-pad,a.spec.scale,lo);hi=forge_plot_inverse(th+pad,a.spec.scale,hi);}
             a.minimum=lo;a.maximum=hi;
-            if(!polar&&horizontal&&a.spec.id==p.options.x_window_axis&&p.options.x_window_mode>0){
+            if(!forge_plot_panel_find(p,a.spec.panel)->system&&horizontal&&a.spec.id==p.options.x_window_axis&&p.options.x_window_mode>0){
                 if(a.spec.scale||!std::isfinite(p.options.x_window_size)||p.options.x_window_size<=0){p.error="实时 X 窗口需要线性轴和正的有限跨度";return false;}
                 a.maximum=std::max(a.domain_maximum,a.domain_minimum+p.options.x_window_size);a.minimum=a.maximum-p.options.x_window_size;
             }
@@ -460,7 +508,7 @@ static bool forge_plot_ranges(ForgePlotCoreState& p) {
 }
 
 static void forge_plot_draw_axes(ForgePlotCoreState& p) {
-    for(const auto& panel:p.panels){const auto& r=panel.rect;std::string box;if(panel.polar)forge_plot_ellipse(box,r.x+r.width*.5,r.y+r.height*.5,std::min(r.width,r.height)*.5,std::min(r.width,r.height)*.5);else forge_plot_rectangle(box,r.x,r.y,r.width,r.height);forge_plot_add_path(p,box,p.options.grid_color,0,1,panel.spec.id,-100,false);if(!panel.title.empty())forge_plot_add_text(p,r.x,r.y-16,panel.title,p.options.foreground,p.options.font_size+1,-99);
+    for(const auto& panel:p.panels){const auto& r=panel.rect;std::string box;if(panel.system>=8){if(!panel.title.empty())forge_plot_add_text(p,r.x,r.y-16,panel.title,p.options.foreground,p.options.font_size+1,-99);continue;}if(panel.polar)forge_plot_ellipse(box,r.x+r.width*.5,r.y+r.height*.5,std::min(r.width,r.height)*.5,std::min(r.width,r.height)*.5);else forge_plot_rectangle(box,r.x,r.y,r.width,r.height);forge_plot_add_path(p,box,p.options.grid_color,0,1,panel.spec.id,-100,false);if(!panel.title.empty())forge_plot_add_text(p,r.x,r.y-16,panel.title,p.options.foreground,p.options.font_size+1,-99);
         if(panel.polar){const ForgePlotCoreAxisState* angular=nullptr;const ForgePlotCoreAxisState* radial=nullptr;for(const auto& a:p.axes)if(a.spec.panel==panel.spec.id){if(a.spec.side<2&&!angular)angular=&a;if(a.spec.side>=2&&!radial)radial=&a;}if(!angular||!radial)continue;
             const double cx=r.x+r.width*.5,cy=r.y+r.height*.5,radius=std::min(r.width,r.height)*.5;std::string grid;
             auto angular_ticks=*angular;if(angular_ticks.spec.tick_step<=0)angular_ticks.spec.tick_step=(angular->maximum-angular->minimum)/8;
@@ -471,12 +519,14 @@ static void forge_plot_draw_axes(ForgePlotCoreState& p) {
     }
     std::map<std::pair<int,int>,double> offsets;
     for(const auto& a:p.axes)if(a.spec.visible) {
-        if(forge_plot_panel_find(p,a.spec.panel)->polar)continue;
+        if(forge_plot_panel_find(p,a.spec.panel)->system)continue;
         const auto& r=forge_plot_panel_find(p,a.spec.panel)->rect;const bool horizontal=a.spec.side<2;
         double& offset=offsets[{a.spec.panel,a.spec.side}];const double o=offset+a.spec.offset;
         const double base=a.spec.side==0?r.y+r.height+o:a.spec.side==1?r.y-o:a.spec.side==2?r.x-o:r.x+r.width+o;
         std::string path;forge_plot_line(path,horizontal?r.x:base,horizontal?base:r.y,horizontal?r.x+r.width:base,horizontal?base:r.y+r.height);
-        for(const auto& tick:forge_plot_ticks(a,horizontal?r.width:r.height)) {
+        auto ticks=forge_plot_ticks(a,horizontal?r.width:r.height);const auto& categories=forge_plot_panel_find(p,a.spec.panel)->categories;
+        if(horizontal&&!categories.empty()){ticks.clear();for(size_t i=0;i<categories.size();++i)ticks.emplace_back(static_cast<double>(i),categories[i]);}
+        for(const auto& tick:ticks) {
             const double pixel=forge_plot_axis_pixel(p,a,tick.first);if(!std::isfinite(pixel)||(horizontal?(pixel<r.x-.1||pixel>r.x+r.width+.1):(pixel<r.y-.1||pixel>r.y+r.height+.1)))continue;
             const double sign=a.spec.side==0||a.spec.side==3?1:-1;
             forge_plot_line(path,horizontal?pixel:base,horizontal?base:pixel,horizontal?pixel:base+sign*5,horizontal?base+sign*5:pixel);
@@ -519,7 +569,7 @@ static std::vector<ForgePlotCoreSample> forge_plot_samples(const ForgePlotCoreSt
         // 对完全位于同一个像素桶的有序数据块，直接使用增量维护的首/尾/峰/谷索引。
         // 有断点、误差棒、独立选择或对数符号变化的块回退到逐点处理。
         bool summarized=false;
-        if(p.options.adaptive&&!scatter_only&&s.spec.kind==0&&s.monotone&&s.binary_searchable&&s.simple_samples&&s.order.empty()&&p.selection.empty()&&last-first>static_cast<size_t>(rect.width*budget)){
+        if(p.options.adaptive&&!scatter_only&&s.spec.kind==0&&s.monotone&&s.binary_searchable&&s.simple_samples&&s.styles.empty()&&s.order.empty()&&p.selection.empty()&&last-first>static_cast<size_t>(rect.width*budget)){
             for(size_t level=forge_plot_block_spans.size();level-->0;){const size_t span=forge_plot_block_spans[level];if(sequence%span||last-sequence<span)continue;const auto& block=s.sample_blocks[level][sequence/span];if(!block.valid||!forge_plot_domain(ay,s.points[block.minimum].y)||!forge_plot_domain(ay,s.points[block.maximum].y))continue;
                 const double x1=forge_plot_axis_pixel(p,ax,s.points[sequence].x),x2=forge_plot_axis_pixel(p,ax,s.points[sequence+span-1].x);if(!std::isfinite(x1+x2)||std::floor(x1/column_width)!=std::floor(x2/column_width))continue;
                 std::array<size_t,4> indices{sequence,block.minimum,block.maximum,sequence+span-1};std::sort(indices.begin(),indices.end());size_t previous=std::numeric_limits<size_t>::max();for(size_t index:indices)if(index!=previous){aggregate({index,forge_plot_axis_pixel(p,ax,s.points[index].x),forge_plot_axis_pixel(p,ay,s.points[index].y),index});previous=index;}
@@ -529,7 +579,7 @@ static std::vector<ForgePlotCoreSample> forge_plot_samples(const ForgePlotCoreSt
         if(summarized)continue;
         const size_t i=s.order.empty()?sequence:s.order[sequence];
         const auto& pt=s.points[i];const double x=forge_plot_axis_pixel(p,ax,pt.x),y=forge_plot_axis_pixel(p,ay,pt.y);
-        if(!forge_plot_point_valid(s,pt)||!std::isfinite(x+y)){flush();if(!output.empty()&&std::isfinite(output.back().x))output.push_back({i,std::numeric_limits<double>::quiet_NaN(),0});bucket_id=std::numeric_limits<int>::min();continue;}
+        if(forge_plot_point_hidden(s,i)||!forge_plot_point_valid(s,pt)||!std::isfinite(x+y)){flush();if(!output.empty()&&std::isfinite(output.back().x))output.push_back({i,std::numeric_limits<double>::quiet_NaN(),0});bucket_id=std::numeric_limits<int>::min();continue;}
         ForgePlotCoreSample sample{i,x,y,sequence};
         // 独立点选择必须可见；大区间仍使用降采样，避免全选恢复百万个图元。
         if(!p.selection.empty()){const auto selected=std::lower_bound(p.selection.begin(),p.selection.end(),std::make_pair(s.spec.id,static_cast<int>(i)),[](const auto& range,const auto& key){return std::make_pair(range.id,range.first)<key;});if(selected!=p.selection.end()&&selected->id==s.spec.id&&selected->first==selected->last&&selected->first==static_cast<int>(i)){flush();output.push_back(sample);bucket_id=std::numeric_limits<int>::min();continue;}}
@@ -578,14 +628,71 @@ static std::vector<std::pair<double,double>> forge_plot_clip_fill(const std::vec
     }
     return clipped;
 }
+// 圆弧转为三次贝塞尔，SVG、位图和 PDF 共用完全相同的路径。
+static void forge_plot_arc(std::string& path,double cx,double cy,double radius,double start,double sweep) {
+    const int count=std::max(1,static_cast<int>(std::ceil(std::abs(sweep)/(forge_plot_pi*.5))));
+    for(int i=0;i<count;++i){const double a=start+sweep*i/count,b=start+sweep*(i+1)/count,k=4./3*std::tan((b-a)/4);
+        path+="C "+forge_plot_number(cx+radius*(std::cos(a)-k*std::sin(a)))+" "+forge_plot_number(cy+radius*(std::sin(a)+k*std::cos(a)))+" "+forge_plot_number(cx+radius*(std::cos(b)+k*std::sin(b)))+" "+forge_plot_number(cy+radius*(std::sin(b)-k*std::cos(b)))+" "+forge_plot_number(cx+radius*std::cos(b))+" "+forge_plot_number(cy+radius*std::sin(b))+" ";
+    }
+}
+static bool forge_plot_draw_radial(ForgePlotCoreState& p,const ForgePlotCoreSeriesState& s,size_t series_index,const ForgePlotCorePanelState& panel) {
+    const auto& r=panel.rect;const double cx=r.x+r.width*.5,cy=r.y+r.height*.5;
+    const double radius=std::max(1.,std::min(r.width,r.height)*.5-(s.spec.kind==10?36.:8.));
+    const size_t n=panel.categories.empty()?s.points.size():panel.categories.size();
+    if(s.points.empty())return true;
+    if(s.spec.kind==10&&(n<3||s.points.size()!=n)){p.error="雷达图需要至少三个分类，所有系列点数须与分类数一致";return false;}
+    if(!std::isfinite(s.spec.inner_radius)||s.spec.inner_radius<0||s.spec.inner_radius>=1){p.error="环形内径比例须在 [0, 1) 内";return false;}
+    double sum=0,maximum=0;
+    for(size_t i=0;i<s.points.size();++i)if(!forge_plot_point_hidden(s,i)&&std::isfinite(s.points[i].y)&&s.points[i].y>0){sum+=s.points[i].y;maximum=std::max(maximum,s.points[i].y);}
+    if(!std::isfinite(sum)){p.error="径向图表数值总和超出有效范围";return false;}
+    if(s.spec.kind==10){
+        for(const auto& other:p.series)if(!other.spec.hidden&&other.spec.kind==10&&other.spec.x_axis==s.spec.x_axis)for(size_t i=0;i<other.points.size();++i)if(!forge_plot_point_hidden(other,i)&&std::isfinite(other.points[i].y))maximum=std::max(maximum,other.points[i].y);
+        maximum=std::max(maximum,1.);
+        bool first=true;for(size_t i=0;i<series_index;++i)if(!p.series[i].spec.hidden&&p.series[i].spec.kind==10&&p.series[i].spec.x_axis==s.spec.x_axis)first=false;
+        if(first){std::string grid;for(int ring=1;ring<=4;++ring){for(size_t i=0;i<n;++i){const double a=-forge_plot_pi*.5+2*forge_plot_pi*i/n;forge_plot_path_point(grid,i?'L':'M',cx+radius*ring/4*std::cos(a),cy+radius*ring/4*std::sin(a));}grid+="Z ";}
+            for(size_t i=0;i<n;++i){const double a=-forge_plot_pi*.5+2*forge_plot_pi*i/n;forge_plot_line(grid,cx,cy,cx+radius*std::cos(a),cy+radius*std::sin(a));const auto label=i<panel.categories.size()?panel.categories[i]:std::to_string(i+1);forge_plot_add_text(p,cx+(radius+18)*std::cos(a)-forge_plot_text_width(label,p.options.font_size)*.5,cy+(radius+18)*std::sin(a)+p.options.font_size*.35,label,p.options.foreground,p.options.font_size,-80);}
+            forge_plot_add_path(p,grid,p.options.grid_color,0,1,panel.spec.id,-90,false);
+        }
+        std::string path,markers,selected;bool complete=true,active=false;
+        for(size_t i=0;i<n;++i){const double v=s.points[i].y;if(forge_plot_point_hidden(s,i)||!std::isfinite(v)||v<0){complete=false;active=false;continue;}const double a=-forge_plot_pi*.5+2*forge_plot_pi*i/n,rr=radius*v/maximum,x=cx+rr*std::cos(a),y=cy+rr*std::sin(a);
+            forge_plot_path_point(path,active?'L':'M',x,y);active=true;forge_plot_symbol(markers,2,x,y,3);if(s.spec.selectable)forge_plot_add_hit(p,s,i,x,y,x,y,false,false,5);if(forge_plot_selected(p,s.spec.id,i))forge_plot_symbol(selected,1,x,y,7);++p.rendered_points;
+        }
+        if(complete)path+="Z ";const uint32_t color=s.spec.color>>24?s.spec.color:forge_plot_palette(series_index);
+        forge_plot_add_path(p,path,color,complete?s.spec.fill_color:0,std::max(1.,s.spec.line_width),panel.spec.id,s.spec.layer);
+        forge_plot_add_path(p,markers,color,color,1,panel.spec.id,s.spec.layer+1);forge_plot_add_path(p,selected,p.options.selection_color,0,2,panel.spec.id,s.spec.layer+2);return true;
+    }
+    if(sum<=0)return true;
+    double angle=-forge_plot_pi*.5;
+    for(size_t i=0;i<s.points.size();++i){const double v=s.points[i].y;const double sweep=s.spec.kind==9?2*forge_plot_pi/s.points.size():(std::isfinite(v)&&v>0&&!forge_plot_point_hidden(s,i)?2*forge_plot_pi*(v/sum):0);
+        if(forge_plot_point_hidden(s,i)||!std::isfinite(v)||v<=0){if(s.spec.kind==9)angle+=sweep;continue;}
+        const double outer=s.spec.kind==9?radius*std::sqrt(v/maximum):radius,inner=s.spec.kind==8?outer*s.spec.inner_radius:0;
+        std::string path;forge_plot_path_point(path,'M',cx+outer*std::cos(angle),cy+outer*std::sin(angle));forge_plot_arc(path,cx,cy,outer,angle,sweep);
+        if(inner>0){forge_plot_path_point(path,'L',cx+inner*std::cos(angle+sweep),cy+inner*std::sin(angle+sweep));forge_plot_arc(path,cx,cy,inner,angle+sweep,-sweep);}else forge_plot_path_point(path,'L',cx,cy);path+="Z ";
+        const auto* style=forge_plot_point_style(s,i);const uint32_t color=style&&(style->color>>24)?style->color:forge_plot_palette(i);
+        const bool selected=forge_plot_selected(p,s.spec.id,i);forge_plot_add_path(p,path,selected?p.options.selection_color:p.options.background,color,selected?3:1,panel.spec.id,s.spec.layer);
+        const double mid=angle+sweep*.5,rr=(inner+outer)*.5;
+        if(s.spec.selectable){forge_plot_add_hit(p,s,i,cx+rr*std::cos(mid),cy+rr*std::sin(mid),cx,cy,false,false,outer*2);auto& hit=p.hits.back();hit.sector=true;hit.cx=cx;hit.cy=cy;hit.inner=inner;hit.outer=outer;hit.start=angle;hit.sweep=sweep;if(i<panel.categories.size())hit.hit.label=panel.categories[i].c_str();}
+        ++p.rendered_points;angle+=sweep;
+    }return true;
+}
+static std::vector<ForgePlotCoreSample> forge_plot_smooth_samples(const std::vector<ForgePlotCoreSample>& input) {
+    std::vector<ForgePlotCoreSample> out;out.reserve(input.size()*8);
+    for(size_t i=0;i<input.size();++i){if(!i||!std::isfinite(input[i].x+input[i].y+input[i-1].x+input[i-1].y)){out.push_back(input[i]);continue;}
+        const auto& a=input[i-1];const auto& b=input[i];const auto& prev=i>1&&std::isfinite(input[i-2].x+input[i-2].y)?input[i-2]:a;const auto& next=i+1<input.size()&&std::isfinite(input[i+1].x+input[i+1].y)?input[i+1]:b;
+        // 插值顶点只绘制曲线，散点、选择轮廓和误差棒仍对应真实样本。
+        for(int step=1;step<=8;++step){const double t=step/8.,t2=t*t,t3=t2*t;const auto interpolate=[&](double p0,double p1,double p2,double p3){return .5*((2*p1)+(-p0+p2)*t+(2*p0-5*p1+4*p2-p3)*t2+(-p0+3*p1-3*p2+p3)*t3);};out.push_back({b.index,interpolate(prev.x,a.x,b.x,next.x),interpolate(prev.y,a.y,b.y,next.y),step==8?b.sequence:std::numeric_limits<size_t>::max()});}
+    }return out;
+}
 static bool forge_plot_draw_series(ForgePlotCoreState& p) {
     std::map<std::tuple<int,int,int,double>,std::pair<double,double>> stacks;
     for(size_t si=0;si<p.series.size();++si) {
         const auto& s=p.series[si];if(s.spec.hidden)continue;
         const auto* ax=forge_plot_axis_find(p,s.spec.x_axis);const auto* ay=forge_plot_axis_find(p,s.spec.y_axis);
-        if(!ax||!ay||ax->spec.side>=2||ay->spec.side<2||ax->spec.panel!=ay->spec.panel||s.spec.kind<0||s.spec.kind>6){p.error="系列的坐标轴、绘图区或图形类型无效";return false;}
+        if(!ax||!ay||ax->spec.side>=2||ay->spec.side<2||ax->spec.panel!=ay->spec.panel||s.spec.kind<0||s.spec.kind>10){p.error="系列的坐标轴、绘图区或图形类型无效";return false;}
         const auto& rect=forge_plot_panel_find(p,ax->spec.panel)->rect;const uint32_t color=s.spec.color>>24?s.spec.color:forge_plot_palette(si);
-        auto samples=forge_plot_samples(p,s,*ax,*ay);std::string path,symbols,errors,filled,selected;bool active=false;ForgePlotCoreSample previous{};
+        if(s.spec.kind>=8){if(!forge_plot_draw_radial(p,s,si,*forge_plot_panel_find(p,ax->spec.panel)))return false;continue;}
+        auto samples=forge_plot_samples(p,s,*ax,*ay);if(s.spec.line_style==6&&(s.spec.kind==0||s.spec.kind==1))samples=forge_plot_smooth_samples(samples);
+        std::string path,symbols,errors,filled,selected;bool active=false;ForgePlotCoreSample previous{};
         // 密集折线的散点符号按屏幕网格去重；折线、误差、选择和原始索引命中不受影响。
         std::unordered_set<uint64_t> marker_cells;const double marker_cell=std::max(2.,s.spec.point_size*.75);
         double baseline=forge_plot_axis_pixel(p,*ay,s.spec.baseline);if(!std::isfinite(baseline))baseline=rect.y+rect.height;
@@ -597,7 +704,8 @@ static bool forge_plot_draw_series(ForgePlotCoreState& p) {
             if(!target->spec.hidden){
                 std::vector<ForgePlotCoreSample> run;
                 const auto finish=[&](){if(run.size()>1)channel_runs.push_back(forge_plot_fill_vertices(run,target->spec.line_style));run.clear();};
-                for(const auto& v:forge_plot_samples(p,*target,*ax,*ay)){if(!std::isfinite(v.x+v.y)){finish();continue;}run.push_back(v);}finish();
+                auto target_samples=forge_plot_samples(p,*target,*ax,*ay);if(target->spec.line_style==6)target_samples=forge_plot_smooth_samples(target_samples);
+                for(const auto& v:target_samples){if(!std::isfinite(v.x+v.y)){finish();continue;}run.push_back(v);}finish();
             }
         }
         std::vector<ForgePlotCoreSample> segment;
@@ -621,18 +729,19 @@ static bool forge_plot_draw_series(ForgePlotCoreState& p) {
         for(const auto& sample:samples) {
             if(!std::isfinite(sample.x+sample.y)){fill_segment();active=false;continue;}
             const auto& pt=s.points[sample.index];double x=sample.x,y=sample.y;
+            const bool original_sample=sample.sequence!=std::numeric_limits<size_t>::max();
             const bool chosen=forge_plot_selected(p,s.spec.id,sample.index);
             if(s.spec.kind==6){const auto pos=forge_plot_polar_point(*forge_plot_panel_find(p,ax->spec.panel),*ax,*ay,pt.x,pt.y);x=pos.first;y=pos.second;}
             const bool inside=x>=rect.x-10&&x<=rect.x+rect.width+10&&y>=rect.y-10&&y<=rect.y+rect.height+10;
             if(s.spec.kind==0||s.spec.kind==1||s.spec.kind==6) {
                 if(s.spec.line_style!=0){if(s.spec.line_style==5)forge_plot_line(path,x,baseline,x,y);else if(!active)forge_plot_path_point(path,'M',x,y);else{if(s.spec.line_style==2)forge_plot_path_point(path,'L',x,previous.y);else if(s.spec.line_style==3)forge_plot_path_point(path,'L',previous.x,y);else if(s.spec.line_style==4){forge_plot_path_point(path,'L',(previous.x+x)*.5,previous.y);forge_plot_path_point(path,'L',(previous.x+x)*.5,y);}forge_plot_path_point(path,'L',x,y);}}
-                if(inside&&s.spec.scatter_style!=0){
+                if(original_sample&&inside&&s.spec.scatter_style!=0){
                     const auto cx=static_cast<uint32_t>(static_cast<int32_t>(std::floor(x/marker_cell))),cy=static_cast<uint32_t>(static_cast<int32_t>(std::floor(y/marker_cell)));
                     const uint64_t cell=(static_cast<uint64_t>(cx)<<32)|cy;
-                    if(!p.options.adaptive||chosen||marker_cells.insert(cell).second)forge_plot_symbol(symbols,s.spec.scatter_style,x,y,s.spec.point_size*.5);
+                    if(!p.options.adaptive||chosen||marker_cells.insert(cell).second){const auto* style=forge_plot_point_style(s,sample.index);if(style){const double size=style->size==0?s.spec.point_size:style->size;if(std::isfinite(size)&&size>0&&size<=16384){std::string mark;forge_plot_symbol(mark,s.spec.scatter_style,x,y,size*.5);const uint32_t c=style->color>>24?style->color:color;forge_plot_add_path(p,mark,c,s.spec.scatter_style==2?c:0,1,ax->spec.panel,s.spec.layer+1);}}else forge_plot_symbol(symbols,s.spec.scatter_style,x,y,s.spec.point_size*.5);}
                 }
-                if(chosen&&inside)forge_plot_symbol(selected,1,x,y,std::max(5.,s.spec.point_size*.5+3));
-                if(s.spec.selectable&&inside)forge_plot_add_hit(p,s,sample.index,x,y,x,y,false,false,std::max(4.,s.spec.point_size*.5));
+                if(original_sample&&chosen&&inside)forge_plot_symbol(selected,1,x,y,std::max(5.,s.spec.point_size*.5+3));
+                if(original_sample&&s.spec.selectable&&inside)forge_plot_add_hit(p,s,sample.index,x,y,x,y,false,false,std::max(4.,s.spec.point_size*.5));
                 if(s.spec.selectable&&s.spec.line_style==5)forge_plot_add_hit(p,s,sample.index,x,baseline,x,y,true,false);
                 if(s.spec.selectable&&active&&s.spec.line_style!=0&&s.spec.line_style!=5){
                     if(s.spec.line_style==2){forge_plot_add_hit(p,s,sample.index,previous.x,previous.y,x,previous.y,true,false);forge_plot_add_hit(p,s,sample.index,x,previous.y,x,y,true,false);}
@@ -641,6 +750,12 @@ static bool forge_plot_draw_series(ForgePlotCoreState& p) {
                     else forge_plot_add_hit(p,s,sample.index,previous.x,previous.y,x,y,true,false);
                 }
                 segment.push_back({sample.index,x,y});previous={sample.index,x,y};active=true;
+            } else if(s.spec.kind==7) {
+                const auto* style=forge_plot_point_style(s,sample.index);const double size=style&&style->size!=0?style->size:s.spec.point_size;
+                if(!std::isfinite(size)||size<=0||size>16384)continue;
+                const uint32_t point_color=style&&(style->color>>24)?style->color:color;std::string bubble;forge_plot_ellipse(bubble,x,y,size*.5,size*.5);
+                forge_plot_add_path(p,bubble,chosen?p.options.selection_color:point_color,point_color,chosen?3:1,ax->spec.panel,s.spec.layer);
+                if(s.spec.selectable)forge_plot_add_hit(p,s,sample.index,x,y,x,y,false,false,size*.5);
             } else if(s.spec.kind==2) {
                 double lo=s.spec.baseline,hi=lo+pt.y;double shift=0,width=s.spec.bar_width>0?s.spec.bar_width:.8;
                 if(s.spec.stack_group>=0){auto& stack=stacks[{s.spec.x_axis,s.spec.y_axis,s.spec.stack_group,pt.x}];double& sum=pt.y>=0?stack.first:stack.second;lo+=sum;sum+=pt.y;hi=s.spec.baseline+sum;}
@@ -648,7 +763,7 @@ static bool forge_plot_draw_series(ForgePlotCoreState& p) {
                 const double x1=forge_plot_axis_pixel(p,*ax,pt.x+shift-width*.45),x2=forge_plot_axis_pixel(p,*ax,pt.x+shift+width*.45),y2=forge_plot_axis_pixel(p,*ay,hi);double y1=forge_plot_axis_pixel(p,*ay,lo);
                 if(!std::isfinite(y1)&&ay->spec.scale)y1=forge_plot_axis_pixel(p,*ay,ay->minimum>0?ay->minimum:ay->maximum);
                 if(!std::isfinite(x1+x2+y1+y2))continue;
-                forge_plot_rectangle(path,std::min(x1,x2),std::min(y1,y2),std::abs(x2-x1),std::abs(y2-y1));if(s.spec.selectable)forge_plot_add_hit(p,s,sample.index,std::min(x1,x2),std::min(y1,y2),std::max(x1,x2),std::max(y1,y2),false,true);
+                const auto* style=forge_plot_point_style(s,sample.index);if(style&&(style->color>>24)){std::string bar;forge_plot_rectangle(bar,std::min(x1,x2),std::min(y1,y2),std::abs(x2-x1),std::abs(y2-y1));forge_plot_add_path(p,bar,style->color,style->color,s.spec.line_width,ax->spec.panel,s.spec.layer);}else forge_plot_rectangle(path,std::min(x1,x2),std::min(y1,y2),std::abs(x2-x1),std::abs(y2-y1));if(s.spec.selectable)forge_plot_add_hit(p,s,sample.index,std::min(x1,x2),std::min(y1,y2),std::max(x1,x2),std::max(y1,y2),false,true);
                 if(chosen)forge_plot_rectangle(selected,std::min(x1,x2),std::min(y1,y2),std::abs(x2-x1),std::abs(y2-y1));
             } else {
                 const double w=std::abs(forge_plot_axis_pixel(p,*ax,pt.x+(s.spec.bar_width>0?s.spec.bar_width:.6)*.5)-x);
@@ -660,7 +775,7 @@ static bool forge_plot_draw_series(ForgePlotCoreState& p) {
                 if(chosen)forge_plot_rectangle(selected,x-w,std::min(low,high),2*w,std::max(1.,std::abs(low-high)));
             }
             ++p.rendered_points;
-            if(inside&&s.spec.kind!=6){const double xl=forge_plot_axis_pixel(p,*ax,pt.x-std::max(0.,pt.error_x_minus)),xr=forge_plot_axis_pixel(p,*ax,pt.x+std::max(0.,pt.error_x_plus));if((pt.error_x_minus>0||pt.error_x_plus>0)&&std::isfinite(xl+xr)){forge_plot_line(errors,xl,y,xr,y);forge_plot_line(errors,xl,y-4,xl,y+4);forge_plot_line(errors,xr,y-4,xr,y+4);}const double yl=forge_plot_axis_pixel(p,*ay,pt.y-std::max(0.,pt.error_y_minus)),yr=forge_plot_axis_pixel(p,*ay,pt.y+std::max(0.,pt.error_y_plus));if((pt.error_y_minus>0||pt.error_y_plus>0)&&std::isfinite(yl+yr)){forge_plot_line(errors,x,yl,x,yr);forge_plot_line(errors,x-4,yl,x+4,yl);forge_plot_line(errors,x-4,yr,x+4,yr);}}
+            if(original_sample&&inside&&s.spec.kind!=6){const double xl=forge_plot_axis_pixel(p,*ax,pt.x-std::max(0.,pt.error_x_minus)),xr=forge_plot_axis_pixel(p,*ax,pt.x+std::max(0.,pt.error_x_plus));if((pt.error_x_minus>0||pt.error_x_plus>0)&&std::isfinite(xl+xr)){forge_plot_line(errors,xl,y,xr,y);forge_plot_line(errors,xl,y-4,xl,y+4);forge_plot_line(errors,xr,y-4,xr,y+4);}const double yl=forge_plot_axis_pixel(p,*ay,pt.y-std::max(0.,pt.error_y_minus)),yr=forge_plot_axis_pixel(p,*ay,pt.y+std::max(0.,pt.error_y_plus));if((pt.error_y_minus>0||pt.error_y_plus>0)&&std::isfinite(yl+yr)){forge_plot_line(errors,x,yl,x,yr);forge_plot_line(errors,x-4,yl,x+4,yl);forge_plot_line(errors,x-4,yr,x+4,yr);}}
         }
         fill_segment();forge_plot_add_path(p,filled,0,s.spec.fill_color,0,ax->spec.panel,s.spec.layer-1);
         forge_plot_add_path(p,path,color,s.spec.kind==2?color:s.spec.kind==3?s.spec.fill_color:0,s.spec.line_width,ax->spec.panel,s.spec.layer);
@@ -794,15 +909,26 @@ static void forge_plot_draw_legend(ForgePlotCoreState& p) {
     layout.x=p.legend_area.x;layout.y=p.legend_area.y;
     const bool clip=p.options.legend_placement!=1;const auto& rect=clip?layout.rect:p.legend_area;
     if(p.options.legend_style==1){std::string box;forge_plot_rectangle(box,layout.x,layout.y,layout.width,layout.height);forge_plot_add_path(p,box,p.options.grid_color,0,1,rect.id,99,clip);}
-    for(const auto& entry:layout.entries){const auto& s=p.series[entry.index];const double x=layout.x+entry.x,y=layout.y+entry.y;const uint32_t color=s.spec.hidden?0xff888888:s.spec.color>>24?s.spec.color:forge_plot_palette(entry.index);std::string mark;forge_plot_line(mark,x,y-4,x+22,y-4);forge_plot_add_path(p,mark,color,0,3,rect.id,100,clip);forge_plot_add_text(p,x+28,y,entry.text,color,p.options.font_size,100,rect.id,clip);ForgePlotCoreHitState hit;hit.clip=clip;hit.hit.kind=2;hit.hit.id=s.spec.id;hit.hit.index=-1;hit.hit.panel=rect.id;hit.hit.pixel_x=std::max(x,rect.x);hit.hit.pixel_y=std::max(y-p.options.font_size-4,rect.y);hit.hit.label=s.name.c_str();hit.x2=std::min(x+entry.width,rect.x+rect.width);hit.y2=std::min(y+4,rect.y+rect.height);hit.rect=true;if(hit.x2>hit.hit.pixel_x&&hit.y2>hit.hit.pixel_y)p.hits.push_back(hit);}
+    for(const auto& entry:layout.entries){const auto& s=p.series[entry.index];const double x=layout.x+entry.x,y=layout.y+entry.y;
+        const auto* style=entry.point>=0?forge_plot_point_style(s,entry.point):nullptr;const bool hidden=s.spec.hidden||(style&&style->hidden);
+        const uint32_t color=hidden?((p.options.foreground&0xffffff)|0x66000000):entry.point>=0?(style&&(style->color>>24)?style->color:forge_plot_palette(entry.point)):s.spec.color>>24?s.spec.color:forge_plot_palette(entry.index);
+        std::string mark;forge_plot_line(mark,x,y-4,x+22,y-4);forge_plot_add_path(p,mark,color,0,3,rect.id,100,clip);forge_plot_add_text(p,x+28,y,entry.text,hidden?color:p.options.foreground,p.options.font_size,100,rect.id,clip);
+        ForgePlotCoreHitState hit;hit.clip=clip;hit.hit.kind=2;hit.hit.id=s.spec.id;hit.hit.index=entry.point;hit.hit.panel=rect.id;hit.hit.pixel_x=std::max(x,rect.x);hit.hit.pixel_y=std::max(y-p.options.font_size-4,rect.y);hit.hit.label=s.name.c_str();hit.x2=std::min(x+entry.width,rect.x+rect.width);hit.y2=std::min(y+4,rect.y+rect.height);hit.rect=true;if(hit.x2>hit.hit.pixel_x&&hit.y2>hit.hit.pixel_y)p.hits.push_back(hit);
+    }
 }
 static std::string forge_plot_serialize_svg(const ForgePlotCoreState& p) {
+    std::unique_ptr<ForgePlotLegendMetrics> font_metrics;
     std::string out="<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\""+forge_plot_number(p.options.width)+"\" height=\""+forge_plot_number(p.options.height)+"\" viewBox=\"0 0 "+forge_plot_number(p.options.width)+' '+forge_plot_number(p.options.height)+"\"><defs>";
     for(const auto& panel:p.panels){const auto& r=panel.rect;out+="<clipPath id=\"p"+std::to_string(panel.spec.id)+"\">";if(panel.polar)out+="<circle cx=\""+forge_plot_number(r.x+r.width*.5)+"\" cy=\""+forge_plot_number(r.y+r.height*.5)+"\" r=\""+forge_plot_number(std::min(r.width,r.height)*.5)+"\"/>";else out+="<rect x=\""+forge_plot_number(r.x)+"\" y=\""+forge_plot_number(r.y)+"\" width=\""+forge_plot_number(r.width)+"\" height=\""+forge_plot_number(r.height)+"\"/>";out+="</clipPath>";}
     out+="</defs><g shape-rendering=\""+std::string(p.options.antialias?"geometricPrecision":"crispEdges")+"\"><rect width=\"100%\" height=\"100%\" fill=\""+forge_plot_color(p.options.background)+"\" fill-opacity=\""+forge_plot_number((p.options.background>>24)/255.)+"\"/>";
     for(const auto& d:p.draw){if(d.clip)out+="<g clip-path=\"url(#p"+std::to_string(d.panel)+")\">";
         if(!d.path.empty())out+="<path d=\""+d.path+"\" stroke=\""+(d.stroke>>24?forge_plot_color(d.stroke):"none")+"\" stroke-opacity=\""+forge_plot_number((d.stroke>>24)/255.)+"\" stroke-width=\""+forge_plot_number(d.width)+"\" stroke-linejoin=\"round\" stroke-linecap=\"round\" fill=\""+(d.fill>>24?forge_plot_color(d.fill):"none")+"\" fill-opacity=\""+forge_plot_number((d.fill>>24)/255.)+"\"/>";
-        if(!d.text.empty())out+="<text x=\""+forge_plot_number(d.x)+"\" y=\""+forge_plot_number(d.y)+"\" transform=\"rotate("+forge_plot_number(d.rotation)+' '+forge_plot_number(d.x)+' '+forge_plot_number(d.y)+")\" fill=\""+forge_plot_color(d.fill)+"\" fill-opacity=\""+forge_plot_number((d.fill>>24)/255.)+"\" font-family=\""+forge_plot_xml(p.font)+"\" font-size=\""+forge_plot_number(d.size)+"\">"+forge_plot_xml(d.text)+"</text>";
+        if(!d.text.empty()){
+            auto family=p.font;
+            // Slint 的 SVG 回退仅查询通用族；缺字时显式选择系统中文字体。
+            if(std::any_of(d.text.begin(),d.text.end(),[](unsigned char c){return c>=128;})){if(!font_metrics)font_metrics=std::make_unique<ForgePlotLegendMetrics>(p.font);if(!font_metrics->supports(d.text)||((p.font.rfind("Segoe UI",0)==0||p.font.rfind("Consolas",0)==0)&&forge_plot_has_cjk(d.text)))family="Microsoft YaHei UI, Microsoft YaHei, Noto Sans CJK SC, sans-serif";}
+            out+="<text x=\""+forge_plot_number(d.x)+"\" y=\""+forge_plot_number(d.y)+"\" transform=\"rotate("+forge_plot_number(d.rotation)+' '+forge_plot_number(d.x)+' '+forge_plot_number(d.y)+")\" fill=\""+forge_plot_color(d.fill)+"\" fill-opacity=\""+forge_plot_number((d.fill>>24)/255.)+"\" font-family=\""+forge_plot_xml(family)+"\" font-size=\""+forge_plot_number(d.size)+"\">"+forge_plot_xml(d.text)+"</text>";
+        }
         if(!d.image.empty())out+="<image x=\""+forge_plot_number(d.x)+"\" y=\""+forge_plot_number(d.y)+"\" width=\""+forge_plot_number(d.image_width)+"\" height=\""+forge_plot_number(d.image_height)+"\" preserveAspectRatio=\"none\" image-rendering=\""+(d.nearest?std::string("optimizeSpeed"):std::string("optimizeQuality"))+"\" xlink:href=\""+forge_plot_xml(d.image)+"\"/>";
         if(d.clip)out+="</g>";
     }return out+"</g></svg>";
@@ -815,6 +941,7 @@ static void forge_plot_index_hits(ForgePlotCoreState& p) {
     }
 }
 static double forge_plot_hit_distance(const ForgePlotCoreHitState& h,double x,double y) {
+    if(h.sector){const double r=std::hypot(x-h.cx,y-h.cy);if(r<h.inner||r>h.outer)return INFINITY;double a=std::fmod(std::atan2(y-h.cy,x-h.cx)-h.start+4*forge_plot_pi,2*forge_plot_pi);return a<=h.sweep+1e-9?0:INFINITY;}
     if(h.rect){const double dx=std::max({h.hit.pixel_x-x,0.,x-h.x2}),dy=std::max({h.hit.pixel_y-y,0.,y-h.y2});return std::hypot(dx,dy);}
     if(h.segment){const double vx=h.x2-h.hit.pixel_x,vy=h.y2-h.hit.pixel_y,den=vx*vx+vy*vy,t=den>0?std::clamp(((x-h.hit.pixel_x)*vx+(y-h.hit.pixel_y)*vy)/den,0.,1.):0;return std::hypot(x-h.hit.pixel_x-t*vx,y-h.hit.pixel_y-t*vy);}
     return std::max(0.,std::hypot(x-h.hit.pixel_x,y-h.hit.pixel_y)-h.radius);
@@ -838,12 +965,18 @@ static std::wstring forge_plot_wide(const std::string& text) {
 }
 struct ForgePlotPdfGlyph { std::string path; double advance=0; bool valid=false; };
 class ForgePlotPdfFont {
-    HDC dc_=nullptr;HFONT font_=nullptr;HGDIOBJ previous_=nullptr;std::map<wchar_t,ForgePlotPdfGlyph> glyphs_;
+    HDC dc_=nullptr;HFONT font_=nullptr;HFONT fallback_=nullptr;HGDIOBJ previous_=nullptr;std::map<wchar_t,ForgePlotPdfGlyph> glyphs_;
 public:
     explicit ForgePlotPdfFont(std::string family){const auto comma=family.find(',');family=family.substr(0,comma);family.erase(std::remove(family.begin(),family.end(),'\''),family.end());family.erase(std::remove(family.begin(),family.end(),'"'),family.end());if(family.empty()||family=="sans-serif")family="Microsoft YaHei";
         dc_=CreateCompatibleDC(nullptr);if(dc_){font_=CreateFontW(-128,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_TT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH,forge_plot_wide(family).c_str());if(font_)previous_=SelectObject(dc_,font_);}}
-    ~ForgePlotPdfFont(){if(dc_&&previous_)SelectObject(dc_,previous_);if(font_)DeleteObject(font_);if(dc_)DeleteDC(dc_);}
+    ~ForgePlotPdfFont(){if(dc_&&previous_)SelectObject(dc_,previous_);if(font_)DeleteObject(font_);if(fallback_)DeleteObject(fallback_);if(dc_)DeleteDC(dc_);}
     const ForgePlotPdfGlyph& glyph(wchar_t character){const auto found=glyphs_.find(character);if(found!=glyphs_.end())return found->second;ForgePlotPdfGlyph glyph;if(!dc_||!font_)return glyphs_.emplace(character,std::move(glyph)).first->second;
+        SelectObject(dc_,font_);WORD index=0xffff;
+        if(GetGlyphIndicesW(dc_,&character,1,&index,GGI_MARK_NONEXISTING_GLYPHS)==GDI_ERROR||index==0xffff){
+            if(!fallback_)fallback_=CreateFontW(-128,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_TT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,DEFAULT_PITCH,L"Microsoft YaHei UI");
+            if(fallback_)SelectObject(dc_,fallback_);
+            if(GetGlyphIndicesW(dc_,&character,1,&index,GGI_MARK_NONEXISTING_GLYPHS)==GDI_ERROR||index==0xffff)return glyphs_.emplace(character,std::move(glyph)).first->second;
+        }
         MAT2 matrix{};matrix.eM11.value=1;matrix.eM22.value=1;GLYPHMETRICS metrics{};const DWORD bytes=GetGlyphOutlineW(dc_,character,GGO_BEZIER,&metrics,0,nullptr,&matrix);glyph.advance=metrics.gmCellIncX;
         if(bytes!=GDI_ERROR&&bytes<16*1024*1024){std::vector<uint8_t> data(bytes);if(!bytes||GetGlyphOutlineW(dc_,character,GGO_BEZIER,&metrics,bytes,data.data(),&matrix)!=GDI_ERROR){glyph.valid=true;const auto point=[](const POINTFX& value){return std::make_pair(value.x.value+value.x.fract/65536.,-(value.y.value+value.y.fract/65536.));};
             size_t offset=0;while(offset+sizeof(TTPOLYGONHEADER)<=data.size()){const auto* header=reinterpret_cast<const TTPOLYGONHEADER*>(data.data()+offset);if(header->cb<sizeof(TTPOLYGONHEADER)||offset+header->cb>data.size()){glyph.valid=false;break;}const auto start=point(header->pfxStart);forge_plot_path_point(glyph.path,'M',start.first,start.second);size_t curve_offset=offset+sizeof(TTPOLYGONHEADER);
@@ -904,20 +1037,20 @@ static std::string forge_plot_serialize_pdf(const ForgePlotCoreState& p) {
 // C ABI 不向调用端传播 C++ 异常。输入错误保存在场景状态中。
 static void forge_plot_error(ForgePlotCoreState* p,const char* message) {if(p){p->status=2;p->error=message;}}
 extern "C" void* forge_plot_core_new(const ForgePlotOptionsCore* options) {
-    if(!options)return nullptr;try{auto p=std::make_unique<ForgePlotCoreState>();p->options=*options;p->title=forge_plot_string(options->title);p->font=forge_plot_string(options->font_family);if(p->font.empty())p->font="Microsoft YaHei, sans-serif";return p.release();}catch(...){return nullptr;}
+    if(!options)return nullptr;try{auto p=std::make_unique<ForgePlotCoreState>();p->options=*options;p->title=forge_plot_string(options->title);p->font=forge_plot_font_families(forge_plot_string(options->font_family));return p.release();}catch(...){return nullptr;}
 }
 extern "C" void forge_plot_core_free(void* plot) {delete static_cast<ForgePlotCoreState*>(plot);}
 extern "C" void forge_plot_core_begin_view(void* plot,const ForgePlotOptionsCore* options) {
-    auto* p=static_cast<ForgePlotCoreState*>(plot);if(!p||!options)return;try{p->options=*options;p->title=forge_plot_string(options->title);p->font=forge_plot_string(options->font_family);if(p->font.empty())p->font="Microsoft YaHei, sans-serif";p->axes.clear();p->status=0;p->error.clear();}catch(...){forge_plot_error(p,"视图更新失败");}
+    auto* p=static_cast<ForgePlotCoreState*>(plot);if(!p||!options)return;try{p->options=*options;p->title=forge_plot_string(options->title);p->font=forge_plot_font_families(forge_plot_string(options->font_family));p->axes.clear();p->status=0;p->error.clear();}catch(...){forge_plot_error(p,"视图更新失败");}
 }
 extern "C" void forge_plot_core_panel(void* plot,const ForgePlotPanelCore* panel) {
-    auto* p=static_cast<ForgePlotCoreState*>(plot);if(!p||!panel)return;try{ForgePlotCorePanelState s;s.spec=*panel;s.title=forge_plot_string(panel->title);p->panels.push_back(std::move(s));}catch(...){forge_plot_error(p,"绘图区分配失败");}
+    auto* p=static_cast<ForgePlotCoreState*>(plot);if(!p||!panel)return;try{ForgePlotCorePanelState s;s.spec=*panel;s.title=forge_plot_string(panel->title);if(panel->categories)for(size_t i=0;i<panel->category_count;++i)s.categories.push_back(forge_plot_string(panel->categories[i].label));s.spec.categories=nullptr;p->panels.push_back(std::move(s));}catch(...){forge_plot_error(p,"绘图区分配失败");}
 }
 extern "C" void forge_plot_core_axis(void* plot,const ForgePlotAxisCore* axis) {
     auto* p=static_cast<ForgePlotCoreState*>(plot);if(!p||!axis)return;try{ForgePlotCoreAxisState s;s.spec=*axis;s.label=forge_plot_string(axis->label);s.format=forge_plot_string(axis->format);if(axis->ticks)for(size_t i=0;i<axis->tick_count;++i)s.ticks.emplace_back(axis->ticks[i].value,forge_plot_string(axis->ticks[i].label));s.spec.ticks=nullptr;p->axes.push_back(std::move(s));}catch(...){forge_plot_error(p,"坐标轴分配失败");}
 }
 extern "C" void forge_plot_core_series(void* plot,const ForgePlotSeriesCore* series,const ForgePlotPointCore* points,size_t count) {
-    auto* p=static_cast<ForgePlotCoreState*>(plot);if(!p||!series||(!points&&count))return;try{ForgePlotCoreSeriesState s;s.spec=*series;s.name=forge_plot_string(series->name);if(count)s.points.assign(points,points+count);double previous=-std::numeric_limits<double>::infinity();
+    auto* p=static_cast<ForgePlotCoreState*>(plot);if(!p||!series||(!points&&count))return;try{ForgePlotCoreSeriesState s;s.spec=*series;s.name=forge_plot_string(series->name);forge_plot_copy_styles(s);if(count)s.points.assign(points,points+count);double previous=-std::numeric_limits<double>::infinity();
         for(size_t i=0;i<count;++i){auto& pt=s.points[i];if(pt.label&&*pt.label)s.labels[i]=pt.label;if(pt.outliers&&pt.outlier_count)s.outliers[i].assign(pt.outliers,pt.outliers+pt.outlier_count);pt.label=nullptr;pt.outliers=nullptr;if(!std::isfinite(pt.x)){s.binary_searchable=false;previous=-std::numeric_limits<double>::infinity();}else{if(pt.x<previous)s.monotone=false;previous=pt.x;}}
         // 折线按键值稳定排序；参数曲线保留顺序。断点隔开的各段独立排序，原始索引不变。
         forge_plot_series_order(s);
@@ -943,7 +1076,7 @@ extern "C" int forge_plot_core_append(void* plot,int series_id,const ForgePlotPo
 extern "C" int forge_plot_core_update_series(void* plot,const ForgePlotSeriesCore* series) {
     auto* p=static_cast<ForgePlotCoreState*>(plot);if(!p||!series)return 0;
     try{for(auto& s:p->series)if(s.spec.id==series->id){const bool kind_changed=s.spec.kind!=series->kind;const bool bounds_changed=kind_changed||s.spec.bar_width!=series->bar_width||s.spec.baseline!=series->baseline;
-        s.spec=*series;s.name=forge_plot_string(series->name);if(kind_changed)forge_plot_series_order(s);if(bounds_changed){s.x_bounds={};s.y_bounds={};s.sample_blocks={};s.simple_samples=true;s.latest_valid=std::numeric_limits<size_t>::max();for(size_t i=0;i<s.points.size();++i)forge_plot_series_bounds(s,i);}return 1;}
+        s.spec=*series;s.name=forge_plot_string(series->name);forge_plot_copy_styles(s);if(kind_changed)forge_plot_series_order(s);if(bounds_changed){s.x_bounds={};s.y_bounds={};s.sample_blocks={};s.simple_samples=true;s.latest_valid=std::numeric_limits<size_t>::max();for(size_t i=0;i<s.points.size();++i)forge_plot_series_bounds(s,i);}return 1;}
     }catch(...){forge_plot_error(p,"更新系列属性失败");}return 0;
 }
 extern "C" void forge_plot_core_map(void* plot,const ForgePlotMapCore* map,const double* values,size_t count) {
@@ -980,10 +1113,10 @@ extern "C" size_t forge_plot_core_domains(const void* plot,ForgePlotRangeCore* r
 }
 extern "C" ForgePlotHitCore forge_plot_core_measure(const void* plot,int series_id,double x) {
     ForgePlotHitCore out{};out.kind=-1;out.id=-1;out.index=-1;const auto* p=static_cast<const ForgePlotCoreState*>(plot);if(!p||!std::isfinite(x))return out;
-    for(const auto& s:p->series)if(s.spec.id==series_id&&!s.points.empty()){
+    for(const auto& s:p->series)if(s.spec.id==series_id&&!s.points.empty()&&s.spec.kind<8&&s.spec.kind!=6){
         size_t index=0;if(s.monotone&&s.binary_searchable){const auto it=std::lower_bound(s.points.begin(),s.points.end(),x,[](const auto& pt,double v){return pt.x<v;});index=static_cast<size_t>(it-s.points.begin());if(index==s.points.size())--index;else if(index&&std::abs(s.points[index-1].x-x)<=std::abs(s.points[index].x-x))--index;}
         else{double distance=INFINITY;for(size_t i=0;i<s.points.size();++i)if(forge_plot_point_valid(s,s.points[i])&&std::abs(s.points[i].x-x)<distance){index=i;distance=std::abs(s.points[i].x-x);}}
-        const auto& pt=s.points[index];if(!forge_plot_point_valid(s,pt))return out;const auto* ax=forge_plot_axis_find(*p,s.spec.x_axis);const auto* ay=forge_plot_axis_find(*p,s.spec.y_axis);if(!ax||!ay)return out;
+        const auto& pt=s.points[index];if(forge_plot_point_hidden(s,index)||!forge_plot_point_valid(s,pt))return out;const auto* ax=forge_plot_axis_find(*p,s.spec.x_axis);const auto* ay=forge_plot_axis_find(*p,s.spec.y_axis);if(!ax||!ay)return out;
         out.kind=0;out.id=series_id;out.index=static_cast<int>(index);out.panel=ax->spec.panel;out.x=pt.x;out.y=s.spec.kind==4||s.spec.kind==5?pt.close:pt.y;out.value=out.y;out.pixel_x=forge_plot_axis_pixel(*p,*ax,out.x);out.pixel_y=forge_plot_axis_pixel(*p,*ay,out.y);out.label=s.name.c_str();return out;
     }return out;
 }
@@ -992,7 +1125,7 @@ extern "C" double forge_plot_core_coordinate(const void* plot,int axis,double pi
 }
 extern "C" ForgePlotRangeCore forge_plot_core_view(const void* plot,const ForgePlotRangeCore* baseline,int mode,double position,double amount,double endpoint) {
     if(!baseline)return {};auto result=*baseline;const auto* p=static_cast<const ForgePlotCoreState*>(plot);if(!p||!std::isfinite(position+amount+endpoint))return result;
-    const auto* axis=forge_plot_axis_find(*p,baseline->id);if(!axis)return result;const auto* panel=forge_plot_panel_find(*p,axis->spec.panel);if(!panel)return result;const auto& r=panel->rect;
+    const auto* axis=forge_plot_axis_find(*p,baseline->id);if(!axis)return result;const auto* panel=forge_plot_panel_find(*p,axis->spec.panel);if(!panel||panel->system!=0)return result;const auto& r=panel->rect;
     const bool horizontal=axis->spec.side<2;const double span=horizontal?r.width:-r.height,origin=horizontal?r.x:r.y+r.height;
     const double lo=forge_plot_transform(baseline->minimum,baseline->scale),hi=forge_plot_transform(baseline->maximum,baseline->scale);double low=lo,high=hi;
     const auto transformed=[&](double pixel){double t=(pixel-origin)/span;if(baseline->reversed)t=1-t;return lo+t*(hi-lo);};
@@ -1022,23 +1155,24 @@ extern "C" size_t forge_plot_core_select(const void* plot,double x,double y,doub
     const double left=std::min(x,x+width),right=std::max(x,x+width),top=std::min(y,y+height),bottom=std::max(y,y+height);size_t count=0;
     const auto key=[](int id,size_t index){return(static_cast<uint64_t>(static_cast<uint32_t>(id))<<32)|static_cast<uint32_t>(index);};
     std::unordered_map<uint64_t,std::pair<double,double>> shape_hits;
-    std::unordered_set<int> shape_series;for(const auto& s:p->series)if(s.spec.kind>=2&&s.spec.kind<=5)shape_series.insert(s.spec.id);
+    std::unordered_set<int> shape_series;for(const auto& s:p->series)if((s.spec.kind>=2&&s.spec.kind<=5)||s.spec.kind>=7)shape_series.insert(s.spec.id);
     // 柱、统计箱和金融图以实际几何框选，金融点未使用的 y 不参与选择判断。
     for(const auto& h:p->hits)if(h.hit.kind==0&&shape_series.contains(h.hit.id)) {
         const auto* panel=forge_plot_panel_find(*p,h.hit.panel);if(!panel)continue;
         const double l=std::max(left,panel->rect.x),r=std::min(right,panel->rect.x+panel->rect.width),t=std::max(top,panel->rect.y),b=std::min(bottom,panel->rect.y+panel->rect.height);
         if(l>r||t>b)continue;
-        if(h.rect&&h.hit.pixel_x<=r&&h.x2>=l&&h.hit.pixel_y<=b&&h.y2>=t)shape_hits[key(h.hit.id,h.hit.index)]={(h.hit.pixel_x+h.x2)*.5,(h.hit.pixel_y+h.y2)*.5};
+        if(h.sector){bool intersect=false;for(int j=0;j<=32&&!intersect;++j){const double a=h.start+h.sweep*j/32;for(double rr:{h.inner,(h.inner+h.outer)*.5,h.outer}){const double xx=h.cx+rr*std::cos(a),yy=h.cy+rr*std::sin(a);if(xx>=l&&xx<=r&&yy>=t&&yy<=b){intersect=true;break;}}}for(double xx:{l,r})for(double yy:{t,b})if(forge_plot_hit_distance(h,xx,yy)==0)intersect=true;if(intersect)shape_hits[key(h.hit.id,h.hit.index)]={h.hit.pixel_x,h.hit.pixel_y};}
+        else if(h.rect&&h.hit.pixel_x<=r&&h.x2>=l&&h.hit.pixel_y<=b&&h.y2>=t)shape_hits[key(h.hit.id,h.hit.index)]={(h.hit.pixel_x+h.x2)*.5,(h.hit.pixel_y+h.y2)*.5};
         else if(!h.segment&&!h.rect&&h.hit.pixel_x>=l&&h.hit.pixel_x<=r&&h.hit.pixel_y>=t&&h.hit.pixel_y<=b)shape_hits[key(h.hit.id,h.hit.index)]={h.hit.pixel_x,h.hit.pixel_y};
     }
     for(const auto& s:p->series)if(!s.spec.hidden&&s.spec.selectable){
         const auto* ax=forge_plot_axis_find(*p,s.spec.x_axis);const auto* ay=forge_plot_axis_find(*p,s.spec.y_axis);if(!ax||!ay)continue;
         const auto* panel=forge_plot_panel_find(*p,ax->spec.panel);if(!panel)continue;
         for(size_t i=0;i<s.points.size();++i){
-            const auto& pt=s.points[i];if(!forge_plot_point_valid(s,pt))continue;
+            const auto& pt=s.points[i];if(forge_plot_point_hidden(s,i)||!forge_plot_point_valid(s,pt))continue;
             const double value=s.spec.kind==4||s.spec.kind==5?pt.close:pt.y;
             double px=forge_plot_axis_pixel(*p,*ax,pt.x),py=forge_plot_axis_pixel(*p,*ay,value);bool selected=false;
-            if(s.spec.kind>=2&&s.spec.kind<=5){const auto geometry=shape_hits.find(key(s.spec.id,i));if(geometry!=shape_hits.end()){selected=true;px=geometry->second.first;py=geometry->second.second;}}
+            if((s.spec.kind>=2&&s.spec.kind<=5)||s.spec.kind>=7){const auto geometry=shape_hits.find(key(s.spec.id,i));if(geometry!=shape_hits.end()){selected=true;px=geometry->second.first;py=geometry->second.second;}}
             else{if(s.spec.kind==6){const auto point=forge_plot_polar_point(*panel,*ax,*ay,pt.x,pt.y);px=point.first;py=point.second;}selected=forge_plot_inside(*panel,px,py)&&px>=std::max(left,panel->rect.x)&&px<=std::min(right,panel->rect.x+panel->rect.width)&&py>=std::max(top,panel->rect.y)&&py<=std::min(bottom,panel->rect.y+panel->rect.height);}
             if(selected){if(hits&&count<capacity){const auto label=s.labels.find(i);hits[count]={0,s.spec.id,static_cast<int>(i),ax->spec.panel,pt.x,value,value,px,py,0,label==s.labels.end()?s.name.c_str():label->second.c_str()};}++count;}
         }

@@ -1,6 +1,9 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 // 专业二维绘图的共享契约；枚举顺序对应共用数值引擎的公开常量。
-export enum ForgePlotKind { graph, curve, bars, statistical-box, candlestick, ohlc, polar }
-export enum ForgePlotLineStyle { auto, none, line, step-left, step-right, step-center, impulse }
+export enum ForgePlotKind { graph, curve, bars, statistical-box, candlestick, ohlc, polar, bubble, pie, polar-area, radar }
+export enum ForgePlotLineStyle { auto, none, line, step-left, step-right, step-center, impulse, smooth }
 export enum ForgePlotScatterStyle { none, circle, disc, square, diamond, cross, cross-plus, triangle, plus, star }
 export enum ForgePlotAxisSide { bottom, top, left, right }
 export enum ForgePlotScale { linear, logarithmic }
@@ -23,14 +26,16 @@ export struct ForgePlotAxis {
     minimum: float, maximum: float, tick-step: float, offset: float,
     label: string, format: string, time-origin: string, ticks: [ForgePlotTick],
 }
-export struct ForgePlotPanel { id: int, x: float, y: float, width: float, height: float, title: string }
+export struct ForgePlotPanel { id: int, x: float, y: float, width: float, height: float, title: string, categories: [string] }
+// 可选旁路样式按原始索引关联；实时波形点结构保持紧凑。
+export struct ForgePlotPointStyle { index: int, hidden: bool, size: float, color: color }
 export struct ForgePlotSeries {
     id: int, kind: ForgePlotKind, x-axis: int, y-axis: int,
     line-style: ForgePlotLineStyle, scatter-style: ForgePlotScatterStyle,
     hidden: bool, unselectable: bool, stacked: bool, stack-group: int,
     channel-fill: bool, fill-target: int, layer: int, sorted: bool,
     color: color, fill-color: color, line-width: float, point-size: float, bar-width: float, baseline: float,
-    name: string, points: [ForgePlotPoint],
+    name: string, points: [ForgePlotPoint], inner-radius: float, point-styles: [ForgePlotPointStyle],
 }
 export struct ForgePlotColorMap {
     id: int, panel: int, x-axis: int, y-axis: int, columns: int, rows: int, palette: int,
@@ -82,7 +87,11 @@ export global ForgePlotServices {
     callback select-rect(int, float, float, float, float) -> [ForgePlotSelection];
     callback merge-selection([ForgePlotSelection], [ForgePlotSelection], int) -> [ForgePlotSelection];
     callback change-view(int, [ForgePlotAxis], [ForgePlotRange], int, int, float, float, float, float, int) -> [ForgePlotAxis];
+    pure callback axis-index([ForgePlotAxis], int) -> int;
     callback scroll-view(int, [ForgePlotAxis], int, float, float) -> [ForgePlotAxis];
     callback toggle-series([ForgePlotSeries], int) -> [ForgePlotSeries];
+    pure callback cartesian-panel([ForgePlotSeries], [ForgePlotAxis], int) -> bool;
+    pure callback cartesian-series([ForgePlotSeries], int) -> bool;
+    callback toggle-point([ForgePlotSeries], int, int) -> [ForgePlotSeries];
     callback export(int, string, string) -> ForgePlotExportResult;
 }

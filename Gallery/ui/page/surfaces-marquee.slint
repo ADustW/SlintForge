@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { CheckBox, LineEdit, Palette, Slider } from "std-widgets.slint";
 import { ForgeIcon, ForgeIcons, ForgeMarquee, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
@@ -34,7 +37,7 @@ export component GalleryMarqueePage inherits Rectangle {
                     horizontal-stretch: 1;
                     text: root.message;
                     cycle-duration: root.seconds * 1s;
-                    running <=> root.running;
+                    running: root.running && root.visible;
                 }
             }
             GalleryOptions {
@@ -55,8 +58,8 @@ export component GalleryMarqueePage inherits Rectangle {
                 // 变体组件较宽，纵向排列以适应窄窗口。
                 VerticalLayout {
                     spacing: 10px; horizontal-stretch: 1;
-                    GalleryVariant { caption: "overflowing: false"; ForgeMarquee { width: 170px; height: 40px; text: @tr("已连接"); } }
-                    GalleryVariant { caption: "overflowing: true"; ForgeMarquee { width: 170px; height: 40px; text: @tr("正在下载更新包，完成后将提示重启。"); } }
+                    GalleryVariant { caption: "overflowing: false"; ForgeMarquee { width: 170px; height: 40px; running: root.visible; text: @tr("已连接"); } }
+                    GalleryVariant { caption: "overflowing: true"; ForgeMarquee { width: 170px; height: 40px; running: root.visible; text: @tr("正在下载更新包，完成后将提示重启。"); } }
                     GalleryVariant { caption: "running: false"; ForgeMarquee { width: 170px; height: 40px; running: false; text: @tr("正在下载更新包，完成后将提示重启。"); } }
                 }
             }
@@ -84,11 +87,12 @@ export component GalleryMarqueePage inherits Rectangle {
                             background: transparent;
                             text: @tr("系统将于今晚 23:00 至次日 01:00 进行维护升级，届时部分功能暂停使用。");
                             cycle-duration: 14s;
+                            running: root.visible;
                         }
                         if root.notice-closed : Text {
                             horizontal-stretch: 1;
                             text: @tr("公告已关闭"); color: Palette.foreground.transparentize(0.4);
-                            font-size: 13px * ForgeTypography.scale; vertical-alignment: center;
+                            font-size: 14px * ForgeTypography.scale; vertical-alignment: center;
                         }
                         Rectangle {
                             width: 28px;

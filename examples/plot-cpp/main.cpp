@@ -1,6 +1,10 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "professional-plot.h"
 #include "ForgePlot.hpp"
 #include "ForgeCapture.hpp"
+#include "ForgeRendering.hpp"
 #include <chrono>
 #include <filesystem>
 #include <iostream>
@@ -29,6 +33,7 @@ static void forge_plot_consumer_benchmark(const slint::ComponentHandle<Professio
 }
 
 int main(int argc,char** argv) {
+    const auto rendering = forge_configure_rendering();
     try {
         auto ui=ProfessionalPlotWindow::create();
         forge_bind_plot_services<ForgePlotServices,ForgePlotScene,ForgePlotAxis,ForgePlotRange,ForgePlotRect,ForgePlotHit,ForgePlotSelection,ForgePlotExportResult>(ui);

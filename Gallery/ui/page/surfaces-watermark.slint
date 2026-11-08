@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { LineEdit, Palette, Slider } from "std-widgets.slint";
 import { ForgeTypography, ForgeWatermark } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
@@ -39,7 +42,7 @@ export component GalleryWatermarkPage inherits Rectangle {
                         VerticalLayout {
                             padding: 20px; spacing: 10px; alignment: start;
                             Text { text: @tr("示例文档"); color: Palette.foreground; font-size: 17px * ForgeTypography.scale; font-weight: 600; }
-                            Text { text: @tr("水印绘制在内容上方，不影响内容本身的布局。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                            Text { text: @tr("水印绘制在内容上方，不影响内容本身的布局。"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
                         }
                     }
                 }
@@ -91,9 +94,9 @@ export component GalleryWatermarkPage inherits Rectangle {
                             Text { text: @tr("技术服务合同"); color: Palette.foreground; font-size: 16px * ForgeTypography.scale; font-weight: 600; horizontal-alignment: center; }
                             Text { text: @tr("合同编号：HT-2026-0412"); color: Palette.foreground.transparentize(0.4); font-size: 12px * ForgeTypography.scale; horizontal-alignment: center; }
                             Rectangle { height: 6px; }
-                            Text { text: @tr("第一条　服务内容：乙方为甲方提供界面组件的定制开发与维护服务。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
-                            Text { text: @tr("第二条　服务期限：自签订之日起十二个月。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
-                            Text { text: @tr("第三条　保密条款：双方对合作中获知的技术资料负有保密义务。"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                            Text { text: @tr("第一条　服务内容：乙方为甲方提供界面组件的定制开发与维护服务。"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
+                            Text { text: @tr("第二条　服务期限：自签订之日起十二个月。"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
+                            Text { text: @tr("第三条　保密条款：双方对合作中获知的技术资料负有保密义务。"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
                         }
                     }
                 }

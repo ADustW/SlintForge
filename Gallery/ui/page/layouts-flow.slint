@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette, Slider, SpinBox } from "std-widgets.slint";
 import { ForgeFlowLayout, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
@@ -86,7 +89,7 @@ export component GalleryFlowLayoutPage inherits Rectangle {
                         label := Text {
                             text: tag;
                             color: parent.picked ? Palette.accent-foreground : Palette.foreground;
-                            font-size: 13px * ForgeTypography.scale;
+                            font-size: 14px * ForgeTypography.scale;
                             horizontal-alignment: center; vertical-alignment: center;
                         }
                         touch := TouchArea {

@@ -1,0 +1,45 @@
+/* Copyright © 2026 陕西禾又科技有限责任公司 */
+/* SPDX-License-Identifier: GPL-3.0-only */
+
+:root {
+  --vp-c-brand-1: #4f6bed;
+  --vp-c-brand-2: #3f57c7;
+  --vp-c-brand-3: #3048ad;
+  --vp-c-brand-soft: rgba(79, 107, 237, 0.14);
+  --vp-layout-max-width: 100vw;
+}
+
+.VPDoc .content-container {
+  max-width: 1600px !important;
+}
+
+.api-preview {
+  margin: 24px 0;
+}
+
+.api-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  box-shadow: 0 14px 38px rgba(20, 28, 60, 0.12);
+}
+
+.api-preview figcaption {
+  margin-top: 8px;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  text-align: center;
+}
+
+.api-table code {
+  white-space: nowrap;
+}
+
+@media (max-width: 960px) {
+  .VPDoc .content-container {
+    max-width: none !important;
+  }
+}

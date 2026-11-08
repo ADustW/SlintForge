@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 import { ForgePickerField, ForgePickerAction } from "picker-base.slint";
@@ -48,11 +51,11 @@ export component ForgeShortcutPicker inherits Rectangle {
         close-policy: no-auto-close; forward-focus: recorder;
         property<int> focus-token: root.focus-token;
         changed focus-token => { recorder.focus(); }
-        Rectangle { background: root.dark ? #242424 : #fff; border-radius: 8px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        Rectangle { background: Palette.surface-for(root.dark); border-radius: 8px; border-width: 1px; border-color: Palette.border-for(root.dark); }
         VerticalLayout {
             padding: 20px * ForgeTypography.scale; spacing: 14px * ForgeTypography.scale;
-            Text { text: root.language == "en" ? "Activate the Shortcut" : "设置快捷键"; color: root.dark ? #fff : #202020; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
-            Text { text: root.language == "en" ? "Press the key combination to change the shortcut" : "按下组合键以更改快捷键"; color: root.dark ? #ddd : #555; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+            Text { text: root.language == "en" ? "Activate the Shortcut" : "设置快捷键"; color: Palette.text-for(root.dark); font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            Text { text: root.language == "en" ? "Press the key combination to change the shortcut" : "按下组合键以更改快捷键"; color: Palette.secondary-for(root.dark); font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
             Rectangle {
                 vertical-stretch: 1;
                 Rectangle {

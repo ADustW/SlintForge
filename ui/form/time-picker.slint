@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Time, Palette, SpinBox } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 import { ForgeDateTime } from "date-time.slint";
@@ -49,7 +52,7 @@ export component ForgeTimePickerPopup inherits Rectangle {
         height: (root.clock-mode ? 348px : 210px) * root.scale;
         close-policy: close-on-click-outside;
         forward-focus: scope;
-        Rectangle { background: root.dark ? #242424 : #ffffff; border-radius: 6px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        Rectangle { background: Palette.surface-for(root.dark); border-radius: 6px; border-width: 1px; border-color: Palette.border-for(root.dark); }
         scope := FocusScope {
             width: 100%; height: 100%;
             key-pressed(event) => {
@@ -80,16 +83,16 @@ export component ForgeTimePickerPopup inherits Rectangle {
             if !root.clock-mode: VerticalLayout {
                 spacing: 8px;
                 HorizontalLayout {
-                    Text { text: root.language == "en" ? "Hour" : "时"; color: root.dark ? #fff : #202020; vertical-alignment: center; }
+                    Text { text: root.language == "en" ? "Hour" : "时"; color: Palette.text-for(root.dark); vertical-alignment: center; }
                     SpinBox { minimum: root.use-24-hour-format ? 0 : 1; maximum: root.use-24-hour-format ? 23 : 12; value <=> root.numeric-hour; edited(value) => { root.set-hour(value); } }
                 }
                 HorizontalLayout {
-                    Text { text: root.language == "en" ? "Minute" : "分"; color: root.dark ? #fff : #202020; vertical-alignment: center; }
+                    Text { text: root.language == "en" ? "Minute" : "分"; color: Palette.text-for(root.dark); vertical-alignment: center; }
                     SpinBox { minimum: 0; maximum: 59; value <=> root.minute; edited(value) => { root.set-minute(value); } }
                 }
                 if !root.use-24-hour-format: ForgePickerAction { dark: root.dark; text: root.hour >= 12 ? (root.language == "en" ? "PM" : "下午") : (root.language == "en" ? "AM" : "上午"); clicked => { root.set-period(root.hour < 12); } }
             }
-            Rectangle { height: 1px; background: root.dark ? #454545 : #d0d0d0; }
+            Rectangle { height: 1px; background: Palette.border-for(root.dark); }
             HorizontalLayout {
                 spacing: 4px;
                 ForgePickerAction { dark: root.dark; text: "✓"; accessible-label: root.language == "en" ? "Confirm" : "确定"; clicked => { root.confirm(); } }

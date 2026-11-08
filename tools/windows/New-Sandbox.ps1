@@ -1,4 +1,7 @@
-﻿[CmdletBinding()]
+﻿# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
+[CmdletBinding()]
 param([Parameter(Mandatory=$true)][string]$ReleaseDirectory, [string]$OutputDirectory, [string]$MappedReleaseDirectory, [string]$EvidenceDirectory)
 $ErrorActionPreference = 'Stop'
 $release = (Resolve-Path -LiteralPath $ReleaseDirectory).Path

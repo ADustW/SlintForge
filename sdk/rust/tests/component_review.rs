@@ -1,4 +1,6 @@
-use slintforge::charts::{prepare_chart, ChartOptionsData, ChartPointData, ChartSeriesData};
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use slintforge::{Error, NavItem, NavItemKind, NavTree};
 use std::time::Instant;
 
@@ -74,81 +76,9 @@ fn plot_type_switches_rebuild_order_before_appending() {
 }
 
 #[test]
-fn categorical_ranges_ignore_points_without_a_category() {
-    let series = [ChartSeriesData {
-        points: [(-1., 10000.), (0., 2.), (1., 4.), (2., -10000.)]
-            .into_iter()
-            .map(|(x, y)| ChartPointData {
-                x,
-                y,
-                ..Default::default()
-            })
-            .collect(),
-        ..Default::default()
-    }];
-    let categories = ["A".into(), "B".into()];
-    for kind in [0, 1] {
-        let scene = prepare_chart(
-            kind,
-            &series,
-            &[],
-            &categories,
-            &ChartOptionsData::default(),
-        );
-        assert_eq!(scene.status, 0);
-        assert_eq!(scene.marks.len(), 2);
-        assert!(
-            scene.y_max <= 10. && scene.y_min >= -1.,
-            "范围={}..{}",
-            scene.y_min,
-            scene.y_max
-        );
-    }
-    let invalid_only = [ChartSeriesData {
-        points: vec![ChartPointData {
-            x: 9.,
-            y: 3.,
-            ..Default::default()
-        }],
-        ..Default::default()
-    }];
-    assert_eq!(
-        prepare_chart(
-            0,
-            &invalid_only,
-            &[],
-            &categories,
-            &ChartOptionsData::default()
-        )
-        .status,
-        1
-    );
-}
-
-#[test]
-fn manual_ranges_with_overflowing_spans_are_rejected() {
-    let series = [ChartSeriesData {
-        points: vec![ChartPointData {
-            x: 0.,
-            y: 0.,
-            ..Default::default()
-        }],
-        ..Default::default()
-    }];
-    let mut options = ChartOptionsData {
-        auto_range: false,
-        x_min: -f64::MAX,
-        x_max: f64::MAX,
-        y_min: -1.,
-        y_max: 1.,
-        ..Default::default()
-    };
-    assert_eq!(prepare_chart(5, &series, &[], &[], &options).status, 2);
-    options.x_min = -1.;
-    options.x_max = 1.;
-    options.y_min = -f64::MAX;
-    options.y_max = f64::MAX;
-    assert_eq!(prepare_chart(5, &series, &[], &[], &options).status, 2);
+fn plot_nan_points_do_not_pollute_ranges() {
+    let plot=review_plot(0,&[(0.,1.),(1.,f64::NAN),(2.,3.)]);
+    let ranges=plot.ranges();assert!(ranges[1].minimum>0. && ranges[1].maximum<4.);
 }
 
 #[test]

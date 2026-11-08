@@ -1,0 +1,46 @@
+version = 1
+SPDX-PackageName = "SlintForge"
+SPDX-PackageSupplier = "陕西禾又科技有限责任公司"
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 陕西禾又科技有限责任公司"
+SPDX-License-Identifier = "GPL-3.0-only"
+
+[[annotations]]
+path = "third_party/nlohmann/**"
+precedence = "override"
+SPDX-FileCopyrightText = "2013-2025 Niels Lohmann"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "third_party/qrcodegen/**"
+precedence = "override"
+SPDX-FileCopyrightText = "Project Nayuki"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "ui/assets/fonts/FluentSystemIcons-*"
+precedence = "override"
+SPDX-FileCopyrightText = "2020 Microsoft Corporation"
+SPDX-License-Identifier = "MIT"
+
+# Slint 1.18.0 标准控件原文：保留文件头中的上游版权（含 KDAB 署名），无文件头的资源按 Slint 上游 REUSE 声明标注。
+[[annotations]]
+path = "ui/styles/slintforge-winui3/upstream/**"
+precedence = "closest"
+SPDX-FileCopyrightText = "SixtyFPS GmbH <info@slint.dev>"
+SPDX-License-Identifier = "GPL-3.0-only OR LicenseRef-Slint-Royalty-free-2.0 OR LicenseRef-Slint-Software-3.0"
+
+[[annotations]]
+path = "ui/styles/slintforge-winui3/upstream/fluent/_*.svg"
+precedence = "override"
+SPDX-FileCopyrightText = "Microsoft Corporation"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "ui/styles/slintforge-winui3/upstream/common/MadeWithSlint-logo-*.svg"
+precedence = "override"
+SPDX-FileCopyrightText = "SixtyFPS GmbH <info@slint.dev>"
+SPDX-License-Identifier = "CC-BY-ND-4.0"

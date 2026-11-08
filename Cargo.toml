@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 [workspace]
 members = ["sdk/runtime", "sdk/runtime-api", "sdk/rust-build", "sdk/rust", "Gallery/rust", "examples/rust", "examples/plot-rust", "examples/flow-rust"]
 exclude = ["third_party/qrcodegen/rust"]
@@ -6,8 +9,16 @@ resolver = "2"
 [workspace.package]
 version = "0.1.2"
 edition = "2021"
+license = "GPL-3.0-only"
+authors = ["陕西禾又科技有限责任公司"]
 publish = false
 
 # Debug 保留本项目的调试信息，栅格化与渲染依赖启用优化以满足桌面交互帧预算。
 [profile.dev.package."*"]
 opt-level = 3
+
+# Gallery 的生成界面代码也需要优化，避免日常预览使用未优化的绑定与布局路径。
+[profile.dev.package.slintforge-gallery-rust]
+opt-level = 2
+debug = 0
+incremental = false

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 // 由 tools/generate_plot_ffi.py 生成；修改共用头文件后重新生成。
 #![allow(non_snake_case)]
 
@@ -79,8 +82,25 @@ pub struct ForgePlotPanelCore {
     pub width: f64,
     pub height: f64,
     pub title: *const std::ffi::c_char,
+    pub categories: *const ForgePlotTickCore,
+    pub category_count: usize,
 }
 impl Default for ForgePlotPanelCore {
+    fn default() -> Self {
+        // 契约只包含数字和裸指针，零位模式均有效。
+        unsafe { std::mem::zeroed() }
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+pub struct ForgePlotPointStyleCore {
+    pub index: i32,
+    pub hidden: i32,
+    pub size: f64,
+    pub color: u32,
+}
+impl Default for ForgePlotPointStyleCore {
     fn default() -> Self {
         // 契约只包含数字和裸指针，零位模式均有效。
         unsafe { std::mem::zeroed() }
@@ -109,6 +129,9 @@ pub struct ForgePlotSeriesCore {
     pub bar_width: f64,
     pub baseline: f64,
     pub name: *const std::ffi::c_char,
+    pub inner_radius: f64,
+    pub point_styles: *const ForgePlotPointStyleCore,
+    pub point_style_count: usize,
 }
 impl Default for ForgePlotSeriesCore {
     fn default() -> Self {

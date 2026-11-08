@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
@@ -28,7 +31,15 @@ typedef struct ForgePlotPanelCore {
     int id;
     double x, y, width, height;
     const char* title;
+    const ForgePlotTickCore* categories;
+    size_t category_count;
 } ForgePlotPanelCore;
+
+typedef struct ForgePlotPointStyleCore {
+    int index, hidden;
+    double size;
+    uint32_t color;
+} ForgePlotPointStyleCore;
 
 typedef struct ForgePlotSeriesCore {
     int id, kind, x_axis, y_axis, line_style, scatter_style, hidden, selectable;
@@ -36,6 +47,9 @@ typedef struct ForgePlotSeriesCore {
     uint32_t color, fill_color;
     double line_width, point_size, bar_width, baseline;
     const char* name;
+    double inner_radius;
+    const ForgePlotPointStyleCore* point_styles;
+    size_t point_style_count;
 } ForgePlotSeriesCore;
 
 typedef struct ForgePlotMapCore {

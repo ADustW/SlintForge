@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use slintforge::flow::json::{self, Value};
 
 // 业务控件导出为当前状态的静态图元；与 C++ 示例使用相同内容。

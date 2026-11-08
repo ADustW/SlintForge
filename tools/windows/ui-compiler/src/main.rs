@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use std::{collections::HashMap, path::PathBuf};
 fn main() {
     let args: Vec<_> = std::env::args().collect();
@@ -11,10 +14,13 @@ fn main() {
     let output = output.canonicalize().unwrap();
     std::env::set_var("OUT_DIR", &output);
     std::env::set_var("CARGO_MANIFEST_DIR", file.parent().unwrap());
-    std::env::set_var("SLINT_STYLE", "fluent");
+    std::env::set_var("SLINT_STYLE", "slintforge-winui3");
+    std::env::set_var("SLINT_ENABLE_EXPERIMENTAL_FEATURES", "1");
+    let styles = PathBuf::from(&args[2]).canonicalize().unwrap().parent().unwrap().join("styles");
+    let style = styles.join("slintforge-winui3");
     std::env::set_var("SLINT_EMBED_RESOURCES", "true");
     let mut config =
-        slint_build::CompilerConfiguration::new().with_library_paths(HashMap::from([(
+        slint_build::CompilerConfiguration::new().with_include_paths(vec![styles,style.clone(),style.join("upstream/fluent"),style.join("upstream/common")]).with_library_paths(HashMap::from([(
             "slintforge".into(),
             PathBuf::from(&args[2]).canonicalize().unwrap(),
         )]));

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { LineEdit, Palette, Slider } from "std-widgets.slint";
 import { ForgeCard, ForgeIconButton, ForgePillButton, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
@@ -8,7 +11,7 @@ component GalleryCardMetric inherits VerticalLayout {
     in property<color> tint: Palette.foreground;
     spacing: 2px;
     Text { text: root.label; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; }
-    Text { text: root.value; color: root.tint; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+    Text { text: root.value; color: root.tint; font-size: 20px * ForgeTypography.scale; font-weight: 600; }
 }
 
 // 共享组件演示：Card。

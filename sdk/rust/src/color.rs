@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use slintforge_runtime_api::models::*;
 use slintforge_runtime_api::{Arena, Wire};
 pub fn color_from_hex(text: &str) -> Option<slint::Color> {

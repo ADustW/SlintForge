@@ -6240,3 +6240,30 @@ msgstr " (including archived)"
 msgid "（未填写）"
 msgstr "(not provided)"
 
+
+msgid "切换导航"
+msgstr "Toggle navigation"
+
+msgid "缩放：X + Y"
+msgstr "Zoom: X + Y"
+
+msgid "仅缩放 X 轴"
+msgstr "Zoom: X only"
+
+msgid "仅缩放 Y 轴"
+msgstr "Zoom: Y only"
+
+msgid "缩放方向"
+msgstr "Zoom direction"
+
+msgid "切换主题"
+msgstr "Toggle theme"
+
+msgid "最大化或还原"
+msgstr "Maximize or restore"
+
+msgid "置顶"
+msgstr "Always on top"
+
+msgid "主要、次要和辅助文字分别使用独立的语义颜色，确保浅色与深色下都清晰可读。"
+msgstr "Primary, secondary, and tertiary text use separate semantic colors for readability in both light and dark themes."

@@ -1,7 +1,12 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 [package]
 name = "slintforge-flow-example"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
+authors.workspace = true
 publish.workspace = true
 
 [dependencies]

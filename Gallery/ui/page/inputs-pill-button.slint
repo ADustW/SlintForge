@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { CheckBox, LineEdit, Palette } from "std-widgets.slint";
 import { ForgePillButton, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
@@ -68,7 +71,7 @@ export component GalleryInputsPillButtonPage inherits Rectangle {
                     dialog := VerticalLayout {
                         padding: 20px; spacing: 16px;
                         Text { text: @tr("保存对“季度报告”的更改？"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
-                        Text { text: @tr("不保存，所做的更改将会丢失。"); color: Palette.foreground.transparentize(0.3); font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                        Text { text: @tr("不保存，所做的更改将会丢失。"); color: Palette.foreground.transparentize(0.3); font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
                         HorizontalLayout {
                             spacing: 8px; alignment: end;
                             ForgePillButton { text: @tr("不保存"); clicked => { root.status = @tr("已放弃更改"); } }

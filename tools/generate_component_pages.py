@@ -1,9 +1,13 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """生成逐组件演示页；运行后可直接编辑生成的 .slint 文件。"""
 from pathlib import Path
 import json
 import re
 from component_catalog import ROOT, CUSTOM, NATIVE, EXISTING_DEMOS
 from gallery_presentation import prepare_presentations
+from license_header import with_license_header
 
 STD = 'Button, CheckBox, Slider, Switch, RadioGroup, LineEdit, TextEdit, ComboBox, SpinBox, TabWidget, Date, Time, Palette, ProgressIndicator, Spinner, StandardButton'
 FORGE = ', '.join(sorted(set(CUSTOM.values()) | {'ForgeDateTime', 'ForgeChoiceItem', 'ForgeTreeItem', 'ForgeTourStep', 'ForgeTimelineItem', 'ForgeInfoLevel', 'ForgeDrawerEdge', 'ForgeTypography', 'ForgeNavigationView', 'ForgeNavigationItem', 'ForgeNavItemKind', 'ForgeBreadcrumb', 'ForgeTabBar', 'ForgePageHeader'}))
@@ -148,7 +152,7 @@ def generate():
                 snippet = widget_imports(snippet, STD, 'std-widgets.slint') + f'import {{ {imported} }} from "@slintforge";\nexport component Example inherits Window {{\n    width: 520px; height: {example_height}px;\n    {snippet}\n}}'
             else:
                 snippet = widget_imports(snippet, STD, 'std-widgets.slint') + f'export component Example inherits Window {{\n    width: 520px; height: {example_height}px;\n    {snippet}\n}}'
-        (examples / f'{key}.slint').write_text(snippet, encoding='utf-8')
+        (examples / f'{key}.slint').write_text(with_license_header(snippet), encoding='utf-8')
         source = header + f'''\n// {'Slint 原生示例' if native else '共享组件演示'}：{titles[key]}。
 export component {component_name(key)} inherits Rectangle {{
     in-out property<int> count: 0;
@@ -177,7 +181,7 @@ export component {component_name(key)} inherits Rectangle {{
 '''
         # 选择器与延时按钮使用人工维护的参考布局，生成器只维护路由封装。
         if key not in {'form-time-picker','form-date-picker','form-calendar-picker','form-color-picker','form-shortcut-picker','inputs-delay-button'}:
-            (ROOT/f'Gallery/ui/page/{key}.slint').write_text(escape_literal_newlines(source),encoding='utf-8')
+            (ROOT/f'Gallery/ui/page/{key}.slint').write_text(with_license_header(escape_literal_newlines(source)),encoding='utf-8')
     screen = ROOT/'Gallery/ui/screen/main-screen.slint'
     source = screen.read_text(encoding='utf-8')
     for key in DEMOS:
@@ -197,7 +201,7 @@ export component {component_name(key)} inherits Rectangle {{
         body = '\n'.join(f'    page-{index} := {component_name(key)} {{ width: root.width; height: root.height; ' + ('language: root.language; ' if key in ['form-date-picker', 'form-calendar-picker', 'form-time-picker', 'form-color-picker', 'form-shortcut-picker'] else '') + f'visible: root.active-route-id == "{key}"; }}' for index, key in enumerate(keys))
         actions = ' '.join(f'if route == "{key}" {{ page-{index}.prepare-preview(open); }}' for index, key in enumerate(keys))
         language_property = '    in property<string> language: "zh";\n    callback configure-time-preview(bool, bool);\n    configure-time-preview(use-24-hour, clock) => { page-0.configure-preview(use-24-hour, clock); }\n    callback configure-calendar-preview(bool);\n    configure-calendar-preview(with-time) => { page-2.configure-preview(with-time); }\n' if category == 'form' else ''
-        (ROOT/f'Gallery/ui/component/{category}-pages.slint').write_text(header + f'\nexport component {name} inherits Rectangle {{\n    in property<string> active-route-id;\n{language_property}    callback prepare-preview(string, bool);\n    prepare-preview(route, open) => {{ {actions} }}\n{body}\n}}\n', encoding='utf-8')
+        (ROOT/f'Gallery/ui/component/{category}-pages.slint').write_text(with_license_header(header) + f'\nexport component {name} inherits Rectangle {{\n    in property<string> active-route-id;\n{language_property}    callback prepare-preview(string, bool);\n    prepare-preview(route, open) => {{ {actions} }}\n{body}\n}}\n', encoding='utf-8')
     imports = '\n'.join(f'import {{ Gallery{category.title()}Pages }} from "../component/{category}-pages.slint";' for category in groups)
     instances = '\n'.join(f'        {category}-components := Gallery{category.title()}Pages {{ width: root.page-width; height: root.page-height; ' + ('language: root.language; ' if category == 'form' else '') + 'active-route-id: root.active-route-id; }' for category in groups)
     source = source.replace('import { GalleryPendingItem, GalleryPendingPage }', imports+'\nimport { GalleryPendingItem, GalleryPendingPage }')

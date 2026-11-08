@@ -1,6 +1,58 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use std::fs;
 use std::io;
 use std::path::PathBuf;
+use std::sync::mpsc;
+use std::thread::JoinHandle;
+
+// 设置写入串行后台队列；合并连续切换，并在退出时保存最后一个状态。
+pub struct SettingsWriter {
+    sender: Option<mpsc::Sender<GallerySettings>>,
+    worker: Option<JoinHandle<()>>,
+}
+
+impl SettingsWriter {
+    pub fn new() -> Self {
+        Self::with_save(save)
+    }
+
+    fn with_save(
+        mut save: impl FnMut(&GallerySettings) -> io::Result<()> + Send + 'static,
+    ) -> Self {
+        let (sender, receiver) = mpsc::channel::<GallerySettings>();
+        let worker = std::thread::spawn(move || {
+            while let Ok(mut settings) = receiver.recv() {
+                while let Ok(latest) = receiver.try_recv() {
+                    settings = latest;
+                }
+                if let Err(error) = save(&settings) {
+                    eprintln!("设置保存失败: {error}");
+                }
+            }
+        });
+        Self {
+            sender: Some(sender),
+            worker: Some(worker),
+        }
+    }
+
+    pub fn request(&self, settings: GallerySettings) {
+        if let Some(sender) = &self.sender {
+            let _ = sender.send(settings);
+        }
+    }
+}
+
+impl Drop for SettingsWriter {
+    fn drop(&mut self) {
+        self.sender.take();
+        if let Some(worker) = self.worker.take() {
+            let _ = worker.join();
+        }
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct GallerySettings {
@@ -95,6 +147,42 @@ pub fn save(settings: &GallerySettings) -> io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn queued_saves_do_not_block_requests_and_flush_latest_on_drop() {
+        use std::sync::{Arc, Mutex};
+        use std::time::Duration;
+        let (started_tx, started_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let saved = Arc::new(Mutex::new(Vec::new()));
+        let observed = saved.clone();
+        let mut first = true;
+        let writer = SettingsWriter::with_save(move |settings| {
+            if first {
+                first = false;
+                started_tx.send(()).unwrap();
+                release_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+            }
+            observed.lock().unwrap().push(settings.pane_state.clone());
+            Ok(())
+        });
+        writer.request(GallerySettings::default());
+        started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        // 首次磁盘写入被阻塞时，UI 请求仍能完成；中间状态不必重复写盘。
+        for _ in 0..100 {
+            writer.request(GallerySettings {
+                pane_state: "hidden".into(),
+                ..Default::default()
+            });
+        }
+        writer.request(GallerySettings {
+            pane_state: "compact".into(),
+            ..Default::default()
+        });
+        release_tx.send(()).unwrap();
+        drop(writer);
+        assert_eq!(*saved.lock().unwrap(), vec!["expanded", "compact"]);
+    }
 
     #[test]
     fn invalid_values_keep_defaults() {

@@ -1,13 +1,16 @@
 # v0.1.2 SDK 接入约定
 
+> **兼容提示：**本页继续保留统一接入约定。双语 Rust/C++ SDK 索引见 [中文 API 站点源码](site/index.md) 与 [English API source](site/en/index.md)。
+
 Rust 与 C++ 编译同一套 `.slint` 契约。应用为每个顶层窗口绑定其使用的服务；绑定持有窗口弱引用，关闭窗口后不得继续直接写窗口状态。
+
+创建首个窗口前，Rust 调用 `slintforge::configure_rendering(Default::default())?`，C++ 调用 `forge_configure_rendering()`（`ForgeRendering.hpp`），默认 GPU 优先。软件渲染、环境覆盖及初始化时序见 [UI 渲染偏好](RENDERING.md)。
 
 | 使用能力 | Rust / C++ 绑定 | 刷新约定 |
 |---|---|---|
 | 二维码、高亮、材质、建议输入键盘导航、颜色文本与 Windows 取色 | `bind_widget_services!` / `forge_bind_widget_services`；`ForgeWidgetServices` | 修改输入属性后同步重算；替换建议模型或改筛选文字会清除候选索引 |
-| 基础图表 | `bind_chart_services!` / `forge_bind_chart_services`；`ForgeChartServices` | 更换顶层属性自动重算；嵌套模型修改后调用对应组件 `refresh()` |
 | DataGrid、TreeDataGrid | `bind_grid_services!` / `forge_bind_grid_services`；`ForgeGridServices` | 更换顶层模型自动重算；原模型行或嵌套 cells 原位修改后调用 `refresh()` |
-| ForgePlot | `bind_plot_services!` / `forge_bind_plot_services`；`ForgePlotServices` | 场景/模型刷新与实时批次追加见 [Plot API](PLOT.md) |
+| 全部图表（ForgePlot） | `bind_plot_services!` / `forge_bind_plot_services`；`ForgePlotServices` | 场景/模型刷新与实时批次追加见 [Plot API](PLOT.md) |
 | ForgeFlow | `bind_flow_services!` / `forge_bind_flow_services`；`ForgeFlowServices` | 每个画布独立文档；编辑请求由核心校验并按稳定 ID 更新模型行，见 [Flow API](FLOW.md) |
 | 窗口/页面截图 | `bind_capture_service!` / `forge_bind_capture_service` | 窗口必须已显示且布局完成；捕获当前可见区域 |
 
@@ -40,3 +43,7 @@ Rust SDK 使用 `slintforge_runtime.dll` 和公共 Rust 安全封装。支持和
 C++ 的 `slintforge_target_sources()` 默认设置目标属性 `SLINT_EMBED_RESOURCES=embed-files`，将图片、字体等资源嵌入程序；调用方显式设置的资源策略仍会保留。直接使用官方 `slint_target_sources()` 的应用应自行设置该属性，避免运行时引用开发机绝对路径。Gallery 也嵌入全部资源，便携运行无需访问原源码目录。
 
 ForgeFlow 的画布需要整体缩放，应用启动前选择 `winit-skia` 或 `winit-skia-software`；不能在进入页面后切换渲染器。Rust 需开启 `renderer-skia` 及 SDK `flow` 特性，二进制接入入口使用 `Compile-Rust.ps1 -Flow`。Windows 示例默认选择 DX12，已有 `WGPU_BACKEND` 设置优先。独立接入验证入口为 `tools/windows/Test-FlowConsumers.ps1`，从安装后的 C++ SDK、Rust 接口包和运行 DLL 构建相同窗口。
+
+## 统一样式入口
+
+应用及测试使用 `slintforge-winui3`，见 [WinUI 3 主题](WINUI3_THEME.md)。Rust 构建调用 `slintforge_build::configure_style()` 并将 `style_include_paths()` 传入 `CompilerConfiguration`；C++ 使用安装包提供的 `slintforge_target_sources()`。不要修改 Slint 安装目录。

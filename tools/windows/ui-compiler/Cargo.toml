@@ -1,7 +1,12 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 [package]
 name = "slintforge-ui-compiler"
 version = "0.1.2"
 edition = "2021"
+license = "GPL-3.0-only"
+authors = ["陕西禾又科技有限责任公司"]
 rust-version = "1.98.0"
 [dependencies]
 slint-build = "=1.18.0"

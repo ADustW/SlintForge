@@ -1,6 +1,10 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "flow.h"
 #include "ForgeFlowBindings.hpp"
 #include "ForgeCapture.hpp"
+#include "ForgeRendering.hpp"
 #include <cstdlib>
 #include <iostream>
 #include "FlowQa.hpp"
@@ -10,8 +14,7 @@
 
 int main(int argc, char** argv) {
     if(argc>1&&std::string(argv[1])=="--sdk-contract")return forge_flow_sdk_contract();
-    if (!std::getenv("SLINT_BACKEND")) _putenv_s("SLINT_BACKEND", "winit-skia");
-    if (!std::getenv("WGPU_BACKEND")) _putenv_s("WGPU_BACKEND", "dx12");
+    const auto rendering = forge_configure_rendering();
     auto ui = ForgeFlowWindow::create();
     forge_bind_flow_services<ForgeFlowPointData, ForgeFlowPortData, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport, ForgeFlowRect, ForgeFlowAction, ForgeFlowState, ForgeFlowServices>(ui);
     ui->global<ForgeFlowServices>().on_export_card([](slint::SharedString node){return slint::SharedString(forge_flow_demo_export_card(std::string(node)).c_str());});

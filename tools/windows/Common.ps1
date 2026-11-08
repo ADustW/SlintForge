@@ -1,4 +1,7 @@
-﻿Set-StrictMode -Version Latest
+﻿# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
+Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $script:ForgeRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $script:ForgeChecks = [Collections.Generic.List[object]]::new()

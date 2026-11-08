@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use slintforge::{NavItem, NavItemKind, NavTree, Router};
 
 #[test]
@@ -63,7 +66,7 @@ fn loader_rejects_missing_wrong_arch_and_incompatible_abi() {
     std::fs::create_dir_all(&root).unwrap();
     let source = root.join("incompatible.c");
     let library = root.join("incompatible.dll");
-    std::fs::write(&source,"struct ForgeMockHeader { unsigned version; unsigned size; };\n__declspec(dllexport) const void* slintforge_runtime_get_api_v1(void) { static const struct ForgeMockHeader header = { 999, 8 }; return &header; }\n").unwrap();
+    std::fs::write(&source,"struct ForgeMockHeader { unsigned version; unsigned size; };\n__declspec(dllexport) const void* slintforge_runtime_get_api_v2(void) { static const struct ForgeMockHeader header = { 999, 8 }; return &header; }\n").unwrap();
     let result = std::process::Command::new("cl.exe")
         .current_dir(&root)
         .args(["/nologo", "/LD"])
@@ -76,6 +79,16 @@ fn loader_rejects_missing_wrong_arch_and_incompatible_abi() {
         "{}",
         String::from_utf8_lossy(&result.stderr)
     );
+    let legacy_source = root.join("legacy.c");
+    let legacy_library = root.join("legacy.dll");
+    std::fs::write(&legacy_source, "__declspec(dllexport) const void* slintforge_runtime_get_api_v1(void) { return 0; }\n").unwrap();
+    let legacy = std::process::Command::new("cl.exe")
+        .current_dir(&root)
+        .args(["/nologo", "/LD"])
+        .arg(&legacy_source)
+        .arg(format!("/Fe:{}", legacy_library.display()))
+        .output().unwrap();
+    assert!(legacy.status.success(), "{}", String::from_utf8_lossy(&legacy.stderr));
     let wrong = root.join("wrong-arch.dll");
     let mut bytes = vec![0u8; 70];
     bytes[..2].copy_from_slice(b"MZ");
@@ -87,6 +100,7 @@ fn loader_rejects_missing_wrong_arch_and_incompatible_abi() {
         (root.join("missing.dll"), "无法加载"),
         (wrong, "不是 Windows x64"),
         (library, "ABI 不兼容"),
+        (legacy_library, "ABI"),
     ];
     for (path, message) in cases {
         let output = std::process::Command::new(std::env::current_exe().unwrap())

@@ -1,0 +1,9 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+// 两端共享同一像素断言，验证选择的后端确实能完成窗口渲染。
+export component RenderingProbe inherits Window {
+    width: 160px; height: 120px;
+    background: #005fb8;
+    Rectangle { x: 40px; y: 30px; width: 80px; height: 60px; background: #60cdff; }
+}

@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """从实际 Gallery 截图检查基础图表色块、复选框和说明文字的垂直对齐。"""
 import argparse
 from collections import Counter

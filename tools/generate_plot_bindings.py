@@ -1,7 +1,11 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """从 C 数据布局生成两端 Slint 薄适配层；数值算法只有共用引擎一份。"""
 import argparse
 import pathlib
 import re
+from license_header import with_license_header
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RAW = (ROOT / "sdk/runtime-api/src/plot.rs").read_text(encoding="utf-8")
@@ -30,6 +34,10 @@ CPP_SPECIAL = {
 SPECIAL["ForgePlotItemCore"].update({"image_pixels":"std::ptr::null()","image_byte_count":"0","image_width":"0","image_height":"0"})
 SPECIAL["ForgePlotAxisCore"]["time_origin"]="if v.time_origin.is_empty() {0.} else {v.time_origin.parse::<f64>().unwrap_or(f64::NAN)}"
 CPP_SPECIAL["time_origin"]="forge_plot_ui_number(v.time_origin)"
+SPECIAL["ForgePlotPanelCore"]={"categories":"categories.as_ptr()","category_count":"categories.len()"}
+SPECIAL["ForgePlotSeriesCore"].update({"point_styles":"point_styles.as_ptr()","point_style_count":"point_styles.len()"})
+CPP_SPECIAL.update({"categories":"categories.data()","category_count":"categories.size()","point_styles":"point_styles.data()","point_style_count":"point_styles.size()"})
+
 def assignments(typ, lang):
     out = []
     for name, field_type in FIELDS[typ]:
@@ -87,6 +95,8 @@ macro_rules! bind_plot_services {
                 if !reusable {
                 for v in panels.iter() {
                     let title = plot_cstring(v.title.as_str());
+                    let category_labels=v.categories.iter().map(|v|plot_cstring(v.as_str())).collect::<Vec<_>>();
+                    let categories=category_labels.iter().enumerate().map(|(i,v)|ForgePlotTickCore{value:i as f64,label:v.as_ptr()}).collect::<Vec<_>>();
                     let core = ForgePlotPanelCore {
 @PANEL@
                     }; unsafe { plot.add_panel_core(&core); }
@@ -102,6 +112,7 @@ macro_rules! bind_plot_services {
                 }
                 for v in series.iter() {
                     let name = plot_cstring(v.name.as_str());
+                    let point_styles=v.point_styles.iter().map(|v|ForgePlotPointStyleCore{index:v.index,hidden:v.hidden as i32,size:v.size as f64,color:plot_color(v.color)}).collect::<Vec<_>>();
                     let core = ForgePlotSeriesCore {
 @SERIES@
                     };
@@ -199,6 +210,7 @@ macro_rules! bind_plot_services {
             let ranges=$crate::plot::merge_plot_selection(&a,&b,mode);
             slint::ModelRc::new(slint::VecModel::from(ranges.into_iter().map(|(id,first,last)| {let mut r=<$selection>::default();r.id=id;r.first=first;r.last=last;r}).collect::<Vec<_>>()))
         });
+        service.on_axis_index(|axes,id| axes.iter().position(|axis| axis.id == id).map(|index| index as i32).unwrap_or(-1));
         let query = state.clone(); service.on_change_view(move |token,axes,ranges,panel,mode,x,y,w,h,directions| {
             let state=query.borrow();let plot=state.get(token);
             slint::ModelRc::new(slint::VecModel::from(axes.iter().map(|mut a| {
@@ -214,7 +226,13 @@ macro_rules! bind_plot_services {
                 } a
             }).collect::<Vec<_>>()))
         });
-        service.on_toggle_series(move |series,id| slint::ModelRc::new(slint::VecModel::from(series.iter().map(|mut s| {if s.id==id{s.hidden=!s.hidden;}s}).collect::<Vec<_>>())));
+        service.on_cartesian_panel(|series,axes,panel| series.row_count()==0||series.iter().any(|s|{let kind=s.kind as i32;(kind<=5||kind==7)&&(panel<0||axes.iter().find(|a|a.id==s.x_axis).map(|a|a.panel).unwrap_or(s.x_axis/2)==panel)}));
+        service.on_cartesian_series(|series,id| series.iter().any(|s|s.id==id&&{let kind=s.kind as i32;kind<=5||kind==7}));
+        service.on_toggle_point(move |series,id,index| slint::ModelRc::new(slint::VecModel::from(series.iter().map(|mut s| {
+            if s.id==id {let mut styles=s.point_styles.iter().collect::<Vec<_>>();if let Some(style)=styles.iter_mut().find(|v|v.index==index){style.hidden=!style.hidden;}else{let mut style=styles.first().cloned().unwrap_or_default();style.index=index;style.hidden=true;style.size=if s.point_size>0.{s.point_size}else{6.};style.color=Default::default();styles.push(style);}s.point_styles=slint::ModelRc::new(slint::VecModel::from(styles));}s
+        }).collect::<Vec<_>>())));
+
+    service.on_toggle_series(move |series,id| slint::ModelRc::new(slint::VecModel::from(series.iter().map(|mut s| {if s.id==id{s.hidden=!s.hidden;}s}).collect::<Vec<_>>())));
         let query=state.clone();service.on_scroll_view(move |token,axes,id,position,span|{
             let bounds=query.borrow().get(token).and_then(|p|p.domains().into_iter().find(|r|r.id==id));
             slint::ModelRc::new(slint::VecModel::from(axes.iter().map(|mut a|{if a.id==id{if let Some(b)=bounds{let width=(span as f64).max(0.000001);a.manual_range=true;a.minimum=(b.minimum+(b.maximum-b.minimum-width).max(0.)*(position as f64).clamp(0.,1.)) as f32;a.maximum=a.minimum+width as f32;}}a}).collect::<Vec<_>>()))
@@ -313,10 +331,15 @@ void forge_bind_plot_services(const Handle& ui) {
     });
     service.on_select_rect([state](int token,float x,float y,float width,float height){std::vector<Selection> out;const auto it=state->plots.find(token);if(it!=state->plots.end())for(const auto& [id,first,last]:it->second->select_rect(x,y,width,height)){Selection r{};r.id=id;r.first=first;r.last=last;out.push_back(r);}return std::make_shared<slint::VectorModel<Selection>>(std::move(out));});
     service.on_merge_selection([](auto a,auto b,int mode){std::vector<std::tuple<int,int,int>> current,next;const auto append=[](const auto& model,auto& list){for(size_t i=0;model&&i<model->row_count();++i){const auto s=model->row_data(i);if(s)list.emplace_back(s->id,s->first,s->last);}};append(a,current);append(b,next);std::vector<Selection> out;for(const auto& [id,first,last]:forge_plot_merge_selection(current,next,mode)){Selection r{};r.id=id;r.first=first;r.last=last;out.push_back(r);}return std::make_shared<slint::VectorModel<Selection>>(std::move(out));});
+    service.on_axis_index([](auto axes,int id){for(size_t i=0;axes&&i<axes->row_count();++i)if(auto axis=axes->row_data(i);axis&&axis->id==id)return static_cast<int>(i);return -1;});
     service.on_change_view([state](int token,auto axes,auto ranges,int panel,int mode,float x,float y,float w,float h,int directions){std::vector<Axis> out;const auto it=state->plots.find(token);
         for(size_t i=0;axes&&i<axes->row_count();++i){const auto value=axes->row_data(i);if(!value)continue;auto a=*value;const bool horizontal=static_cast<int>(a.side)<2;
             if((panel<0||a.panel==panel)&&(horizontal?directions%2!=0:directions>=2)){if(mode==3)a.manual_range=false;else if(it!=state->plots.end())for(size_t j=0;ranges&&j<ranges->row_count();++j){const auto r=ranges->row_data(j);if(r&&r->id==a.id){ForgePlotRangeCore range{r->id,r->scale,r->reversed?1:0,r->minimum,r->maximum};const auto next=it->second->view(range,mode,horizontal?x:y,horizontal?w:h);a.manual_range=true;a.minimum=static_cast<float>(next.minimum);a.maximum=static_cast<float>(next.maximum);break;}}}out.push_back(a);
         }return std::make_shared<slint::VectorModel<Axis>>(std::move(out));});
+    service.on_cartesian_panel([](auto series,auto axes,int panel){if(!series||!series->row_count())return true;for(size_t i=0;series&&i<series->row_count();++i)if(auto s=series->row_data(i)){const int kind=static_cast<int>(s->kind);if(kind>5&&kind!=7)continue;int id=s->x_axis/2;for(size_t j=0;axes&&j<axes->row_count();++j)if(auto a=axes->row_data(j);a&&a->id==s->x_axis){id=a->panel;break;}if(panel<0||id==panel)return true;}return false;});
+    service.on_cartesian_series([](auto series,int id){for(size_t i=0;series&&i<series->row_count();++i)if(auto s=series->row_data(i);s&&s->id==id){const int kind=static_cast<int>(s->kind);return kind<=5||kind==7;}return false;});
+    service.on_toggle_point([](auto series,int id,int index){using Item=std::remove_cvref_t<decltype(series->row_data(0).value())>;std::vector<Item> out;
+        for(size_t i=0;series&&i<series->row_count();++i)if(auto value=series->row_data(i)){auto s=*value;if(s.id==id){using Style=std::remove_cvref_t<decltype(s.point_styles->row_data(0).value())>;std::vector<Style> styles;bool found=false;for(size_t j=0;s.point_styles&&j<s.point_styles->row_count();++j)if(auto v=s.point_styles->row_data(j)){if(v->index==index){v->hidden=!v->hidden;found=true;}styles.push_back(*v);}if(!found){Style v{};v.index=index;v.hidden=true;v.size=s.point_size>0?s.point_size:6;styles.push_back(v);}s.point_styles=std::make_shared<slint::VectorModel<Style>>(std::move(styles));}out.push_back(s);}return std::make_shared<slint::VectorModel<Item>>(std::move(out));});
     service.on_toggle_series([](auto series,int id){using Item=std::remove_cvref_t<decltype(series->row_data(0).value())>;std::vector<Item> out;for(size_t i=0;series&&i<series->row_count();++i){const auto value=series->row_data(i);if(value){auto s=*value;if(s.id==id)s.hidden=!s.hidden;out.push_back(s);}}return std::make_shared<slint::VectorModel<Item>>(std::move(out));});
     service.on_scroll_view([state](int token,auto axes,int id,float position,float span){std::vector<Axis> out;const auto it=state->plots.find(token);
         for(size_t i=0;axes&&i<axes->row_count();++i){const auto value=axes->row_data(i);if(!value)continue;auto a=*value;if(a.id==id&&it!=state->plots.end())for(const auto& b:it->second->domains())if(b.id==id){const double width=std::max(.000001,static_cast<double>(span));a.manual_range=true;a.minimum=static_cast<float>(b.minimum+std::max(0.,b.maximum-b.minimum-width)*std::clamp(static_cast<double>(position),0.,1.));a.maximum=a.minimum+static_cast<float>(width);break;}out.push_back(a);}return std::make_shared<slint::VectorModel<Axis>>(std::move(out));
@@ -328,11 +351,11 @@ void forge_bind_plot_services(const Handle& ui) {
     out=out.replace("@OPTIONS@",assignments("ForgePlotOptionsCore","cpp").replace(".as_ptr()",".c_str()"))
     equal=" && ".join("std::bit_cast<uint32_t>(a->"+name+")==std::bit_cast<uint32_t>(b->"+name+")" for name,typ in FIELDS["ForgePlotPointCore"] if typ=="f64")
     out=out.replace("@POINT_EQUAL_CPP@","                    same_points="+equal+" && a->label==b->label;")
-    loops="        if(!reusable){\n"+cpp_loop("panels","Panel","            const std::string title(v.title);","            plot->add_panel(core);")+"        }\n"
+    loops="        if(!reusable){\n"+cpp_loop("panels","Panel","            const std::string title(v.title);std::deque<std::string> category_labels;std::vector<ForgePlotTickCore> categories;for(size_t i=0;v.categories&&i<v.categories->row_count();++i)if(auto label=v.categories->row_data(i)){category_labels.emplace_back(*label);categories.push_back({static_cast<double>(i),category_labels.back().c_str()});}","            plot->add_panel(core);")+"        }\n"
     loops+=cpp_loop("axes","Axis",'''            const std::string label(v.label),format(v.format);std::deque<std::string> labels;std::vector<ForgePlotTickCore> ticks;
             for(size_t t=0;v.ticks&&t<v.ticks->row_count();++t){const auto tick=v.ticks->row_data(t);if(tick){labels.emplace_back(tick->label);ticks.push_back({tick->value,labels.back().c_str()});}}''',"            plot->add_axis(core);")
     points=assignments("ForgePlotPointCore","cpp").replace("core.","point.")
-    loops+=cpp_loop("series","Series","            const std::string name(v.name);",'''            if(reusable){plot->update_series(core);continue;}
+    loops+=cpp_loop("series","Series","            const std::string name(v.name);std::vector<ForgePlotPointStyleCore> point_styles;for(size_t i=0;v.point_styles&&i<v.point_styles->row_count();++i)if(auto style=v.point_styles->row_data(i))point_styles.push_back({style->index,static_cast<int>(style->hidden),style->size,forge_plot_ui_color(style->color)});",'''            if(reusable){plot->update_series(core);continue;}
             std::vector<ForgePlotPointCore> points;std::deque<std::string> labels;std::vector<std::vector<double>> outliers;
             points.reserve(v.points?v.points->row_count():0);
             for(size_t j=0;v.points&&j<v.points->row_count();++j){const auto item=v.points->row_data(j);if(!item)continue;const auto& v=*item;
@@ -356,7 +379,7 @@ void forge_bind_plot_services(const Handle& ui) {
 if __name__=="__main__":
     parser=argparse.ArgumentParser();parser.add_argument("--check",action="store_true");args=parser.parse_args()
     for relative, text in [("sdk/rust/src/plot_bindings.rs",rust()),("sdk/cpp/include/ForgePlotBindings.hpp",cpp())]:
-        path=ROOT/relative
+        path=ROOT/relative;text=with_license_header(text)
         if args.check:
             if path.read_text(encoding="utf-8")!=text:raise SystemExit("PLOT_BINDINGS_STALE "+relative)
         else:path.write_text(text,encoding="utf-8")

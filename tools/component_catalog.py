@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """维护 Gallery 的组件状态，并检查导航、演示和公共导出是否一致。"""
 from pathlib import Path
 import re
@@ -76,13 +79,13 @@ CUSTOM = {
     "other-tour": "ForgeTour",
     "other-syntax": "ForgeSyntaxView",
     "other-dial": "ForgeDial",
-    "chart-bar": "ForgeBarChart",
-    "chart-line": "ForgeLineChart",
-    "chart-pie": "ForgePieChart",
-    "chart-polar": "ForgePolarAreaChart",
-    "chart-bubble": "ForgeBubbleChart",
-    "chart-scatter": "ForgeScatterChart",
-    "chart-radar": "ForgeRadarChart",
+    "chart-bar": "ForgePlot",
+    "chart-line": "ForgePlot",
+    "chart-pie": "ForgePlot",
+    "chart-polar": "ForgePlot",
+    "chart-bubble": "ForgePlot",
+    "chart-scatter": "ForgePlot",
+    "chart-radar": "ForgePlot",
     "chart-professional": "ForgePlot",
     "data-grid": "ForgeDataGrid",
     "data-tree-grid": "ForgeTreeDataGrid",

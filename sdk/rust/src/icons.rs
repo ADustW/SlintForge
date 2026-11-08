@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct IconGlyph {
     pub name: String,

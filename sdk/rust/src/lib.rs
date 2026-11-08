@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! SlintForge 的 Rust 宿主模型。视觉组件由 ui/slintforge.slint 统一定义。
 
 pub mod flow;
@@ -10,13 +13,14 @@ mod wire;
 pub use icons::{IconCatalog, IconGlyph};
 mod window_corners;
 pub use window_corners::apply_window_corners;
+mod rendering;
+pub use rendering::{configure_rendering, RenderConfiguration, RenderOptions, RenderPreference};
 mod staggered_layout;
 pub use staggered_layout::{StaggeredInput, StaggeredLayout, StaggeredPlacement};
 mod capture;
 mod color;
 mod widgets;
 pub use color::{color_from_hex, color_to_hex, screen_color, screen_color_input};
-pub mod charts;
 pub mod grids;
 pub mod plot;
 mod plot_bindings;

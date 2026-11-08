@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryVariant } from "../component/component-page.slint";
@@ -21,7 +24,7 @@ component GalleryColorSwatch inherits Rectangle {
             height: 52px * ForgeTypography.scale;
             border-radius: 4px; border-width: 1px; border-color: Palette.border;
             background: root.fill;
-            Text { text: "Aa"; color: root.ink; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+            Text { text: "Aa"; color: root.ink; font-size: 20px * ForgeTypography.scale; font-weight: 600; }
         }
         Text { text: root.name; color: Palette.foreground; font-family: "Consolas"; font-size: 11px * ForgeTypography.scale; wrap: word-wrap; horizontal-alignment: center; }
     }
@@ -103,12 +106,12 @@ export component GalleryThemeColorsPage inherits Rectangle {
 
         GalleryExample {
             title: @tr("文字层级");
-            description: @tr("在 foreground 上叠加透明度得到主要、次要和辅助文字，三者始终与背景保持同一色相。");
+            description: @tr("主要、次要和辅助文字分别使用独立的语义颜色，确保浅色与深色下都清晰可读。");
             GalleryPreview {
                 content-padding: 16px;
                 GalleryVariant { caption: "foreground"; Text { text: @tr("主要文字"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; } }
-                GalleryVariant { caption: "transparentize(0.3)"; Text { text: @tr("次要文字"); color: Palette.foreground.transparentize(0.3); font-size: 15px * ForgeTypography.scale; } }
-                GalleryVariant { caption: "transparentize(0.45)"; Text { text: @tr("辅助文字"); color: Palette.foreground.transparentize(0.45); font-size: 15px * ForgeTypography.scale; } }
+                GalleryVariant { caption: "text-secondary"; Text { text: @tr("次要文字"); color: Palette.text-secondary; font-size: 15px * ForgeTypography.scale; } }
+                GalleryVariant { caption: "text-tertiary"; Text { text: @tr("辅助文字"); color: Palette.text-tertiary; font-size: 15px * ForgeTypography.scale; } }
             }
         }
 
@@ -121,13 +124,13 @@ export component GalleryThemeColorsPage inherits Rectangle {
                     width: 340px * ForgeTypography.scale;
                     height: card.preferred-height;
                     border-radius: 8px; border-width: 1px; border-color: Palette.border;
-                    background: Palette.background;
+                    background: Palette.card-background;
                     card := VerticalLayout {
                         padding: 14px; spacing: 4px;
                         HorizontalLayout {
                             padding-bottom: 6px;
                             Text { text: @tr("今日任务"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; vertical-alignment: center; }
-                            Text { text: @tr("3 项"); color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; horizontal-alignment: right; vertical-alignment: center; }
+                            Text { text: @tr("3 项"); color: Palette.text-secondary; font-size: 12px * ForgeTypography.scale; horizontal-alignment: right; vertical-alignment: center; }
                         }
                         GalleryTaskRow { text: @tr("整理需求文档"); selected: root.task == 0; clicked => { root.task = 0; } }
                         GalleryTaskRow { text: @tr("评审登录页设计"); tag: @tr("今天"); selected: root.task == 1; clicked => { root.task = 1; } }

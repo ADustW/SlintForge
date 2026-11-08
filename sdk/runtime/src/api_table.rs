@@ -1,6 +1,9 @@
-static API: RuntimeApiV1 = RuntimeApiV1 {
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+static API: RuntimeApiV2 = RuntimeApiV2 {
     abi_version: ABI_VERSION,
-    struct_size: std::mem::size_of::<RuntimeApiV1>() as u32,
+    struct_size: std::mem::size_of::<RuntimeApiV2>() as u32,
     schema: ABI_SCHEMA,
     call: runtime_call,
     release: runtime_release,

@@ -1,3 +1,7 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgeMetrics } from "../theme/theme.slint";
 import { Palette } from "std-widgets.slint";
 
 export component ForgeIconButton inherits Rectangle {
@@ -5,21 +9,27 @@ export component ForgeIconButton inherits Rectangle {
     in property<string> label;
     in property<bool> selected: false;
     in property<bool> enabled: true;
+    out property<bool> has-focus: focus.has-focus;
     callback clicked();
     width: root.label == "" ? 36px : icon-text.preferred-width + label-text.preferred-width + 26px;
-    height: 34px;
+    height: ForgeMetrics.control-height;
     horizontal-stretch: 0;
-    border-radius: 6px;
-    border-width: 1px;
-    border-color: selected ? Palette.accent-background : Palette.border;
-    background: selected ? Palette.accent-background : button-touch.has-hover ? Palette.control-background : Palette.background;
-    opacity: root.enabled ? 1 : 0.45;
+    border-radius: ForgeMetrics.control-radius;
+    border-width: ForgeMetrics.stroke-width;
+    border-color: focus.has-focus ? Palette.focus-stroke-outer : selected ? Palette.accent-control-border : Palette.control-border;
+    background: !root.enabled ? Palette.control-disabled : selected ? (button-touch.pressed ? Palette.tertiary-accent-background : button-touch.has-hover ? Palette.secondary-accent-background : Palette.accent-background) : button-touch.pressed ? Palette.control-tertiary : button-touch.has-hover ? Palette.control-secondary : Palette.control-background;
+    forward-focus: focus;
+    accessible-role: button;
+    accessible-label: root.label == "" ? root.icon : root.label;
+    accessible-enabled: root.enabled;
+    accessible-action-default => { if root.enabled { root.clicked(); } }
     HorizontalLayout {
         padding-left: 8px;
         padding-right: 8px;
         spacing: 6px;
-        icon-text := Text { text: root.icon; visible: root.icon != ""; vertical-alignment: center; color: selected ? Palette.accent-foreground : Palette.foreground; }
-        label-text := Text { text: root.label; visible: root.label != ""; vertical-alignment: center; color: selected ? Palette.accent-foreground : Palette.foreground; }
+        icon-text := Text { text: root.icon; visible: root.icon != ""; vertical-alignment: center; color: !root.enabled ? Palette.text-disabled : selected ? Palette.accent-foreground : Palette.foreground; }
+        label-text := Text { text: root.label; visible: root.label != ""; vertical-alignment: center; color: !root.enabled ? Palette.text-disabled : selected ? Palette.accent-foreground : Palette.foreground; }
     }
-    button-touch := TouchArea { enabled: root.enabled; clicked => { root.clicked(); } }
+    focus := FocusScope { enabled: root.enabled; key-pressed(event) => { if event.text == Key.Return || event.text == " " { root.clicked(); return accept; } return reject; } }
+    button-touch := TouchArea { enabled: root.enabled; clicked => { focus.focus(); root.clicked(); } }
 }

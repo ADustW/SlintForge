@@ -1,4 +1,7 @@
-﻿[CmdletBinding()]
+﻿# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
+[CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$Installer,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
@@ -54,7 +57,7 @@ try {
     $results.runtime_after_gallery_install = Get-ForgeRuntimeSnapshot
     $results.runtime_unchanged = ($results.runtime_before | ConvertTo-Json -Depth 10 -Compress) -eq ($results.runtime_after_gallery_install | ConvertTo-Json -Depth 10 -Compress)
     if (!$results.runtime_unchanged) { throw 'Gallery 安装改变了系统运行库' }
-    foreach ($name in @('prerequisites/vc_redist.x64.exe','prerequisites/RUNTIME-README.txt','Gallery-Rust.exe','Gallery-Cpp.exe')) {
+    foreach ($name in @('prerequisites/vc_redist.x64.exe','prerequisites/RUNTIME-README.txt','Gallery-Rust.exe','Gallery-Cpp.exe','SlintForge-Docs.exe','docs/site/index.html','docs/site/en/index.html')) {
         if (!(Test-Path -LiteralPath (Join-Path $installRoot $name))) { throw "安装目录缺少手动运行库文件或启动入口：$name" }
     }
     foreach ($hostName in @('Rust','Cpp')) {
@@ -64,6 +67,10 @@ try {
         $results.launcher_checks += [ordered]@{ host=$hostName; exit_code=$check.ExitCode; expected=$expectedCode }
         if ($check.ExitCode -ne $expectedCode) { throw "运行库启动检查不符合预期：$hostName / $($check.ExitCode)" }
     }
+    $docsLauncher = Join-Path $installRoot 'SlintForge-Docs.exe'
+    $docsCheck = Start-Process -FilePath $docsLauncher -ArgumentList '--check' -WindowStyle Hidden -Wait -PassThru
+    $results.launcher_checks += [ordered]@{ host='Docs'; exit_code=$docsCheck.ExitCode; expected=0 }
+    if ($docsCheck.ExitCode -ne 0) { throw "文档启动器自检失败：$($docsCheck.ExitCode)" }
     if (!$results.runtime_before.compatible -and $InstallRuntimeForAcceptance) {
         # 显式验收阶段模拟用户从软件目录单独安装；此操作不属于 Gallery 安装器。
         $logDirectory = Join-Path $evidence 'manual-runtime'

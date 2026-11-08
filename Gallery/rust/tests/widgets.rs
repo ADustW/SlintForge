@@ -1,8 +1,13 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
 use slint::platform::{Key, WindowEvent};
 use slint::{ComponentHandle, LogicalPosition, Model, ModelRc, VecModel};
 use std::time::Duration;
 
-slint::slint! {
+slintforge_ui! {
+
     import { LineEdit } from "std-widgets.slint";
     import { ForgePillButton, ForgeDelayButton, ForgeProgressButton, ForgeDropDownButton } from "../../../ui/inputs/action-buttons.slint";
     import { ForgeInputValidation } from "../../../ui/inputs/validation.slint";

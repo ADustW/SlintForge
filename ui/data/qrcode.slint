@@ -1,3 +1,7 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { Palette } from "std-widgets.slint";
 import { ForgeWidgetServices, ForgeQRCodeResult } from "../types/widgets.slint";
 
 export component ForgeQRCode inherits Rectangle {
@@ -15,5 +19,5 @@ export component ForgeQRCode inherits Rectangle {
     preferred-width: 220px; preferred-height: 220px;
     background: root.light-color;
     Image { width: parent.width; height: parent.height; source: root.result.image; image-fit: contain; image-rendering: pixelated; }
-    if !root.result.ok : Text { text: root.result.error; color: #d13b3b; wrap: word-wrap; horizontal-alignment: center; vertical-alignment: center; }
+    if !root.result.ok : Text { text: root.result.error; color: Palette.error; wrap: word-wrap; horizontal-alignment: center; vertical-alignment: center; }
 }

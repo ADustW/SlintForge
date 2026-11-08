@@ -1,140 +1,79 @@
-import { Palette, Button, CheckBox } from "std-widgets.slint";
-import { ForgeChart, ForgeChartKind, ForgeChartSeries, ForgeChartSlice, ForgeTypography } from "@slintforge";
-import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "component-page.slint";
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
 
-// 七类图表共享演示框架；切换数据、图例和选项均操作实际组件。
+import { Palette, Button, CheckBox } from "std-widgets.slint";
+import { ForgePlot, ForgePlotKind, ForgePlotLineStyle, ForgePlotSeries, ForgeTypography } from "@slintforge";
+import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "component-page.slint";
+
+// 七类展示页面使用同一专业绘图组件；路由编号保持稳定。
 export component GalleryChartPage inherits Rectangle {
     in property<string> title;
-    in property<ForgeChartKind> kind;
-    property<string> showcase-route: root.kind == bar ? "chart-bar" : root.kind == line ? "chart-line" : root.kind == pie ? "chart-pie" : root.kind == polar ? "chart-polar" : root.kind == bubble ? "chart-bubble" : root.kind == scatter ? "chart-scatter" : "chart-radar";
+    in property<int> kind;
+    property<ForgePlotKind> plot-kind: root.kind == 0 ? bars : root.kind == 2 ? pie : root.kind == 3 ? polar-area : root.kind == 4 ? bubble : root.kind == 6 ? radar : graph;
+    property<bool> radial: root.kind == 2 || root.kind == 3 || root.kind == 6;
+    property<bool> slices: root.kind == 2 || root.kind == 3;
+    property<string> showcase-route: root.kind == 0 ? "chart-bar" : root.kind == 1 ? "chart-line" : root.kind == 2 ? "chart-pie" : root.kind == 3 ? "chart-polar" : root.kind == 4 ? "chart-bubble" : root.kind == 5 ? "chart-scatter" : "chart-radar";
     in-out property<bool> updated: false;
     in-out property<bool> empty: false;
     in-out property<bool> stacked: false;
     in-out property<bool> smooth: false;
     in-out property<bool> filled: true;
     in-out property<bool> doughnut: false;
-    in-out property<string> selection: @tr("悬停查看数值，点击选择数据，点击图例显示或隐藏系列。");
-    property<[string]> categories: root.kind == radar
-        ? [@tr("饮食"), @tr("饮水"), @tr("睡眠"), @tr("设计"), @tr("编程"), @tr("骑行"), @tr("跑步")]
+    in-out property<string> selection: @tr("悬停查看数值，点击选择数据，点击图例切换显隐。");
+    property<[string]> categories: root.slices ? [@tr("研发"), @tr("设计"), @tr("测试"), @tr("运营"), @tr("支持")]
+        : root.kind == 6 ? [@tr("性能"), @tr("可靠性"), @tr("易用性"), @tr("扩展性"), @tr("安全性"), @tr("兼容性"), @tr("效率")]
         : [@tr("一月"), @tr("二月"), @tr("三月"), @tr("四月"), @tr("五月"), @tr("六月"), @tr("七月")];
-    property<[ForgeChartSeries]> series: [
-        { name: @tr("系列一"), color: #36a2eb, points: [
-            {x: 0, y: root.updated ? 38 : 65, size: 12}, {x: 1, y: root.updated ? 74 : 59, size: 20},
-            {x: 2, y: 80, size: 9}, {x: 3, y: root.updated ? 48 : 81, size: 24},
-            {x: 4, y: 56, size: 15}, {x: 5, y: root.updated ? 68 : 55, size: 10}, {x: 6, y: 40, size: 18}
-        ] },
-        { name: @tr("系列二"), color: #ff6384, points: [
-            {x: 0, y: 28, size: 18}, {x: 1, y: 48, size: 12}, {x: 2, y: root.updated ? 70 : 40, size: 22},
-            {x: 3, y: 19, size: 8}, {x: 4, y: root.updated ? 48 : 96, size: 16},
-            {x: 5, y: 27, size: 13}, {x: 6, y: 100, size: 20}
-        ] }
+    property<[ForgePlotSeries]> data: root.empty ? [] : root.slices ? [
+        {id: 10, name: @tr("资源分布"), kind: root.plot-kind, inner-radius: root.doughnut ? 0.6 : 0,
+         points: [{y: root.updated ? 22 : 11},{y: root.updated ? 9 : 16},{y: 7},{y: 3},{y: 14}],
+         point-styles: [{index: 0, color: #0078d4},{index: 1, color: #00b7c3},{index: 2, color: #ffb900},{index: 3, color: #d13438},{index: 4, color: #8764b8}]}
+    ] : [
+        {id: 10, name: @tr("系列一"), kind: root.plot-kind, color: Palette.accent-background,
+         line-style: root.kind == 5 ? ForgePlotLineStyle.none : root.smooth ? ForgePlotLineStyle.smooth : ForgePlotLineStyle.line, scatter-style: root.kind == 5 || root.kind == 1 ? disc : none,
+         stacked: root.stacked, stack-group: 0, point-size: 8, inner-radius: 0,
+         fill-color: root.filled && (root.kind == 1 || root.kind == 6) ? Palette.accent-background.with-alpha(0.18) : #0000,
+         points: [{x: 0,y: root.updated ? 38 : 65},{x: 1,y: 59},{x: 2,y: 80},{x: 3,y: root.updated ? 48 : 81},{x: 4,y: 56},{x: 5,y: 55},{x: 6,y: 40}],
+         point-styles: root.kind == 4 ? [{index: 0,size: 18},{index: 1,size: 32},{index: 2,size: 14},{index: 3,size: 40},{index: 4,size: 24},{index: 5,size: 16},{index: 6,size: 28}] : []},
+        {id: 20, name: @tr("系列二"), kind: root.plot-kind, color: #00a78e,
+         line-style: root.kind == 5 ? ForgePlotLineStyle.none : root.smooth ? ForgePlotLineStyle.smooth : ForgePlotLineStyle.line, scatter-style: root.kind == 5 || root.kind == 1 ? disc : none,
+         stacked: root.stacked, stack-group: 0, point-size: 8,
+         fill-color: root.filled && (root.kind == 1 || root.kind == 6) ? #00a78e28 : #0000,
+         points: [{x: 0,y: 28},{x: 1,y: 48},{x: 2,y: root.updated ? 70 : 40},{x: 3,y: 19},{x: 4,y: 96},{x: 5,y: 27},{x: 6,y: 100}],
+         point-styles: root.kind == 4 ? [{index: 0,size: 28},{index: 1,size: 18},{index: 2,size: 36},{index: 3,size: 12},{index: 4,size: 24},{index: 5,size: 20},{index: 6,size: 32}] : []}
     ];
-    property<[ForgeChartSlice]> slices: [
-        {label: @tr("红色"), value: root.updated ? 22 : 11, color: #ff6384},
-        {label: @tr("绿色"), value: root.updated ? 9 : 16, color: #4bc0c0},
-        {label: @tr("黄色"), value: 7, color: #ffcd56},
-        {label: @tr("灰色"), value: root.updated ? 12 : 3, color: #788694},
-        {label: @tr("蓝色"), value: 14, color: #36a2eb}
-    ];
-    property<string> style-caption: root.kind == bar ? "stacked: true" : root.kind == line ? "smooth · fill-area" : root.kind == pie ? "doughnut: true" : root.kind == polar ? @tr("三个扇区") : @tr("单系列");
     callback prepare-preview(bool);
-    prepare-preview(open) => {
-        root.stacked = open && root.kind == bar;
-        root.smooth = open && root.kind == line;
-        root.doughnut = open && root.kind == pie;
-        if open { chart.select-point(0); } else { chart.clear-selection(); }
-    }
+    prepare-preview(open) => {root.stacked = open && root.kind == 0;root.smooth = open && root.kind == 1;root.doughnut = open && root.kind == 2;chart.selection = open ? [{id: 10,first: 0,last: 0}] : [];}
     GalleryComponentPage {
         width: parent.width; height: parent.height;
-        category: @tr("图表");
-        title: root.title;
-        subtitle: root.kind == bar ? @tr("比较各月份的数据，切换分组或堆叠。")
-            : root.kind == line ? @tr("观察趋势，切换折线、平滑曲线和面积填充。")
-            : root.kind == pie ? @tr("比较各类别占比，切换饼图或环形图。")
-            : root.kind == polar ? @tr("扇区角度相同，面积随类别数值变化。")
-            : root.kind == bubble ? @tr("位置表示两个数值，圆的大小表示第三个数值。")
-            : root.kind == scatter ? @tr("查看两个系列的分布和相关性。")
-            : @tr("对比多个维度上的系列表现。");
+        category: @tr("图表"); title: root.title;
+        subtitle: root.kind == 3 ? @tr("等角扇区，以面积表达数值。") : root.kind == 6 ? @tr("在多个分类维度上比较系列。") : @tr("使用 ForgePlot 统一渲染、图例、选择和导出。");
         showcase-route: root.showcase-route;
-        qa-anchors: [styles.y, boundary.y];
         api: [
-            { name: "kind", kind: @tr("属性"), type: "ForgeChartKind", description: @tr("bar、line、pie、polar、bubble、scatter 或 radar。") },
-            { name: "series / slices", kind: @tr("属性"), type: "[ForgeChartSeries] / [ForgeChartSlice]", description: @tr("坐标类图表用 series，饼图与极坐标图用 slices。") },
-            { name: "categories", kind: @tr("属性"), type: "[string]", description: @tr("类别轴或雷达图维度的标签。") },
-            { name: "stacked / smooth / fill-area / doughnut", kind: @tr("属性"), type: "bool", description: @tr("堆叠、平滑、面积填充与环形样式。") },
-            { name: "show-legend / show-grid", kind: @tr("属性"), type: "bool", description: @tr("显示图例与网格线。") },
-            { name: "point-selected(int, int, float)", kind: @tr("回调"), type: "", description: @tr("点击数据点，参数为系列、索引与数值。") },
-            { name: "select-point / clear-selection", kind: @tr("函数"), type: "", description: @tr("以编程方式选择或清除数据点。") },
+            {name: "series.kind",kind: @tr("属性"),type: "ForgePlotKind",description: @tr("bars、graph、bubble、pie、polar-area、radar")},
+            {name: "panels.categories",kind: @tr("属性"),type: "[string]",description: @tr("分类轴、逐项图例和雷达维度标签")},
+            {name: "series.point-styles",kind: @tr("属性"),type: "[ForgePlotPointStyle]",description: @tr("按原始索引指定尺寸、颜色和显隐")},
+            {name: "series.inner-radius",kind: @tr("属性"),type: "float",description: @tr("环形内径比例，范围 [0, 1)")},
+            {name: "point-selected",kind: @tr("回调"),type: "ForgePlotHit",description: @tr("包含系列 ID、原始索引、位置和数值")},
+            {name: "export-file",kind: @tr("函数"),type: "(string, string)",description: "PNG / JPEG / BMP / SVG / PDF"}
         ];
-
         GalleryExample {
-            title: @tr("交互示例");
-            description: @tr("悬停读取数值，点击数据点或图例进行交互；在右侧更新数据或切换样式。");
-            output: root.selection;
-            GalleryPreview {
-                stretch: true;
-                content-padding: 16px;
-                chart := ForgeChart {
-                    height: 370px * ForgeTypography.scale;
-                    horizontal-stretch: 1;
-                    kind: root.kind;
-                    series: root.empty ? [] : root.series;
-                    slices: root.empty ? [] : root.slices;
-                    categories: root.categories;
-                    include-zero: true;
-                    stacked: root.stacked; smooth: root.smooth;
-                    fill-area: root.filled; doughnut: root.doughnut;
-                    point-selected(series, point, value) => {
-                        root.selection = @tr("已选择：系列 {}，数据 {}，值 {}", series + 1, point + 1, value);
-                    }
+            title: @tr("交互示例"); description: @tr("更新数据、选择数据点或切换图例；主题切换保留当前数据和选择。");output: root.selection;
+            GalleryPreview { stretch: true; content-padding: 16px;
+                chart := ForgePlot {
+                    height: 420px * ForgeTypography.scale; horizontal-stretch: 1;
+                    series: root.data; panels: [{id: 0,width: 1,height: 1,categories: root.kind == 4 || root.kind == 5 ? [] : root.categories}];
+                    legend-placement: outside; show-crosshair: !root.radial; allow-pan: !root.radial; allow-zoom: !root.radial;
+                    plot-background: Palette.dark ? Palette.content-background : Palette.plot-background;
+                    point-selected(hit) => {root.selection = @tr("系列 {} · 数据 {} · 数值 {}",hit.id,hit.index + 1,hit.value);}
                 }
             }
             GalleryOptions {
-                Button { text: root.updated ? @tr("恢复数据") : @tr("更新数据"); clicked => { root.updated = !root.updated; root.empty = false; } }
-                Button { text: root.empty ? @tr("显示数据") : @tr("清空数据"); clicked => { root.empty = !root.empty; } }
-                if root.kind == bar : CheckBox { text: "stacked"; checked <=> root.stacked; }
-                if root.kind == line : CheckBox { text: "smooth"; checked <=> root.smooth; }
-                if root.kind == line || root.kind == radar : CheckBox { text: "fill-area"; checked <=> root.filled; }
-                if root.kind == pie : CheckBox { text: "doughnut"; checked <=> root.doughnut; }
-            }
-        }
-
-        styles := GalleryExample {
-            title: @tr("样式对照");
-            description: @tr("同一组数据的基础样式与变体样式。");
-            GalleryPreview {
-                stretch: true;
-                content-padding: 16px;
-                GalleryVariant {
-                    caption: @tr("基础样式");
-                    ForgeChart { height: 300px * ForgeTypography.scale; horizontal-stretch: 1; kind: root.kind; series: root.series; slices: root.slices; categories: root.categories; }
-                }
-                GalleryVariant {
-                    caption: root.style-caption;
-                    ForgeChart {
-                        height: 300px * ForgeTypography.scale; horizontal-stretch: 1; kind: root.kind;
-                        series: root.kind == bubble || root.kind == scatter || root.kind == radar ? [root.series[1]] : root.series;
-                        slices: root.kind == polar ? [root.slices[0], root.slices[1], root.slices[2]] : root.slices;
-                        categories: root.categories; stacked: true; smooth: true; fill-area: true; doughnut: true;
-                    }
-                }
-            }
-        }
-
-        boundary := GalleryExample {
-            title: @tr("数据与空状态");
-            description: @tr("少量数据，以及清空数据后保留容器与空状态提示。");
-            GalleryPreview {
-                stretch: true;
-                content-padding: 16px;
-                GalleryVariant {
-                    caption: @tr("单系列数据");
-                    ForgeChart { height: 300px * ForgeTypography.scale; horizontal-stretch: 1; kind: root.kind; series: [root.series[0]]; slices: [root.slices[0], root.slices[1]]; categories: root.categories; }
-                }
-                GalleryVariant {
-                    caption: @tr("暂无数据");
-                    ForgeChart { height: 300px * ForgeTypography.scale; horizontal-stretch: 1; kind: root.kind; series: []; slices: []; categories: root.categories; }
-                }
+                Button {text: root.updated ? @tr("恢复数据") : @tr("更新数据");clicked => {root.updated = !root.updated;root.empty = false;}}
+                Button {text: root.empty ? @tr("显示数据") : @tr("清空数据");clicked => {root.empty = !root.empty;}}
+                if root.kind == 0 : CheckBox {text: @tr("正负堆叠");checked <=> root.stacked;}
+                if root.kind == 1 : CheckBox {text: @tr("平滑曲线");checked <=> root.smooth;}
+                if root.kind == 1 || root.kind == 6 : CheckBox {text: @tr("面积填充");checked <=> root.filled;}
+                if root.kind == 2 : CheckBox {text: @tr("环形图");checked <=> root.doughnut;}
             }
         }
     }

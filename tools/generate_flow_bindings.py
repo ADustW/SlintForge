@@ -1,7 +1,11 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """由共享 Slint 数据契约生成双端模型转换，保留运行中的节点模型实例。"""
 from pathlib import Path
 import re
 import argparse
+from license_header import with_license_header
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -109,7 +113,7 @@ def generate():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(); parser.add_argument('--check', action='store_true'); args=parser.parse_args()
     for name, text in generate().items():
-        path=ROOT/name
+        path=ROOT/name; text=with_license_header(text)
         if args.check:
             assert path.read_text(encoding='utf-8') == text, name
         else: path.write_text(text,encoding='utf-8')

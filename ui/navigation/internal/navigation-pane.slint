@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { ForgeTypography } from "../../typography/typography.slint";
 import { LineEdit, Palette, ScrollView } from "std-widgets.slint";
 import { ForgeNavigationItem, ForgeNavItemKind, ForgePaneState } from "../../types/navigation.slint";
@@ -11,11 +14,13 @@ export component ForgeNavigationPane inherits Rectangle {
     in property<string> active-route-id;
     in property<ForgePaneState> pane-state;
     in property<string> search-query;
+    in property<bool> show-header: true;
+    in property<bool> show-search: true;
     callback navigate-requested(string);
     callback group-toggle-requested(string);
     callback search-requested(string);
     callback expand-requested();
-    background: Palette.alternate-background;
+    background: Palette.background;
 
     function activate(id: string, kind: ForgeNavItemKind) {
         if (root.pane-state == ForgePaneState.compact && kind == ForgeNavItemKind.group) {
@@ -31,7 +36,9 @@ export component ForgeNavigationPane inherits Rectangle {
         width: parent.width;
         height: parent.height;
         spacing: 0px;
-        if root.pane-state == ForgePaneState.expanded : Rectangle {
+        padding: 0px;
+        padding-top: root.show-header || root.show-search ? 0px : 4px;
+        if root.show-header && root.pane-state == ForgePaneState.expanded : Rectangle {
             height: 80px;
             background: transparent;
             Rectangle {
@@ -43,7 +50,7 @@ export component ForgeNavigationPane inherits Rectangle {
             Text { x: 71px; y: 19px; text: "SlintForge"; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; font-weight: 600; }
             Text { x: 71px; y: 41px; text: "Rust + C++ Gallery"; color: Palette.foreground; font-size: 11px * ForgeTypography.scale; }
         }
-        Rectangle {
+        if root.show-search : Rectangle {
             height: 48px;
             background: transparent;
             if root.pane-state == ForgePaneState.expanded : LineEdit {
@@ -67,7 +74,7 @@ export component ForgeNavigationPane inherits Rectangle {
                 width: parent.width;
                 padding-left: 5px;
                 padding-right: 5px;
-                spacing: 1px;
+                spacing: 0px;
                 for item in root.items : ForgeNavigationRow {
                     visible: root.pane-state != ForgePaneState.compact || (item.depth == 0 && item.kind != ForgeNavItemKind.header && item.kind != ForgeNavItemKind.separator);
                     item: item;
@@ -83,7 +90,7 @@ export component ForgeNavigationPane inherits Rectangle {
                 }
             }
         }
-        Rectangle { height: 1px; background: Palette.border; }
+        Rectangle { height: 1px; background: Palette.divider; }
         if root.pane-state == ForgePaneState.expanded : Rectangle {
             height: 36px;
             background: transparent;

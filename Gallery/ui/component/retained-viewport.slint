@@ -1,0 +1,27 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+// 常驻的重型示例在隐藏时保留尺寸，避免侧栏切换触发离屏图表与表格重算。
+export component GalleryRetainedViewport inherits Rectangle {
+    in property<bool> active;
+    in property<length> viewport-width;
+    in property<length> viewport-height;
+    private property<length> retained-width: 1100px;
+    private property<length> retained-height: 812px;
+    out property<length> content-width: root.active ? root.viewport-width : root.retained-width;
+    out property<length> content-height: root.active ? root.viewport-height : root.retained-height;
+    width: root.viewport-width;
+    height: root.viewport-height;
+    visible: root.active;
+    function update-extent() {
+        if root.active {
+            root.retained-width = root.viewport-width;
+            root.retained-height = root.viewport-height;
+        }
+    }
+    init => { root.update-extent(); }
+    changed active => { root.update-extent(); }
+    changed viewport-width => { root.update-extent(); }
+    changed viewport-height => { root.update-extent(); }
+    @children
+}

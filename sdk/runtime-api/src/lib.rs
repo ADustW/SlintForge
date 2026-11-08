@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! DLL 与安全封装共用的纯 C 数据契约；此包不包含组件计算实现。
 use std::any::Any;
 use std::ffi::c_void;
@@ -5,7 +8,7 @@ use std::ffi::c_void;
 pub mod models;
 pub mod plot;
 
-pub const ABI_VERSION: u32 = 1;
+pub const ABI_VERSION: u32 = 2;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -205,5 +208,5 @@ impl<A: Wire, B: Wire, C: Wire> Wire for (A, B, C) {
     }
 }
 
-// 函数表由生成器从同一份绘图契约和模型生成，字段顺序属于 ABI v1。
+// 函数表由生成器从同一份绘图契约和模型生成，字段顺序属于 ABI v2。
 include!("table.rs");

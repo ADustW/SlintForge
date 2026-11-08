@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """独立消费者只能使用交付锁文件中已有的 registry 依赖版本。"""
 from pathlib import Path
 import sys

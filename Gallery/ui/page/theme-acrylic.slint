@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, CheckBox, ComboBox, LineEdit, Palette, Slider } from "std-widgets.slint";
 import { ForgeAcrylic, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions, GalleryVariant } from "../component/component-page.slint";
@@ -105,7 +108,7 @@ export component GalleryThemeAcrylicPage inherits Rectangle {
                     tint: #20202860;
                     player := VerticalLayout {
                         spacing: 10px;
-                        Text { text: @tr("夜航星"); color: white; font-size: 18px * ForgeTypography.scale; font-weight: 600; }
+                        Text { text: @tr("夜航星"); color: white; font-size: 20px * ForgeTypography.scale; font-weight: 600; }
                         Text { text: @tr("城市灯火乐队 · 第 3 首"); color: #ffffffc0; font-size: 12px * ForgeTypography.scale; }
                         Slider { minimum: 0; maximum: 100; value <=> root.progress; }
                         HorizontalLayout {

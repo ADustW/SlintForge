@@ -1,18 +1,21 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 
 // Flow 独立视觉令牌，不改变 Gallery 中其他组件的全局主题。
 export global ForgeFlowTheme {
     in-out property<bool> dark: Palette.color-scheme == ColorScheme.dark;
-    in-out property<color> canvas: self.dark ? #141b27 : #f8fafc;
-    in-out property<color> surface: self.dark ? #202b3b : #ffffff;
-    in-out property<color> raised: self.dark ? #2a374b : #f1f5f9;
-    in-out property<color> border: self.dark ? #41516b : #d9e2ee;
-    in-out property<color> text: self.dark ? #e9eff8 : #1e293b;
-    in-out property<color> muted: self.dark ? #9cacbf : #64748b;
-    in-out property<color> accent: self.dark ? #76a9ff : #2563eb;
-    in-out property<color> edge: self.dark ? #8d9db7 : #8191ab;
-    in-out property<color> grid: self.dark ? #3c4b62 : #cbd5e1;
-    in-out property<color> success: self.dark ? #60d8ac : #059669;
+    in-out property<color> canvas: self.dark ? Palette.base-for(true) : Palette.content-for(false);
+    in-out property<color> surface: self.dark ? Palette.content-for(true) : Palette.surface-for(false);
+    in-out property<color> raised: Palette.surface-for(self.dark);
+    in-out property<color> border: Palette.border-for(self.dark);
+    in-out property<color> text: Palette.text-for(self.dark);
+    in-out property<color> muted: Palette.secondary-for(self.dark);
+    in-out property<color> accent: self.dark ? Palette.accent-dark : Palette.accent-light;
+    in-out property<color> edge: Palette.secondary-for(self.dark);
+    in-out property<color> grid: self.dark ? Palette.border-for(true) : Palette.divider-for(false);
+    in-out property<color> success: Palette.success;
     in-out property<length> radius: 8px;
 }
 
@@ -27,23 +30,23 @@ export component ForgeFlowToolButton inherits Rectangle {
     preferred-width: root.text == "" ? 32px : caption.preferred-width + (root.icon == "" ? 24px : 44px);
     preferred-height: 32px; min-height: 28px;
     horizontal-stretch: 0; vertical-stretch: 0;
-    background: root.primary ? ForgeFlowTheme.accent : root.checked ? ForgeFlowTheme.accent.with-alpha(0.12) : touch.has-hover ? ForgeFlowTheme.raised : transparent;
-    border-radius: 5px; border-width: focus.has-focus ? 1px : 0px; border-color: ForgeFlowTheme.accent;
-    opacity: root.enabled ? 1 : 0.35;
+    background: !root.enabled ? Palette.control-disabled : root.primary ? ForgeFlowTheme.accent : root.checked ? ForgeFlowTheme.accent.with-alpha(0.12) : touch.pressed ? Palette.subtle-tertiary : touch.has-hover ? Palette.subtle-secondary : transparent;
+    border-radius: 4px; border-width: focus.has-focus ? 1px : 0px; border-color: ForgeFlowTheme.accent;
+
     accessible-role: button; accessible-label: root.label; accessible-enabled: root.enabled;
     accessible-action-default => { if root.enabled { root.clicked(); } }
     forward-focus: focus;
     if root.icon != "" : Path {
         x: root.text == "" ? (root.width - 18px) / 2 : 8px; y: (root.height - 18px) / 2;
         width: 18px; height: 18px; viewbox-width: 24; viewbox-height: 24;
-        commands: root.icon; fill: transparent; stroke: root.primary ? white : root.checked ? ForgeFlowTheme.accent : ForgeFlowTheme.text;
+        commands: root.icon; fill: transparent; stroke: !root.enabled ? Palette.text-disabled : root.primary ? Palette.accent-foreground : root.checked ? ForgeFlowTheme.accent : ForgeFlowTheme.text;
         stroke-width: 1.7px; stroke-line-cap: round; stroke-line-join: round;
     }
     caption := Text {
         x: root.icon == "" ? 0px : 30px; width: parent.width - self.x; height: parent.height;
         text: root.text; font-size: 12px; font-weight: root.primary ? 600 : 400;
         horizontal-alignment: center; vertical-alignment: center; overflow: elide;
-        color: root.primary ? white : root.checked ? ForgeFlowTheme.accent : ForgeFlowTheme.text;
+        color: !root.enabled ? Palette.text-disabled : root.primary ? Palette.accent-foreground : root.checked ? ForgeFlowTheme.accent : ForgeFlowTheme.text;
     }
     focus := FocusScope { enabled: root.enabled;
         key-pressed(e) => { if e.text == Key.Return || e.text == " " { root.clicked(); return accept; } return reject; }

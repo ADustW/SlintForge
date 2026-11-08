@@ -1,3 +1,7 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgeMetrics } from "../theme/theme.slint";
 import { Palette, ScrollView } from "std-widgets.slint";
 import { ForgePillButton } from "../inputs/action-buttons.slint";
 import { ForgeTypography } from "../typography/typography.slint";
@@ -23,7 +27,7 @@ export component ForgeContentDialog inherits Rectangle {
     public function focus-cancel-button() { if root.open { root.focus-index = 1; cancel-button.focus-button(); } }
     public function dismiss() { if root.open { root.open = false; root.canceled(); } }
     visible: root.open;
-    background: #00000080;
+    background: Palette.smoke;
     TouchArea { clicked => { if root.dismiss-on-outside { root.dismiss(); } } }
     forward-focus: scope;
     scope := FocusScope {
@@ -42,7 +46,7 @@ export component ForgeContentDialog inherits Rectangle {
         width: Math.max(0px, Math.min(460px, root.width - 32px));
         height: Math.min(Math.max(0px, root.height - 32px), layout.preferred-height);
         x: (root.width - self.width) / 2; y: (root.height - self.height) / 2;
-        background: Palette.background; border-width: 1px; border-color: Palette.border; border-radius: 10px;
+        background: Palette.popup-background; border-width: ForgeMetrics.stroke-width; border-color: Palette.border; border-radius: ForgeMetrics.surface-radius;
         clip: true;
         TouchArea { }
         layout := VerticalLayout {
@@ -55,10 +59,11 @@ export component ForgeContentDialog inherits Rectangle {
                 body := VerticalLayout {
                     width: body-scroll.visible-width;
                     spacing: 18px;
-                    Text { text: root.message; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                    Text { text: root.message; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
                     Rectangle { @children }
                 }
             }
+            Rectangle { height: 1px; background: Palette.divider; }
             HorizontalLayout {
                 spacing: 10px; alignment: end;
                 cancel-button := ForgePillButton { text: root.cancel-text; clicked => { root.dismiss(); } }

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Date, Time, Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 import { ForgeDateTime } from "date-time.slint";
@@ -81,7 +84,7 @@ export component ForgeDatePickerPopup inherits Rectangle {
     popup := PopupWindow {
         width: (root.show-time ? 500px : 300px) * root.scale; height: 350px * root.scale;
         close-policy: close-on-click-outside; forward-focus: scope;
-        Rectangle { background: root.dark ? #2b2b2b : #fff; border-radius: 4px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        Rectangle { background: Palette.surface-for(root.dark); border-radius: 4px; border-width: 1px; border-color: Palette.border-for(root.dark); }
         scope := FocusScope {
             width: 100%; height: 100%;
             key-pressed(event) => {
@@ -106,31 +109,31 @@ export component ForgeDatePickerPopup inherits Rectangle {
                             heading := Text {
                                 x: 10px * root.scale; width: max(0px, parent.width - 20px * root.scale); height: parent.height;
                                 text: root.view == 0 ? root.month-text : root.view == 1 ? "" + root.display-year : floor(root.display-year / 10) * 10 + " - " + (floor(root.display-year / 10) * 10 + 9);
-                                color: root.dark ? #fff : #202020; font-size: 13px * root.scale; vertical-alignment: center;
+                                color: Palette.text-for(root.dark); font-size: 13px * root.scale; vertical-alignment: center;
                             }
                             clicked => { if root.view < 2 { root.view += 1; } }
                         }
                         ForgePickerAction {
                             dark: root.dark; min-width: 30px * root.scale; horizontal-stretch: 0; text: "";
                             accessible-label: root.language == "en" ? "Previous" : "上一页";
-                            ForgeIcon { width: parent.width; height: parent.height; glyph: "\u{f2b5}"; font-size: 12px * root.scale; color: root.dark ? #fff : #202020; }
+                            ForgeIcon { width: parent.width; height: parent.height; glyph: "\u{f2b5}"; font-size: 12px * root.scale; color: Palette.text-for(root.dark); }
                             clicked => { root.browse-month(root.view == 0 ? -1 : root.view == 1 ? -12 : -120); }
                         }
                         ForgePickerAction {
                             dark: root.dark; min-width: 30px * root.scale; horizontal-stretch: 0; text: "";
                             accessible-label: root.language == "en" ? "Next" : "下一页";
-                            ForgeIcon { width: parent.width; height: parent.height; glyph: "\u{f2a2}"; font-size: 12px * root.scale; color: root.dark ? #fff : #202020; }
+                            ForgeIcon { width: parent.width; height: parent.height; glyph: "\u{f2a2}"; font-size: 12px * root.scale; color: Palette.text-for(root.dark); }
                             clicked => { root.browse-month(root.view == 0 ? 1 : root.view == 1 ? 12 : 120); }
                         }
                     }
-                    Rectangle { y: parent.height - 1px; height: 1px; background: root.dark ? #454545 : #ddd; }
+                    Rectangle { y: parent.height - 1px; height: 1px; background: Palette.border-for(root.dark); }
                 }
                 if root.view == 0: Rectangle {
                     height: 24px * root.scale;
                     for label[index] in (root.language == "en" ? ForgeDateTime.weekday-names("en") : ["一", "二", "三", "四", "五", "六", "日"]): Text {
                         x: 10px * root.scale + index * (parent.width - 20px * root.scale) / 7;
                         width: (parent.width - 20px * root.scale) / 7; height: parent.height;
-                        text: label; color: root.dark ? #fff : #202020; horizontal-alignment: center; vertical-alignment: center; font-size: 13px * root.scale;
+                        text: label; color: Palette.text-for(root.dark); horizontal-alignment: center; vertical-alignment: center; font-size: 13px * root.scale;
                     }
                 }
                 grid := Rectangle {
@@ -153,13 +156,12 @@ export component ForgeDatePickerPopup inherits Rectangle {
                         y: floor(index / (root.view == 0 ? 7 : 4)) * self.cell-height + (self.cell-height - self.height) / 2;
                         border-radius: root.view == 0 ? self.width / 2 : 4px;
                         border-width: self.selected ? 1px : 0px; border-color: Palette.accent-background;
-                        background: touch.has-hover && self.available ? (root.dark ? #ffffff12 : #00000008) : transparent;
-                        opacity: self.available ? 1 : 0.3;
+                        background: touch.has-hover && self.available ? (Palette.subtle-for(root.dark)) : transparent;
                         accessible-role: button; accessible-enabled: self.available;
                         accessible-label: root.view == 0 ? ForgeDateTime.format-date(self.candidate, root.language) : label.text;
                         label := Text {
                             text: root.view == 0 ? "" + parent.candidate.day : root.view == 1 ? ForgeDateTime.month-names(root.language)[index] : "" + parent.year;
-                            color: root.dark ? #fff : #202020; opacity: parent.adjacent && !touch.has-hover ? 0.3 : 1;
+                            color: !parent.available ? Palette.disabled-text-for(root.dark) : parent.adjacent && !touch.has-hover ? Palette.secondary-for(root.dark) : Palette.text-for(root.dark);
                             horizontal-alignment: center; vertical-alignment: center; font-size: 13px * root.scale; overflow: elide;
                         }
                         touch := TouchArea {
@@ -174,7 +176,7 @@ export component ForgeDatePickerPopup inherits Rectangle {
                 }
                 if !root.confirm-on-selection && !root.show-time: Rectangle {
                     height: 40px * root.scale;
-                    Rectangle { x: 0px; y: 0px; width: parent.width; height: 1px; background: root.dark ? #454545 : #ddd; }
+                    Rectangle { x: 0px; y: 0px; width: parent.width; height: 1px; background: Palette.border-for(root.dark); }
                     HorizontalLayout {
                         padding: 4px * root.scale; spacing: 0px;
                         ForgePickerAction { dark: root.dark; text: "✓"; accessible-label: root.language == "en" ? "Confirm" : "确定"; clicked => { root.confirm(); } }
@@ -185,7 +187,7 @@ export component ForgeDatePickerPopup inherits Rectangle {
         }
         if root.show-time: Rectangle {
             x: 300px * root.scale; y: 0px; width: 200px * root.scale; height: parent.height;
-            Rectangle { x: 0px; width: 1px; height: parent.height; background: root.dark ? #454545 : #ddd; }
+            Rectangle { x: 0px; width: 1px; height: parent.height; background: Palette.border-for(root.dark); }
             Rectangle { x: 4px * root.scale; y: (parent.height - 80px * root.scale) / 2; width: parent.width - 8px * root.scale; height: 40px * root.scale; border-radius: 4px; background: Palette.accent-background; }
             HorizontalLayout {
                 x: 1px; y: 0px; width: parent.width - 2px; height: parent.height - 40px * root.scale; spacing: 1px; padding: 0px;
@@ -196,13 +198,13 @@ export component ForgeDatePickerPopup inherits Rectangle {
             Rectangle {
                 y: parent.height - self.height; height: 40px * root.scale;
                 // 分隔线固定在按钮栏顶部，避免默认居中后穿过确认和取消图标。
-                Rectangle { x: 0px; y: 0px; width: parent.width; height: 1px; background: root.dark ? #454545 : #ddd; }
+                Rectangle { x: 0px; y: 0px; width: parent.width; height: 1px; background: Palette.border-for(root.dark); }
                 HorizontalLayout {
                     padding: 4px * root.scale; spacing: 0px;
                     ForgePickerAction { dark: root.dark; text: "✓"; accessible-label: root.language == "en" ? "Confirm" : "确定"; clicked => { root.confirm(); } }
                     ForgePickerAction { dark: root.dark; text: "✕"; accessible-label: root.language == "en" ? "Cancel" : "取消"; clicked => { root.cancel(); } }
                 }
-                Rectangle { x: parent.width / 2; y: 1px; width: 1px; height: parent.height - 1px; background: root.dark ? #454545 : #ddd; }
+                Rectangle { x: parent.width / 2; y: 1px; width: 1px; height: parent.height - 1px; background: Palette.border-for(root.dark); }
             }
         }
 
@@ -259,7 +261,7 @@ export component ForgeDatePicker inherits Rectangle {
     popup := PopupWindow {
         y: root.height + 4px; width: root.width; height: 348px * root.scale;
         close-policy: close-on-click-outside; forward-focus: popup-scope;
-        Rectangle { background: root.dark ? #242424 : #fff; border-radius: 6px; border-width: 1px; border-color: root.dark ? #454545 : #d0d0d0; }
+        Rectangle { background: Palette.surface-for(root.dark); border-radius: 6px; border-width: 1px; border-color: Palette.border-for(root.dark); }
         popup-scope := FocusScope {
             width: 100%; height: 100%;
             key-pressed(event) => { if event.text == Key.Escape { root.cancel(); return accept; } if event.text == Key.Return { root.confirm(); return accept; } return reject; }
@@ -289,7 +291,7 @@ export component ForgeDatePicker inherits Rectangle {
                     pad: false; value: root.draft.day; accessible-name: root.language == "en" ? "Day" : "日"; edited(value) => { root.set-day(value); }
                 }
             }
-            Rectangle { height: 1px; background: root.dark ? #454545 : #ddd; }
+            Rectangle { height: 1px; background: Palette.border-for(root.dark); }
             HorizontalLayout {
                 ForgePickerAction { dark: root.dark; text: "✓"; accessible-label: root.language == "en" ? "Confirm" : "确定"; clicked => { root.confirm(); } }
                 ForgePickerAction { dark: root.dark; text: "✕"; accessible-label: root.language == "en" ? "Cancel" : "取消"; clicked => { root.cancel(); } }
@@ -327,13 +329,13 @@ export component ForgeCalendarPicker inherits Rectangle {
         : root.language == "en" ? "Pick a date" : "选择日期";
     // 按文字、图标和内边距计算宽度，日期时间模式在未选择时也保持紧凑。
     preferred-width: label.preferred-width + 44px * ForgeTypography.scale;
-    preferred-height: max(30px * ForgeTypography.scale, label.preferred-height + 12px * ForgeTypography.scale);
+    preferred-height: max(32px * ForgeTypography.scale, label.preferred-height + 12px * ForgeTypography.scale);
     width: root.preferred-width; height: root.preferred-height;
     horizontal-stretch: 0; vertical-stretch: 0; forward-focus: focus;
     border-radius: 4px; border-width: 1px;
-    border-color: focus.has-focus ? Palette.accent-background : root.dark ? #ffffff12 : #00000022;
-    background: touch.pressed ? (root.dark ? #292929 : #f4f4f4) : touch.has-hover ? (root.dark ? #353535 : #fafafa) : root.dark ? #2d2d2d : #ffffff;
-    opacity: root.enabled ? 1 : 0.45;
+    border-color: focus.has-focus ? Palette.accent-background : Palette.border-for(root.dark);
+    background: !root.enabled ? Palette.disabled-fill-for(root.dark) : touch.pressed ? (Palette.control-for(root.dark, 2)) : touch.has-hover ? (Palette.control-for(root.dark, 1)) : Palette.control-for(root.dark, 0);
+
     accessible-role: button; accessible-label: root.display-text; accessible-enabled: root.enabled;
     accessible-action-default => { root.open(); }
     Rectangle {
@@ -341,12 +343,12 @@ export component ForgeCalendarPicker inherits Rectangle {
         x: (root.width - self.width) / 2; height: root.height;
         label := Text {
             x: 0px; width: max(0px, parent.width - 20px * ForgeTypography.scale); height: parent.height;
-            text: root.display-text; color: root.dark ? #fff : #202020;
-            font-size: 13px * ForgeTypography.scale; vertical-alignment: center; overflow: elide;
+            text: root.display-text; color: root.enabled ? Palette.text-for(root.dark) : Palette.disabled-text-for(root.dark);
+            font-size: 14px * ForgeTypography.scale; vertical-alignment: center; overflow: elide;
         }
         ForgeIcon {
             x: parent.width - self.width; width: 14px * ForgeTypography.scale; height: parent.height;
-            font-size: 14px * ForgeTypography.scale; glyph: ForgeIcons.calendar; color: root.dark ? #fff : #202020;
+            font-size: 14px * ForgeTypography.scale; glyph: ForgeIcons.calendar; color: Palette.text-for(root.dark);
         }
     }
     touch := TouchArea { enabled: root.enabled; clicked => { focus.focus(); root.open(); } }

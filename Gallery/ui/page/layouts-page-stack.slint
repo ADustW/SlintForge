@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, LineEdit, Palette } from "std-widgets.slint";
 import { ForgePageStack, ForgeStackPage, ForgeIconButton, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
@@ -85,7 +88,7 @@ export component GalleryPageStackPage inherits Rectangle {
                             for label[index] in [@tr("账号"), @tr("联系方式"), @tr("确认")] : Text {
                                 text: @tr("{}. {}", index + 1, label);
                                 color: index == root.step ? Palette.accent-background : Palette.foreground.transparentize(0.5);
-                                font-size: 13px * ForgeTypography.scale;
+                                font-size: 14px * ForgeTypography.scale;
                                 font-weight: index == root.step ? 600 : 400;
                             }
                         }
@@ -96,7 +99,7 @@ export component GalleryPageStackPage inherits Rectangle {
                                 page-id: "account"; active-id: wizard-stack.active-id;
                                 VerticalLayout {
                                     spacing: 8px; alignment: start;
-                                    Text { text: @tr("用户名"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+                                    Text { text: @tr("用户名"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; }
                                     user-input := LineEdit { placeholder-text: @tr("3 到 16 个字符"); }
                                 }
                             }
@@ -104,7 +107,7 @@ export component GalleryPageStackPage inherits Rectangle {
                                 page-id: "contact"; active-id: wizard-stack.active-id;
                                 VerticalLayout {
                                     spacing: 8px; alignment: start;
-                                    Text { text: @tr("邮箱"); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+                                    Text { text: @tr("邮箱"); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; }
                                     mail-input := LineEdit { placeholder-text: "name@example.com"; }
                                 }
                             }
@@ -112,8 +115,8 @@ export component GalleryPageStackPage inherits Rectangle {
                                 page-id: "confirm"; active-id: wizard-stack.active-id;
                                 VerticalLayout {
                                     spacing: 8px; alignment: start;
-                                    Text { text: @tr("用户名：{}", user-input.text == "" ? @tr("（未填写）") : user-input.text); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
-                                    Text { text: @tr("邮箱：{}", mail-input.text == "" ? @tr("（未填写）") : mail-input.text); color: Palette.foreground; font-size: 13px * ForgeTypography.scale; }
+                                    Text { text: @tr("用户名：{}", user-input.text == "" ? @tr("（未填写）") : user-input.text); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; }
+                                    Text { text: @tr("邮箱：{}", mail-input.text == "" ? @tr("（未填写）") : mail-input.text); color: Palette.foreground; font-size: 14px * ForgeTypography.scale; }
                                 }
                             }
                         }

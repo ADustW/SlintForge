@@ -1,3 +1,7 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgeMetrics } from "../theme/theme.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 import { Palette, StyleMetrics } from "std-widgets.slint";
 
@@ -5,10 +9,10 @@ export component ForgeCard inherits Rectangle {
     in property<string> title;
     in property<length> content-padding: StyleMetrics.layout-padding;
     in property<length> spacing: 8px;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: Palette.border;
-    background: Palette.background;
+    border-radius: ForgeMetrics.surface-radius;
+    border-width: ForgeMetrics.stroke-width;
+    border-color: Palette.card-stroke;
+    background: Palette.card-background;
     VerticalLayout {
         padding: Math.max(0px, root.content-padding);
         spacing: Math.max(0px, root.spacing);

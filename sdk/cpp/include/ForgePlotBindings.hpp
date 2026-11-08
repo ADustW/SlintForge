@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 // 由 tools/generate_plot_bindings.py 生成。
 #pragma once
 template<class Service,class Scene,class Axis,class Range,class Rect,class Hit,class Selection,class Export,class Handle>
@@ -56,7 +59,7 @@ void forge_bind_plot_services(const Handle& ui) {
         auto plot=reusable?state->plots[token]:std::make_shared<ForgePlot>(core);if(reusable)plot->begin_view(core);
         if(!reusable){
         for(size_t i=0;panels && i<panels->row_count();++i){const auto item=panels->row_data(i);if(!item)continue;const auto& v=*item;
-            const std::string title(v.title);
+            const std::string title(v.title);std::deque<std::string> category_labels;std::vector<ForgePlotTickCore> categories;for(size_t i=0;v.categories&&i<v.categories->row_count();++i)if(auto label=v.categories->row_data(i)){category_labels.emplace_back(*label);categories.push_back({static_cast<double>(i),category_labels.back().c_str()});}
             ForgePlotPanelCore core{};
                 core.id = v.id;
                 core.x = v.x;
@@ -64,6 +67,8 @@ void forge_bind_plot_services(const Handle& ui) {
                 core.width = v.width;
                 core.height = v.height;
                 core.title = title.c_str();
+                core.categories = categories.data();
+                core.category_count = categories.size();
             plot->add_panel(core);
         }
         }
@@ -93,7 +98,7 @@ void forge_bind_plot_services(const Handle& ui) {
             plot->add_axis(core);
         }
         for(size_t i=0;series && i<series->row_count();++i){const auto item=series->row_data(i);if(!item)continue;const auto& v=*item;
-            const std::string name(v.name);
+            const std::string name(v.name);std::vector<ForgePlotPointStyleCore> point_styles;for(size_t i=0;v.point_styles&&i<v.point_styles->row_count();++i)if(auto style=v.point_styles->row_data(i))point_styles.push_back({style->index,static_cast<int>(style->hidden),style->size,forge_plot_ui_color(style->color)});
             ForgePlotSeriesCore core{};
                 core.id = v.id;
                 core.kind = static_cast<int>(v.kind);
@@ -114,6 +119,9 @@ void forge_bind_plot_services(const Handle& ui) {
                 core.bar_width = v.bar_width > 0 ? v.bar_width : .8;
                 core.baseline = v.baseline;
                 core.name = name.c_str();
+                core.inner_radius = v.inner_radius;
+                core.point_styles = point_styles.data();
+                core.point_style_count = point_styles.size();
             if(reusable){plot->update_series(core);continue;}
             std::vector<ForgePlotPointCore> points;std::deque<std::string> labels;std::vector<std::vector<double>> outliers;
             points.reserve(v.points?v.points->row_count():0);
@@ -272,10 +280,15 @@ void forge_bind_plot_services(const Handle& ui) {
     });
     service.on_select_rect([state](int token,float x,float y,float width,float height){std::vector<Selection> out;const auto it=state->plots.find(token);if(it!=state->plots.end())for(const auto& [id,first,last]:it->second->select_rect(x,y,width,height)){Selection r{};r.id=id;r.first=first;r.last=last;out.push_back(r);}return std::make_shared<slint::VectorModel<Selection>>(std::move(out));});
     service.on_merge_selection([](auto a,auto b,int mode){std::vector<std::tuple<int,int,int>> current,next;const auto append=[](const auto& model,auto& list){for(size_t i=0;model&&i<model->row_count();++i){const auto s=model->row_data(i);if(s)list.emplace_back(s->id,s->first,s->last);}};append(a,current);append(b,next);std::vector<Selection> out;for(const auto& [id,first,last]:forge_plot_merge_selection(current,next,mode)){Selection r{};r.id=id;r.first=first;r.last=last;out.push_back(r);}return std::make_shared<slint::VectorModel<Selection>>(std::move(out));});
+    service.on_axis_index([](auto axes,int id){for(size_t i=0;axes&&i<axes->row_count();++i)if(auto axis=axes->row_data(i);axis&&axis->id==id)return static_cast<int>(i);return -1;});
     service.on_change_view([state](int token,auto axes,auto ranges,int panel,int mode,float x,float y,float w,float h,int directions){std::vector<Axis> out;const auto it=state->plots.find(token);
         for(size_t i=0;axes&&i<axes->row_count();++i){const auto value=axes->row_data(i);if(!value)continue;auto a=*value;const bool horizontal=static_cast<int>(a.side)<2;
             if((panel<0||a.panel==panel)&&(horizontal?directions%2!=0:directions>=2)){if(mode==3)a.manual_range=false;else if(it!=state->plots.end())for(size_t j=0;ranges&&j<ranges->row_count();++j){const auto r=ranges->row_data(j);if(r&&r->id==a.id){ForgePlotRangeCore range{r->id,r->scale,r->reversed?1:0,r->minimum,r->maximum};const auto next=it->second->view(range,mode,horizontal?x:y,horizontal?w:h);a.manual_range=true;a.minimum=static_cast<float>(next.minimum);a.maximum=static_cast<float>(next.maximum);break;}}}out.push_back(a);
         }return std::make_shared<slint::VectorModel<Axis>>(std::move(out));});
+    service.on_cartesian_panel([](auto series,auto axes,int panel){if(!series||!series->row_count())return true;for(size_t i=0;series&&i<series->row_count();++i)if(auto s=series->row_data(i)){const int kind=static_cast<int>(s->kind);if(kind>5&&kind!=7)continue;int id=s->x_axis/2;for(size_t j=0;axes&&j<axes->row_count();++j)if(auto a=axes->row_data(j);a&&a->id==s->x_axis){id=a->panel;break;}if(panel<0||id==panel)return true;}return false;});
+    service.on_cartesian_series([](auto series,int id){for(size_t i=0;series&&i<series->row_count();++i)if(auto s=series->row_data(i);s&&s->id==id){const int kind=static_cast<int>(s->kind);return kind<=5||kind==7;}return false;});
+    service.on_toggle_point([](auto series,int id,int index){using Item=std::remove_cvref_t<decltype(series->row_data(0).value())>;std::vector<Item> out;
+        for(size_t i=0;series&&i<series->row_count();++i)if(auto value=series->row_data(i)){auto s=*value;if(s.id==id){using Style=std::remove_cvref_t<decltype(s.point_styles->row_data(0).value())>;std::vector<Style> styles;bool found=false;for(size_t j=0;s.point_styles&&j<s.point_styles->row_count();++j)if(auto v=s.point_styles->row_data(j)){if(v->index==index){v->hidden=!v->hidden;found=true;}styles.push_back(*v);}if(!found){Style v{};v.index=index;v.hidden=true;v.size=s.point_size>0?s.point_size:6;styles.push_back(v);}s.point_styles=std::make_shared<slint::VectorModel<Style>>(std::move(styles));}out.push_back(s);}return std::make_shared<slint::VectorModel<Item>>(std::move(out));});
     service.on_toggle_series([](auto series,int id){using Item=std::remove_cvref_t<decltype(series->row_data(0).value())>;std::vector<Item> out;for(size_t i=0;series&&i<series->row_count();++i){const auto value=series->row_data(i);if(value){auto s=*value;if(s.id==id)s.hidden=!s.hidden;out.push_back(s);}}return std::make_shared<slint::VectorModel<Item>>(std::move(out));});
     service.on_scroll_view([state](int token,auto axes,int id,float position,float span){std::vector<Axis> out;const auto it=state->plots.find(token);
         for(size_t i=0;axes&&i<axes->row_count();++i){const auto value=axes->row_data(i);if(!value)continue;auto a=*value;if(a.id==id&&it!=state->plots.end())for(const auto& b:it->second->domains())if(b.id==id){const double width=std::max(.000001,static_cast<double>(span));a.manual_range=true;a.minimum=static_cast<float>(b.minimum+std::max(0.,b.maximum-b.minimum-width)*std::clamp(static_cast<double>(position),0.,1.));a.maximum=a.minimum+static_cast<float>(width);break;}out.push_back(a);}return std::make_shared<slint::VectorModel<Axis>>(std::move(out));

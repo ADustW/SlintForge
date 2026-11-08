@@ -1,52 +1,70 @@
-# 图表组件
+# ForgePlot 统一图表与迁移
 
-7 个公共组件共用 Slint 绘图层：`ForgeBarChart`、`ForgeLineChart`、`ForgePieChart`、`ForgePolarAreaChart`、`ForgeBubbleChart`、`ForgeScatterChart`、`ForgeRadarChart`。基线为 Slint 1.18.0，图形使用原生 Rectangle、Path 和 Text；两端 SDK 负责数据校验、归一化几何与命中测试。共享入口为 `ui/slintforge.slint`。
+SlintForge 使用 `ForgePlot` 作为唯一图表组件。共享的 C++ 绘图内核负责数据、路径、命中、选择、图例和矢量导出，Rust/C++ SDK 只负责模型适配和位图输出。无需 ECharts。
 
-## 数据与行为
+## 图形配置
 
-| 项目 | 约定 |
+| 展示 | 配置 |
 |---|---|
-| `series: [ForgeChartSeries]` | `name`、`color`、`hidden`、`points`；点包含 `x`、`y`、`size`、`label`、`color`。透明色采用默认系列颜色。 |
-| `slices: [ForgeChartSlice]` | 饼图和极区图使用 `label`、`value`、`color`、`hidden`。忽略非正值和非有限值，所有项隐藏时显示空数据提示。 |
-| `categories: [string]` | 分类标签；雷达图至少需要 3 个维度，点顺序对应维度顺序。 |
-| 自动坐标 | 默认 `auto-range=true`；提供刻度与单值范围扩展。分类图表只用类别域内的有效点计算范围。`include-zero` 控制是否包含零，柱图与雷达图默认包含零。 |
-| 手动坐标 | 设置 `auto-range=false` 及 `x-min/x-max/y-min/y-max`。端点及跨度须有限且最小值小于最大值；跨度溢出返回无效范围状态。 |
-| 柱图 | 分类使用从 0 开始的 x 索引；`stacked` 切换分组/堆叠，正值和负值分别累计。 |
-| 折线 | `smooth` 切换三次曲线；`fill-area` 填充到零基线。非有限点断开折线；曲线与填充采用相同边界。 |
-| 饼图 | `doughnut` 切换环形；单项 360° 使用两段圆弧，环形中心不参与选择。 |
-| 极区图 | 扇区等角，半径按值的平方根变化，使面积与数值成比例。 |
-| 气泡/散点 | 连续 `x/y`；气泡 `size` 为正的逻辑像素半径，非正或非有限 size 不显示；散点使用 `point-size`。 |
-| 雷达 | 按维度顺序闭合，默认填充；两个或更少维度返回无效数据提示。 |
-| 图例 | `show-legend` 控制显示；点击复选框隐藏/显示系列或扇区。 |
-| 选择 | 悬停显示标签，点击触发 `point-selected(series-index, point-index, value)`；方向键循环、Home/End 首末项、Escape 清除。索引从 0 开始。 |
-| 禁用 | `enabled=false` 阻止鼠标、键盘和图例操作。 |
+| 分组／正负堆叠柱图 | `kind: bars`；`stacked`、`stack-group`、`bar-width` |
+| 折线／面积 | `kind: graph`；`line-style: line / smooth`；`fill-color` |
+| 散点 | `kind: graph`、`line-style: none`、`scatter-style: disc` |
+| 气泡 | `kind: bubble`；`point-size` 为默认直径，`point-styles` 覆盖逐点尺寸和颜色 |
+| 饼／环 | `kind: pie`；`inner-radius: 0 / 0.6` |
+| 极区面积 | `kind: polar-area`；等角扇区，半径正比于数值平方根 |
+| 雷达 | `kind: radar`；`panels.categories` 至少 3 项，多系列维度一致 |
 
-`scene.status` 为 0（正常）、1（无有效数据）、2（范围/维度无效）、3（未绑定服务）。`selected-index`、`selected-series`、`selected-point`、`hovered-index` 可供应用读取。模型变化时重置悬停和选择，Slint 的 changed 回调在下一轮更新执行。
-
-可调用 `select-point(index)`、`clear-selection()`、`hide-series(index, hidden)`、`hide-slice(index, hidden)`。替换模型会重新计算；宿主就地修改嵌套模型后调用 `refresh()`。密集或高频数据可由应用预先降采样。
-
-## 两端接入
-
-在编译入口中导出服务和返回类型：
+旧枚举 `graph` 至 `polar` 的数值 0–6 保持不变；新增 `bubble=7`、`pie=8`、`polar-area=9`、`radar=10`。`smooth` 追加在已有线型之后。曲线采用 Catmull–Rom 插值并细分到共享绘制路径，面积和命中沿同一曲线边界。
 
 ```slint
-export { ForgeChartServices, ForgeChartScene, ForgeChartMark,
-    ForgeChartLine, ForgeChartTick, ForgeChartLabel } from "@slintforge";
+import { ForgePlot } from "@slintforge";
+ForgePlot {
+    panels: [{id: 0, width: 1, height: 1, categories: ["研发", "设计", "测试"]}];
+    legend-placement: outside;
+    series: [{
+        id: 10, kind: pie, name: "资源分布", inner-radius: 0.6,
+        points: [{y: 35}, {y: 20}, {y: 45}],
+        point-styles: [{index: 0, color: #0078d4}, {index: 1, color: #00b7c3}, {index: 2, color: #ffb900}],
+    }];
+}
 ```
 
-创建窗口后绑定：
+`ForgePlotPointStyle` 是可选旁路数据，不增加实时波形点的体积。`index` 始终是原始点索引；`hidden` 隐藏对应点；透明 `color` 使用默认颜色；`size=0` 继承系列默认尺寸，负值、NaN 或超过 16384 的气泡尺寸不显示。尺寸单位为逻辑像素直径。
+
+饼图与极区图忽略非正、非有限和隐藏值，图例按原始数据项排列并允许重新显示隐藏项。命中返回系列 `id` 和原始 `index`，环形中心不会命中。`inner-radius` 必须在 `[0,1)`。每个饼图／极区系列使用独立绘图区。笛卡尔、原有 polar、pie、polar-area、radar 坐标体系不得静默混绘；无效配置通过 `scene.status=2` 与 `scene.error` 返回。
+
+径向图表保留悬停、选择和图例，禁用轴平移、缩放、波形测量及历史窗口。笛卡尔图表保留追加、降采样、游标、历史和缓存。主题切换重新渲染视图，保留数据、范围、选择和游标。
+
+## 两端绑定
+
+入口导出：
+
+```slint
+export { ForgePlotServices, ForgePlotScene, ForgePlotAxis, ForgePlotRange,
+    ForgePlotRect, ForgePlotHit, ForgePlotSelection, ForgePlotExportResult } from "@slintforge";
+```
+
+Rust：
 
 ```rust
-slintforge::bind_chart_services!(ui, ForgeChartServices, ForgeChartScene,
-    ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel);
+slintforge::bind_plot_services!(ui, ForgePlotServices, ForgePlotScene, ForgePlotAxis,
+    ForgePlotRange, ForgePlotRect, ForgePlotHit, ForgePlotSelection, ForgePlotExportResult);
 ```
+
+C++：
 
 ```cpp
-#include "ForgeCharts.hpp"
-forge_bind_chart_services<ForgeChartServices, ForgeChartScene, ForgeChartMark,
-    ForgeChartLine, ForgeChartTick, ForgeChartLabel>(ui);
+#include "ForgePlot.hpp"
+forge_bind_plot_services<ForgePlotServices, ForgePlotScene, ForgePlotAxis,
+    ForgePlotRange, ForgePlotRect, ForgePlotHit, ForgePlotSelection, ForgePlotExportResult>(ui);
 ```
 
-公共入口消费者为 `examples/ui/charts.slint`，由 Rust/C++ 共享。`--charts-smoke` 检查 7 个组件实例的数据数量、几何状态和窗口截图。安装后的 C++ SDK 提供 ForgeCharts.hpp、静态实现及全部 Slint 文件。
+`export-file(path, format)` 支持 PNG、JPEG、BMP、SVG、PDF。位图导出使用 Slint 字体上下文；无可见窗口的 C++ 消费者也应先创建 Slint 组件再执行位图导出。示例见 `examples/ui/charts.slint` 和 `tests/cpp/ForgePlotChartTests.cpp`。
 
-底层接口为 Rust `charts::prepare_chart` / `chart_hit_test` 和 C++ `forge_prepare_chart` / `forge_chart_hit_test`。几何结果由跨宿主 CSV 比对验证。圆弧语义见 [Slint Path 官方文档](https://docs.slint.dev/latest/docs/slint/reference/elements/path/)。
+## ABI v2 迁移
+
+本次直接删除旧 `ForgeChart` 系列、旧类型及 `bind_chart_services!` / `forge_bind_chart_services`，没有兼容壳。原 `series/slices` 统一为 `ForgePlotSeries.points`；切片 `value` 改为 `y`，标签放在 `panels.categories` 或点 `label`；旧气泡半径迁移时乘以 2 转为直径；`doughnut` 改为 `inner-radius`；`point-selected` 改为单个 `ForgePlotHit` 参数。
+
+DLL 入口为 `slintforge_runtime_get_api_v2`，版本、表大小及契约指纹均验证。旧操作编号 21–23 退役，不再接受请求，也不重新分配；其他运行库操作编号保持不变。消费者必须同步更新 UI、Rust/C++ 绑定和 DLL。版本不匹配明确返回 ABI 不兼容错误。
+
+Gallery 继续使用 `chart-bar`、`chart-line`、`chart-pie`、`chart-polar`、`chart-bubble`、`chart-scatter`、`chart-radar` 路由。

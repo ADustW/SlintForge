@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette, Slider, SpinBox } from "std-widgets.slint";
 import { ForgeAdaptiveGrid, ForgeIcon, ForgeIcons, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
@@ -94,7 +97,7 @@ export component GalleryAdaptiveGridPage inherits Rectangle {
                                     ForgeIcon { glyph: app.glyph; color: white; font-size: 20px * ForgeTypography.scale; }
                                 }
                             }
-                            Text { text: app.name; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; overflow: elide; }
+                            Text { text: app.name; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; horizontal-alignment: center; overflow: elide; }
                         }
                         touch := TouchArea { mouse-cursor: pointer; clicked => { root.launched = app.name; } }
                     }

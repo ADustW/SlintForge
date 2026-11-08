@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { ScrollView } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 
@@ -33,7 +36,7 @@ component ForgeStaggeredTile inherits Rectangle {
         height: 22px;
         text: root.item.description;
         color: white;
-        font-size: 13px * ForgeTypography.scale;
+        font-size: 14px * ForgeTypography.scale;
         overflow: elide;
     }
     TouchArea { clicked => { root.activated(root.item.id); } }

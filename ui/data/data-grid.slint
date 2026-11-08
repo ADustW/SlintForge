@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette, ListView, CheckBox, Button, LineEdit } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 import { ForgeGridSelectionMode, ForgeGridCell, ForgeGridColumn, ForgeGridRow,
@@ -20,12 +23,12 @@ component ForgeGridCellView inherits Rectangle {
     callback cancel();
     property<length> inset: root.tree-cell ? Math.max(0px, Math.min(12px + root.item.depth * 20px, root.width - 40px)) : 10px;
     clip: true;
-    opacity: root.item.disabled ? 0.45 : 1;
+
     Text {
         x: root.inset + (root.tree-cell ? 28px : 0px);
         width: Math.max(0px, root.width - self.x - 10px); height: parent.height;
         text: root.item.cells[root.column.source-index].text;
-        color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+        color: root.item.disabled ? Palette.text-disabled : Palette.foreground; font-size: 14px * ForgeTypography.scale;
         horizontal-alignment: root.column.column.numeric ? right : left;
         vertical-alignment: center; overflow: elide;
         visible: !root.editing;
@@ -56,7 +59,7 @@ component ForgeGridCellView inherits Rectangle {
         key-pressed(event) => { if event.text == Key.Escape { root.cancel(); return accept; } return reject; }
     }
     changed editing => { if root.editing { editor.focus(); } }
-    Rectangle { x: parent.width - 1px; width: 1px; background: Palette.border; opacity: 0.35; }
+    Rectangle { x: parent.width - 1px; width: 1px; background: Palette.table-grid; }
 }
 
 // 原生 ListView 负责虚拟化和滚动；排序与行操作由 SDK 服务提供。
@@ -111,7 +114,7 @@ export component ForgeDataGrid inherits Rectangle {
     private property<length> actual-row-height: Math.max(28px, root.row-height);
     private property<length> actual-header-height: Math.max(28px, root.header-height);
     min-width: 240px; min-height: 160px; preferred-width: 640px; preferred-height: 360px;
-    background: Palette.background; border-width: 1px; border-color: Palette.border; border-radius: 4px;
+    background: Palette.table-background; border-width: 1px; border-color: Palette.border; border-radius: 4px;
     clip: true; forward-focus: keyboard;
     accessible-role: table;
     accessible-item-count: root.visible-row-count;
@@ -244,7 +247,7 @@ export component ForgeDataGrid inherits Rectangle {
     keyboard := FocusScope {
         width: 0px; height: 0px; enabled: root.enabled;
         key-pressed(event) => {
-            
+
             if root.editing || !ForgeGridServices.connected { return reject; }
             if (event.modifiers.control || event.modifiers.meta) && (event.text == "a" || event.text == "A") { root.select-all(); return accept; }
             if event.text == Key.Escape { root.clear-selection(); return accept; }
@@ -277,18 +280,18 @@ export component ForgeDataGrid inherits Rectangle {
     }
     header := Rectangle {
         x: 1px; y: 1px; width: Math.max(0px, root.width - 2px); height: root.actual-header-height;
-        background: Palette.control-background; clip: true;
+        background: Palette.table-header; clip: true;
         for column[column-index] in root.columns : Rectangle {
                 private property<int> layout-index: ForgeGridServices.connected ? ForgeGridServices.find-column(root.scene.columns, column-index) : -1;
                 private property<ForgeGridViewColumn> layout-column: root.scene.columns[self.layout-index];
             x: root.leading-width + self.layout-column.x * root.unit + (column.frozen ? 0px : list.content-x);
             width: self.layout-column.width * root.unit; height: parent.height;
-            background: Palette.control-background;
+            background: Palette.table-header;
             visible: self.layout-index >= 0 && !column.frozen;
             Text {
                 x: 10px; width: parent.width - 30px; height: parent.height;
                 text: column.title; color: Palette.foreground; font-weight: 600;
-                font-size: 13px * ForgeTypography.scale; vertical-alignment: center; overflow: elide;
+                font-size: 14px * ForgeTypography.scale; vertical-alignment: center; overflow: elide;
             }
             Text {
                 x: parent.width - 24px; width: 18px; height: parent.height;
@@ -314,7 +317,7 @@ export component ForgeDataGrid inherits Rectangle {
         Rectangle {
             x: 0px; y: 0px;
             width: root.leading-width + root.scene.frozen-width * root.unit; height: parent.height;
-            background: Palette.control-background; clip: true;
+            background: Palette.table-header; clip: true;
             if root.selection-mode == multiple : CheckBox {
                 x: 8px; y: (parent.height - self.height) / 2; width: 26px;
                 checked: root.scene.all-visible-selected; enabled: root.enabled && root.scene.rows.length > 0;
@@ -328,9 +331,9 @@ export component ForgeDataGrid inherits Rectangle {
                 private property<int> layout-index: ForgeGridServices.connected ? ForgeGridServices.find-column(root.scene.columns, column-index) : -1;
                 private property<ForgeGridViewColumn> layout-column: root.scene.columns[self.layout-index];
                 visible: self.layout-index >= 0 && column.frozen; x: root.leading-width + self.layout-column.x * root.unit;
-                width: self.layout-column.width * root.unit; height: parent.height; background: Palette.control-background;
+                width: self.layout-column.width * root.unit; height: parent.height; background: Palette.table-header;
                 Text { x: 10px; width: parent.width - 30px; height: parent.height; text: column.title;
-                    color: Palette.foreground; font-weight: 600; font-size: 13px * ForgeTypography.scale; vertical-alignment: center; overflow: elide; }
+                    color: Palette.foreground; font-weight: 600; font-size: 14px * ForgeTypography.scale; vertical-alignment: center; overflow: elide; }
                 Text { x: parent.width - 24px; width: 18px; height: parent.height;
                     text: root.sort-column == column-index ? (root.sort-descending ? "↓" : "↑") : "";
                     color: Palette.accent-background; vertical-alignment: center; horizontal-alignment: center; }
@@ -355,8 +358,8 @@ export component ForgeDataGrid inherits Rectangle {
         for index in root.scene.rows.length : Rectangle {
             private property<ForgeGridViewRow> item: root.scene.rows[index];
             width: list.content-width; height: root.actual-row-height;
-            property<color> row-background: item.selected ? Palette.accent-background.with-alpha(0.18)
-                : root.alternating-rows && mod(index, 2) == 0 ? Palette.alternate-background : Palette.background;
+            property<color> row-background: item.selected ? Palette.table-selected
+                : root.alternating-rows && mod(index, 2) == 0 ? Palette.table-alternate : Palette.table-background;
             background: self.row-background;
             accessible-role: list-item; accessible-label: item.cells[0].text;
             for column[column-index] in root.columns : ForgeGridCellView {
@@ -384,7 +387,7 @@ export component ForgeDataGrid inherits Rectangle {
                 }
                 if root.show-row-numbers : Text {
                     x: root.selector-width; width: root.number-width; height: parent.height;
-                    text: "\{index + 1}"; color: Palette.foreground; opacity: item.disabled ? 0.45 : 0.65;
+                    text: "\{index + 1}"; color: item.disabled ? Palette.text-disabled : Palette.text-secondary;
                     vertical-alignment: center; horizontal-alignment: center; font-size: 12px * ForgeTypography.scale;
                 }
                 for column[column-index] in root.columns : ForgeGridCellView {
@@ -403,7 +406,7 @@ export component ForgeDataGrid inherits Rectangle {
                     commit => { root.commit-edit(); } cancel => { root.cancel-edit(); keyboard.focus(); }
                 }
             }
-            Rectangle { y: parent.height - 1px; height: 1px; background: Palette.border; opacity: 0.35; }
+            Rectangle { y: parent.height - 1px; height: 1px; background: Palette.table-grid; }
             Rectangle {
                 x: -list.content-x; width: list.visible-width; height: parent.height; background: transparent;
                 border-width: root.current-row-id == item.id && keyboard.has-focus ? 1px : 0px;
@@ -419,7 +422,7 @@ export component ForgeDataGrid inherits Rectangle {
     }
     if root.edit-message != "" : Text {
         x: 10px; y: root.height - 32px; width: root.width - 20px; height: 28px;
-        text: root.edit-message; color: #d83b01; font-size: 12px * ForgeTypography.scale; vertical-alignment: center;
+        text: root.edit-message; color: Palette.error; font-size: 12px * ForgeTypography.scale; vertical-alignment: center;
     }
 }
 

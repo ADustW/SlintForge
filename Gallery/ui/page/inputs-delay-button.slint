@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, CheckBox, ComboBox, Palette, Slider } from "std-widgets.slint";
 import { ForgeDelayButton, ForgeDelayButtonMode, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
@@ -99,7 +102,7 @@ export component GalleryInputsDelayButtonPage inherits Rectangle {
                         Text { text: @tr("回收站"); color: Palette.foreground; font-size: 15px * ForgeTypography.scale; font-weight: 600; }
                         Text {
                             text: root.trash-items > 0 ? @tr("共 {} 个项目，清空后将永久删除。", root.trash-items) : @tr("回收站已清空。");
-                            color: Palette.foreground.transparentize(0.3); font-size: 13px * ForgeTypography.scale; wrap: word-wrap;
+                            color: Palette.foreground.transparentize(0.3); font-size: 14px * ForgeTypography.scale; wrap: word-wrap;
                         }
                         HorizontalLayout {
                             spacing: 8px; alignment: end;

@@ -1,7 +1,10 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette, Button, CheckBox, ComboBox, LineEdit } from "std-widgets.slint";
 import { ForgePlot, ForgePlotScene, ForgePlotSeries, ForgePlotPoint, ForgePlotAxis, ForgePlotPanel,
     ForgePlotColorMap, ForgePlotItem, ForgePlotExportResult, ForgePlotScale,
-    ForgePlotLegendPosition, ForgePlotLegendStyle, ForgePlotXWindowMode, ForgePlotTicker } from "@slintforge";
+    ForgePlotLegendPosition, ForgePlotLegendStyle, ForgePlotXWindowMode, ForgePlotTicker, ForgeTypography } from "@slintforge";
 export { ForgePlotServices, ForgePlotScene, ForgePlotAxis, ForgePlotRange, ForgePlotRect,
     ForgePlotHit, ForgePlotSelection, ForgePlotExportResult, ForgePlotPoint } from "@slintforge";
 
@@ -13,13 +16,13 @@ component ProfessionalPlotPositionPicker inherits Rectangle {
     out property<bool> open: popup.is-open;
     public function show() {if root.enabled {focus.focus();popup.show();}}
     public function close() {popup.close();}
-    min-width:80px;preferred-height:34px;horizontal-stretch:1;vertical-stretch:0;
-    background:Palette.control-background;border-width:1px;border-color:Palette.border;border-radius:3px;
-    opacity:root.enabled?1:0.45;forward-focus:focus;
+    min-width:80px;preferred-height:32px;horizontal-stretch:1;vertical-stretch:0;
+    background:root.enabled?Palette.control-background:Palette.control-disabled;border-width:1px;border-color:focus.has-focus?Palette.focus-stroke-outer:Palette.border;border-radius:4px;
+    forward-focus:focus;
     accessible-role:combobox;accessible-enabled:root.enabled;accessible-expanded:root.open;
     accessible-expandable:true;accessible-value:root.model[root.current-index];accessible-action-expand=>{root.show();}
-    Text {x:10px;width:parent.width - 34px;height:parent.height;text:root.model[root.current-index];color:Palette.foreground;vertical-alignment:center;overflow:elide;}
-    Text {x:parent.width - 24px;width:16px;height:parent.height;text:"⌄";color:Palette.foreground;vertical-alignment:center;horizontal-alignment:center;}
+    Text {x:10px;width:parent.width - 34px;height:parent.height;text:root.model[root.current-index];color:root.enabled?Palette.foreground:Palette.text-disabled;vertical-alignment:center;overflow:elide;}
+    Text {x:parent.width - 24px;width:16px;height:parent.height;text:"⌄";color:root.enabled?Palette.foreground:Palette.text-disabled;vertical-alignment:center;horizontal-alignment:center;}
     focus:=FocusScope {enabled:root.enabled;key-pressed(event)=>{
         if event.text==Key.Return || event.text==" " {root.show();return accept;}
         if event.text==Key.DownArrow {root.current-index=Math.min(root.model.length - 1,root.current-index+1);return accept;}
@@ -51,6 +54,12 @@ component ProfessionalPlotPositionPicker inherits Rectangle {
     changed enabled=>{if !root.enabled {root.close();}}
 }
 
+component ProfessionalPlotZoomPicker inherits ComboBox {
+    model: [@tr("缩放：X + Y"), @tr("仅缩放 X 轴"), @tr("仅缩放 Y 轴")];
+    width: 176px * ForgeTypography.scale;
+    accessible-label: @tr("缩放方向");
+}
+
 export component ProfessionalPlotDemo inherits Rectangle {
     preferred-width: 1080px; preferred-height: 760px;
     background: Palette.background;
@@ -61,6 +70,8 @@ export component ProfessionalPlotDemo inherits Rectangle {
     in-out property<bool> live: false;
     in-out property<bool> streaming: false;
     in-out property<int> window-mode: 2;
+    in-out property<int> zoom-mode: 0;
+    private property<bool> compact-zoom-toolbar: root.width < 980px * ForgeTypography.scale;
     in-out property<int> legend-position-index: 0;
     in-out property<int> legend-placement-index: 0;
     in-out property<int> legend-style-index: 0;
@@ -183,7 +194,13 @@ export component ProfessionalPlotDemo inherits Rectangle {
             CheckBox {text:@tr("对数轴");checked<=>root.logarithmic;enabled:root.mode!=7&&root.mode!=9;}
             CheckBox {text:@tr("实时数据");checked<=>root.live;toggled=>{root.mode=0;if self.checked {root.streaming=true;}root.sample-running(self.checked);}}
             ComboBox {model:[@tr("连续折线"),@tr("左阶梯"),@tr("右阶梯"),@tr("中间阶梯"),@tr("脉冲"),@tr("仅散点")];current-index<=>root.line-style-index;enabled:root.mode==0;min-width:80px;}
+            if !root.compact-zoom-toolbar : ProfessionalPlotZoomPicker {current-index<=>root.zoom-mode;enabled:root.mode!=8;}
             Button {text:@tr("复位");clicked=>{plot.reset-view();}}
+        }
+        if root.compact-zoom-toolbar : HorizontalLayout {
+            height:34px;vertical-stretch:0;spacing:8px;
+            ProfessionalPlotZoomPicker {current-index<=>root.zoom-mode;enabled:root.mode!=8;}
+            Rectangle {horizontal-stretch:1;}
         }
         legend-row:=HorizontalLayout {
             height: 34px;vertical-stretch: 0;spacing:8px;
@@ -203,6 +220,7 @@ export component ProfessionalPlotDemo inherits Rectangle {
         }
         plot:=ForgePlot {
             title:@tr("专业二维绘图");series:root.data;axes:root.axes;panels:root.panels;color-maps:root.maps;
+            zoom-directions: root.zoom-mode == 1 ? 1 : root.zoom-mode == 2 ? 2 : 3;
             legend-position: root.legend-position-index == 1 ? top : root.legend-position-index == 2 ? left : root.legend-position-index == 3 ? right : root.legend-position-index == 4 ? top-right : root.legend-position-index == 5 ? bottom-right : root.legend-position-index == 6 ? top-left : root.legend-position-index == 7 ? bottom-left : bottom;
             legend-style: root.legend-style-index == 1 ? framed : root.legend-style-index == 2 ? compact : plain;
             legend-placement: root.legend-placement-index == 1 ? outside : inside;

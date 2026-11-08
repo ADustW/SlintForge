@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, Palette } from "std-widgets.slint";
 import { ForgeTourStep } from "../types/widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
@@ -46,7 +49,7 @@ export component ForgeTour inherits Rectangle {
         layout := VerticalLayout {
             padding: 18px; spacing: 12px;
             Text { text: root.step-data.title + " · " + (root.current-step + 1) + "/" + root.steps.length; color: Palette.foreground; font-size: 18px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
-            Text { text: root.step-data.description; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+            Text { text: root.step-data.description; color: Palette.foreground; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
             HorizontalLayout {
                 spacing: 6px;
                 Button { text: @tr("跳过"); clicked => { root.dismiss(); } }

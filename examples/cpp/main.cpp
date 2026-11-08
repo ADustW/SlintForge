@@ -1,8 +1,12 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "minimal.h"
 #include "ForgeCapture.hpp"
 #include "ForgeWidgets.hpp"
-#include "ForgeCharts.hpp"
+#include "ForgePlot.hpp"
 #include "ForgeGrids.hpp"
+#include "ForgeRendering.hpp"
 #include <cassert>
 #include <chrono>
 #include <iostream>
@@ -31,13 +35,7 @@ static int forge_example_widgets_smoke() {
 
 static int forge_example_charts_smoke() {
     auto window = ChartsWindow::create();
-    forge_bind_chart_services<ForgeChartServices, ForgeChartScene, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel>(window);
-    // C++ 中未赋值的 Slint 数组使用空指针表示，绑定层必须按空模型处理。
-    const auto& service = window->global<ForgeChartServices>();
-    assert(service.invoke_prepare(0, {}, {}, {}, ForgeChartOptions{}).status == 1);
-    auto blank_series = std::make_shared<slint::VectorModel<ForgeChartSeries>>(std::vector<ForgeChartSeries>{ForgeChartSeries{}});
-    assert(service.invoke_prepare(0, blank_series, {}, {}, ForgeChartOptions{}).status == 1);
-    assert(service.invoke_hit_test({}, 0.5f, 0.5f, 100.f, 100.f, 0.f) == -1);
+    forge_bind_plot_services<ForgePlotServices, ForgePlotScene, ForgePlotAxis, ForgePlotRange, ForgePlotRect, ForgePlotHit, ForgePlotSelection, ForgePlotExportResult>(window);
     const auto directory = std::filesystem::path("build/charts-qa");
     std::filesystem::create_directories(directory);
     auto phase = std::make_shared<int>(0);
@@ -92,6 +90,7 @@ static int forge_example_grids_smoke() {
 }
 
 int main(int argc, char** argv) {
+    const auto rendering = forge_configure_rendering();
     if (argc > 1 && (std::string_view(argv[1]) == "--suggestion-demo" || std::string_view(argv[1]) == "--suggestion-smoke")) return forge_business_suggestion(std::string_view(argv[1]) == "--suggestion-smoke");
     if (argc > 1 && (std::string_view(argv[1]) == "--dialog-demo" || std::string_view(argv[1]) == "--dialog-smoke")) return forge_business_dialog(std::string_view(argv[1]) == "--dialog-smoke");
     if (argc > 1 && std::string_view(argv[1]) == "--grids-smoke") return forge_example_grids_smoke();

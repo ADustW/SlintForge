@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
@@ -8,13 +11,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/SlintForgeTargets.cmake")
 
 set(SLINTFORGE_UI_LIBRARY "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_DATADIR@/slintforge/ui/slintforge.slint")
 
-function(slintforge_target_sources target source)
-    get_property(forge_embed_resources_set TARGET ${target} PROPERTY SLINT_EMBED_RESOURCES SET)
-    if(NOT forge_embed_resources_set)
-        set_property(TARGET ${target} PROPERTY SLINT_EMBED_RESOURCES embed-files)
-    endif()
-    slint_target_sources(${target} ${source}
-        LIBRARY_PATHS "slintforge=${SLINTFORGE_UI_LIBRARY}")
-endfunction()
+include("${CMAKE_CURRENT_LIST_DIR}/SlintForgeUi.cmake")
 
 check_required_components(SlintForge)

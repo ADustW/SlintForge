@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$SourceFile,
@@ -16,7 +19,7 @@ $metadata = Get-Content -Raw -LiteralPath (Join-Path $sdk 'sdk.json') | ConvertF
 $version = & rustc --version
 if ($LASTEXITCODE -ne 0 -or $version -notmatch '^rustc (\d+)\.(\d+)\.') { throw '无法确定客户 Rust 编译器版本' }
 if ([int]$Matches[1] -lt 1 -or ([int]$Matches[1] -eq 1 -and [int]$Matches[2] -lt 98)) { throw "Rust 接口最低要求 1.98.0，当前为 $version" }
-if ($metadata.abi_version -ne 1) { throw 'Rust SDK 的 ABI 清单不兼容' }
+if ($metadata.abi_version -ne 2) { throw 'Rust SDK 的 ABI 清单不兼容' }
 $source = (Resolve-Path -LiteralPath $SourceFile).Path
 $ui = (Resolve-Path -LiteralPath $UiFile).Path
 $output = [IO.Path]::GetFullPath($OutputFile)
@@ -74,6 +77,6 @@ $artifact = $records | Where-Object { $_.reason -eq 'compiler-artifact' -and $_.
 if (!$artifact) { throw 'Cargo 未报告应用可执行文件' }
 Copy-Item -LiteralPath $artifact.executable -Destination $output -Force
 Copy-Item -LiteralPath (Join-Path $sdk $metadata.runtime) -Destination (Join-Path $destinationDirectory 'slintforge_runtime.dll') -Force
-$receipt = [ordered]@{ passed=$true; rust=$version; abi_version=1; configuration=$Configuration; seconds=$watch.Elapsed.TotalSeconds; output=$output; runtime=(Join-Path $destinationDirectory 'slintforge_runtime.dll'); target_directory=$target; offline=[bool]$Offline; log=$log }
+$receipt = [ordered]@{ passed=$true; rust=$version; abi_version=2; configuration=$Configuration; seconds=$watch.Elapsed.TotalSeconds; output=$output; runtime=(Join-Path $destinationDirectory 'slintforge_runtime.dll'); target_directory=$target; offline=[bool]$Offline; log=$log }
 [IO.File]::WriteAllText((Join-Path $project 'result.json'),($receipt | ConvertTo-Json),[Text.UTF8Encoding]::new($false))
 Write-Host "RUST_CONSUMER_BUILD_OK output=$output seconds=$([math]::Round($watch.Elapsed.TotalSeconds,3)) rust=$version"

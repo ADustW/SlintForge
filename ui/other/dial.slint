@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 
@@ -22,24 +25,24 @@ export component ForgeDial inherits Rectangle {
     preferred-width: 180px; preferred-height: 180px;
     min-width: 100px; min-height: 100px; forward-focus: scope;
     accessible-role: slider; accessible-value: root.value; accessible-value-minimum: root.minimum; accessible-value-maximum: root.maximum;
-    opacity: root.enabled ? 1 : 0.45;
+
     wheel := Rectangle {
         width: Math.min(root.width, root.height) - 8px; height: self.width;
         x: (root.width - self.width) / 2; y: (root.height - self.height) / 2;
-        border-radius: self.width / 2; background: Palette.control-background;
+        border-radius: self.width / 2; background: root.enabled ? Palette.control-background : Palette.control-disabled;
         border-width: scope.has-focus ? 3px : 1px; border-color: scope.has-focus ? Palette.accent-background : Palette.border;
         for index in 11 : Rectangle {
             private property<angle> tick-angle: (-135 + index * 27) * 1deg;
-            width: 4px; height: 4px; border-radius: 2px; background: Palette.foreground;
+            width: 4px; height: 4px; border-radius: 2px; background: root.enabled ? Palette.foreground : Palette.text-disabled;
             x: parent.width / 2 + Math.sin(self.tick-angle) * parent.width * 0.43 - 2px;
             y: parent.height / 2 - Math.cos(self.tick-angle) * parent.height * 0.43 - 2px;
         }
         Rectangle {
-            width: 12px; height: 12px; border-radius: 6px; background: Palette.accent-background;
+            width: 12px; height: 12px; border-radius: 6px; background: root.enabled ? Palette.accent-background : Palette.accent-disabled;
             x: parent.width / 2 + Math.sin(root.needle-angle) * parent.width * 0.33 - 6px;
             y: parent.height / 2 - Math.cos(root.needle-angle) * parent.height * 0.33 - 6px;
         }
-        Text { text: round(root.value * 100) / 100 + root.suffix; color: Palette.foreground; font-size: 20px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
+        Text { text: round(root.value * 100) / 100 + root.suffix; color: root.enabled ? Palette.foreground : Palette.text-disabled; font-size: 20px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; }
     }
     scope := FocusScope {
         enabled: root.enabled;

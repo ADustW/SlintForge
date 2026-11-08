@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 pub fn merge_plot_selection(
     current: &[(i32, i32, i32)],
     next: &[(i32, i32, i32)],

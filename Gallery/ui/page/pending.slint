@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { ForgeTypography } from "@slintforge";
 import { Palette } from "std-widgets.slint";
 import { GalleryPageFrame } from "../component/page-frame.slint";
@@ -35,7 +38,7 @@ export component GalleryPendingPage inherits Rectangle {
                 height: 58px;
                 text: @tr("{} 属于表格组件，继续按要求暂缓。", root.item.title);
                 color: Palette.foreground;
-                font-size: 13px * ForgeTypography.scale;
+                font-size: 14px * ForgeTypography.scale;
                 horizontal-alignment: left;
                 wrap: word-wrap;
             }

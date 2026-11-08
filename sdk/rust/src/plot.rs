@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! 共用绘图引擎的生命周期、空间查询和导出。Slint 绑定由生成的宏完成。
 #[path = "plot_ffi.rs"]
 pub mod raw;
@@ -178,7 +181,7 @@ impl Plot {
         raw::forge_plot_core_item(self.handle.as_ptr(), item);
     }
     pub fn graph(points: &[(f64, f64)], width: f64, height: f64) -> Result<Self, String> {
-        let font = plot_cstring("Microsoft YaHei, sans-serif");
+        let font = plot_cstring("Segoe UI Variable");
         let options = raw::ForgePlotOptionsCore {
             width,
             height,

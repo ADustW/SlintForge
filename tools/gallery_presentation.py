@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """按 FluentUI 的用法示例组织每页内容；元数据同时用于展示页核对清单。"""
 from pathlib import Path
 

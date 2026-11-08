@@ -1,8 +1,13 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
 use slint::platform::{Key, PointerEventButton, WindowEvent};
 use slint::{ComponentHandle, LogicalPosition, Model, ModelRc, VecModel};
 use std::time::Duration;
 
-slint::slint! {
+slintforge_ui! {
+
     import { ForgeDataGrid } from "../../../ui/data/data-grid.slint";
     import { ForgeGridScene, ForgeGridRow, ForgeGridCell, ForgeGridColumn, ForgeGridSelectionMode } from "../../../ui/types/grids.slint";
     export { ForgeGridServices, ForgeGridScene, ForgeGridViewRow, ForgeGridViewColumn, ForgeGridRow,

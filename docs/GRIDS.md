@@ -1,5 +1,7 @@
 # DataGrid 与 TreeDataGrid
 
+> **兼容提示：**本页继续保留 Grid 专题说明。逐组件中英文 API 见 [中文 API 站点源码](site/index.md) 与 [English API source](site/en/index.md)。
+
 基线为 Slint 1.18.0、fluent 样式。`ForgeDataGrid` 和 `ForgeTreeDataGrid` 共用 `ui/data/data-grid.slint`；后者默认 `tree: true`。Rust/C++ 绑定同一份 Slint 契约，原生 `ListView` 负责可见行虚拟化和双向滚动，SDK 负责排序、筛选、树关系和数据操作。
 
 Slint 原生 [StandardTableView](https://docs.slint.dev/latest/docs/slint/reference/std-widgets/views/standardtableview/) 提供文本表格、当前行、排序回调和列宽调整。本组件在此之外提供多选、单元格编辑、冻结/隐藏列和树形表格；普通文本表格仍可直接使用原生控件。

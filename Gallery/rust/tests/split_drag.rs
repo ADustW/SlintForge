@@ -1,8 +1,13 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
 use i_slint_core::items::PointerEventButton;
 use slint::platform::WindowEvent;
 use slint::{ComponentHandle, LogicalPosition};
 
-slint::slint! {
+slintforge_ui! {
+
     import { ForgeSplitLayout, ForgeSplitOrientation } from "../../../ui/layouts/split-layout.slint";
 
     export component SplitDragTestWindow inherits Window {

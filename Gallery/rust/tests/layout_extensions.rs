@@ -1,3 +1,7 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
 use i_slint_core::items::PointerEventButton;
 use slint::platform::WindowEvent;
 use slint::{ComponentHandle, LogicalPosition};
@@ -5,7 +9,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::Duration;
 
-slint::slint! {
+slintforge_ui! {
+
     import { LineEdit } from "std-widgets.slint";
     import { ForgeAdaptiveGrid } from "../../../ui/layouts/adaptive-grid.slint";
     import { ForgeDockLayout } from "../../../ui/layouts/dock-layout.slint";

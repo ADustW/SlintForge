@@ -1,6 +1,8 @@
 # 专业二维图表 ForgePlot
 
-`ForgePlot` 是组件库的专业绘图入口，参考 QCustomPlot 的二维绘图能力。共享 `.slint` 契约、Rust/C++ 薄适配层和共用绘图引擎支持相同的数据、坐标、命中和导出。既有七类基础图表继续使用 `ForgeChart`，见 [基础图表](CHARTS.md)。
+> **兼容提示：**本页继续保留 ForgePlot 专题说明。逐组件中英文 API 见 [中文 API 站点源码](site/index.md) 与 [English API source](site/en/index.md)。
+
+`ForgePlot` 是组件库的专业绘图入口，参考 QCustomPlot 的二维绘图能力。共享 `.slint` 契约、Rust/C++ 薄适配层和共用绘图引擎支持相同的数据、坐标、命中和导出。七类基础图表也使用此入口，新增图形和 ABI v2 迁移见 [统一图表](CHARTS.md)。
 
 ## 最小 Slint 窗口
 
@@ -81,8 +83,8 @@ forge_bind_plot_services<ForgePlotServices, ForgePlotScene, ForgePlotAxis,
 | 操作 | 行为 |
 |---|---|
 | 鼠标拖动 | 平移，`allow-pan` 和 `directions` 限制轴方向 |
-| 滚轮 | 光标中心缩放；`allow-zoom` 控制 |
-| Shift 拖动 | 框选缩放 |
+| 滚轮 | 光标中心缩放；`allow-zoom` 和 `zoom-directions` 控制 |
+| Shift 拖动 | 按 `zoom-directions` 框选缩放；单轴模式的选框占满另一方向 |
 | Ctrl/Meta 拖动 | 合并矩形选择；选择保持原始数据索引 |
 | 点击数据、Ctrl/Meta 点击 | 替换选择、切换单点选择；选中数据有高亮 |
 | 点击图例 | 切换系列显隐并触发回调 |
@@ -90,7 +92,16 @@ forge_bind_plot_services<ForgePlotServices, ForgePlotScene, ForgePlotAxis,
 | 方向键、+/- | 平移、缩放，遵守交互开关 |
 | Escape | 清除选择并取消拖动 |
 
-`directions` 为 1(水平)、2(垂直)、3(两者)。`enabled: false` 禁止指针和键盘交互。`show-crosshair/show-tooltip/show-legend` 可控制辅助显示。
+`directions` 为 1(水平)、2(垂直)、3(两者)。`zoom-directions` 可独立指定缩放方向：1 仅 X 轴、2 仅 Y 轴、3 双轴，默认跟随 `directions`，兼容既有用法。它统一约束滚轮、键盘 +/-、Shift 框选和 `zoom-at()`，不会改变平移方向；切换方向不会复位已有范围或中断实时跟随。Gallery 与专业绘图示例提供“缩放：X + Y / 仅缩放 X 轴 / 仅缩放 Y 轴”选择器，默认双轴，极坐标模式禁用该选择器。
+
+```slint
+ForgePlot {
+    directions: 3;       // 平移仍允许两个方向。
+    zoom-directions: 1;  // 仅缩放 X 轴，Y 轴范围保持不变。
+}
+```
+
+`enabled: false` 禁止指针和键盘交互。`show-crosshair/show-tooltip/show-legend` 可控制辅助显示。
 
 公共函数包括 `append-point(id, point)`、`append-points(id, points)`、`flush()`、`follow-latest()`、`scroll-history(position)`、`measure-at(id, x)`、`refresh()`、`refresh-immediate()`、`reset-view()`、`zoom-at(x,y,factor,panel)`、`pan-by(dx,dy,panel)`、`select-point(id,index,additive)`、`clear-selection()`、`export-file(path,format)`、`release()`。追加数据自动以 `frame-interval` 合并视图刷新，缺省 16ms；`flush()` 在需要立即读取最新 scene 时更新视图，导出会自动执行。`refresh()` 用于原地修改静态模型；它重新导入静态数据，因此增量追加不需要调用它。替换点模型自动重新导入。
 
@@ -131,7 +142,7 @@ plot := ForgePlot {
 // 回调中调用 plot.append-point(0, {x:时间, y:电压})；批量输入用 append-points。
 ```
 
-`x-window-mode` 为 `fit`（全量自动适配）、`unlimited`（保留历史、按跨度显示、超出跨度后显示滚动条）或 `fixed`（按跨度显示、不显示历史滚动条）。`x-window-axis` 指定线性 X 轴 ID，默认 0；`x-window-size` 使用数据坐标单位。三种模式均保留追加数据；固定模式限制的是视图跨度。平移、滚轮、框选缩放或滚动后暂停自动跟随，追加数据仍会保留。滚动条双击或 `follow-latest()` 恢复 X 轴自动跟随，`reset-view()` 同时复位两方向。
+`x-window-mode` 为 `fit`（全量自动适配）、`unlimited`（保留历史、按跨度显示、超出跨度后显示滚动条）或 `fixed`（按跨度显示、不显示历史滚动条）。`x-window-axis` 指定线性 X 轴 ID，默认 0；`x-window-size` 使用数据坐标单位。三种模式均保留追加数据；固定模式限制的是视图跨度。实时跟随时，滚轮、键盘、`zoom-at()` 和框选缩放调整显示跨度，并继续跟随最新数据；Y 轴保留缩放后的范围。平移或历史滚动暂停跟随，此时继续缩放也保持历史定位。滚动条双击或 `follow-latest()` 恢复 X 轴跟随并保留当前缩放跨度；`reset-view()` 复位两方向，并恢复配置的 `x-window-size`。修改窗口模式、目标 X 轴或配置跨度时清除缩放跨度；`fit` 模式仍使用原有的自由缩放行为。
 
 `legend-position` 支持 `bottom/top/left/right/top-right/bottom-right/top-left/bottom-left`；`legend-placement` 为 `inside`（默认）或 `outside`。区域内距第一个绘图区边界固定 6 个逻辑像素；区域外预留独立布局带，距坐标轴刻度及标题的占用边界为 6 像素，避免遮挡波形及坐标。上下位置居中、左右位置垂直居中、四角按对应边界对齐；外部四角使用上方或下方布局带。所有位置和样式背景均透明；`legend-style` 支持 `plain/framed/compact`，其中 `framed` 仅绘制边框。`legend-latest-value` 显示最新有效点的 Y 值，金融图使用 close；`legend-precision` 默认 2。点击区域内外图例均可隐藏系列，调整布局和曲线外观保留追加数据。
 

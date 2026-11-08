@@ -1,163 +1,39 @@
-use slint::platform::{Key, PointerEventButton, WindowEvent};
-use slint::{ComponentHandle, LogicalPosition, Model, ModelRc, VecModel};
-use std::time::Duration;
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
 
-slint::slint! {
-    import { ForgeChart } from "../../../ui/charts/charts.slint";
-    import { ForgeChartScene, ForgeChartKind, ForgeChartSeries, ForgeChartPoint, ForgeChartSlice } from "../../../ui/types/charts.slint";
-    export { ForgeChartServices, ForgeChartScene, ForgeChartMark, ForgeChartLine, ForgeChartTick, ForgeChartLabel, ForgeChartKind, ForgeChartSeries, ForgeChartPoint, ForgeChartSlice } from "../../../ui/types/charts.slint";
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
+use slint::{ComponentHandle, Model};
+slintforge_ui! {
+    import {Palette} from "std-widgets.slint";
+    import {ForgePlot} from "../../../ui/charts/plot.slint";
+    import {ForgePlotKind,ForgePlotSeries,ForgePlotScene} from "../../../ui/types/plot.slint";
+    export {ForgePlotServices,ForgePlotScene,ForgePlotAxis,ForgePlotRange,ForgePlotRect,ForgePlotHit,ForgePlotSelection,ForgePlotExportResult,ForgePlotPointStyle} from "../../../ui/types/plot.slint";
     export component ChartTestWindow inherits Window {
-        width: 640px; height: 420px;
-        in-out property<ForgeChartKind> kind: bar;
-        in-out property<[ForgeChartSeries]> series: [
-            {name: "A", points: [{x: 0, y: 20, size: 12}, {x: 1, y: 60, size: 18}, {x: 2, y: 40, size: 10}]},
-            {name: "B", points: [{x: 0, y: 30, size: 15}, {x: 1, y: 10, size: 20}, {x: 2, y: 50, size: 9}]}
-        ];
-        in-out property<[ForgeChartSlice]> slices: [{label: "A", value: 1}, {label: "B", value: 3}];
-        in-out property<bool> enabled: true;
-        in-out property<bool> stacked: false;
-        in-out property<bool> doughnut: false;
-        in-out property<bool> auto-range: true;
-        in-out property<float> y-max: 100;
-        out property<ForgeChartScene> scene: chart.scene;
-        out property<int> selection: chart.selected-index;
-        out property<int> hover: chart.hovered-index;
-        in-out property<int> selections: 0;
-        callback hide-series(int, bool); hide-series(index, value) => { chart.hide-series(index, value); }
-        callback hide-slice(int, bool); hide-slice(index, value) => { chart.hide-slice(index, value); }
-        callback refresh(); refresh => { chart.refresh(); }
-        chart := ForgeChart {
-            x: 20px; y: 20px; width: 600px; height: 370px;
-            kind: root.kind; series: root.series; slices: root.slices; categories: ["A", "B", "C"];
-            enabled: root.enabled; stacked: root.stacked; doughnut: root.doughnut;
-            auto-range: root.auto-range; y-min: 0; y-max: root.y-max;
-            include-zero: true; smooth: true; fill-area: true;
-            point-selected(a,b,c) => { root.selections += 1; }
-        }
+        width:720px;height:480px;
+        in-out property<ForgePlotKind> kind: graph;
+        in-out property<bool> dark:false;
+        in-out property<float> inner:0;
+        changed dark => {Palette.color-scheme=root.dark ? ColorScheme.dark : ColorScheme.light;}
+        in-out property<[ForgePlotSeries]> series: [{id:17,kind:root.kind,name:"Series",inner-radius:root.inner,color:Palette.accent-background,fill-color:Palette.accent-background.with-alpha(0.2),point-size:16,points:[{x:0,y:2},{x:1,y:4},{x:2,y:3}]}];
+        out property<ForgePlotScene> scene: plot.scene;
+        plot:=ForgePlot {width:720px;height:480px;series<=>root.series;panels:[{id:0,width:1,height:1,categories:["A","B","C"]}];legend-placement:outside;}
     }
 }
-
-fn tick() {
-    i_slint_backend_testing::mock_elapsed_time(Duration::from_millis(1));
-    slint::platform::update_timers_and_animations();
-}
-fn click(ui: &ChartTestWindow, x: f32, y: f32) {
-    let position = LogicalPosition::new(x, y);
-    ui.window()
-        .dispatch_event(WindowEvent::PointerMoved { position });
-    ui.window().dispatch_event(WindowEvent::PointerPressed {
-        position,
-        button: PointerEventButton::Left,
-    });
-    ui.window().dispatch_event(WindowEvent::PointerReleased {
-        position,
-        button: PointerEventButton::Left,
-    });
-    tick();
-}
-fn key(ui: &ChartTestWindow, key: Key) {
-    let text: slint::SharedString = key.into();
-    ui.window()
-        .dispatch_event(WindowEvent::KeyPressed { text: text.clone() });
-    ui.window()
-        .dispatch_event(WindowEvent::KeyReleased { text });
-    tick();
-}
-
 #[test]
-fn charts_bind_models_render_geometry_and_handle_input() {
+fn migrated_charts_share_hit_legend_theme_and_exports() {
     i_slint_backend_testing::init_no_event_loop();
-    let ui = ChartTestWindow::new().unwrap();
-    assert_eq!(ui.get_scene().status, 3);
-    slintforge::bind_chart_services!(
-        ui,
-        ForgeChartServices,
-        ForgeChartScene,
-        ForgeChartMark,
-        ForgeChartLine,
-        ForgeChartTick,
-        ForgeChartLabel
-    );
-    ui.show().unwrap();
-    tick();
-    assert_eq!(ui.get_scene().marks.row_count(), 6);
-    tick();
-    let first = ui.get_scene().marks.row_data(0).unwrap();
-    let x = 72. + (first.x + first.width / 2.) * 528.;
-    let y = 32. + (first.y + first.height / 2.) * 278.;
-    ui.window().dispatch_event(WindowEvent::PointerMoved {
-        position: LogicalPosition::new(x, y),
-    });
-    assert_eq!(ui.get_hover(), 0);
-    click(&ui, x, y);
-    assert_eq!(ui.get_hover(), 0);
-    assert_eq!(ui.get_selection(), 0);
-    assert_eq!(ui.get_selections(), 1);
-    key(&ui, Key::RightArrow);
-    assert_eq!(ui.get_selection(), 1);
-    key(&ui, Key::Escape);
-    key(&ui, Key::LeftArrow);
-    assert_eq!(ui.get_selection(), 5);
-    ui.set_enabled(false);
-    click(&ui, x, y);
-    key(&ui, Key::Home);
-    assert_eq!(ui.get_selection(), 5);
-    ui.set_enabled(true);
-    ui.invoke_hide_series(1, true);
-    assert_eq!(ui.get_scene().marks.row_count(), 3);
-    ui.invoke_hide_series(1, false);
-    ui.set_stacked(true);
-    assert_eq!(ui.get_scene().y_max, 100.);
-    for kind in [
-        ForgeChartKind::Line,
-        ForgeChartKind::Bubble,
-        ForgeChartKind::Scatter,
-        ForgeChartKind::Radar,
-    ] {
-        ui.set_kind(kind);
-        assert_eq!(ui.get_scene().status, 0);
-        assert_eq!(ui.get_scene().marks.row_count(), 6);
+    let ui=ChartTestWindow::new().unwrap();
+    slintforge::bind_plot_services!(ui,ForgePlotServices,ForgePlotScene,ForgePlotAxis,ForgePlotRange,ForgePlotRect,ForgePlotHit,ForgePlotSelection,ForgePlotExportResult);
+    slint::platform::update_timers_and_animations();
+    let directory=std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../build/winui3/rust-chart-exports");std::fs::create_dir_all(&directory).unwrap();
+    for (index,kind) in [ForgePlotKind::Graph,ForgePlotKind::Bars,ForgePlotKind::Bubble,ForgePlotKind::Pie,ForgePlotKind::PolarArea,ForgePlotKind::Radar].into_iter().enumerate(){
+        ui.set_kind(kind);let scene=ui.get_scene();assert_eq!(scene.status,0,"{}",scene.error);assert_eq!(scene.input_points,3);
+        for format in ["svg","png","jpeg","bmp","pdf"] {let path=directory.join(format!("{index}.{format}"));let result=ui.global::<ForgePlotServices>().invoke_export(scene.token,path.to_string_lossy().as_ref().into(),format.into());assert!(result.ok,"{}",result.error);assert!(std::fs::metadata(path).unwrap().len()>100);}
     }
-    assert_eq!(ui.get_scene().lines.row_count(), 6);
-    ui.set_kind(ForgeChartKind::Pie);
-    assert_eq!(ui.get_scene().marks.row_count(), 2);
-    ui.set_doughnut(true);
-    assert!(ui.get_scene().inner_radius > 0.);
-    ui.invoke_hide_slice(0, true);
-    assert_eq!(ui.get_scene().marks.row_count(), 1);
-    assert_eq!(ui.get_scene().marks.row_data(0).unwrap().sweep_angle, 360.);
-    ui.set_kind(ForgeChartKind::Polar);
-    assert_eq!(ui.get_scene().status, 0);
-    ui.set_kind(ForgeChartKind::Line);
-    ui.set_auto_range(false);
-    ui.set_y_max(0.);
-    assert_eq!(ui.get_scene().status, 2);
-    ui.set_auto_range(true);
-    let points = ModelRc::new(VecModel::from(vec![ForgeChartPoint {
-        x: 1.,
-        y: 42.,
-        ..Default::default()
-    }]));
-    ui.set_series(ModelRc::new(VecModel::from(vec![ForgeChartSeries {
-        name: "Updated".into(),
-        points: points.clone(),
-        ..Default::default()
-    }])));
-    assert_eq!(ui.get_scene().marks.row_count(), 1);
-    assert_eq!(ui.get_scene().marks.row_data(0).unwrap().value, 42.);
-    points.set_row_data(
-        0,
-        ForgeChartPoint {
-            x: 1.,
-            y: 73.,
-            ..Default::default()
-        },
-    );
-    ui.invoke_refresh();
-    assert_eq!(ui.get_scene().marks.row_data(0).unwrap().value, 73.);
-    ui.set_series(ModelRc::new(VecModel::from(Vec::<ForgeChartSeries>::new())));
-    assert_eq!(ui.get_scene().status, 1);
-    // Slint 的 changed 回调在下一轮更新执行。
-    tick();
-    assert_eq!(ui.get_selection(), -1);
+    ui.set_kind(ForgePlotKind::Pie);ui.set_inner(0.6);let before=ui.get_scene();let rect=before.rects.row_data(0).unwrap();
+    let service=ui.global::<ForgePlotServices>();let center=service.invoke_hit_test(before.token,rect.x+rect.width/2.,rect.y+rect.height/2.,8.);assert!(center.kind<0,"环形中心应穿透");
+    let hidden=service.invoke_toggle_point(ui.get_series(),17,0);ui.set_series(hidden);let scene=ui.get_scene();assert_eq!(scene.rendered_points,2);
+    let styles=ui.get_series().row_data(0).unwrap().point_styles;assert!(styles.row_data(0).unwrap().hidden);
+    ui.set_dark(true);slint::platform::update_timers_and_animations();let dark=ui.get_scene();assert_eq!(dark.token,scene.token);assert_eq!(dark.rendered_points,2);assert_ne!(dark.svg,scene.svg,"主题须更新缓存");
+    let restored=service.invoke_toggle_point(ui.get_series(),17,0);ui.set_series(restored);assert_eq!(ui.get_scene().rendered_points,3);
 }

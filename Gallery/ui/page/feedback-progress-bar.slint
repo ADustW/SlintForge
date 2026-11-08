@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { CheckBox, Palette, ProgressIndicator, Slider } from "std-widgets.slint";
 import { ForgePillButton, ForgeTypography } from "@slintforge";
 import { GalleryComponentPage, GalleryExample, GalleryPreview, GalleryOptions } from "../component/component-page.slint";
@@ -42,9 +45,9 @@ export component GalleryFeedbackProgressBarPage inherits Rectangle {
                     spacing: 8px; alignment: center;
                     Text {
                         text: root.flag ? @tr("正在安装更新 {}%", Math.round(root.number)) : @tr("正在准备安装…");
-                        color: Palette.foreground; font-size: 13px * ForgeTypography.scale;
+                        color: Palette.foreground; font-size: 14px * ForgeTypography.scale;
                     }
-                    ProgressIndicator { progress: root.number / 100; indeterminate: !root.flag; }
+                    ProgressIndicator { progress: root.number / 100; indeterminate: !root.flag && root.visible; }
                 }
             }
             GalleryOptions {
@@ -75,7 +78,7 @@ export component GalleryFeedbackProgressBarPage inherits Rectangle {
                     }
                     Row {
                         Text { text: "indeterminate: true"; color: Palette.foreground.transparentize(0.45); font-size: 12px * ForgeTypography.scale; vertical-alignment: center; }
-                        ProgressIndicator { indeterminate: true; }
+                        ProgressIndicator { indeterminate: root.visible; }
                     }
                 }
             }

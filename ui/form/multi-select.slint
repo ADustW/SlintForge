@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, CheckBox, Palette, ScrollView } from "std-widgets.slint";
 import { ForgeChoiceItem, ForgeTreeItem } from "../types/widgets.slint";
 import { ForgeFileTree } from "../data/file-tree.slint";
@@ -18,7 +21,7 @@ export component ForgeMultiSelectComboBox inherits Rectangle {
     ForgeIcon {
         x: root.width - self.width - 8px; width: 14px * ForgeTypography.scale; height: root.height;
         glyph: ForgeIcons.chevron-down; font-size: 14px * ForgeTypography.scale;
-        opacity: root.enabled ? 1 : 0.45;
+        color: root.enabled ? Palette.foreground : Palette.text-disabled;
     }
     popup := PopupWindow {
         y: root.height; x: 0px; width: Math.max(240px, root.width);
@@ -57,13 +60,13 @@ export component ForgeMultiTreeSelectComboBox inherits Rectangle {
     ForgeIcon {
         x: root.width - self.width - 8px; width: 14px * ForgeTypography.scale; height: root.height;
         glyph: ForgeIcons.chevron-down; font-size: 14px * ForgeTypography.scale;
-        opacity: root.enabled ? 1 : 0.45;
+        color: root.enabled ? Palette.foreground : Palette.text-disabled;
     }
     popup := PopupWindow {
         x: 0px; y: root.height; width: Math.max(300px, root.width); height: 340px;
         close-policy: close-on-click-outside;
         Rectangle {
-            background: Palette.background; border-radius: 6px; border-width: 1px; border-color: Palette.border;
+            background: Palette.popup-background; border-radius: 8px; border-width: 1px; border-color: Palette.border;
             VerticalLayout {
                 padding: 10px; spacing: 8px;
                 ForgeFileTree {

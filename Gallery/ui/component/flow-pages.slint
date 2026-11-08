@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { ForgeFlowState, ForgeFlowAction } from "@slintforge";
 import { Palette } from "std-widgets.slint";
 import { ForgeFlowShowcase } from "../../../examples/ui/flow-showcase.slint";
@@ -10,9 +13,9 @@ component GalleryFlowPage inherits Rectangle {
     callback fit(); fit => { demo.fit(); }
     in property<string> title;
     in property<string> subtitle;
-    Text { x: 24px; y: 18px; text: root.title; color: Palette.foreground; font-size: 26px; font-weight: 600; }
-    Text { x: 24px; y: 57px; width: parent.width - 48px; text: root.subtitle; color: Palette.foreground.with-alpha(0.7); font-size: 13px; overflow: elide; }
-    demo := ForgeFlowShowcase { x: 16px; y: 88px; width: parent.width - 32px; height: parent.height - 104px; variant: root.variant; chinese: GalleryLocale.language != "en"; }
+    Text { x: 24px; y: 18px; text: root.title; color: Palette.foreground; font-size: 28px; font-weight: 600; }
+    Text { x: 24px; y: 57px; width: parent.width - 48px; text: root.subtitle; color: Palette.foreground.with-alpha(0.7); font-size: 14px; overflow: elide; }
+    demo := ForgeFlowShowcase { x: 16px; y: 88px; width: parent.width - 32px; height: parent.height - 104px; variant: root.variant; active: root.visible; chinese: GalleryLocale.language != "en"; }
 }
 
 // 页面常驻，隐藏页面保留各自独立文档、编辑历史和卡片焦点状态。

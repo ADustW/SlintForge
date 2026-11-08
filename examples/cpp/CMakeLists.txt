@@ -1,7 +1,10 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 cmake_minimum_required(VERSION 3.21)
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     project(SlintForgeCppConsumer LANGUAGES CXX)
-    set(SLINT_STYLE fluent CACHE STRING "Slint widget style")
+    set(SLINT_STYLE slintforge-winui3 CACHE STRING "SlintForge widget style")
     if(MSVC)
         add_compile_options(/utf-8)
     endif()

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette, Button } from "std-widgets.slint";
 import { ForgeCaptureResult, ForgeTypography } from "@slintforge";
 
@@ -18,7 +21,7 @@ export component GalleryCapturePreview inherits Rectangle {
             Text {
                 text: root.result.ok ? @tr("截图尺寸：{} × {} 像素", root.result.pixel-width, root.result.pixel-height) : root.result.error;
                 color: Palette.foreground; wrap: word-wrap;
-                font-size: 13px * ForgeTypography.scale;
+                font-size: 14px * ForgeTypography.scale;
                 height: self.preferred-height;
             }
         }

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 import { ForgeTypography } from "../typography/typography.slint";
 import { ForgeDateTime } from "date-time.slint";
@@ -14,15 +17,15 @@ export component ForgePickerField inherits Rectangle {
     preferred-height: 32px * ForgeTypography.scale;
     horizontal-stretch: 0; vertical-stretch: 0;
     border-radius: 4px; border-width: 1px;
-    border-color: root.focused ? Palette.accent-background : root.dark ? #454545 : #d0d0d0;
-    background: root.dark ? #303030 : #ffffff;
-    opacity: root.enabled ? 1 : 0.45;
+    border-color: root.focused ? Palette.accent-background : Palette.border-for(root.dark);
+    background: root.enabled ? Palette.control-for(root.dark, 0) : Palette.disabled-fill-for(root.dark);
+
     for field[index] in root.fields: Rectangle {
         x: index * root.width / max(1, root.fields.length);
         width: root.width / max(1, root.fields.length); height: root.height;
-        background: touch.has-hover ? (root.dark ? #ffffff0a : #00000006) : transparent;
-        if index > 0: Rectangle { width: 1px; height: parent.height; background: root.dark ? #454545 : #d0d0d0; }
-        Text { text: field; color: root.dark ? #ffffff : #202020; font-size: 13px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; overflow: elide; }
+        background: touch.has-hover ? (Palette.subtle-for(root.dark)) : transparent;
+        if index > 0: Rectangle { width: 1px; height: parent.height; background: Palette.border-for(root.dark); }
+        Text { text: field; color: root.enabled ? Palette.text-for(root.dark) : Palette.disabled-text-for(root.dark); font-size: 14px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center; overflow: elide; }
         touch := TouchArea { enabled: root.enabled; clicked => { root.clicked(index); } }
     }
 }
@@ -34,16 +37,17 @@ export component ForgePickerAction inherits Rectangle {
     in property<bool> enabled: true;
     callback clicked();
     min-width: 60px * ForgeTypography.scale;
-    preferred-height: 36px * ForgeTypography.scale;
+    preferred-height: 32px * ForgeTypography.scale;
     horizontal-stretch: 1; vertical-stretch: 0;
     border-radius: 4px;
-    background: root.primary ? Palette.accent-background : touch.has-hover ? (root.dark ? #ffffff12 : #0000000a) : transparent;
-    opacity: root.enabled ? 1 : 0.45;
+    background: !root.enabled ? Palette.disabled-fill-for(root.dark) : root.primary ? (touch.pressed ? Palette.tertiary-accent-background : touch.has-hover ? Palette.secondary-accent-background : Palette.accent-background) : touch.pressed ? Palette.control-for(root.dark, 2) : touch.has-hover ? Palette.subtle-for(root.dark) : transparent;
+    border-width: focus.has-focus ? 2px : 1px; border-color: focus.has-focus ? Palette.focus-stroke-outer : Palette.border-for(root.dark);
+
     forward-focus: focus;
     accessible-role: button; accessible-label: root.text; accessible-enabled: root.enabled;
     accessible-action-default => { if root.enabled { root.clicked(); } }
-    Text { visible: root.text != "✓" && root.text != "✕"; text: root.text; color: root.primary ? Palette.accent-foreground : root.dark ? #ffffff : #202020; horizontal-alignment: center; vertical-alignment: center; font-size: 14px * ForgeTypography.scale; }
-    if root.text == "✓" || root.text == "✕": ForgeIcon { width: root.width; height: root.height; glyph: root.text == "✓" ? ForgeIcons.checkmark : ForgeIcons.dismiss; color: root.primary ? Palette.accent-foreground : root.dark ? #fff : #202020; font-size: 18px * ForgeTypography.scale; }
+    Text { visible: root.text != "✓" && root.text != "✕"; text: root.text; color: !root.enabled ? Palette.disabled-text-for(root.dark) : root.primary ? Palette.accent-foreground : Palette.text-for(root.dark); horizontal-alignment: center; vertical-alignment: center; font-size: 14px * ForgeTypography.scale; }
+    if root.text == "✓" || root.text == "✕": ForgeIcon { width: root.width; height: root.height; glyph: root.text == "✓" ? ForgeIcons.checkmark : ForgeIcons.dismiss; color: !root.enabled ? Palette.disabled-text-for(root.dark) : root.primary ? Palette.accent-foreground : Palette.text-for(root.dark); font-size: 18px * ForgeTypography.scale; }
     focus := FocusScope {
         enabled: root.enabled;
         key-pressed(event) => { if event.text == Key.Return || event.text == " " { root.clicked(); return accept; } return reject; }
@@ -94,7 +98,7 @@ export component ForgePickerWheel inherits Rectangle {
         y: root.height / 2 + (index - root.middle-row - 0.5) * root.row-height; width: root.width; height: root.row-height;
         text: root.labels.length > 0 ? root.labels[self.candidate - root.label-base] : root.pad ? ForgeDateTime.two-digits(self.candidate) : "" + self.candidate;
         visible: root.wrap || (root.value + (index - root.middle-row) * root.safe-step >= root.minimum && root.value + (index - root.middle-row) * root.safe-step <= root.maximum);
-        color: index == root.middle-row ? Palette.accent-foreground : root.dark ? #ffffff : #202020;
+        color: index == root.middle-row ? Palette.accent-foreground : Palette.text-for(root.dark);
         opacity: index == root.middle-row ? 1 : abs(index - root.middle-row) == 1 ? 0.85 : 0.5;
         font-size: 14px * ForgeTypography.scale; horizontal-alignment: center; vertical-alignment: center;
     }

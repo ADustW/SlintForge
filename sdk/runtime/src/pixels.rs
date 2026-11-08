@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! 计算核心使用的纯数值颜色和像素存储，不创建 GUI 对象。
 #[derive(Clone, Copy, Default, Debug, PartialEq, Eq)]
 pub struct Color(u32);

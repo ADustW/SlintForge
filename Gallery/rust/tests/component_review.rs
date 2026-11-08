@@ -1,8 +1,13 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
 use slint::platform::WindowEvent;
 use slint::{ComponentHandle, LogicalPosition};
 use std::time::Duration;
 
-slint::slint! {
+slintforge_ui! {
+
     import { ForgeNumberBox, ForgeDial, ForgeFormRow, ForgeSplitLayout, ForgeSplitOrientation, ForgeAutoSuggestBox, ForgeRatingControl } from "../../../ui/slintforge.slint";
     export component ComponentReviewWindow inherits Window {
         width: 900px; height: 700px;

@@ -1,6 +1,36 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! 不加载运行库的 Cargo 构建辅助入口。
 use std::path::{Path, PathBuf};
 pub type BuildError = Box<dyn std::error::Error + Send + Sync>;
+
+/// 启用固定版本标准控件的原有属性标记，并为内联 Slint 测试传递同一配置。
+pub fn configure_style() {
+    std::env::set_var("SLINT_STYLE", "slintforge-winui3");
+    std::env::set_var("SLINT_ENABLE_EXPERIMENTAL_FEATURES", "1");
+    println!("cargo:rustc-env=SLINT_STYLE=slintforge-winui3");
+    println!("cargo:rustc-env=SLINT_ENABLE_EXPERIMENTAL_FEATURES=1");
+    // Slint 的相对 include_path 会逐文件重定位，内联测试必须使用构建时生成的绝对路径。
+    let mut inline = String::from("macro_rules! slintforge_ui { ($($tokens:tt)*) => { slint::slint! { #[style = \"slintforge-winui3\"]\n");
+    for path in style_include_paths() {
+        let path = path.to_string_lossy().replace('\\', "/");
+        inline.push_str(&format!("#[include_path = {path:?}]\n"));
+    }
+    inline.push_str("$($tokens)* } }; }\n");
+    if let Some(output) = std::env::var_os("OUT_DIR") {
+        std::fs::write(PathBuf::from(output).join("slintforge_style.rs"), inline)
+            .expect("无法生成内联 Slint 样式入口");
+    }
+}
+
+/// 所有路径均为绝对路径，避免消费者位于不同目录时回退到其他样式。
+pub fn style_include_paths() -> Vec<PathBuf> {
+    let library = ui_library_path();
+    let styles = library.parent().expect("UI 入口需要父目录").join("styles");
+    let style = styles.join("slintforge-winui3");
+    vec![styles, style.clone(), style.join("upstream/fluent"), style.join("upstream/common")]
+}
 
 pub fn ui_library_path() -> PathBuf {
     println!("cargo:rerun-if-env-changed=SLINTFORGE_UI_LIBRARY");
@@ -64,6 +94,7 @@ pub fn compile_ui_with_translations(
     ui: impl AsRef<Path>,
     translations: Option<impl AsRef<Path>>,
 ) -> Result<(), BuildError> {
+    configure_style();
     let base = Path::new(env!("CARGO_MANIFEST_DIR"));
     let packaged = base.join("../rust/bin/slintforge-ui-compiler.exe");
     let compiler = if packaged.is_file() {

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "gallery.h"
 #include "ForgeFlowBindings.hpp"
 #include "../../examples/flow-cpp/FlowCardExport.hpp"
@@ -6,6 +9,7 @@
 #include "ForgeStaggeredLayout.hpp"
 #include "ForgeIconCatalog.hpp"
 #include "ForgeWindowCorners.hpp"
+#include "ForgeRendering.hpp"
 #include "ForgeGalleryNavigation.hpp"
 #include "ForgeGallerySettings.hpp"
 #include "ForgeGalleryCapture.hpp"
@@ -21,11 +25,13 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <thread>
 #include <vector>
+#include "ForgeGalleryTitlebarQa.hpp"
 
 struct ForgeGalleryState {
     ForgeIconCatalog icons;
@@ -44,6 +50,7 @@ struct ForgeGalleryState {
     bool rounded_corners = true;
     bool dark_mode = true;
     bool persist = true;
+    std::shared_ptr<ForgeGallerySettingsWriter> settings_writer = std::make_shared<ForgeGallerySettingsWriter>();
 };
 
 static ForgeGallerySettings forge_gallery_saved_settings(const ForgeGalleryState& state) {
@@ -60,7 +67,7 @@ static ForgeGallerySettings forge_gallery_saved_settings(const ForgeGalleryState
 }
 
 static void forge_gallery_persist(const ForgeGalleryState& state) {
-    if (state.persist) forge_gallery_save_settings(forge_gallery_saved_settings(state));
+    if (state.persist) state.settings_writer->request(forge_gallery_saved_settings(state));
 }
 
 static ForgeNavItemKind forge_gallery_ui_kind(ForgeTreeItemKind kind) {
@@ -120,6 +127,16 @@ static void forge_gallery_expand_route_ancestors(ForgeGalleryState& state, const
     }
 }
 
+// 模型内容未变化时保留原实例，避免一次导航重建所有列表与图标行。
+template<typename T, typename Setter>
+static void forge_gallery_update_model(const std::shared_ptr<slint::Model<T>>& current,
+                                      std::vector<T> rows, Setter set) {
+    bool equal = current && current->row_count() == rows.size();
+    for (std::size_t index = 0; equal && index < rows.size(); ++index)
+        equal = current->row_data(index) == std::optional<T>(rows[index]);
+    if (!equal) set(std::make_shared<slint::VectorModel<T>>(std::move(rows)));
+}
+
 static void forge_gallery_apply_state(const slint::ComponentHandle<GalleryWindow>& ui, const ForgeGalleryState& state) {
     const auto icon_total = state.icons.count(state.icon_query);
     const auto icon_page = state.icons.search(state.icon_query, state.icon_page * 60, 60);
@@ -132,7 +149,7 @@ static void forge_gallery_apply_state(const slint::ComponentHandle<GalleryWindow
         entry.glyph = item.glyph_utf8().c_str();
         icons.push_back(std::move(entry));
     }
-    ui->set_icon_items(std::make_shared<slint::VectorModel<ForgeIconEntry>>(std::move(icons)));
+    forge_gallery_update_model(ui->get_icon_items(), std::move(icons), [&](auto rows) { ui->set_icon_items(rows); });
     ui->set_icon_query(state.icon_query.c_str());
     ui->set_icon_total(static_cast<int>(icon_total));
     ui->set_icon_page(static_cast<int>(state.icon_page));
@@ -173,9 +190,9 @@ static void forge_gallery_apply_state(const slint::ComponentHandle<GalleryWindow
         row.child_count = child_count;
         all_rows.push_back(std::move(row));
     }
-    ui->set_navigation_items(std::make_shared<slint::VectorModel<ForgeNavigationItem>>(std::move(rows)));
-    ui->set_all_navigation_items(std::make_shared<slint::VectorModel<ForgeNavigationItem>>(std::move(all_rows)));
-    ui->set_footer_items(std::make_shared<slint::VectorModel<ForgeNavigationItem>>(std::move(footer)));
+    forge_gallery_update_model(ui->get_navigation_items(), std::move(rows), [&](auto model) { ui->set_navigation_items(model); });
+    forge_gallery_update_model(ui->get_all_navigation_items(), std::move(all_rows), [&](auto model) { ui->set_all_navigation_items(model); });
+    forge_gallery_update_model(ui->get_footer_items(), std::move(footer), [&](auto rows) { ui->set_footer_items(rows); });
     ui->set_active_route_id(state.router.current().id.c_str());
     ui->set_active_top_id(forge_gallery_active_top_id(state.entries, state.router.current().id).c_str());
     ui->set_search_query(state.search_query.c_str());
@@ -197,7 +214,7 @@ static void forge_gallery_apply_state(const slint::ComponentHandle<GalleryWindow
         item.category = forge_gallery_category(state.entries, entry.item.id, state.language).c_str();
         pending.push_back(std::move(item));
     }
-    ui->set_pending_items(std::make_shared<slint::VectorModel<GalleryPendingItem>>(std::move(pending)));
+    forge_gallery_update_model(ui->get_pending_items(), std::move(pending), [&](auto rows) { ui->set_pending_items(rows); });
     std::string summary;
     for (const auto& param : state.router.current().params) {
         if (!summary.empty()) summary += ", ";
@@ -237,8 +254,7 @@ static void forge_gallery_apply_staggered_layout(const slint::ComponentHandle<Ga
 }
 
 int main(int argc, char** argv) {
-    if (!std::getenv("SLINT_BACKEND")) _putenv_s("SLINT_BACKEND", "winit-skia");
-    if (!std::getenv("WGPU_BACKEND")) _putenv_s("WGPU_BACKEND", "dx12");
+    const auto rendering = forge_configure_rendering();
     auto ui = GalleryWindow::create();
     forge_bind_flow_services<ForgeFlowPointData, ForgeFlowPortData, ForgeFlowNodeData, ForgeFlowEdgeData, ForgeFlowViewport, ForgeFlowRect, ForgeFlowAction, ForgeFlowState, ForgeFlowServices>(ui);
     ui->global<ForgeFlowServices>().on_export_card([](slint::SharedString node){return slint::SharedString(forge_flow_demo_export_card(std::string(node)).c_str());});
@@ -246,7 +262,8 @@ int main(int argc, char** argv) {
     const bool capture_smoke = std::any_of(argv + 1, argv + argc, [](const char* arg) { return std::string_view(arg) == "--capture-smoke"; });
     const bool capture_preview = std::any_of(argv + 1, argv + argc, [](const char* arg) { return std::string_view(arg) == "--capture-preview"; });
     const bool components_smoke = std::any_of(argv + 1, argv + argc, [](const char* arg) { return std::string_view(arg) == "--components-smoke"; });
-    const auto saved = smoke || capture_smoke || capture_preview || components_smoke ? ForgeGallerySettings{} : forge_gallery_load_settings();
+    const bool titlebar_smoke = std::any_of(argv + 1, argv + argc, [](const char* arg) { return std::string_view(arg) == "--titlebar-smoke"; });
+    const auto saved = smoke || capture_smoke || capture_preview || components_smoke || titlebar_smoke ? ForgeGallerySettings{} : forge_gallery_load_settings();
     if (!slint::select_bundled_translation(saved.language == "en" ? "en" : ""))
         throw std::runtime_error("translation unavailable");
     ForgeGalleryState state;
@@ -258,7 +275,7 @@ int main(int argc, char** argv) {
     state.dark_mode = saved.dark_mode;
     state.placement = saved.placement == "right" ? ForgeNavPlacement::Right : saved.placement == "top" ? ForgeNavPlacement::Top : ForgeNavPlacement::Left;
     state.pane_state = saved.pane_state == "compact" ? ForgePaneState::Compact : saved.pane_state == "hidden" ? ForgePaneState::Hidden : ForgePaneState::Expanded;
-    state.persist = !smoke && !capture_smoke && !capture_preview && !components_smoke;
+    state.persist = !smoke && !capture_smoke && !capture_preview && !components_smoke && !titlebar_smoke;
     state.entries = forge_gallery_entries();
     std::vector<std::string> routes;
     std::vector<ForgeNavItem> tree_items;
@@ -332,9 +349,11 @@ int main(int argc, char** argv) {
         forge_gallery_apply_state(ui, state);
     });
     ui->on_pane_state_requested([&](ForgePaneState pane) {
+        if (state.pane_state == pane) return;
         state.pane_state = pane;
+        // 侧栏切换不重建图标、导航、页脚和页面模型。
+        ui->set_pane_state(pane);
         forge_gallery_persist(state);
-        forge_gallery_apply_state(ui, state);
     });
     ui->on_placement_requested([&](ForgeNavPlacement placement) {
         state.placement = placement;
@@ -427,13 +446,13 @@ int main(int argc, char** argv) {
             if (!glyph || std::string_view(ui->get_qa_navigation_glyph()) != glyph->glyph_utf8())
                 throw std::runtime_error("titlebar navigation glyph");
         };
-        expect_navigation_glyph("panel_left_20_regular");
+        expect_navigation_glyph("navigation_20_regular");
         ui->invoke_qa_toggle_navigation();
-        if (ui->get_pane_state() != ForgePaneState::Hidden) throw std::runtime_error("titlebar hide");
-        expect_navigation_glyph("panel_left_expand_20_regular");
+        if (ui->get_pane_state() != ForgePaneState::Compact) throw std::runtime_error("titlebar compact");
+        expect_navigation_glyph("navigation_20_regular");
         ui->invoke_qa_toggle_navigation();
         if (ui->get_pane_state() != ForgePaneState::Expanded) throw std::runtime_error("titlebar restore");
-        expect_navigation_glyph("panel_left_20_regular");
+        expect_navigation_glyph("navigation_20_regular");
         if (std::string_view(ui->get_qa_localized_settings_label()) != "设置") throw std::runtime_error("default Chinese");
         ui->invoke_staggered_layout_requested(3);
         if (ui->get_staggered_items()->row_count() != 9) throw std::runtime_error("staggered count");
@@ -540,18 +559,18 @@ int main(int argc, char** argv) {
         if (!tabbar_visible) throw std::runtime_error("active route in navigation");
         ui->invoke_placement_requested(ForgeNavPlacement::Right);
         if (ui->get_placement() != ForgeNavPlacement::Right) throw std::runtime_error("right");
-        expect_navigation_glyph("panel_right_20_regular");
+        expect_navigation_glyph("navigation_20_regular");
         ui->invoke_qa_toggle_navigation();
-        if (ui->get_pane_state() != ForgePaneState::Hidden) throw std::runtime_error("right hide");
-        expect_navigation_glyph("panel_right_expand_20_regular");
+        if (ui->get_pane_state() != ForgePaneState::Compact) throw std::runtime_error("right compact");
+        expect_navigation_glyph("navigation_20_regular");
         ui->invoke_qa_toggle_navigation();
         if (ui->get_pane_state() != ForgePaneState::Expanded) throw std::runtime_error("right restore");
         ui->invoke_placement_requested(ForgeNavPlacement::Top);
         if (ui->get_placement() != ForgeNavPlacement::Top) throw std::runtime_error("top");
-        expect_navigation_glyph("panel_top_contract_20_regular");
+        expect_navigation_glyph("navigation_20_regular");
         ui->invoke_qa_toggle_navigation();
-        if (ui->get_pane_state() != ForgePaneState::Hidden) throw std::runtime_error("top hide");
-        expect_navigation_glyph("panel_top_expand_20_regular");
+        if (ui->get_pane_state() != ForgePaneState::Compact) throw std::runtime_error("top compact");
+        expect_navigation_glyph("navigation_20_regular");
         ui->invoke_qa_toggle_navigation();
         if (ui->get_pane_state() != ForgePaneState::Expanded) throw std::runtime_error("top restore");
         if (std::string_view(ui->get_active_top_id()) != "navigation-group") throw std::runtime_error("top active group");
@@ -620,6 +639,8 @@ int main(int argc, char** argv) {
     if (capture_smoke || capture_preview) forge_gallery_start_capture_verification(ui, capture_timer, capture_preview);
     slint::Timer component_timer;
     if (components_smoke) forge_gallery_start_component_qa(ui, component_timer);
+    slint::Timer titlebar_timer;
+    if (titlebar_smoke) forge_gallery_start_titlebar_qa(ui, titlebar_timer);
     ui->run();
     worker.request_stop();
     worker.join();

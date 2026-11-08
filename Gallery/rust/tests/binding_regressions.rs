@@ -1,8 +1,13 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
 use slint::platform::{Key, PointerEventButton, WindowEvent};
 use slint::{ComponentHandle, SharedString};
 use std::time::Duration;
 
-slint::slint! {
+slintforge_ui! {
+
     import { ForgeNumberBox } from "../../../ui/slintforge.slint";
     export component BindingRegressionWindow inherits Window {
         width: 600px; height: 200px;

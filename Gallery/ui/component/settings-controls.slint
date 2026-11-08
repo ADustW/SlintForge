@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 import { ForgeIcon, ForgeTypography } from "@slintforge";
 
@@ -7,8 +10,8 @@ export component GallerySettingsChoice inherits Rectangle {
     in property<bool> selected;
     callback clicked();
     width: label-text.preferred-width + (root.icon == "" ? 28px : 52px);
-    height: 34px;
-    border-radius: 5px;
+    height: 32px;
+    border-radius: 4px;
     border-width: 1px;
     border-color: root.selected ? Palette.accent-background : Palette.border;
     background: root.selected || choice-touch.has-hover ? Palette.control-background : Palette.alternate-background;
@@ -22,7 +25,7 @@ export component GallerySettingsChoice inherits Rectangle {
         width: parent.width - self.x;
         text: root.label;
         color: Palette.foreground;
-        font-size: 13px * ForgeTypography.scale;
+        font-size: 14px * ForgeTypography.scale;
         horizontal-alignment: center;
         vertical-alignment: center;
     }

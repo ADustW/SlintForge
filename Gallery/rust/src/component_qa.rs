@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! 实际渲染器逐页截图验证；仅在显式命令行检查模式启用。
 use crate::GalleryWindow;
 use slint::{ComponentHandle, LogicalSize, Model, ModelRc, VecModel};
@@ -49,6 +52,10 @@ pub fn verification_timer(ui: &GalleryWindow, enabled: bool) -> slint::Timer {
         "data-tree-grid",
     ] {
         frames.push((route.into(), true, false, false, -1));
+    }
+    // 浅色弹层同时检查遮罩、卡片边界和正文与操作区分隔线。
+    for route in ["popups-content-dialog", "popups-drawer"] {
+        frames.push((route.into(), true, true, false, -1));
     }
     // 本地化弹层覆盖中英文、放大字号、窄窗口和 12/24 小时时钟/数字模式。
     for route in [
@@ -126,7 +133,10 @@ pub fn verification_timer(ui: &GalleryWindow, enabled: bool) -> slint::Timer {
         }
     }
     if let Ok(filter) = std::env::var("SLINTFORGE_COMPONENT_QA_FILTER") {
-        frames.retain(|frame| frame.0.starts_with(&filter));
+        frames.retain(|frame| filter.split(',').filter(|p| !p.is_empty()).any(|p| frame.0.starts_with(p)));
+    }
+    if std::env::var_os("SLINTFORGE_COMPONENT_QA_BASE_ONLY").is_some() {
+        frames.retain(|frame| frame.4 == -1);
     }
     if let Ok(exclude) = std::env::var("SLINTFORGE_COMPONENT_QA_EXCLUDE") {
         frames.retain(|frame| !frame.0.starts_with(&exclude));
@@ -138,7 +148,14 @@ pub fn verification_timer(ui: &GalleryWindow, enabled: bool) -> slint::Timer {
     std::fs::create_dir_all(&directory).expect("创建逐页截图目录");
     let phase = Rc::new(Cell::new(0usize));
     let retries = Rc::new(Cell::new(0usize));
-    let inject_minimize = std::env::var_os("SLINTFORGE_COMPONENT_QA_MINIMIZE_ONCE").is_some();
+    let background = std::env::var_os("SLINTFORGE_COMPONENT_QA_BACKGROUND").is_some();
+    let inject_minimize = !background && std::env::var_os("SLINTFORGE_COMPONENT_QA_MINIMIZE_ONCE").is_some();
+    let forced_size = std::env::var("SLINTFORGE_COMPONENT_QA_SIZE").ok().map(|value| {
+        let (width, height) = value.split_once('x').expect("验收尺寸格式为宽x高");
+        let (width, height) = (width.parse::<f32>().unwrap(), height.parse::<f32>().unwrap());
+        assert!(width >= 960. && height >= 600., "验收尺寸至少为 960x600");
+        LogicalSize::new(width, height)
+    });
     let minimized_once = Rc::new(Cell::new(false));
     let weak = ui.as_weak();
     timer.start(
@@ -152,20 +169,20 @@ pub fn verification_timer(ui: &GalleryWindow, enabled: bool) -> slint::Timer {
             let (route, open, light, narrow, showcase) = &frames[index];
             match stage {
                 0 => {
-                    ui.window().set_minimized(false);
+                    if !background { ui.window().set_minimized(false); }
                     ui.invoke_qa_showcase("".into(), -1);
                     ui.invoke_qa_prepare_component(false);
                     ui.invoke_theme_setting_changed(!*light);
                     ui.set_theme_dark(!*light);
                     ui.invoke_language_requested(if *light { "en" } else { "zh" }.into());
                     ui.invoke_font_scale_requested(if *light { 1.25 } else { 1.0 });
-                    ui.window().set_size(if *narrow {
-                        LogicalSize::new(960., 720.)
+                    ui.window().set_size(forced_size.unwrap_or_else(|| if *narrow {
+                        LogicalSize::new(960., 600.)
                     } else if *light {
                         LogicalSize::new(1100., 800.)
                     } else {
                         LogicalSize::new(1280., 900.)
-                    });
+                    }));
                     ui.invoke_navigate_requested(
                         route.as_str().into(),
                         ModelRc::new(VecModel::from(Vec::new())),
@@ -225,11 +242,12 @@ pub fn verification_timer(ui: &GalleryWindow, enabled: bool) -> slint::Timer {
                 _ => {
                     let size = ui.window().size();
                     if ui.window().is_minimized() || size.width < 960 || size.height < 600 {
+                        assert!(!background, "后台测试窗口尺寸无效，不执行前台恢复: {route}");
                         assert!(retries.get() < 2, "验收窗口恢复后仍未完成布局: {route}");
                         retries.set(retries.get() + 1);
                         // 原生最小化可能未同步到 Slint 属性，切换意图以确保恢复请求生效。
                         ui.window().set_minimized(true);
-                        ui.window().set_minimized(false);
+                        if !background { ui.window().set_minimized(false); }
                         println!("QA_WINDOW_RESTORED host=rust route={route}");
                         phase.set(index * 3);
                         return;
@@ -249,7 +267,11 @@ pub fn verification_timer(ui: &GalleryWindow, enabled: bool) -> slint::Timer {
                     if route == "chart-professional" {
                         assert!(ui.get_qa_showcase_ready(), "图表总览场景必须全部完成渲染");
                     }
-                    let pixels = slintforge::capture_window(ui.window()).expect("实际窗口截图成功");
+                    let pixels = if background {
+                        ui.window().take_snapshot().expect("后台渲染器快照成功")
+                    } else {
+                        slintforge::capture_window(ui.window()).expect("实际窗口截图成功")
+                    };
                     assert!(
                         pixels.width() >= 960 && pixels.height() >= 600,
                         "整窗截图尺寸不正确: {route}"

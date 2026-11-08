@@ -1,14 +1,19 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 [package]
 name = "slintforge"
 version = "0.1.2"
 edition = "2021"
+license = "GPL-3.0-only"
+authors = ["陕西禾又科技有限责任公司"]
 rust-version = "1.98.0"
 publish = false
 description = "SlintForge 原生 Rust 接口与 DLL 安全封装"
 [features]
 flow = ["slint/renderer-skia"]
 [dependencies]
-slint = { version = "=1.18.0", features = ["raw-window-handle-06"] }
+slint = { version = "=1.18.0", features = ["raw-window-handle-06", "renderer-skia"] }
 slintforge-runtime-api = { version = "=0.1.2", path = "../runtime-api" }
 slintforge-build = { version = "=0.1.2", path = "../rust-build" }
 libloading = "=0.8.9"

@@ -1,7 +1,12 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+include!(concat!(env!("OUT_DIR"), "/slintforge_style.rs"));
 use slint::ComponentHandle;
 use std::time::Duration;
 
-slint::slint! {
+slintforge_ui! {
+
     import { ForgeFlowLayout } from "../../../ui/layouts/flow-layout.slint";
 
     export component FlowLayoutTestWindow inherits Window {

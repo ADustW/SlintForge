@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 # Rust、CMake 编译及打包输出（适用于各级目录）
 target/
 build/
@@ -60,6 +63,12 @@ __pycache__/
 .cache/
 .coverage
 htmlcov/
+
+# API 文档站依赖与 VitePress 本地缓存
+node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+output/playwright/
 
 # IDE 个人设置和操作系统文件
 .vs/

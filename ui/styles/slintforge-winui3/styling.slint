@@ -1,0 +1,30 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+// 项目主题适配；图标名称对应未修改的上游控件。
+export { ForgeTheme as FluentPalette } from "../../theme/theme.slint";
+export struct TextStyle { font-size: relative-font-size, font-weight: int }
+export global FluentFontSettings {
+ out property<TextStyle> body-strong: { font-size: 1rem, font-weight: 600 };
+ out property<TextStyle> title: { font-size: 2rem, font-weight: 600 };
+}
+export global FluentSizeSettings { out property<length> item-height: 40px; }
+export global Icons {
+    out property <image> arrow-down: @image-url("upstream/fluent/_arrow-down.svg");
+    out property <image> arrow-up: @image-url("upstream/fluent/_arrow-up.svg");
+    out property <image> check-mark: @image-url("upstream/fluent/_check-mark.svg");
+    out property <image> chevron-down: @image-url("upstream/fluent/_chevron-down.svg");
+    out property <image> chevron-up: @image-url("upstream/fluent/_chevron-up.svg");
+    out property <image> down: @image-url("upstream/fluent/_down.svg");
+    out property <image> dropdown: @image-url("upstream/fluent/_dropdown.svg");
+    out property <image> left: @image-url("upstream/fluent/_left.svg");
+    out property <image> right: @image-url("upstream/fluent/_right.svg");
+    out property <image> up: @image-url("upstream/fluent/_up.svg");
+    out property <image> keyboard: @image-url("upstream/fluent/_keyboard.svg");
+    out property <image> clock: @image-url("upstream/fluent/_clock.svg");
+    out property <image> arrow-back: @image-url("upstream/fluent/_arrow_back.svg");
+    out property <image> arrow-forward: @image-url("upstream/fluent/_arrow_forward.svg");
+    out property <image> edit: @image-url("upstream/fluent/_edit.svg");
+    out property <image> calendar: @image-url("upstream/fluent/_calendar.svg");
+}
+

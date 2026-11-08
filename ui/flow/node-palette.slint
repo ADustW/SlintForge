@@ -1,4 +1,8 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { ForgeFlowTheme } from "theme.slint";
+import { Palette } from "std-widgets.slint";
 
 // 节点库只上报类型与手势，节点模板及业务默认值由接入方决定。
 export component ForgeFlowNodePalette inherits Rectangle {
@@ -14,11 +18,10 @@ export component ForgeFlowNodePalette inherits Rectangle {
     Text { x: 12px; y: 33px; text: root.chinese ? "点击添加，或拖入画布" : "Click or drag onto canvas"; color: ForgeFlowTheme.muted; font-size: 10px; }
     for kind[index] in root.kinds : Rectangle {
         x: 10px; y: (58 + index * 46) * 1px; width: parent.width - 20px; height: 38px;
-        background: touch.has-hover ? ForgeFlowTheme.raised : ForgeFlowTheme.surface;
-        border-width: 1px; border-color: ForgeFlowTheme.border; border-radius: 6px;
-        opacity: root.read-only ? 0.45 : 1;
+        background: root.read-only ? Palette.disabled-fill-for(ForgeFlowTheme.dark) : touch.has-hover ? (ForgeFlowTheme.dark ? ForgeFlowTheme.raised : ForgeFlowTheme.surface.darker(0.03)) : ForgeFlowTheme.surface;
+        border-width: 1px; border-color: root.read-only ? Palette.disabled-border-for(ForgeFlowTheme.dark) : ForgeFlowTheme.border; border-radius: 6px;
         Rectangle { x: 10px; y: 11px; width: 4px; height: 16px; border-radius: 2px; background: [ForgeFlowTheme.accent, #7c5ce7, #11998a, #d48727][Math.mod(index,4)]; }
-        Text { x: 25px; width: parent.width - 32px; height: parent.height; text: index < root.labels.length ? root.labels[index] : kind; color: ForgeFlowTheme.text; overflow: elide; font-size: 12px; vertical-alignment: center; }
+        Text { x: 25px; width: parent.width - 32px; height: parent.height; text: index < root.labels.length ? root.labels[index] : kind; color: root.read-only ? Palette.disabled-text-for(ForgeFlowTheme.dark) : ForgeFlowTheme.text; overflow: elide; font-size: 12px; vertical-alignment: center; }
         touch := TouchArea {
             enabled: !root.read-only; mouse-cursor: grab;
             pointer-event(e) => {

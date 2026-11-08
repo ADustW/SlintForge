@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use std::ffi::{c_char, c_void, CStr, CString};
 extern "C" {
     fn forge_flow_create(mode: *const c_char) -> *mut c_void;

@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 
 import { ForgeInfoLevel } from "../types/feedback.slint";
@@ -8,13 +11,13 @@ export component ForgeInfoBar inherits Rectangle {
     in property<ForgeInfoLevel> level: ForgeInfoLevel.info;
     in property<string> message;
     in property<bool> dismissible: true;
-    property<color> accent-color: root.level == ForgeInfoLevel.success ? #59b27c : root.level == ForgeInfoLevel.warning ? #dca340 : root.level == ForgeInfoLevel.error ? #db6969 : #69a8de;
+    property<color> accent-color: root.level == ForgeInfoLevel.success ? Palette.success : root.level == ForgeInfoLevel.warning ? Palette.warning : root.level == ForgeInfoLevel.error ? Palette.error : Palette.accent-background;
     callback dismissed();
     min-height: 44px;
-    border-radius: 6px;
+    border-radius: 4px;
     border-width: 1px;
     border-color: Palette.border;
-    background: Palette.alternate-background;
+    background: root.level == ForgeInfoLevel.success ? Palette.success-background : root.level == ForgeInfoLevel.warning ? Palette.warning-background : root.level == ForgeInfoLevel.error ? Palette.error-background : Palette.content-background;
     Rectangle { x: 0px; y: 0px; width: 4px; height: parent.height; background: root.accent-color; }
     HorizontalLayout {
         padding: 10px;

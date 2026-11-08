@@ -1,5 +1,8 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! 运行库加载、ABI 校验和 DLL 所有权封装。
-use slintforge_runtime_api::{CallResult, RuntimeApiV1, Wire, ABI_SCHEMA, ABI_VERSION};
+use slintforge_runtime_api::{CallResult, RuntimeApiV2, Wire, ABI_SCHEMA, ABI_VERSION};
 use std::path::{Path, PathBuf};
 use std::sync::{Mutex, OnceLock};
 
@@ -59,7 +62,7 @@ impl std::error::Error for RuntimeError {}
 
 struct Runtime {
     _library: libloading::Library,
-    api: RuntimeApiV1,
+    api: RuntimeApiV2,
     path: PathBuf,
 }
 static RUNTIME: OnceLock<Runtime> = OnceLock::new();
@@ -166,12 +169,12 @@ pub fn initialize_from(path: impl AsRef<Path>) -> Result<(), RuntimeError> {
             detail: e.to_string(),
         })?;
         let query = library
-            .get::<unsafe extern "C" fn() -> *const RuntimeApiV1>(
-                b"slintforge_runtime_get_api_v1\0",
+            .get::<unsafe extern "C" fn() -> *const RuntimeApiV2>(
+                b"slintforge_runtime_get_api_v2\0",
             )
             .map_err(|e| RuntimeError::Abi {
                 path: requested.clone(),
-                detail: format!("缺少 ABI v1 入口：{e}"),
+                detail: format!("缺少 ABI v2 入口：{e}"),
             })?;
         let pointer = query();
         if pointer.is_null() {
@@ -188,13 +191,13 @@ pub fn initialize_from(path: impl AsRef<Path>) -> Result<(), RuntimeError> {
         }
         let header = &*pointer.cast::<Header>();
         if header.version != ABI_VERSION
-            || (header.size as usize) < std::mem::size_of::<RuntimeApiV1>()
+            || (header.size as usize) < std::mem::size_of::<RuntimeApiV2>()
         {
             return Err(RuntimeError::Abi {
                 path: requested,
                 detail: format!(
                     "要求 ABI {ABI_VERSION}/{} 字节，收到 ABI {}/{} 字节",
-                    std::mem::size_of::<RuntimeApiV1>(),
+                    std::mem::size_of::<RuntimeApiV2>(),
                     header.version,
                     header.size
                 ),
@@ -222,13 +225,13 @@ pub fn initialize_from(path: impl AsRef<Path>) -> Result<(), RuntimeError> {
     Ok(())
 }
 
-pub(crate) fn api() -> &'static RuntimeApiV1 {
+pub(crate) fn api() -> &'static RuntimeApiV2 {
     initialize().unwrap_or_else(|error| panic!("SlintForge 初始化失败：{error}"));
     &RUNTIME.get().expect("运行库已经初始化").api
 }
 struct OutputGuard {
     result: CallResult,
-    api: &'static RuntimeApiV1,
+    api: &'static RuntimeApiV2,
 }
 impl Drop for OutputGuard {
     fn drop(&mut self) {

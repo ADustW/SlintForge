@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 #pragma once
 
 // 查询使用世界坐标；选区边界包含选中连线，避免只适应节点导致曲线被裁掉。

@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """从固定版本的上游码位表生成 Rust/C++ 共用目录。"""
 
 import json

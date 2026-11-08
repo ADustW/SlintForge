@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Button, LineEdit, Palette } from "std-widgets.slint";
 
 export component ForgeNumberBox inherits Rectangle {
@@ -33,7 +36,7 @@ export component ForgeNumberBox inherits Rectangle {
     }
     changed minimum => { root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), root.value)); }
     changed maximum => { root.value = Math.max(root.minimum, Math.min(Math.max(root.minimum, root.maximum), root.value)); }
-    min-width: 160px; preferred-height: 36px;
+    min-width: 160px; preferred-height: 32px;
     forward-focus: field;
     HorizontalLayout {
         spacing: 4px;

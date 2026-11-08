@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 import { Palette } from "std-widgets.slint";
 import { ForgeTypography } from "@slintforge";
 import { GalleryPageFrame } from "../component/page-frame.slint";
@@ -24,7 +27,7 @@ export component GalleryAboutPage inherits Rectangle {
             card := VerticalLayout {
                 padding: 24px; spacing: 12px;
                 Text { text: "SlintForge Gallery · " + root.version-text; color: Palette.foreground; font-size: 24px * ForgeTypography.scale; font-weight: 600; }
-                Text { text: @tr("共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。"); color: Palette.foreground.transparentize(0.25); font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+                Text { text: @tr("共享 Slint 组件 · Rust / C++ SDK\n96 个导航页面已全部提供演示。\n原生控件示例与组件 API 使用同一套 UI 契约。"); color: Palette.foreground.transparentize(0.25); font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
             }
         }
     }

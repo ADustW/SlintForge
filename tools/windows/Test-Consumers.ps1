@@ -1,4 +1,7 @@
-﻿[CmdletBinding()]
+﻿# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
+[CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$SourceArchive,
     [Parameter(Mandatory=$true)][string]$CppArchive,

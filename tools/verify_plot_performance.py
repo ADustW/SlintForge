@@ -1,3 +1,6 @@
+# Copyright © 2026 陕西禾又科技有限责任公司
+# SPDX-License-Identifier: GPL-3.0-only
+
 """检查真实窗口交互基准；阈值针对本机 Windows 软件渲染验收，不能替代跨平台测量。"""
 import argparse
 import csv

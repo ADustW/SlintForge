@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 use crate::{
     ForgeQRCodeResult, ForgeSyntaxLine, ForgeTreeItem, ForgeWidgetServices, GalleryDemoDialog,
     GalleryDemoModels, GalleryDemoWindow, GalleryWindow,
@@ -83,15 +86,6 @@ fn refresh_tree(ui: &GalleryWindow, items: &mut [ForgeTreeItem]) {
 pub fn connect(ui: &GalleryWindow) {
     crate::plot_demo::connect(ui);
     crate::grids_demo::connect(ui);
-    slintforge::bind_chart_services!(
-        ui,
-        crate::ForgeChartServices,
-        crate::ForgeChartScene,
-        crate::ForgeChartMark,
-        crate::ForgeChartLine,
-        crate::ForgeChartTick,
-        crate::ForgeChartLabel
-    );
     let model = Rc::new(RefCell::new(tree_model()));
     refresh_tree(ui, &mut model.borrow_mut());
     let mut pixels = SharedPixelBuffer::<Rgba8Pixel>::new(600, 360);

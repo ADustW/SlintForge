@@ -1,3 +1,6 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
 //! 自动生成的 C 数据视图；使用 tools/generate_runtime_ffi.py 更新。
 use crate::{Optional, Pixels, Slice, Triple};
 
@@ -62,122 +65,6 @@ pub struct FfiStaggeredPlacement {
 pub struct FfiStaggeredLayout {
     pub placements: Slice<FfiStaggeredPlacement>,
     pub content_height: f32,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartPointData {
-    pub x: f64,
-    pub y: f64,
-    pub size: f64,
-    pub label: Slice<u8>,
-    pub color: u32,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartSeriesData {
-    pub name: Slice<u8>,
-    pub color: u32,
-    pub points: Slice<FfiChartPointData>,
-    pub hidden: u8,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartSliceData {
-    pub label: Slice<u8>,
-    pub value: f64,
-    pub color: u32,
-    pub hidden: u8,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartOptionsData {
-    pub auto_range: u8,
-    pub x_min: f64,
-    pub x_max: f64,
-    pub y_min: f64,
-    pub y_max: f64,
-    pub include_zero: u8,
-    pub stacked: u8,
-    pub smooth: u8,
-    pub fill_area: u8,
-    pub doughnut: u8,
-    pub point_size: f64,
-    pub precision: i32,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartMarkData {
-    pub kind: i32,
-    pub x: f64,
-    pub y: f64,
-    pub width: f64,
-    pub height: f64,
-    pub radius: f64,
-    pub x1: f64,
-    pub y1: f64,
-    pub x2: f64,
-    pub y2: f64,
-    pub x3: f64,
-    pub y3: f64,
-    pub start_angle: f64,
-    pub sweep_angle: f64,
-    pub color: u32,
-    pub series_index: i32,
-    pub point_index: i32,
-    pub value: f64,
-    pub label: Slice<u8>,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartLineData {
-    pub x: f64,
-    pub y: f64,
-    pub x1: f64,
-    pub y1: f64,
-    pub c1x: f64,
-    pub c1y: f64,
-    pub c2x: f64,
-    pub c2y: f64,
-    pub color: u32,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartTickData {
-    pub position: f64,
-    pub label: Slice<u8>,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartLabelData {
-    pub x: f64,
-    pub y: f64,
-    pub text: Slice<u8>,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct FfiChartSceneData {
-    pub status: i32,
-    pub x_min: f64,
-    pub x_max: f64,
-    pub y_min: f64,
-    pub y_max: f64,
-    pub zero_y: f64,
-    pub inner_radius: f64,
-    pub marks: Slice<FfiChartMarkData>,
-    pub areas: Slice<FfiChartMarkData>,
-    pub lines: Slice<FfiChartLineData>,
-    pub x_ticks: Slice<FfiChartTickData>,
-    pub y_ticks: Slice<FfiChartTickData>,
-    pub labels: Slice<FfiChartLabelData>,
 }
 
 #[repr(C)]
@@ -423,34 +310,25 @@ pub struct ArgsScreenInput {
     pub reserved: u8,
 }
 
-pub const OP_CHARTCOLOR: u32 = 21;
+pub const OP_RESERVED21: u32 = 21;
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct ArgsChartColor {
-    pub index: usize,
+pub struct ArgsReserved21 {
+    pub reserved: u8,
 }
 
-pub const OP_CHARTPREPARE: u32 = 22;
+pub const OP_RESERVED22: u32 = 22;
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct ArgsChartPrepare {
-    pub kind: i32,
-    pub series: Slice<FfiChartSeriesData>,
-    pub slices: Slice<FfiChartSliceData>,
-    pub categories: Slice<Slice<u8>>,
-    pub options: FfiChartOptionsData,
+pub struct ArgsReserved22 {
+    pub reserved: u8,
 }
 
-pub const OP_CHARTHIT: u32 = 23;
+pub const OP_RESERVED23: u32 = 23;
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct ArgsChartHit {
-    pub marks: Slice<FfiChartMarkData>,
-    pub x: f64,
-    pub y: f64,
-    pub width: f64,
-    pub height: f64,
-    pub inner_radius: f64,
+pub struct ArgsReserved23 {
+    pub reserved: u8,
 }
 
 pub const OP_GRIDPREPARE: u32 = 24;

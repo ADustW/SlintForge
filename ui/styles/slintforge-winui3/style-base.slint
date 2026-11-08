@@ -1,0 +1,18 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgeTheme } from "../../theme/theme.slint";
+export { ForgeTheme as Palette } from "../../theme/theme.slint";
+
+export global StyleMetrics {
+    out property<length> layout-spacing: 8px;
+    out property<length> layout-padding: 8px;
+    out property<length> text-cursor-width: 1px;
+    out property<color> window-background: ForgeTheme.background;
+    out property<color> default-text-color: ForgeTheme.foreground;
+    out property<color> textedit-background: ForgeTheme.control-input-active;
+    out property<color> textedit-text-color: ForgeTheme.foreground;
+    out property<color> textedit-background-disabled: ForgeTheme.control-disabled;
+    out property<color> textedit-text-color-disabled: ForgeTheme.text-disabled;
+    out property<bool> dark-color-scheme: ForgeTheme.dark;
+}

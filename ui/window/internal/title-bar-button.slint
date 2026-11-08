@@ -1,8 +1,17 @@
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgeMetrics } from "../../theme/theme.slint";
 import { Palette } from "std-widgets.slint";
 import { ForgeIcon, ForgeIcons } from "../../icons/icon.slint";
 import { ForgeTypography } from "../../typography/typography.slint";
 
-// 窗口按钮只由 ForgeWindow 使用；role: 菜单、主题、最小化、最大化、关闭、置顶、设置。
+// 同一窗口的标题栏共享输入方式，鼠标操作不残留键盘焦点框。
+export global ForgeTitleBarInputState {
+    in-out property<bool> keyboard-navigation: false;
+}
+
+// 窗口按钮只由 ForgeWindow 使用；role: 菜单、主题、最小化、最大化、关闭、置顶、设置、返回。
 export component ForgeTitleBarButton inherits Rectangle {
     in property<int> role;
     in property<bool> enabled: true;
@@ -10,67 +19,102 @@ export component ForgeTitleBarButton inherits Rectangle {
     in property<bool> dark-mode: false;
     in property<bool> pinned-state: false;
     in property<string> glyph;
+    in property<bool> navigation-style: false;
+    out property<bool> has-focus: button-focus.has-focus;
+    out property<bool> focus-visible: root.enabled && button-focus.has-focus && ForgeTitleBarInputState.keyboard-navigation;
     callback clicked();
 
-    width: 46px;
-    height: 46px;
+    width: root.navigation-style ? ForgeMetrics.title-bar-leading-width : ForgeMetrics.title-bar-button-width;
+    height: ForgeMetrics.title-bar-height;
     horizontal-stretch: 0;
-    background: root.role == 5 && button-touch.has-hover ? #c42b1c : button-touch.has-hover && root.enabled ? Palette.control-background : transparent;
-    opacity: root.enabled ? 1 : 0.38;
+    background: transparent;
+    forward-focus: button-focus;
+    accessible-role: button;
+    accessible-enabled: root.enabled;
+    accessible-label: root.role == 8 ? @tr("返回") : root.role == 1 ? @tr("切换导航") : root.role == 2 ? @tr("切换主题") : root.role == 3 ? @tr("最小化") : root.role == 4 ? @tr("最大化或还原") : root.role == 5 ? @tr("关闭") : root.role == 6 ? @tr("置顶") : @tr("设置");
+    accessible-action-default => { if root.enabled { root.clicked(); } }
+    Rectangle {
+        x: root.navigation-style ? 4px : 0px;
+        y: root.navigation-style ? 4px : 0px;
+        width: parent.width - 2 * self.x; height: parent.height - 2 * self.y;
+        border-radius: root.navigation-style ? ForgeMetrics.control-radius : 0px;
+        border-width: root.focus-visible ? 2px : 0px;
+        border-color: Palette.focus-stroke-outer;
+        background: !root.enabled ? transparent : root.role == 5 && button-touch.has-hover ? #c42b1c : button-touch.pressed ? Palette.subtle-tertiary : button-touch.has-hover ? Palette.subtle : transparent;
+    }
 
     if root.role == 2 : ForgeIcon {
         glyph: root.dark-mode ? ForgeIcons.sun : ForgeIcons.moon;
         width: parent.width; height: parent.height;
-        font-size: 20px * ForgeTypography.scale;
-        color: Palette.foreground;
+        font-size: 16px * ForgeTypography.scale;
+        color: (root.enabled ? Palette.foreground : Palette.text-disabled);
     }
     if root.role == 5 : Text {
         text: "×";
-        color: button-touch.has-hover ? white : Palette.foreground;
-        font-size: 20px * ForgeTypography.scale;
+        color: button-touch.has-hover ? white : (root.enabled ? Palette.foreground : Palette.text-disabled);
+        font-size: 18px * ForgeTypography.scale;
         horizontal-alignment: center;
         vertical-alignment: center;
     }
-    if root.role == 1 : ForgeIcon {
-        glyph: root.glyph;
+    if root.role == 1 || root.role == 8 : ForgeIcon {
+        glyph: root.role == 8 ? ForgeIcons.arrow-left : root.glyph;
         width: parent.width; height: parent.height;
-        font-size: 20px * ForgeTypography.scale;
-        color: Palette.foreground;
+        font-size: 14px * ForgeTypography.scale;
+        color: (root.enabled ? Palette.foreground : Palette.text-disabled);
     }
     if root.role == 3 : Rectangle {
-        x: 17px; y: 23px; width: 12px; height: 1px;
-        background: Palette.foreground;
+        x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; width: 10px; height: 1px;
+        background: (root.enabled ? Palette.foreground : Palette.text-disabled);
     }
     if root.role == 4 && !root.maximized-state : Rectangle {
-        x: 17px; y: 17px; width: 12px; height: 12px;
-        border-width: 1px;
-        border-color: Palette.foreground;
+        x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; width: 10px; height: 10px;
+        border-width: ForgeMetrics.stroke-width;
+        border-color: (root.enabled ? Palette.foreground : Palette.text-disabled);
         background: transparent;
     }
     if root.role == 4 && root.maximized-state : Rectangle {
-        x: 16px; y: 19px; width: 11px; height: 10px;
-        border-width: 1px;
-        border-color: Palette.foreground;
+        x: (parent.width - self.width) / 2 - 1px; y: (parent.height - self.height) / 2 + 1px; width: 10px; height: 9px;
+        border-width: ForgeMetrics.stroke-width;
+        border-color: (root.enabled ? Palette.foreground : Palette.text-disabled);
         background: Palette.alternate-background;
         Rectangle {
-            x: 3px; y: -3px; width: 11px; height: 10px;
-            border-width: 1px;
-            border-color: Palette.foreground;
+            x: 3px; y: -3px; width: 10px; height: 9px;
+            border-width: ForgeMetrics.stroke-width;
+            border-color: (root.enabled ? Palette.foreground : Palette.text-disabled);
             background: transparent;
         }
     }
     if root.role == 6 : ForgeIcon {
         glyph: root.pinned-state ? ForgeIcons.pin : ForgeIcons.pin-off;
         width: parent.width; height: parent.height;
-        color: Palette.foreground;
+        font-size: 16px * ForgeTypography.scale;
+        color: (root.enabled ? Palette.foreground : Palette.text-disabled);
     }
     if root.role == 7 : ForgeIcon {
         glyph: ForgeIcons.settings;
         width: parent.width; height: parent.height;
-        color: Palette.foreground;
+        font-size: 16px * ForgeTypography.scale;
+        color: (root.enabled ? Palette.foreground : Palette.text-disabled);
+    }
+    button-focus := FocusScope {
+        enabled: root.enabled;
+        focus-on-click: false;
+        focus-gained(reason) => {
+            if reason != FocusReason.window-activation {
+                ForgeTitleBarInputState.keyboard-navigation = reason != FocusReason.pointer-click;
+            }
+        }
+        key-pressed(event) => {
+            ForgeTitleBarInputState.keyboard-navigation = true;
+            if event.text == Key.Return || event.text == " " { root.clicked(); return accept; }
+            return reject;
+        }
     }
     button-touch := TouchArea {
         enabled: root.enabled;
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down { ForgeTitleBarInputState.keyboard-navigation = false; }
+        }
         clicked => { root.clicked(); }
     }
 }

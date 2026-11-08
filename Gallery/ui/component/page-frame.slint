@@ -1,4 +1,7 @@
-import { ForgeTypography } from "@slintforge";
+// Copyright © 2026 陕西禾又科技有限责任公司
+// SPDX-License-Identifier: GPL-3.0-only
+
+import { ForgeTypography, ForgeMetrics } from "@slintforge";
 import { Palette, ScrollView } from "std-widgets.slint";
 
 // Gallery 页面统一使用标题、说明与滚动内容区。
@@ -7,7 +10,7 @@ export component GalleryPageFrame inherits Rectangle {
     in property<string> subtitle;
     in property<length> content-spacing: 24px;
     in-out property<length> viewport-y <=> scroll.content-y;
-    background: Palette.background;
+    background: Palette.content-background;
 
     scroll := ScrollView {
         width: parent.width;
@@ -17,13 +20,14 @@ export component GalleryPageFrame inherits Rectangle {
         VerticalLayout {
             alignment: start;
             width: scroll.visible-width;
-            padding-left: 24px;
-            padding-right: 24px;
-            padding-top: 24px;
-            padding-bottom: 24px;
+            padding-left: root.width < 720px ? ForgeMetrics.space-l : ForgeMetrics.page-padding;
+            padding-right: root.width < 720px ? ForgeMetrics.space-l : ForgeMetrics.page-padding;
+            padding-top: ForgeMetrics.page-padding;
+            padding-bottom: ForgeMetrics.page-padding;
             spacing: root.content-spacing;
-            Text { text: root.title; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 26px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
-            if root.subtitle != "": Text { text: root.subtitle; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 13px * ForgeTypography.scale; wrap: word-wrap; }
+            Text { text: root.title; height: self.preferred-height; vertical-stretch: 0; color: Palette.foreground; font-size: 28px * ForgeTypography.scale; font-weight: 600; wrap: word-wrap; }
+            if root.subtitle != "": Text { text: root.subtitle; height: self.preferred-height; vertical-stretch: 0; color: Palette.text-secondary; font-size: 14px * ForgeTypography.scale; wrap: word-wrap; }
+            Rectangle { height: 1px; background: Palette.divider; }
             @children
         }
     }
