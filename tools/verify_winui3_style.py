@@ -1,4 +1,4 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """核对主题依赖、未改动的标准控件来源和旧图表接口清理。"""

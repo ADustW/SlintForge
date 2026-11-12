@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """验证 SlintForge 双语 API 文档、示例、链接和截图资产。"""

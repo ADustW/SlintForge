@@ -1,4 +1,4 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """汇总实际窗口 PNG，供组件布局复核；不替代原始分辨率检查。"""

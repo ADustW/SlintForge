@@ -1,4 +1,4 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """准备独立的 Flow 接入项目，只复制 SDK 接口和示例，不复制共用核心源码。"""

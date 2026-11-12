@@ -1,4 +1,4 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """验证专业图表的双端矢量、位图、PDF 导出和网格性能样本一致性。"""

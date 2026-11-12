@@ -1,4 +1,4 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """生成双端窗口的预算裁剪、重做分支和超大编辑边界场景。"""

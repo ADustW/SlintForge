@@ -1,11 +1,11 @@
 # SlintForge 许可说明
 
-Copyright © 2026 陕西禾又科技有限责任公司
+Copyright © 2026 陕西禾又科技有限公司
 
-除下文“第三方组件”列出的内容外，本仓库的源代码、`.slint` 界面文件、脚本、文档及 Gallery 资源均由陕西禾又科技有限责任公司享有版权，并按 **GNU General Public License v3.0 only**（SPDX：`GPL-3.0-only`）授权。许可全文见 [`LICENSE`](LICENSE)，另有一份副本位于 [`LICENSES/GPL-3.0-only.txt`](LICENSES/GPL-3.0-only.txt)。
+除下文“第三方组件”列出的内容外，本仓库的源代码、`.slint` 界面文件、脚本、文档及 Gallery 资源均由陕西禾又科技有限公司享有版权，并按 **GNU General Public License v3.0 only**（SPDX：`GPL-3.0-only`）授权。许可全文见 [`LICENSE`](LICENSE)，另有一份副本位于 [`LICENSES/GPL-3.0-only.txt`](LICENSES/GPL-3.0-only.txt)。
 
 ```
-SPDX-FileCopyrightText: 2026 陕西禾又科技有限责任公司
+SPDX-FileCopyrightText: 2026 陕西禾又科技有限公司
 SPDX-License-Identifier: GPL-3.0-only
 ```
 
@@ -28,13 +28,13 @@ GPL-3.0-only OR LicenseRef-Slint-Royalty-free-2.0 OR LicenseRef-Slint-Software-3
 **对使用者的影响**
 
 - 按 GPL-3.0 使用 SlintForge 时，分发的衍生作品须整体遵守 GPL-3.0：提供完整对应源代码，保留版权和许可声明。
-- 如需闭源分发基于 SlintForge 的产品，须先取得陕西禾又科技有限责任公司对 SlintForge 的另行书面授权，并根据实际分发方式另行满足 Slint 的适用许可。符合官方条件的桌面、移动或 Web 终端应用可能使用 Slint Royalty-free 许可并履行署名要求；单独分发 SDK 或暴露 Slint API 的产品不适用该许可，需选择 Slint 允许的其他路径。详见 [Slint 官方许可 FAQ](https://github.com/slint-ui/slint/blob/master/FAQ.md#licensing)。
+- 如需闭源分发基于 SlintForge 的产品，须先取得陕西禾又科技有限公司对 SlintForge 的另行书面授权，并根据实际分发方式另行满足 Slint 的适用许可。符合官方条件的桌面、移动或 Web 终端应用可能使用 Slint Royalty-free 许可并履行署名要求；单独分发 SDK 或暴露 Slint API 的产品不适用该许可，需选择 Slint 允许的其他路径。详见 [Slint 官方许可 FAQ](https://github.com/slint-ui/slint/blob/master/FAQ.md#licensing)。
 
 **二进制打包现状：**当前 `tools/windows/Package.ps1` 生成的目录和安装包只含公共接口源码，不含 SlintForge 核心实现及包内 Slint SDK 的对应源码。该打包产物仅供内部验证，尚不能直接作为 GPLv3 对外发行包；公开二进制发行还需满足上文的对应源码和声明要求。参见 [`docs/RELEASE.md`](docs/RELEASE.md)。
 
 ## 第三方组件
 
-以下内容不属于陕西禾又科技有限责任公司的版权作品，按各自上游许可提供，原始许可文件随附在对应目录：
+以下内容不属于陕西禾又科技有限公司的版权作品，按各自上游许可提供，原始许可文件随附在对应目录：
 
 | 路径 | 组件 | 版权人 | 许可 |
 |---|---|---|---|

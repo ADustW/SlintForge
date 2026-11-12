@@ -1,9 +1,9 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """生成器输出文件统一使用的版权与许可声明。"""
 
-LICENSE_HEADER = '// Copyright © 2026 陕西禾又科技有限责任公司\n// SPDX-License-Identifier: GPL-3.0-only\n\n'
+LICENSE_HEADER = '// Copyright © 2026 陕西禾又科技有限公司\n// SPDX-License-Identifier: GPL-3.0-only\n\n'
 
 
 def with_license_header(text: str) -> str:

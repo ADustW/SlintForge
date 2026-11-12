@@ -1,4 +1,4 @@
-// Copyright © 2026 陕西禾又科技有限责任公司
+// Copyright © 2026 陕西禾又科技有限公司
 // SPDX-License-Identifier: GPL-3.0-only
 
 //! SlintForge 纯计算运行库。GUI 对象只存在于客户应用。

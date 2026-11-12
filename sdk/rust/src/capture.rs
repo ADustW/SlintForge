@@ -1,4 +1,4 @@
-// Copyright © 2026 陕西禾又科技有限责任公司
+// Copyright © 2026 陕西禾又科技有限公司
 // SPDX-License-Identifier: GPL-3.0-only
 
 //! 截图坐标采用窗口逻辑像素，像素数据采用不预乘的 RGBA8。

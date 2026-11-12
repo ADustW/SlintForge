@@ -1,4 +1,4 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """准备隔离的 WinUI 3/ForgePlot SDK 消费者；只写入 build 验证目录，不组装发布包。"""

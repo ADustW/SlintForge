@@ -1,4 +1,4 @@
-// Copyright © 2026 陕西禾又科技有限责任公司
+// Copyright © 2026 陕西禾又科技有限公司
 // SPDX-License-Identifier: GPL-3.0-only
 
 //! 桌面 UI 渲染偏好；在主线程创建任何 Slint 窗口前调用。

@@ -1,4 +1,4 @@
-// Copyright © 2026 陕西禾又科技有限责任公司
+// Copyright © 2026 陕西禾又科技有限公司
 // SPDX-License-Identifier: GPL-3.0-only
 
 //! 专业绘图公开接口的 DLL 转发；数据布局与共用头文件一致。

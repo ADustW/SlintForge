@@ -1,4 +1,4 @@
-// Copyright © 2026 陕西禾又科技有限责任公司
+// Copyright © 2026 陕西禾又科技有限公司
 // SPDX-License-Identifier: GPL-3.0-only
 
 //! 共用绘图引擎的生命周期、空间查询和导出。Slint 绑定由生成的宏完成。

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """从公共 Slint 入口生成双语 API 文档、清单和最小示例。"""

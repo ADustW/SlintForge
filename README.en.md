@@ -2,7 +2,7 @@
 
 # SlintForge v0.1.2
 
-**Developed and maintained by:** 陕西禾又科技有限责任公司 · [Visit the company website](https://shanxiheyoutech.com)
+**Developed and maintained by:** 陕西禾又科技有限公司 · [Visit the company website](https://shanxiheyoutech.com)
 
 SlintForge is a desktop component library with a shared `.slint` implementation and separate Rust and C++ integration paths. It is an independent third-party project, not an official Slint project. The initial baseline is Windows x64, Slint **1.18.0**, and the `fluent` style. `ui/` is the single source for components and public UI types; `ui/slintforge.slint` is the public `@slintforge` export entry point. The two SDKs provide routing, navigation trees, the complete icon catalog, window and page capture with PNG saving, QR codes, syntax highlighting, background image handling, and Windows window-corner adaptation.
 
@@ -130,4 +130,4 @@ The Rust computation core is delivered as a DLL. Slint objects and service bindi
 
 ## License
 
-Copyright © 2026 陕西禾又科技有限责任公司. Original SlintForge code is licensed under [GPL-3.0-only](LICENSE), which is compatible with Slint's open-source option. Third-party content retains its respective licenses. See the [license explanation](LICENSE.md) for Slint's three license options, proprietary-use conditions, and third-party inventory, and [REUSE.toml](REUSE.toml) for path-specific declarations.
+Copyright © 2026 陕西禾又科技有限公司. Original SlintForge code is licensed under [GPL-3.0-only](LICENSE), which is compatible with Slint's open-source option. Third-party content retains its respective licenses. See the [license explanation](LICENSE.md) for Slint's three license options, proprietary-use conditions, and third-party inventory, and [REUSE.toml](REUSE.toml) for path-specific declarations.

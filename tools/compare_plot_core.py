@@ -1,4 +1,4 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """使用当前同一 MSVC 环境构建 HEAD/工作区内核，比较三轮中位数和峰值内存。"""

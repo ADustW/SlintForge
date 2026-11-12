@@ -1,4 +1,4 @@
-# Copyright © 2026 陕西禾又科技有限责任公司
+# Copyright © 2026 陕西禾又科技有限公司
 # SPDX-License-Identifier: GPL-3.0-only
 
 """验证 Gallery 用法示例、公共目录、双端二维码输出及第一方 C++ 命名规则。"""
