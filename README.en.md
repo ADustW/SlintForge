@@ -1,4 +1,4 @@
-[简体中文](README.md) | [English](README.en.md) | [Company website](https://shanxiheyoutech.com) | [Gitee repository](https://gitee.com/wanfeng20221208/slintforge)
+[简体中文](README.md) | [English](README.en.md) | [Company website](https://shanxiheyoutech.com) | [GitHub repository](https://github.com/ADustW/SlintForge) | [Gitee repository](https://gitee.com/wanfeng20221208/slintforge)
 
 # SlintForge v0.1.2
 
