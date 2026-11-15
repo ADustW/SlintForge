@@ -1,0 +1,44 @@
+name: 同步 main 到 Gitee
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: sync-gitee-main
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository == 'ADustW/SlintForge' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 获取 GitHub 当前的 main
+        shell: bash
+        run: |
+          git init --bare "$RUNNER_TEMP/slintforge-sync.git"
+          git -C "$RUNNER_TEMP/slintforge-sync.git" fetch --no-tags \
+            https://github.com/ADustW/SlintForge.git refs/heads/main:refs/heads/main
+
+      - name: 推送到 Gitee 的 main
+        shell: bash
+        env:
+          GITEE_SYNC_TOKEN: ${{ secrets.GITEE_SYNC_TOKEN }}
+        run: |
+          if [[ -z "$GITEE_SYNC_TOKEN" ]]; then
+            echo '::error::缺少 GITEE_SYNC_TOKEN 仓库密钥'
+            exit 1
+          fi
+
+          # 仅向目标 Gitee 仓库发送认证信息，并把编码后的凭据加入日志遮蔽。
+          auth=$(printf 'wanfeng20221208:%s' "$GITEE_SYNC_TOKEN" | base64 -w 0)
+          printf '::add-mask::%s\n' "$auth"
+          GITEE_AUTH_HEADER="Authorization: Basic $auth" GIT_TERMINAL_PROMPT=0 \
+            git -C "$RUNNER_TEMP/slintforge-sync.git" \
+              --config-env=http.https://gitee.com/wanfeng20221208/slintforge.git.extraHeader=GITEE_AUTH_HEADER \
+              -c http.followRedirects=false push \
+              https://gitee.com/wanfeng20221208/slintforge.git refs/heads/main:refs/heads/main
